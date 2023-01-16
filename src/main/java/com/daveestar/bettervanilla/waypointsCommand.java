@@ -51,56 +51,61 @@ public class WaypointsCommand implements CommandExecutor {
 
       if (args.length > 0) {
         if (args[0].equalsIgnoreCase("add")) {
-          String waypointName = args[1];
-          Location playerLocation = p.getLocation();
+          if (args.length == 2) {
+            String waypointName = args[1];
+            Location playerLocation = p.getLocation();
 
-          int pLocX = playerLocation.getBlockX();
-          int pLocY = playerLocation.getBlockY();
-          int pLocZ = playerLocation.getBlockZ();
+            int pLocX = playerLocation.getBlockX();
+            int pLocY = playerLocation.getBlockY();
+            int pLocZ = playerLocation.getBlockZ();
 
-          if (!cfgn.contains(waypointName)) {
-            // if the waypoint doesnt already exist in the waypoints yml
-            cfgn.set(waypointName + ".x", pLocX);
-            cfgn.set(waypointName + ".y", pLocY);
-            cfgn.set(waypointName + ".z", pLocZ);
-            waypoints.save();
+            if (!cfgn.contains(waypointName)) {
+              // if the waypoint doesnt already exist in the waypoints yml
+              cfgn.set(waypointName + ".x", pLocX);
+              cfgn.set(waypointName + ".y", pLocY);
+              cfgn.set(waypointName + ".z", pLocZ);
+              waypoints.save();
 
-            // send the player the success message
-            p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-                + " was successfully added!");
-            p.sendMessage(
-                Main.getPrefix() + "It is set to your current location: " + ChatColor.YELLOW + "X: " + ChatColor.GRAY
-                    + pLocX + ChatColor.YELLOW
-                    + " Y: " + ChatColor.GRAY + pLocY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + pLocZ);
+              // send the player the success message
+              p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+                  + " was successfully added!");
+              p.sendMessage(
+                  Main.getPrefix() + "It is set to your current location: " + ChatColor.YELLOW + "X: " + ChatColor.GRAY
+                      + pLocX + ChatColor.YELLOW
+                      + " Y: " + ChatColor.GRAY + pLocY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + pLocZ);
 
-          } else {
-            // if it already exists give a hint how to overwrite the pos
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
-                + ChatColor.RED + " already exists!");
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "If you want to overwrite this waypoint please use: "
-                + ChatColor.YELLOW + " /waypoints set " + waypointName + " confirm");
+            } else {
+              // if it already exists give a hint how to overwrite the pos
+              p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
+                  + ChatColor.RED + " already exists!");
+              p.sendMessage(Main.getPrefix() + ChatColor.RED + "If you want to overwrite this waypoint please use: "
+                  + ChatColor.YELLOW + " /waypoints set " + waypointName + " confirm");
 
-            if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
-              if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
-                cfgn.set(waypointName + ".x", pLocX);
-                cfgn.set(waypointName + ".y", pLocY);
-                cfgn.set(waypointName + ".z", pLocZ);
-                waypoints.save();
+              if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
+                if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
+                  cfgn.set(waypointName + ".x", pLocX);
+                  cfgn.set(waypointName + ".y", pLocY);
+                  cfgn.set(waypointName + ".z", pLocZ);
+                  waypoints.save();
 
-                // send the player the success message
-                p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-                    + " was successfully updated!");
-                p.sendMessage(
-                    Main.getPrefix() + "It is reset to your current location: " + ChatColor.YELLOW + "X: "
-                        + ChatColor.GRAY
-                        + pLocX + ChatColor.YELLOW
-                        + " Y: " + ChatColor.GRAY + pLocY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + pLocZ);
-              } else {
-                p.sendMessage(Main.getPrefix() + ChatColor.RED
-                    + "Sorry! You don't have permissions to overwrite existing waypoints. Please ask to gain "
-                    + ChatColor.YELLOW + "bettervanilla.waypoints.overwrite");
+                  // send the player the success message
+                  p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+                      + " was successfully updated!");
+                  p.sendMessage(
+                      Main.getPrefix() + "It is reset to your current location: " + ChatColor.YELLOW + "X: "
+                          + ChatColor.GRAY
+                          + pLocX + ChatColor.YELLOW
+                          + " Y: " + ChatColor.GRAY + pLocY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + pLocZ);
+                } else {
+                  p.sendMessage(Main.getPrefix() + ChatColor.RED
+                      + "Sorry! You don't have permissions to overwrite existing waypoints. Please ask to gain "
+                      + ChatColor.YELLOW + "bettervanilla.waypoints.overwrite");
+                }
               }
             }
+          } else {
+            p.sendMessage(Main.getPrefix() + ChatColor.RED + "To add an waypoint please use: "
+                + ChatColor.YELLOW + "/waypoints add <name>");
           }
         }
 
