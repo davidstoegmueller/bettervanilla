@@ -3,6 +3,7 @@ package com.daveestar.bettervanilla;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /*
@@ -21,6 +22,9 @@ public class Main extends JavaPlugin {
 
     // register commands
     getCommand("waypoints").setExecutor(new WaypointsCommand());
+
+    PluginManager manager = getServer().getPluginManager();
+    manager.registerEvents(new DeathChest(), this);
   }
 
   public void onDisable() {
