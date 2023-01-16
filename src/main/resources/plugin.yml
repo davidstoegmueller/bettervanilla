@@ -2,7 +2,7 @@ name: bettervanilla
 main: com.daveestar.bettervanilla.Main
 version: 1.0.0
 api-version: 1.19
-authors: ['']
+authors: ['daveestar']
 commands:
   waypoints:
     description: Set or Remove waypoints. And display a list of all available waypoints.
