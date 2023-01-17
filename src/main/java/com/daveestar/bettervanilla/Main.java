@@ -27,6 +27,7 @@ public class Main extends JavaPlugin {
 
     PluginManager manager = getServer().getPluginManager();
     manager.registerEvents(new DeathChest(), this);
+    manager.registerEvents(new ChatMessages(), this);
   }
 
   public void onDisable() {
