@@ -51,7 +51,7 @@ public class WaypointsCommand implements CommandExecutor {
 
       if (args.length > 0) {
         if (args[0].equalsIgnoreCase("add")) {
-          if (args.length == 2) {
+          if ((args.length == 2) || (args.length == 3 && args[2].equalsIgnoreCase("confirm"))) {
             String waypointName = args[1];
             Location playerLocation = p.getLocation();
 
@@ -79,7 +79,7 @@ public class WaypointsCommand implements CommandExecutor {
               p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
                   + ChatColor.RED + " already exists!");
               p.sendMessage(Main.getPrefix() + ChatColor.RED + "If you want to overwrite this waypoint please use: "
-                  + ChatColor.YELLOW + " /waypoints set " + waypointName + " confirm");
+                  + ChatColor.YELLOW + " /waypoints add " + waypointName + " confirm");
 
               if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
                 if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
@@ -110,25 +110,31 @@ public class WaypointsCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("remove")) {
-          if (args.length == 2) {
-            String waypointName = args[1];
+          if (p.hasPermission("bettervanilla.waypoints.remove")) {
+            if (args.length == 2) {
+              String waypointName = args[1];
 
-            if (cfgn.contains(waypointName)) {
-              // if the waypoint exists -> remove it
-              cfgn.set(waypointName, null);
-              waypoints.save();
+              if (cfgn.contains(waypointName)) {
+                // if the waypoint exists -> remove it
+                cfgn.set(waypointName, null);
+                waypoints.save();
 
-              p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-                  + " was successfully removed!");
+                p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+                    + " was successfully removed!");
+              } else {
+                // send a message that the waypoint doesnt exist
+                p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
+                    + waypointName + ChatColor.RED
+                    + ". Please try an existing one!");
+              }
             } else {
-              // send a message that the waypoint doesnt exist
-              p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
-                  + waypointName + ChatColor.RED
-                  + ". Please try an existing one!");
+              p.sendMessage(Main.getPrefix() + ChatColor.RED + "To remove an existing waypoint please use: "
+                  + ChatColor.YELLOW + "/waypoints remove <name>");
             }
           } else {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "To remove an existing waypoint please use: "
-                + ChatColor.YELLOW + "/waypoints remove <name>");
+            p.sendMessage(Main.getPrefix() + ChatColor.RED
+                + "Sorry! You don't have permissions to remove existing waypoints. Please ask to gain "
+                + ChatColor.YELLOW + "bettervanilla.waypoints.remove");
           }
         }
 
