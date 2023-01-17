@@ -9,6 +9,10 @@ commands:
     usage: /waypoints [set|remove] <name> [confirm]
     permission: bettervanilla.waypoints
   ping:
-    description: Get the ping of either yourself or of another user!
+    description: Get the ping of either yourself or of another user.
     usage: /ping [name]
     permission: bettervanilla.ping
+  invsee:
+    description: See the inventory of another player.
+    usage: /invsee <name>
+    permission: bettervanilla.invsee
