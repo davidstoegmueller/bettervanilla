@@ -22,6 +22,7 @@ public class Main extends JavaPlugin {
 
     // register commands
     getCommand("waypoints").setExecutor(new WaypointsCommand());
+    getCommand("ping").setExecutor(new PingCommand());
 
     PluginManager manager = getServer().getPluginManager();
     manager.registerEvents(new DeathChest(), this);

@@ -8,3 +8,7 @@ commands:
     description: Set or Remove waypoints. And display a list of all available waypoints.
     usage: /waypoints [set|remove] <name> [confirm]
     permission: bettervanilla.waypoints
+  ping:
+    description: Get the ping of either yourself or of another user!
+    usage: /ping [name]
+    permission: bettervanilla.ping
