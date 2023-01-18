@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -94,5 +95,10 @@ public class DeathChest implements Listener {
 
       deathChest.remove(e.getBlock());
     }
+  }
+
+  @EventHandler
+  public void onBlockExplode(EntityExplodeEvent e) {
+    e.blockList().removeIf(block -> deathChest.containsKey(block));
   }
 }
