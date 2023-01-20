@@ -59,6 +59,16 @@ public class WaypointsMove implements Listener {
 
       displayActionBar(p, displayText);
     }
+
+    if (ToggleLocationCommand.showLocation.containsKey(p)) {
+      String displayCoordsCurrent = ChatColor.YELLOW + "X: "
+          + ChatColor.GRAY
+          + p.getLocation().getBlockX() + ChatColor.YELLOW
+          + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
+          + p.getLocation().getBlockZ();
+
+      displayActionBar(p, displayCoordsCurrent);
+    }
   }
 
   public static void displayActionBar(Player p, String text) {

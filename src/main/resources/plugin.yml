@@ -19,3 +19,6 @@ commands:
   help:
     description: Get help for better vanilla.
     usage: /help
+  togglelocation:
+    description: Turn on/off action bar location.
+    usage: /togglelocation

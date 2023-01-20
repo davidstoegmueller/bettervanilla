@@ -27,6 +27,7 @@ public class Main extends JavaPlugin {
     getCommand("ping").setExecutor(new PingCommand());
     getCommand("invsee").setExecutor(new InvseeCommand());
     getCommand("help").setExecutor(new HelpCommand());
+    getCommand("togglelocation").setExecutor(new ToggleLocationCommand());
 
     PluginManager manager = getServer().getPluginManager();
     manager.registerEvents(new DeathChest(), this);

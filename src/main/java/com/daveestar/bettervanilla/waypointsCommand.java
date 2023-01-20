@@ -200,6 +200,10 @@ public class WaypointsCommand implements CommandExecutor {
               showWaypointCoords.remove(p);
             }
 
+            if (ToggleLocationCommand.showLocation.containsKey(p)) {
+              ToggleLocationCommand.showLocation.remove(p);
+            }
+
             showWaypointCoords.put(p, new LocationName(waypointLoc, waypointName));
 
             int locX = p.getLocation().getBlockX();
