@@ -16,3 +16,6 @@ commands:
     description: See the inventory of another player.
     usage: /invsee <name>
     permission: bettervanilla.invsee
+  help:
+    description: Get help for better vanilla.
+    usage: /help

@@ -1,5 +1,7 @@
 package com.daveestar.bettervanilla;
 
+import java.util.HashMap;
+
 import java.util.Set;
 
 import org.bukkit.ChatColor;
@@ -12,7 +14,31 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.utils.Config;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
+class LocationName {
+  private Location waypointLoc;
+  private String waypointName;
+
+  public LocationName(Location waypointLoc, String waypointName) {
+    this.waypointLoc = waypointLoc;
+    this.waypointName = waypointName;
+  }
+
+  public Location getLoc() {
+    return this.waypointLoc;
+  }
+
+  public String getName() {
+    return this.waypointName;
+  }
+
+}
+
 public class WaypointsCommand implements CommandExecutor {
+  public static HashMap<Player, LocationName> showWaypointCoords = new HashMap<Player, LocationName>();
+
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
 
@@ -26,7 +52,8 @@ public class WaypointsCommand implements CommandExecutor {
         // no agruments -> list all waypoints
 
         p.sendMessage(
-            Main.getPrefix() + "--- " + ChatColor.YELLOW + "List of all Waypoints" + ChatColor.GRAY + " ---");
+            Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "All Waypoints:");
+        p.sendMessage("");
 
         Set<String> allWaypoints = cfgn.getKeys(false);
 
@@ -44,9 +71,6 @@ public class WaypointsCommand implements CommandExecutor {
         } else {
           p.sendMessage(Main.getPrefix() + ChatColor.RED + "There are no existing waypoints!");
         }
-
-        p.sendMessage(
-            Main.getPrefix() + "--- " + ChatColor.YELLOW + "List of all Waypoints" + ChatColor.GRAY + " ---");
       }
 
       if (args.length > 0) {
@@ -138,7 +162,25 @@ public class WaypointsCommand implements CommandExecutor {
           }
         }
 
-        if (!args[0].equalsIgnoreCase("add") && !args[0].equalsIgnoreCase("remove")) {
+        if (args[0].equalsIgnoreCase("cancel")) {
+          if (args.length == 1) {
+            if (showWaypointCoords.containsKey(p)) {
+              showWaypointCoords.remove(p);
+              WaypointsMove.waypointScheduler.cancelTasks(Main.getInstance());
+
+              p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
+                  ChatColor.RED + "You've canceled navigation!"));
+            } else {
+              p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no current destination!");
+            }
+          } else {
+            p.sendMessage(Main.getPrefix() + ChatColor.RED + "To cancel navigation to an existing waypoint please use: "
+                + ChatColor.YELLOW + "/waypoints cancel");
+          }
+        }
+
+        if (!args[0].equalsIgnoreCase("add") && !args[0].equalsIgnoreCase("remove")
+            && !args[0].equalsIgnoreCase("cancel")) {
           String waypointName = args[0];
 
           if (cfgn.contains(waypointName)) {
@@ -146,11 +188,41 @@ public class WaypointsCommand implements CommandExecutor {
             int wpY = cfgn.getInt(waypointName + ".y");
             int wpZ = cfgn.getInt(waypointName + ".z");
 
+            Location waypointLoc = new Location(p.getWorld(), wpX, wpY, wpZ);
+
             p.sendMessage(
                 Main.getPrefix() + ChatColor.YELLOW + waypointName + ChatColor.GRAY + " is at " + ChatColor.YELLOW
                     + "X: " + ChatColor.GRAY
                     + wpX + ChatColor.YELLOW
                     + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ);
+
+            if (showWaypointCoords.containsKey(p)) {
+              showWaypointCoords.remove(p);
+            }
+
+            showWaypointCoords.put(p, new LocationName(waypointLoc, waypointName));
+
+            int locX = p.getLocation().getBlockX();
+            int locY = p.getLocation().getBlockY();
+            int locZ = p.getLocation().getBlockZ();
+
+            String displayCoordsWp = ChatColor.YELLOW + "" + ChatColor.BOLD + waypointName.toUpperCase() + ": "
+                + ChatColor.RESET
+                + ChatColor.YELLOW
+                + "X: " + ChatColor.GRAY
+                + wpX + ChatColor.YELLOW
+                + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ;
+
+            String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW
+                + ChatColor.BOLD
+                + "CURRENT: " + ChatColor.RESET + ChatColor.YELLOW + "X: "
+                + ChatColor.GRAY
+                + locX + ChatColor.YELLOW
+                + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
+
+            String displayText = displayCoordsWp + displayCoordsCurrent;
+
+            WaypointsMove.displayActionBar(p, displayText);
           } else {
             // send a message that the waypoint doesnt exist
             p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW

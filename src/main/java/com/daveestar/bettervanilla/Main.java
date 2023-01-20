@@ -3,6 +3,8 @@ package com.daveestar.bettervanilla;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,14 +26,21 @@ public class Main extends JavaPlugin {
     getCommand("waypoints").setExecutor(new WaypointsCommand());
     getCommand("ping").setExecutor(new PingCommand());
     getCommand("invsee").setExecutor(new InvseeCommand());
+    getCommand("help").setExecutor(new HelpCommand());
 
     PluginManager manager = getServer().getPluginManager();
     manager.registerEvents(new DeathChest(), this);
     manager.registerEvents(new ChatMessages(), this);
+    manager.registerEvents(new WaypointsMove(), this);
   }
 
   public void onDisable() {
     mainInstance = null;
+
+    // remove all deathchest blocks on plugin reload
+    for (Block block : DeathChest.deathChest.keySet()) {
+      block.setType(Material.AIR);
+    }
 
     LOGGER.info("bettervanilla disabled");
   }
