@@ -20,7 +20,7 @@ public class ToggleLocationCommand implements CommandExecutor {
       if (args.length == 0) {
         if (showLocation.containsKey(p)) {
           showLocation.remove(p);
-          WaypointsMove.waypointScheduler.cancelTasks(Main.getInstance());
+          PlayerMove.cancelTask(p);
         } else {
           showLocation.put(p, p.getLocation());
           WaypointsCommand.showWaypointCoords.remove(p);
@@ -31,7 +31,7 @@ public class ToggleLocationCommand implements CommandExecutor {
               + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
               + p.getLocation().getBlockZ();
 
-          WaypointsMove.displayActionBar(p, displayCoordsCurrent);
+          PlayerMove.displayActionBar(p, displayCoordsCurrent);
         }
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Plase use: " + ChatColor.YELLOW + "/togglelocation");

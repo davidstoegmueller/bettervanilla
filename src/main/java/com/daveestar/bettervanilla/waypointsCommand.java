@@ -166,7 +166,7 @@ public class WaypointsCommand implements CommandExecutor {
           if (args.length == 1) {
             if (showWaypointCoords.containsKey(p)) {
               showWaypointCoords.remove(p);
-              WaypointsMove.waypointScheduler.cancelTasks(Main.getInstance());
+              PlayerMove.cancelTask(p);
 
               p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
                   ChatColor.RED + "You've canceled navigation!"));
@@ -183,6 +183,7 @@ public class WaypointsCommand implements CommandExecutor {
             && !args[0].equalsIgnoreCase("cancel")) {
           String waypointName = args[0];
 
+          // check if the waypoint exists in the file configuration
           if (cfgn.contains(waypointName)) {
             int wpX = cfgn.getInt(waypointName + ".x");
             int wpY = cfgn.getInt(waypointName + ".y");
@@ -226,7 +227,7 @@ public class WaypointsCommand implements CommandExecutor {
 
             String displayText = displayCoordsWp + displayCoordsCurrent;
 
-            WaypointsMove.displayActionBar(p, displayText);
+            PlayerMove.displayActionBar(p, displayText);
           } else {
             // send a message that the waypoint doesnt exist
             p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW

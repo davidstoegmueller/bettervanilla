@@ -1,5 +1,7 @@
 package com.daveestar.bettervanilla;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -7,12 +9,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class WaypointsMove implements Listener {
+public class PlayerMove implements Listener {
   public static BukkitScheduler waypointScheduler = Bukkit.getScheduler();
+  public static HashMap<Player, BukkitTask> waypointsTasks = new HashMap<Player, BukkitTask>();
 
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent e) {
@@ -25,11 +29,9 @@ public class WaypointsMove implements Listener {
 
       LocationName locationName = WaypointsCommand.showWaypointCoords.get(p);
 
-      p.getLocation().distance(locationName.getLoc());
-
       if (p.getLocation().distance(locationName.getLoc()) <= 25) {
         WaypointsCommand.showWaypointCoords.remove(p);
-        waypointScheduler.cancelTasks(Main.getInstance());
+        PlayerMove.cancelTask(p);
 
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
             ChatColor.YELLOW + "" + ChatColor.BOLD + locationName.getName() + ChatColor.GRAY
@@ -58,9 +60,7 @@ public class WaypointsMove implements Listener {
       String displayText = displayCoordsWp + displayCoordsCurrent;
 
       displayActionBar(p, displayText);
-    }
-
-    if (ToggleLocationCommand.showLocation.containsKey(p)) {
+    } else if (ToggleLocationCommand.showLocation.containsKey(p)) {
       String displayCoordsCurrent = ChatColor.YELLOW + "X: "
           + ChatColor.GRAY
           + p.getLocation().getBlockX() + ChatColor.YELLOW
@@ -72,12 +72,21 @@ public class WaypointsMove implements Listener {
   }
 
   public static void displayActionBar(Player p, String text) {
-    waypointScheduler.cancelTasks(Main.getInstance());
+    cancelTask(p);
 
-    waypointScheduler.scheduleSyncRepeatingTask(Main.getInstance(), new Runnable() {
+    BukkitTask task = waypointScheduler.runTaskTimerAsynchronously(Main.getInstance(), new Runnable() {
       public void run() {
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
       }
     }, 0, 3 * 10);
+
+    waypointsTasks.put(p, task);
+  }
+
+  public static void cancelTask(Player p) {
+    if (waypointsTasks.containsKey(p)) {
+      waypointsTasks.get(p).cancel();
+      waypointsTasks.remove(p);
+    }
   }
 }
