@@ -17,12 +17,14 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getPrefix() + "/waypoints - List all waypoints");
       p.sendMessage(Main.getPrefix() + "/waypoints add <name> - Add a waypoint to the list");
       p.sendMessage(Main.getPrefix() + "/waypoints <name> - Start navigation to waypoint");
-      p.sendMessage(Main.getPrefix() + "/waypoints - List all waypoints");
+      p.sendMessage(Main.getPrefix() + "/waypoints cancel - Cancel the current navigation");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/ping - Display your ping");
       p.sendMessage(Main.getPrefix() + "/ping <name> - Display the ping of a player");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/togglelocation - Display you current location in action bar");
+      p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + "/playerhead <name> - Get a head of a player");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "DeathChest-Feature: " + ChatColor.GRAY
           + "If you die a chest will be created on the location where you died. You can come back to the chest and open it. This enables us to never lose our items. If you close the chest inventory -> items will be dropped. If you break the chest -> items will be dropped.");

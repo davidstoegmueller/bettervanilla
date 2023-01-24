@@ -22,3 +22,6 @@ commands:
   togglelocation:
     description: Turn on/off action bar location.
     usage: /togglelocation
+  playerhead:
+    description: Get a head from a player
+    usage: /playerhead <name>

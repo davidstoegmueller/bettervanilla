@@ -28,6 +28,7 @@ public class Main extends JavaPlugin {
     getCommand("invsee").setExecutor(new InvseeCommand());
     getCommand("help").setExecutor(new HelpCommand());
     getCommand("togglelocation").setExecutor(new ToggleLocationCommand());
+    getCommand("playerhead").setExecutor(new PlayerHeadCommand());
 
     PluginManager manager = getServer().getPluginManager();
     manager.registerEvents(new DeathChest(), this);
