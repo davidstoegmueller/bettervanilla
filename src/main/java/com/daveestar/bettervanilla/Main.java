@@ -29,6 +29,7 @@ public class Main extends JavaPlugin {
     getCommand("help").setExecutor(new HelpCommand());
     getCommand("togglelocation").setExecutor(new ToggleLocationCommand());
     getCommand("playerhead").setExecutor(new PlayerHeadCommand());
+    getCommand("lastdeath").setExecutor(new LastDeathCommand());
 
     PluginManager manager = getServer().getPluginManager();
     manager.registerEvents(new DeathChest(), this);

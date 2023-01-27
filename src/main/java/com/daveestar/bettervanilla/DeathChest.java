@@ -4,8 +4,11 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,12 +21,23 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.daveestar.bettervanilla.utils.Config;
+
 public class DeathChest implements Listener {
   public static HashMap<Block, Inventory> deathChest = new HashMap<Block, Inventory>();
 
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent e) {
     Player p = (Player) e.getEntity();
+
+    Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
+    FileConfiguration cfgn = lastDeaths.getFileCfgrn();
+
+    cfgn.set(p.getName() + ".x", p.getLocation().getBlockX());
+    cfgn.set(p.getName() + ".y", p.getLocation().getBlockY());
+    cfgn.set(p.getName() + ".z", p.getLocation().getBlockZ());
+    cfgn.set(p.getName() + ".world", p.getLocation().getWorld().getName());
+    lastDeaths.save();
 
     Block blockChest = p.getWorld().getBlockAt(p.getLocation().add(0, 0.5, 0));
     blockChest.setType(Material.CHEST);
@@ -43,7 +57,8 @@ public class DeathChest implements Listener {
             + ChatColor.GRAY + blockChest.getLocation().getBlockZ());
     p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
         + " As soon as you close or break the chest all items will be dropped!");
-
+    p.sendMessage(Main.getPrefix() + "If you want to navigate to you latest deathpoint please use: " + ChatColor.YELLOW
+        + "/lastdeath");
   }
 
   private Block openedDeathChestBlock;
@@ -79,6 +94,11 @@ public class DeathChest implements Listener {
       deathChest.remove(openedDeathChestBlock);
       openedDeathChestBlock.setType(Material.AIR);
       openedDeathChestBlock = null;
+
+      Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
+      FileConfiguration cfgn = lastDeaths.getFileCfgrn();
+      cfgn.set(e.getPlayer().getName(), null);
+      lastDeaths.save();
     }
   }
 
@@ -94,6 +114,11 @@ public class DeathChest implements Listener {
       }
 
       deathChest.remove(e.getBlock());
+
+      Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
+      FileConfiguration cfgn = lastDeaths.getFileCfgrn();
+      cfgn.set(e.getPlayer().getName(), null);
+      lastDeaths.save();
     }
   }
 

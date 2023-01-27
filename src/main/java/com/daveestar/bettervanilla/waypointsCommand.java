@@ -9,32 +9,15 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.utils.LocationName;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-
-class LocationName {
-  private Location waypointLoc;
-  private String waypointName;
-
-  public LocationName(Location waypointLoc, String waypointName) {
-    this.waypointLoc = waypointLoc;
-    this.waypointName = waypointName;
-  }
-
-  public Location getLoc() {
-    return this.waypointLoc;
-  }
-
-  public String getName() {
-    return this.waypointName;
-  }
-
-}
 
 public class WaypointsCommand implements CommandExecutor {
   public static HashMap<Player, LocationName> showWaypointCoords = new HashMap<Player, LocationName>();
@@ -44,24 +27,28 @@ public class WaypointsCommand implements CommandExecutor {
 
     if (c.getName().equalsIgnoreCase("waypoints") && cs instanceof Player) {
       Player p = (Player) cs;
+      String worldName = p.getWorld().getName();
 
       Config waypoints = new Config("waypoints.yml", Main.getInstance().getDataFolder());
       FileConfiguration cfgn = waypoints.getFileCfgrn();
 
       if (args.length == 0) {
         // no agruments -> list all waypoints
-
         p.sendMessage(
-            Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "All Waypoints:");
+            Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "All waypoints in " + worldName + ":");
         p.sendMessage("");
 
-        Set<String> allWaypoints = cfgn.getKeys(false);
+        ConfigurationSection section = cfgn.getConfigurationSection(worldName);
+        Set<String> allWaypoints = null;
+        if (section != null) {
+          allWaypoints = cfgn.getConfigurationSection(worldName).getKeys(false);
+        }
 
-        if (allWaypoints.size() > 0) {
+        if (allWaypoints != null && allWaypoints.size() > 0) {
           for (String wpName : allWaypoints) {
-            int wpX = cfgn.getInt(wpName + ".x");
-            int wpY = cfgn.getInt(wpName + ".y");
-            int wpZ = cfgn.getInt(wpName + ".z");
+            int wpX = cfgn.getInt(worldName + "." + wpName + ".x");
+            int wpY = cfgn.getInt(worldName + "." + wpName + ".y");
+            int wpZ = cfgn.getInt(worldName + "." + wpName + ".z");
 
             p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + wpName + ChatColor.GRAY + " is at " + ChatColor.YELLOW
                 + "X: " + ChatColor.GRAY
@@ -69,7 +56,7 @@ public class WaypointsCommand implements CommandExecutor {
                 + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ);
           }
         } else {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "There are no existing waypoints!");
+          p.sendMessage(ChatColor.RED + "There are no existing waypoints!");
         }
       }
 
@@ -83,11 +70,11 @@ public class WaypointsCommand implements CommandExecutor {
             int pLocY = playerLocation.getBlockY();
             int pLocZ = playerLocation.getBlockZ();
 
-            if (!cfgn.contains(waypointName)) {
+            if (!cfgn.contains(worldName + "." + waypointName)) {
               // if the waypoint doesnt already exist in the waypoints yml
-              cfgn.set(waypointName + ".x", pLocX);
-              cfgn.set(waypointName + ".y", pLocY);
-              cfgn.set(waypointName + ".z", pLocZ);
+              cfgn.set(worldName + "." + waypointName + ".x", pLocX);
+              cfgn.set(worldName + "." + waypointName + ".y", pLocY);
+              cfgn.set(worldName + "." + waypointName + ".z", pLocZ);
               waypoints.save();
 
               // send the player the success message
@@ -107,9 +94,9 @@ public class WaypointsCommand implements CommandExecutor {
 
               if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
                 if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
-                  cfgn.set(waypointName + ".x", pLocX);
-                  cfgn.set(waypointName + ".y", pLocY);
-                  cfgn.set(waypointName + ".z", pLocZ);
+                  cfgn.set(worldName + "." + waypointName + ".x", pLocX);
+                  cfgn.set(worldName + "." + waypointName + ".y", pLocY);
+                  cfgn.set(worldName + "." + waypointName + ".z", pLocZ);
                   waypoints.save();
 
                   // send the player the success message
@@ -138,9 +125,9 @@ public class WaypointsCommand implements CommandExecutor {
             if (args.length == 2) {
               String waypointName = args[1];
 
-              if (cfgn.contains(waypointName)) {
+              if (cfgn.contains(worldName + "." + waypointName)) {
                 // if the waypoint exists -> remove it
-                cfgn.set(waypointName, null);
+                cfgn.set(worldName + "." + waypointName, null);
                 waypoints.save();
 
                 p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
@@ -184,10 +171,10 @@ public class WaypointsCommand implements CommandExecutor {
           String waypointName = args[0];
 
           // check if the waypoint exists in the file configuration
-          if (cfgn.contains(waypointName)) {
-            int wpX = cfgn.getInt(waypointName + ".x");
-            int wpY = cfgn.getInt(waypointName + ".y");
-            int wpZ = cfgn.getInt(waypointName + ".z");
+          if (cfgn.contains(worldName + "." + waypointName)) {
+            int wpX = cfgn.getInt(worldName + "." + waypointName + ".x");
+            int wpY = cfgn.getInt(worldName + "." + waypointName + ".y");
+            int wpZ = cfgn.getInt(worldName + "." + waypointName + ".z");
 
             Location waypointLoc = new Location(p.getWorld(), wpX, wpY, wpZ);
 

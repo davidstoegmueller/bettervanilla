@@ -19,6 +19,9 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getPrefix() + "/waypoints <name> - Start navigation to waypoint");
       p.sendMessage(Main.getPrefix() + "/waypoints cancel - Cancel the current navigation");
       p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + "/lastdeath - Navigate to your latest death point");
+      p.sendMessage(Main.getPrefix() + "/lastdeath cancel - Cancel the death point navigation");
+      p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/ping - Display your ping");
       p.sendMessage(Main.getPrefix() + "/ping <name> - Display the ping of a player");
       p.sendMessage("");

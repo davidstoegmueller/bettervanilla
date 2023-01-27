@@ -25,3 +25,6 @@ commands:
   playerhead:
     description: Get a head from a player
     usage: /playerhead <name>
+  lastdeath:
+    description: Navigate to the last death point
+    usage: /lastdeath

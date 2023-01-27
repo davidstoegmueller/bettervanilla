@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.daveestar.bettervanilla.utils.LocationName;
+
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -29,9 +31,17 @@ public class PlayerMove implements Listener {
 
       LocationName locationName = WaypointsCommand.showWaypointCoords.get(p);
 
+      if (locationName.getLoc().getWorld().getName() != p.getWorld().getName()) {
+        WaypointsCommand.showWaypointCoords.remove(p);
+        cancelTask(p);
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
+
+        return;
+      }
+
       if (p.getLocation().distance(locationName.getLoc()) <= 25) {
         WaypointsCommand.showWaypointCoords.remove(p);
-        PlayerMove.cancelTask(p);
+        cancelTask(p);
 
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
             ChatColor.YELLOW + "" + ChatColor.BOLD + locationName.getName() + ChatColor.GRAY
