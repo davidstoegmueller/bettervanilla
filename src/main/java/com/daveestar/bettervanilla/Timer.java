@@ -65,7 +65,7 @@ public class Timer {
 
   public void displayTimerActionBar() {
     for (Player p : Bukkit.getOnlinePlayers()) {
-      if (!WaypointsCommand.showWaypointCoords.containsKey(p)) {
+      if (!WaypointsCommand.showWaypointCoords.containsKey(p) && !ToggleLocationCommand.showLocation.containsKey(p)) {
         if (!isRunning()) {
           p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
               new TextComponent(
