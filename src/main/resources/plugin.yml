@@ -1,8 +1,8 @@
 name: bettervanilla
 main: com.daveestar.bettervanilla.Main
 version: 1.0.0
-api-version: 1.19
-authors: ['daveestar']
+api-version: 1.20
+authors: ["daveestar"]
 commands:
   waypoints:
     description: Set or Remove waypoints. And display a list of all available waypoints.
@@ -16,15 +16,29 @@ commands:
     description: See the inventory of another player.
     usage: /invsee <name>
     permission: bettervanilla.invsee
+  timer:
+    description: Resume, Pause, Reset the Timer.
+    usage: /timer
+    permission: bettervanilla.timer
+  adminhelp:
+    description: Get help for admin commands of better vanilla.
+    usage: /adminhelp
+    permission: bettervanilla.adminhelp
+  maintenance:
+    description: Toggle the maintenance mode.
+    usage: /maintenance
+    permission: bettervanilla.maintenance
   help:
     description: Get help for better vanilla.
     usage: /help
   togglelocation:
     description: Turn on/off action bar location.
     usage: /togglelocation
+    permission: bettervanilla.togglelocation
   playerhead:
     description: Get a head from a player
     usage: /playerhead <name>
+    permission: bettervanilla.playerhead
   lastdeath:
     description: Navigate to the last death point
     usage: /lastdeath

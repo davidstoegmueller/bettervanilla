@@ -34,6 +34,23 @@ public class HelpCommand implements CommandExecutor {
 
       return true;
     }
+
+    if (c.getName().equalsIgnoreCase("adminhelp") && cs instanceof Player) {
+      Player p = (Player) cs;
+
+      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "Admin Commands:");
+      p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + "/timer resume - Resume the timer");
+      p.sendMessage(Main.getPrefix() + "/timer pause - Pause the timer");
+      p.sendMessage(Main.getPrefix() + "/timer reset - Reset the timer");
+      p.sendMessage(Main.getPrefix() + "/timer set <time> - Set the timer to a specific time");
+      p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + "/invsee <name> - See the inventory of a given player");
+      p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + "/maintenance - Toggle the maintenance mode of the server");
+
+      return true;
+    }
     return false;
   }
 }

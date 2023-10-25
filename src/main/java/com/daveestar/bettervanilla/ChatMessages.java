@@ -1,5 +1,8 @@
 package com.daveestar.bettervanilla;
 
+import java.util.Collection;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +18,11 @@ public class ChatMessages implements Listener {
 
     e.setJoinMessage(
         ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName());
+
+    Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+    Main.getInstance().getTimer().checkAndSetTimerRunning(onlinePlayers.size());
+
+    Main.getInstance().getMaintenance().sendMaintenance(p);
   }
 
   @EventHandler
@@ -22,6 +30,9 @@ public class ChatMessages implements Listener {
     Player p = (Player) e.getPlayer();
 
     e.setQuitMessage(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName());
+
+    Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+    Main.getInstance().getTimer().checkAndSetTimerRunning(onlinePlayers.size() - 1);
   }
 
   @EventHandler
