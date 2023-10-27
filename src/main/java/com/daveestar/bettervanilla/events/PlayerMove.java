@@ -1,6 +1,7 @@
 package com.daveestar.bettervanilla.events;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,6 +50,8 @@ public class PlayerMove implements Listener {
       int wpY = locationName.getCoordinates().getBlockY();
       int wpZ = locationName.getCoordinates().getBlockZ();
 
+      Location waypointLocation = new Location(p.getWorld(), wpX, wpY, wpZ);
+
       String displayCoordsWp = ChatColor.YELLOW + "" + ChatColor.BOLD + locationName.getName().toUpperCase() + ": "
           + ChatColor.RESET
           + ChatColor.YELLOW
@@ -62,7 +65,11 @@ public class PlayerMove implements Listener {
           + locX + ChatColor.YELLOW
           + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
 
-      String displayText = displayCoordsWp + displayCoordsCurrent;
+      String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW + ChatColor.BOLD
+          + "DISTANCE: "
+          + ChatColor.RESET + ChatColor.GRAY + Math.round(p.getLocation().distance(waypointLocation));
+
+      String displayText = displayCoordsWp + displayCoordsCurrent + distanceToTarget;
 
       waypointsManager.displayActionBar(p, displayText);
     } else if (waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {

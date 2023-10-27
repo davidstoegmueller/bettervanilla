@@ -192,6 +192,8 @@ public class WaypointsCommand implements CommandExecutor {
             int locY = p.getLocation().getBlockY();
             int locZ = p.getLocation().getBlockZ();
 
+            Location waypointLocation = new Location(p.getWorld(), waypointX, waypointY, waypointZ);
+
             String displayCoordsWp = ChatColor.YELLOW + "" + ChatColor.BOLD + waypointName.toUpperCase() + ": "
                 + ChatColor.RESET
                 + ChatColor.YELLOW
@@ -206,7 +208,11 @@ public class WaypointsCommand implements CommandExecutor {
                 + locX + ChatColor.YELLOW
                 + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
 
-            String displayText = displayCoordsWp + displayCoordsCurrent;
+            String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW + ChatColor.BOLD
+                + "DISTANCE: "
+                + ChatColor.RESET + ChatColor.GRAY + Math.round(p.getLocation().distance(waypointLocation));
+
+            String displayText = displayCoordsWp + displayCoordsCurrent + distanceToTarget;
 
             waypointsManager.displayActionBar(p, displayText);
           } else {
