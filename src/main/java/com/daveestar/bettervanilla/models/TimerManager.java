@@ -1,23 +1,25 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.models;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Config;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Timer {
+public class TimerManager {
   private boolean running;
   private int time;
+
   private Config config;
   private FileConfiguration fileCfgn;
 
-  public Timer(Config config) {
+  public TimerManager(Config config) {
     this.config = config;
     this.fileCfgn = config.getFileCfgrn();
 
@@ -64,8 +66,10 @@ public class Timer {
   }
 
   public void displayTimerActionBar() {
+    WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
     for (Player p : Bukkit.getOnlinePlayers()) {
-      if (!WaypointsCommand.showWaypointCoords.containsKey(p) && !ToggleLocationCommand.showLocation.containsKey(p)) {
+      if (!waypointsManager.checkPlayerActiveWaypointNavigation(p)
+          && !waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
         if (!isRunning()) {
           p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
               new TextComponent(

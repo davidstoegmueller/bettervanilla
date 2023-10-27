@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.events;
 
 import java.util.Collection;
 
@@ -11,6 +11,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.daveestar.bettervanilla.Main;
+
 public class ChatMessages implements Listener {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent e) {
@@ -20,9 +22,9 @@ public class ChatMessages implements Listener {
         ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName());
 
     Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-    Main.getInstance().getTimer().checkAndSetTimerRunning(onlinePlayers.size());
+    Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size());
 
-    Main.getInstance().getMaintenance().sendMaintenance(p);
+    Main.getInstance().getMaintenanceManager().sendMaintenance(p);
   }
 
   @EventHandler
@@ -32,7 +34,7 @@ public class ChatMessages implements Listener {
     e.setQuitMessage(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName());
 
     Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-    Main.getInstance().getTimer().checkAndSetTimerRunning(onlinePlayers.size() - 1);
+    Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size() - 1);
   }
 
   @EventHandler

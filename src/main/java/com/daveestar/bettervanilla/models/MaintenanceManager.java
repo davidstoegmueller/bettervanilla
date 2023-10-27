@@ -1,21 +1,22 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.models;
 
 import java.util.Collection;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Config;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class Maintenance {
+public class MaintenanceManager {
   private Boolean isMaintenance;
 
   private Config config;
   private FileConfiguration fileCfgn;
 
-  public Maintenance(Config config) {
+  public MaintenanceManager(Config config) {
     this.config = config;
     this.fileCfgn = config.getFileCfgrn();
 

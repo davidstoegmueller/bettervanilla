@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -6,11 +6,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.models.TimerManager;
+
 public class TimerCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-
     if (c.getName().equalsIgnoreCase("timer") && cs instanceof Player) {
       Player p = (Player) cs;
 
@@ -23,7 +25,7 @@ public class TimerCommand implements CommandExecutor {
 
       // store the timer model to use later in switch case to handle different timer
       // arguments
-      Timer timer = Main.getInstance().getTimer();
+      TimerManager timer = Main.getInstance().getTimerManager();
 
       switch (args[0].toLowerCase()) {
         case "resume":

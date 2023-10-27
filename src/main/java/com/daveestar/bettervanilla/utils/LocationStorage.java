@@ -2,16 +2,16 @@ package com.daveestar.bettervanilla.utils;
 
 import org.bukkit.Location;
 
-public class LocationName {
+public class LocationStorage {
   private Location waypointLoc;
   private String waypointName;
 
-  public LocationName(Location waypointLoc, String waypointName) {
+  public LocationStorage(Location waypointLoc, String waypointName) {
     this.waypointLoc = waypointLoc;
     this.waypointName = waypointName;
   }
 
-  public Location getLoc() {
+  public Location getCoordinates() {
     return this.waypointLoc;
   }
 

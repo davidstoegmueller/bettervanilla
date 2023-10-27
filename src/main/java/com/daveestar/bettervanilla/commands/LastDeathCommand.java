@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,8 +10,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.models.WaypointsManager;
 import com.daveestar.bettervanilla.utils.Config;
-import com.daveestar.bettervanilla.utils.LocationName;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -21,6 +22,8 @@ public class LastDeathCommand implements CommandExecutor {
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (c.getName().equalsIgnoreCase("lastdeath") && cs instanceof Player) {
       Player p = (Player) cs;
+
+      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
 
       if (args.length == 0) {
         Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
@@ -36,15 +39,15 @@ public class LastDeathCommand implements CommandExecutor {
 
           Location lastDeathLoc = new Location(Bukkit.getWorld(world), locX, locY, locZ);
 
-          if (WaypointsCommand.showWaypointCoords.containsKey(p)) {
-            WaypointsCommand.showWaypointCoords.remove(p);
+          if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
+            waypointsManager.removePlayerActiveWaypointNavigation(p);
           }
 
-          if (ToggleLocationCommand.showLocation.containsKey(p)) {
-            ToggleLocationCommand.showLocation.remove(p);
+          if (waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
+            waypointsManager.removePlayerActiveToggleLocationNavigation(p);
           }
 
-          WaypointsCommand.showWaypointCoords.put(p, new LocationName(lastDeathLoc, "LAST DEATH"));
+          waypointsManager.addPlayerActiveWaypointNavigation(p, lastDeathLoc, "LAST DEATH");
 
           int pLocX = p.getLocation().getBlockX();
           int pLocY = p.getLocation().getBlockY();
@@ -66,14 +69,13 @@ public class LastDeathCommand implements CommandExecutor {
 
           String displayText = displayCoordsWp + displayCoordsCurrent;
 
-          PlayerMove.displayActionBar(p, displayText);
+          waypointsManager.displayActionBar(p, displayText);
         } else {
           p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no last death point!");
         }
       } else if (args.length == 1 && args[0].equalsIgnoreCase("cancel")) {
-        if (WaypointsCommand.showWaypointCoords.containsKey(p)) {
-          WaypointsCommand.showWaypointCoords.remove(p);
-          PlayerMove.cancelTask(p);
+        if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
+          waypointsManager.removePlayerActiveWaypointNavigation(p);
 
           p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
               ChatColor.RED + "You've canceled navigation!"));

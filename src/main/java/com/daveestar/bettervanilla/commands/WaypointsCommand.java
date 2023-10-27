@@ -1,27 +1,24 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.commands;
 
 import java.util.HashMap;
 
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.daveestar.bettervanilla.utils.Config;
-import com.daveestar.bettervanilla.utils.LocationName;
+import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.models.WaypointsManager;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class WaypointsCommand implements CommandExecutor {
-  public static HashMap<Player, LocationName> showWaypointCoords = new HashMap<Player, LocationName>();
-
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
 
@@ -29,8 +26,7 @@ public class WaypointsCommand implements CommandExecutor {
       Player p = (Player) cs;
       String worldName = p.getWorld().getName();
 
-      Config waypoints = new Config("waypoints.yml", Main.getInstance().getDataFolder());
-      FileConfiguration cfgn = waypoints.getFileCfgrn();
+      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
 
       if (args.length == 0) {
         // no agruments -> list all waypoints
@@ -38,25 +34,29 @@ public class WaypointsCommand implements CommandExecutor {
             Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "All waypoints in " + worldName + ":");
         p.sendMessage("");
 
-        ConfigurationSection section = cfgn.getConfigurationSection(worldName);
-        Set<String> allWaypoints = null;
-        if (section != null) {
-          allWaypoints = cfgn.getConfigurationSection(worldName).getKeys(false);
-        }
+        // get all waypoints
+        Set<String> allWaypoints = waypointsManager.getAllWaypoints(worldName);
 
+        // loop through all waypoints and send them to the player
         if (allWaypoints != null && allWaypoints.size() > 0) {
-          for (String wpName : allWaypoints) {
-            int wpX = cfgn.getInt(worldName + "." + wpName + ".x");
-            int wpY = cfgn.getInt(worldName + "." + wpName + ".y");
-            int wpZ = cfgn.getInt(worldName + "." + wpName + ".z");
+          for (String waypointName : allWaypoints) {
+            HashMap<String, Integer> waypointCoordinates = waypointsManager.getSpecificWaypoint(worldName,
+                waypointName);
 
-            p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + wpName + ChatColor.GRAY + " is at " + ChatColor.YELLOW
-                + "X: " + ChatColor.GRAY
-                + wpX + ChatColor.YELLOW
-                + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ);
+            Location waypointLocation = new Location(Bukkit.getWorld(worldName), waypointCoordinates.get("x"),
+                waypointCoordinates.get("y"), waypointCoordinates.get("z"));
+
+            p.sendMessage(
+                Main.getPrefix() + ChatColor.YELLOW + waypointName + ChatColor.GRAY + " is at " + ChatColor.YELLOW
+                    + "X: " + ChatColor.GRAY
+                    + waypointCoordinates.get("x") + ChatColor.YELLOW
+                    + " Y: " + ChatColor.GRAY + waypointCoordinates.get("y") + ChatColor.YELLOW + " Z: "
+                    + ChatColor.GRAY + waypointCoordinates.get("z")
+                    + ChatColor.RED + " | " + ChatColor.YELLOW
+                    + Math.round(p.getLocation().distance(waypointLocation)) + "m");
           }
         } else {
-          p.sendMessage(ChatColor.RED + "There are no existing waypoints!");
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "There are no existing waypoints!");
         }
       }
 
@@ -70,12 +70,9 @@ public class WaypointsCommand implements CommandExecutor {
             int pLocY = playerLocation.getBlockY();
             int pLocZ = playerLocation.getBlockZ();
 
-            if (!cfgn.contains(worldName + "." + waypointName)) {
+            if (!waypointsManager.checkWaypointExists(worldName, waypointName)) {
               // if the waypoint doesnt already exist in the waypoints yml
-              cfgn.set(worldName + "." + waypointName + ".x", pLocX);
-              cfgn.set(worldName + "." + waypointName + ".y", pLocY);
-              cfgn.set(worldName + "." + waypointName + ".z", pLocZ);
-              waypoints.save();
+              waypointsManager.setWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
 
               // send the player the success message
               p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
@@ -84,7 +81,6 @@ public class WaypointsCommand implements CommandExecutor {
                   Main.getPrefix() + "It is set to your current location: " + ChatColor.YELLOW + "X: " + ChatColor.GRAY
                       + pLocX + ChatColor.YELLOW
                       + " Y: " + ChatColor.GRAY + pLocY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + pLocZ);
-
             } else {
               // if it already exists give a hint how to overwrite the pos
               p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
@@ -94,10 +90,7 @@ public class WaypointsCommand implements CommandExecutor {
 
               if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
                 if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
-                  cfgn.set(worldName + "." + waypointName + ".x", pLocX);
-                  cfgn.set(worldName + "." + waypointName + ".y", pLocY);
-                  cfgn.set(worldName + "." + waypointName + ".z", pLocZ);
-                  waypoints.save();
+                  waypointsManager.setWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
 
                   // send the player the success message
                   p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
@@ -125,10 +118,9 @@ public class WaypointsCommand implements CommandExecutor {
             if (args.length == 2) {
               String waypointName = args[1];
 
-              if (cfgn.contains(worldName + "." + waypointName)) {
+              if (waypointsManager.checkWaypointExists(worldName, waypointName)) {
                 // if the waypoint exists -> remove it
-                cfgn.set(worldName + "." + waypointName, null);
-                waypoints.save();
+                waypointsManager.removeWaypoint(worldName, waypointName);
 
                 p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
                     + " was successfully removed!");
@@ -151,9 +143,8 @@ public class WaypointsCommand implements CommandExecutor {
 
         if (args[0].equalsIgnoreCase("cancel")) {
           if (args.length == 1) {
-            if (showWaypointCoords.containsKey(p)) {
-              showWaypointCoords.remove(p);
-              PlayerMove.cancelTask(p);
+            if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
+              waypointsManager.removePlayerActiveWaypointNavigation(p);
 
               p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
                   ChatColor.RED + "You've canceled navigation!"));
@@ -171,28 +162,31 @@ public class WaypointsCommand implements CommandExecutor {
           String waypointName = args[0];
 
           // check if the waypoint exists in the file configuration
-          if (cfgn.contains(worldName + "." + waypointName)) {
-            int wpX = cfgn.getInt(worldName + "." + waypointName + ".x");
-            int wpY = cfgn.getInt(worldName + "." + waypointName + ".y");
-            int wpZ = cfgn.getInt(worldName + "." + waypointName + ".z");
+          if (waypointsManager.checkWaypointExists(worldName, waypointName)) {
+            HashMap<String, Integer> waypointCoordinates = waypointsManager.getSpecificWaypoint(worldName,
+                waypointName);
 
-            Location waypointLoc = new Location(p.getWorld(), wpX, wpY, wpZ);
+            int waypointX = waypointCoordinates.get("x");
+            int waypointY = waypointCoordinates.get("y");
+            int waypointZ = waypointCoordinates.get("z");
+
+            Location waypointLoc = new Location(p.getWorld(), waypointX, waypointY, waypointZ);
 
             p.sendMessage(
                 Main.getPrefix() + ChatColor.YELLOW + waypointName + ChatColor.GRAY + " is at " + ChatColor.YELLOW
                     + "X: " + ChatColor.GRAY
-                    + wpX + ChatColor.YELLOW
-                    + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ);
+                    + waypointX + ChatColor.YELLOW
+                    + " Y: " + ChatColor.GRAY + waypointY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + waypointZ);
 
-            if (showWaypointCoords.containsKey(p)) {
-              showWaypointCoords.remove(p);
+            if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
+              waypointsManager.removePlayerActiveWaypointNavigation(p);
             }
 
-            if (ToggleLocationCommand.showLocation.containsKey(p)) {
-              ToggleLocationCommand.showLocation.remove(p);
+            if (waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
+              waypointsManager.removePlayerActiveToggleLocationNavigation(p);
             }
 
-            showWaypointCoords.put(p, new LocationName(waypointLoc, waypointName));
+            waypointsManager.addPlayerActiveWaypointNavigation(p, waypointLoc, waypointName);
 
             int locX = p.getLocation().getBlockX();
             int locY = p.getLocation().getBlockY();
@@ -202,8 +196,8 @@ public class WaypointsCommand implements CommandExecutor {
                 + ChatColor.RESET
                 + ChatColor.YELLOW
                 + "X: " + ChatColor.GRAY
-                + wpX + ChatColor.YELLOW
-                + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ;
+                + waypointX + ChatColor.YELLOW
+                + " Y: " + ChatColor.GRAY + waypointY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + waypointZ;
 
             String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW
                 + ChatColor.BOLD
@@ -214,7 +208,7 @@ public class WaypointsCommand implements CommandExecutor {
 
             String displayText = displayCoordsWp + displayCoordsCurrent;
 
-            PlayerMove.displayActionBar(p, displayText);
+            waypointsManager.displayActionBar(p, displayText);
           } else {
             // send a message that the waypoint doesnt exist
             p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW

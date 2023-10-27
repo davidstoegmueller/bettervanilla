@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.events;
 
 import java.util.HashMap;
 
@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class DeathChest implements Listener {

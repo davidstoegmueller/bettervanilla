@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla;
+package com.daveestar.bettervanilla.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.daveestar.bettervanilla.Main;
+
 public class PlayerHeadCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
@@ -18,6 +20,7 @@ public class PlayerHeadCommand implements CommandExecutor {
       Player p = (Player) cs;
 
       if (args.length == 1) {
+        @SuppressWarnings("deprecation")
         OfflinePlayer target = (OfflinePlayer) Bukkit.getOfflinePlayer(args[0]);
 
         p.getInventory().addItem(getPlayerHead(target));
