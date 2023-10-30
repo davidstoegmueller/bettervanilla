@@ -1,15 +1,16 @@
 package com.daveestar.bettervanilla.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
@@ -18,7 +19,7 @@ import com.daveestar.bettervanilla.models.WaypointsManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class WaypointsCommand implements CommandExecutor {
+public class WaypointsCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
 
@@ -227,5 +228,22 @@ public class WaypointsCommand implements CommandExecutor {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
+    if (args.length == 1) {
+      Player p = (Player) cs;
+      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+
+      // TODO: refine this extra added completions.
+      List<String> allWaypoints = new ArrayList<String>(waypointsManager.getAllWaypoints(p.getWorld().getName()));
+      allWaypoints.add("add");
+      allWaypoints.add("cancel");
+
+      return allWaypoints;
+    }
+
+    return new ArrayList<>();
   }
 }
