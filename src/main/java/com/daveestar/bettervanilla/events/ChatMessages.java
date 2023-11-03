@@ -18,6 +18,9 @@ public class ChatMessages implements Listener {
   public void onPlayerJoin(PlayerJoinEvent e) {
     Player p = (Player) e.getPlayer();
 
+    p.setPlayerListName(ChatColor.YELLOW + "     " + p.getName() + "     ");
+    p.setDisplayName(ChatColor.YELLOW + p.getName());
+
     e.setJoinMessage(
         ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName());
 
@@ -25,6 +28,8 @@ public class ChatMessages implements Listener {
     Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size());
 
     Main.getInstance().getMaintenanceManager().sendMaintenance(p);
+
+    Main.getInstance().getAFKManager().playerJoined(p);
   }
 
   @EventHandler
@@ -35,6 +40,8 @@ public class ChatMessages implements Listener {
 
     Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
     Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size() - 1);
+
+    Main.getInstance().getAFKManager().playerLeft(p);
   }
 
   @EventHandler

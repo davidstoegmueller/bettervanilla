@@ -20,6 +20,7 @@ import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
+import com.daveestar.bettervanilla.models.AFKManager;
 import com.daveestar.bettervanilla.models.MaintenanceManager;
 import com.daveestar.bettervanilla.models.TimerManager;
 import com.daveestar.bettervanilla.models.WaypointsManager;
@@ -35,6 +36,7 @@ public class Main extends JavaPlugin {
   private WaypointsManager waypointsManager;
   private TimerManager timerManager;
   private MaintenanceManager maintenanceManager;
+  private AFKManager afkManager;
 
   public void onEnable() {
     mainInstance = this;
@@ -47,6 +49,8 @@ public class Main extends JavaPlugin {
 
     Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
     maintenanceManager = new MaintenanceManager(maintenanceConfig);
+
+    afkManager = new AFKManager();
 
     LOGGER.info("BETTERVANILLA ENABLED");
 
@@ -98,5 +102,9 @@ public class Main extends JavaPlugin {
 
   public MaintenanceManager getMaintenanceManager() {
     return maintenanceManager;
+  }
+
+  public AFKManager getAFKManager() {
+    return afkManager;
   }
 }

@@ -2,6 +2,7 @@ package com.daveestar.bettervanilla.events;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +20,15 @@ public class PlayerMove implements Listener {
   public void onPlayerMove(PlayerMoveEvent e) {
     Player p = (Player) e.getPlayer();
 
+    handleLocationPlayerMove(p);
+    handleAFKPlayerMove(p);
+  }
+
+  private void handleAFKPlayerMove(Player p) {
+    Main.getInstance().getAFKManager().playerMoved(p);
+  }
+
+  private void handleLocationPlayerMove(Player p) {
     WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
 
     if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
@@ -73,11 +83,14 @@ public class PlayerMove implements Listener {
 
       waypointsManager.displayActionBar(p, displayText);
     } else if (waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
+      Biome playerBiome = p.getWorld().getBiome(p.getLocation());
+
       String displayCoordsCurrent = ChatColor.YELLOW + "X: "
           + ChatColor.GRAY
           + p.getLocation().getBlockX() + ChatColor.YELLOW
           + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
-          + p.getLocation().getBlockZ();
+          + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " | "
+          + ChatColor.GRAY + playerBiome.name();
 
       waypointsManager.displayActionBar(p, displayCoordsCurrent);
     }

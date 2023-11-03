@@ -236,12 +236,13 @@ public class WaypointsCommand implements TabExecutor {
       Player p = (Player) cs;
       WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
 
-      // TODO: refine this extra added completions.
-      List<String> allWaypoints = new ArrayList<String>(waypointsManager.getAllWaypoints(p.getWorld().getName()));
-      allWaypoints.add("add");
-      allWaypoints.add("cancel");
+      // filter waypoints based on current args[0] input
+      List<String> waypoints = new ArrayList<String>(waypointsManager.getAllWaypoints(p.getWorld().getName()));
+      waypoints.removeIf(waypointName -> !waypointName.toLowerCase().startsWith(args[0].toLowerCase()));
 
-      return allWaypoints;
+      List<String> filteredWaypoints = new ArrayList<String>(waypoints);
+
+      return filteredWaypoints;
     }
 
     return new ArrayList<>();

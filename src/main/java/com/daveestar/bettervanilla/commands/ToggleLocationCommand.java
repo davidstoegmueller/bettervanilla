@@ -1,6 +1,7 @@
 package com.daveestar.bettervanilla.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,11 +25,14 @@ public class ToggleLocationCommand implements CommandExecutor {
           waypointsManager.addPlayerActiveToggleLocationNavigation(p, p.getLocation());
           waypointsManager.removePlayerActiveWaypointNavigation(p);
 
+          Biome playerBiome = p.getWorld().getBiome(p.getLocation());
+
           String displayCoordsCurrent = ChatColor.YELLOW + "X: "
               + ChatColor.GRAY
               + p.getLocation().getBlockX() + ChatColor.YELLOW
               + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
-              + p.getLocation().getBlockZ();
+              + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " | "
+              + ChatColor.GRAY + playerBiome.name();
 
           waypointsManager.displayActionBar(p, displayCoordsCurrent);
         }
