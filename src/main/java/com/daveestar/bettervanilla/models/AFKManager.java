@@ -14,7 +14,7 @@ import net.md_5.bungee.api.ChatColor;
 public class AFKManager {
   private HashMap<Player, Long> lastMovement;
   private HashMap<Player, Boolean> afkStates;
-  private int MAX_AFK_TIME = 3000;
+  private int MAX_AFK_TIME = 60000 * 10;
 
   public AFKManager() {
     this.lastMovement = new HashMap<Player, Long>();
