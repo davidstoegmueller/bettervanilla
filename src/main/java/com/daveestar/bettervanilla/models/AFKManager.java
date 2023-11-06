@@ -25,10 +25,12 @@ public class AFKManager {
 
   public void playerJoined(Player p) {
     lastMovement.put(p, System.currentTimeMillis());
+    afkStates.put(p, false);
   }
 
   public void playerLeft(Player p) {
     lastMovement.remove(p);
+    afkStates.remove(p);
   }
 
   public void playerMoved(Player p) {

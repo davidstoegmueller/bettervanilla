@@ -19,7 +19,6 @@ public class ChatMessages implements Listener {
     Player p = (Player) e.getPlayer();
 
     p.setPlayerListName(ChatColor.YELLOW + "     " + p.getName() + "     ");
-    p.setDisplayName(ChatColor.YELLOW + p.getName());
 
     e.setJoinMessage(
         ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName());
