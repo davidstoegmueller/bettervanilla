@@ -14,6 +14,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class TimerManager {
   private boolean running;
+  private boolean runningOverride;
   private int time;
 
   private Config config;
@@ -24,21 +25,24 @@ public class TimerManager {
     this.fileCfgn = config.getFileCfgrn();
 
     this.running = fileCfgn.getBoolean("running");
+    this.runningOverride = fileCfgn.getBoolean("runningOverride");
     this.time = fileCfgn.getInt("time");
 
     run();
   }
 
   public void checkAndSetTimerRunning(int amountPlayers) {
-    if (amountPlayers > 0) {
-      if (!isRunning()) {
-        setRunning(true);
+    if (isRunningOverride()) {
+      if (amountPlayers > 0) {
+        if (!isRunning()) {
+          setRunning(true);
+        }
       }
-    }
 
-    if (amountPlayers == 0) {
-      if (isRunning()) {
-        setRunning(false);
+      if (amountPlayers == 0) {
+        if (isRunning()) {
+          setRunning(false);
+        }
       }
     }
   }
@@ -47,10 +51,21 @@ public class TimerManager {
     return running;
   }
 
+  public boolean isRunningOverride() {
+    return runningOverride;
+  }
+
   public void setRunning(boolean running) {
     this.running = running;
 
     fileCfgn.set("running", running);
+    config.save();
+  }
+
+  public void setRunningOverride(boolean running) {
+    this.runningOverride = running;
+
+    fileCfgn.set("runningOverride", running);
     config.save();
   }
 
@@ -70,6 +85,7 @@ public class TimerManager {
     for (Player p : Bukkit.getOnlinePlayers()) {
       if (!waypointsManager.checkPlayerActiveWaypointNavigation(p)
           && !waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
+
         if (!isRunning()) {
           p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
               new TextComponent(

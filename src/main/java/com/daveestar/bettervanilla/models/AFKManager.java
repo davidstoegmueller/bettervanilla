@@ -70,11 +70,12 @@ public class AFKManager {
           timer.setRunning(false);
         }
       } else {
-        if (!timer.isRunning()) {
+        if (!timer.isRunning() && timer.isRunningOverride()) {
           timer.setRunning(true);
         }
       }
     }
+
   }
 
   public void setPlayerAFKState(Player p) {

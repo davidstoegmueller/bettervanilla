@@ -90,7 +90,7 @@ public class PlayerMove implements Listener {
           + p.getLocation().getBlockX() + ChatColor.YELLOW
           + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
           + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " | "
-          + ChatColor.GRAY + playerBiome.name();
+          + ChatColor.GRAY + playerBiome.getKey();
 
       waypointsManager.displayActionBar(p, displayCoordsCurrent);
     }

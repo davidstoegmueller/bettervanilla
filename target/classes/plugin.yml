@@ -42,3 +42,4 @@ commands:
   lastdeath:
     description: Navigate to the last death point
     usage: /lastdeath
+    permission: bettervanilla.lastdeath

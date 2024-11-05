@@ -41,6 +41,7 @@ public class HelpCommand implements CommandExecutor {
       Player p = (Player) cs;
 
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "Admin Commands:");
+      p.sendMessage(Main.getPrefix() + "/waypoints remove <name> - Remove an existing waypoint");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/timer resume - Resume the timer");
       p.sendMessage(Main.getPrefix() + "/timer pause - Pause the timer");

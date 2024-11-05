@@ -35,6 +35,7 @@ public class TimerCommand implements CommandExecutor {
           }
 
           timer.setRunning(true);
+          timer.setRunningOverride(true);
 
           p.sendMessage(Main.getPrefix() + "Timer has been resumed.");
 
@@ -46,6 +47,7 @@ public class TimerCommand implements CommandExecutor {
           }
 
           timer.setRunning(false);
+          timer.setRunningOverride(false);
 
           p.sendMessage(Main.getPrefix() + "Timer has been paused.");
 
@@ -60,6 +62,8 @@ public class TimerCommand implements CommandExecutor {
 
           try {
             timer.setRunning(false);
+            timer.setRunningOverride(false);
+
             timer.setTime(Integer.parseInt(args[1]));
 
             p.sendMessage(Main.getPrefix() + "Timer has been set to " + ChatColor.YELLOW + args[1] + ChatColor.GRAY
@@ -71,6 +75,7 @@ public class TimerCommand implements CommandExecutor {
           break;
         case "reset":
           timer.setRunning(false);
+          timer.setRunningOverride(false);
           timer.setTime(0);
 
           p.sendMessage(Main.getPrefix() + "Timer has been reseted to 0 seconds.");
