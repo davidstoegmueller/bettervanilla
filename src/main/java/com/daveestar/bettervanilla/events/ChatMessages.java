@@ -45,7 +45,13 @@ public class ChatMessages implements Listener {
 
   @EventHandler
   public void onPlayerChat(AsyncPlayerChatEvent e) {
+    // convert & color codes to actual ChatColor codes
+    String message = e.getMessage();
+    message = ChatColor.translateAlternateColorCodes('&', message);
+
+    // set the formatted chat message
     e.setFormat(
-        ChatColor.GRAY + "[" + ChatColor.YELLOW + e.getPlayer().getName() + ChatColor.GRAY + "] -> " + e.getMessage());
+        ChatColor.GRAY + "[" + ChatColor.YELLOW + e.getPlayer().getName() + ChatColor.GRAY + "]" + ChatColor.YELLOW
+            + " » " + ChatColor.GRAY + message);
   }
 }

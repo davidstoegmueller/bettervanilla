@@ -85,7 +85,8 @@ public class Main extends JavaPlugin {
   }
 
   public static String getPrefix() {
-    return ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "] ";
+    return ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "]" + ChatColor.YELLOW + " » "
+        + ChatColor.GRAY;
   }
 
   public static Main getInstance() {

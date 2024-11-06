@@ -54,7 +54,7 @@ public class WaypointsCommand implements TabExecutor {
                     + waypointCoordinates.get("x") + ChatColor.YELLOW
                     + " Y: " + ChatColor.GRAY + waypointCoordinates.get("y") + ChatColor.YELLOW + " Z: "
                     + ChatColor.GRAY + waypointCoordinates.get("z")
-                    + ChatColor.RED + " | " + ChatColor.YELLOW
+                    + ChatColor.RED + " » " + ChatColor.YELLOW
                     + Math.round(p.getLocation().distance(waypointLocation)) + "m");
           }
         } else {
@@ -203,14 +203,14 @@ public class WaypointsCommand implements TabExecutor {
                 + waypointX + ChatColor.YELLOW
                 + " Y: " + ChatColor.GRAY + waypointY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + waypointZ;
 
-            String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW
+            String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW
                 + ChatColor.BOLD
                 + "CURRENT: " + ChatColor.RESET + ChatColor.YELLOW + "X: "
                 + ChatColor.GRAY
                 + locX + ChatColor.YELLOW
                 + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
 
-            String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW + ChatColor.BOLD
+            String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
                 + "DISTANCE: "
                 + ChatColor.RESET + ChatColor.GRAY + Math.round(p.getLocation().distance(waypointLocation));
 

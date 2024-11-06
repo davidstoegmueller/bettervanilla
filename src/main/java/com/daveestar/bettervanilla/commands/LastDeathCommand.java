@@ -61,7 +61,7 @@ public class LastDeathCommand implements CommandExecutor {
               + locX + ChatColor.YELLOW
               + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
 
-          String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW
+          String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW
               + ChatColor.BOLD
               + "CURRENT: " + ChatColor.RESET + ChatColor.YELLOW + "X: "
               + ChatColor.GRAY

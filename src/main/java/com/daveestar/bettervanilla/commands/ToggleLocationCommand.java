@@ -31,7 +31,7 @@ public class ToggleLocationCommand implements CommandExecutor {
               + ChatColor.GRAY
               + p.getLocation().getBlockX() + ChatColor.YELLOW
               + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
-              + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " | "
+              + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
               + ChatColor.GRAY + playerBiome.getKey();
 
           waypointsManager.displayActionBar(p, displayCoordsCurrent);

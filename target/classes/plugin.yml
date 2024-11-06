@@ -6,15 +6,15 @@ authors: ["daveestar"]
 commands:
   waypoints:
     description: Set or Remove waypoints. And display a list of all available waypoints.
-    usage: /waypoints [set|remove] <name> [confirm]
+    usage: /waypoints
     permission: bettervanilla.waypoints
   ping:
     description: Get the ping of either yourself or of another user.
-    usage: /ping [name]
+    usage: /ping
     permission: bettervanilla.ping
   invsee:
     description: See the inventory of another player.
-    usage: /invsee <name>
+    usage: /invsee
     permission: bettervanilla.invsee
   timer:
     description: Resume, Pause, Reset the Timer.
@@ -37,7 +37,7 @@ commands:
     permission: bettervanilla.togglelocation
   playerhead:
     description: Get a head from a player
-    usage: /playerhead <name>
+    usage: /playerhead
     permission: bettervanilla.playerhead
   lastdeath:
     description: Navigate to the last death point

@@ -69,13 +69,13 @@ public class PlayerMove implements Listener {
           + wpX + ChatColor.YELLOW
           + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ;
 
-      String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW + ChatColor.BOLD
+      String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
           + "CURRENT: " + ChatColor.RESET + ChatColor.YELLOW + "X: "
           + ChatColor.GRAY
           + locX + ChatColor.YELLOW
           + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
 
-      String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " | " + ChatColor.YELLOW + ChatColor.BOLD
+      String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
           + "DISTANCE: "
           + ChatColor.RESET + ChatColor.GRAY + Math.round(p.getLocation().distance(waypointLocation));
 
@@ -89,7 +89,7 @@ public class PlayerMove implements Listener {
           + ChatColor.GRAY
           + p.getLocation().getBlockX() + ChatColor.YELLOW
           + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
-          + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " | "
+          + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
           + ChatColor.GRAY + playerBiome.getKey();
 
       waypointsManager.displayActionBar(p, displayCoordsCurrent);
