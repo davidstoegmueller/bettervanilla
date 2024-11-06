@@ -2,6 +2,7 @@ package com.daveestar.bettervanilla.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -47,7 +48,7 @@ public class LastDeathCommand implements CommandExecutor {
             waypointsManager.removePlayerActiveToggleLocationNavigation(p);
           }
 
-          waypointsManager.addPlayerActiveWaypointNavigation(p, lastDeathLoc, "LAST DEATH");
+          waypointsManager.addPlayerActiveWaypointNavigation(p, lastDeathLoc, "LAST DEATH", Color.RED);
 
           int pLocX = p.getLocation().getBlockX();
           int pLocY = p.getLocation().getBlockY();

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -28,6 +29,8 @@ public class WaypointsManager {
   private BukkitScheduler navigationScheduler;
   private HashMap<Player, BukkitTask> navigationTasks;
 
+  private HashMap<Player, ParticleBeam> waypointBeams;
+
   public WaypointsManager(Config config) {
     this.config = config;
     this.fileCfgn = config.getFileCfgrn();
@@ -36,6 +39,7 @@ public class WaypointsManager {
     this.activeToggleLocationNavigations = new HashMap<Player, Location>();
     this.navigationScheduler = Bukkit.getScheduler();
     this.navigationTasks = new HashMap<Player, BukkitTask>();
+    this.waypointBeams = new HashMap<Player, ParticleBeam>();
   }
 
   // waypoints list helper
@@ -83,10 +87,21 @@ public class WaypointsManager {
   public void removePlayerActiveWaypointNavigation(Player p) {
     activeWaypointNavigations.remove(p);
     cancelTask(p);
+
+    // hide the particle beam and remove reference
+    ParticleBeam beam = waypointBeams.get(p);
+    beam.removeBeam();
+    waypointBeams.remove(p);
   }
 
-  public void addPlayerActiveWaypointNavigation(Player p, Location location, String locationName) {
+  public void addPlayerActiveWaypointNavigation(Player p, Location location, String locationName, Color waypointColor) {
     activeWaypointNavigations.put(p, new LocationStorage(location, locationName));
+
+    // display the particle beam
+    ParticleBeam beam = new ParticleBeam(p, location, waypointColor);
+    beam.displayBeam();
+
+    waypointBeams.put(p, beam);
   }
 
   public LocationStorage getPlayerActiveWaypointNavigation(Player p) {

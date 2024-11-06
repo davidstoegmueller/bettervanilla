@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -187,7 +188,7 @@ public class WaypointsCommand implements TabExecutor {
               waypointsManager.removePlayerActiveToggleLocationNavigation(p);
             }
 
-            waypointsManager.addPlayerActiveWaypointNavigation(p, waypointLoc, waypointName);
+            waypointsManager.addPlayerActiveWaypointNavigation(p, waypointLoc, waypointName, Color.YELLOW);
 
             int locX = p.getLocation().getBlockX();
             int locY = p.getLocation().getBlockY();
