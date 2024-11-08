@@ -20,6 +20,7 @@ import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
+import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.models.AFKManager;
 import com.daveestar.bettervanilla.models.MaintenanceManager;
 import com.daveestar.bettervanilla.models.TimerManager;
@@ -52,7 +53,7 @@ public class Main extends JavaPlugin {
 
     afkManager = new AFKManager();
 
-    LOGGER.info("BETTERVANILLA ENABLED");
+    LOGGER.info("BetterVanilla ENABLED");
 
     // register commands
     getCommand("waypoints").setExecutor(new WaypointsCommand());
@@ -71,6 +72,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new DeathChest(), this);
     manager.registerEvents(new ChatMessages(), this);
     manager.registerEvents(new PlayerMove(), this);
+    manager.registerEvents(new SittableStairs(), this);
   }
 
   public void onDisable() {
@@ -81,7 +83,7 @@ public class Main extends JavaPlugin {
       block.setType(Material.AIR);
     }
 
-    LOGGER.info("BETTERVANILLA DISABLED");
+    LOGGER.info("BetterVanilla DISABLED");
   }
 
   public static String getPrefix() {
