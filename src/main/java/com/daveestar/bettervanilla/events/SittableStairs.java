@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.util.Vector;
 
 import com.daveestar.bettervanilla.Main;
 
@@ -34,6 +36,28 @@ public class SittableStairs implements Listener {
 
           // create armor stand at the block location for the player to sit on
           Location location = clickedBlock.getLocation().add(0.5, 0.5, 0.5);
+
+          // adjust direction based on the lower side of the stairs
+          if (clickedBlock.getBlockData() instanceof Stairs) {
+            Stairs stairs = (Stairs) clickedBlock.getBlockData();
+            switch (stairs.getFacing()) {
+              case NORTH:
+                location.setDirection(new Vector(0, 0, 1)); // face south
+                break;
+              case SOUTH:
+                location.setDirection(new Vector(0, 0, -1)); // face north
+                break;
+              case EAST:
+                location.setDirection(new Vector(-1, 0, 0)); // face west
+                break;
+              case WEST:
+                location.setDirection(new Vector(1, 0, 0)); // face east
+                break;
+              default:
+                break;
+            }
+          }
+
           mount(p, location);
 
           p.sendMessage(Main.getPrefix() + "We'll have a rest. Stand up using the 'Shift' key.");
