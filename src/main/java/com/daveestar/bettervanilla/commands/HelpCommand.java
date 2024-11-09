@@ -27,9 +27,13 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getPrefix() + "/ping - Display your ping");
       p.sendMessage(Main.getPrefix() + "/ping <name> - Display the ping of a player");
       p.sendMessage("");
-      p.sendMessage(Main.getPrefix() + "/togglelocation - Display you current location in action bar");
+      p.sendMessage(Main.getPrefix() + "/togglelocation - Display your current location in action bar");
+      p.sendMessage(Main.getPrefix() + "/togglecompass - Display you directions as a compass in the bossbar");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/playerhead <name> - Get a head of a player");
+      p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
+          + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-clicl any kind of stairs.");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "DeathChest-Feature: " + ChatColor.GRAY
           + "If you die a chest will be created on the location where you died. You can come back to the chest and open it. This enables us to never lose our items. If you close the chest inventory -> items will be dropped. If you break the chest -> items will be dropped.");

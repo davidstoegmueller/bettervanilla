@@ -15,6 +15,7 @@ import com.daveestar.bettervanilla.commands.MaintenanceCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
 import com.daveestar.bettervanilla.commands.PlayerHeadCommand;
 import com.daveestar.bettervanilla.commands.TimerCommand;
+import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
@@ -22,6 +23,7 @@ import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.models.AFKManager;
+import com.daveestar.bettervanilla.models.CompassManager;
 import com.daveestar.bettervanilla.models.MaintenanceManager;
 import com.daveestar.bettervanilla.models.TimerManager;
 import com.daveestar.bettervanilla.models.WaypointsManager;
@@ -38,6 +40,7 @@ public class Main extends JavaPlugin {
   private TimerManager timerManager;
   private MaintenanceManager maintenanceManager;
   private AFKManager afkManager;
+  private CompassManager compassManager;
 
   public void onEnable() {
     mainInstance = this;
@@ -52,6 +55,7 @@ public class Main extends JavaPlugin {
     maintenanceManager = new MaintenanceManager(maintenanceConfig);
 
     afkManager = new AFKManager();
+    compassManager = new CompassManager();
 
     LOGGER.info("BetterVanilla ENABLED");
 
@@ -62,6 +66,7 @@ public class Main extends JavaPlugin {
     getCommand("help").setExecutor(new HelpCommand());
     getCommand("adminhelp").setExecutor(new HelpCommand());
     getCommand("togglelocation").setExecutor(new ToggleLocationCommand());
+    getCommand("togglecompass").setExecutor(new ToggleCompassCommand());
     getCommand("playerhead").setExecutor(new PlayerHeadCommand());
     getCommand("lastdeath").setExecutor(new LastDeathCommand());
     getCommand("timer").setExecutor(new TimerCommand());
@@ -82,6 +87,8 @@ public class Main extends JavaPlugin {
     for (Block block : DeathChest.deathChest.keySet()) {
       block.setType(Material.AIR);
     }
+
+    compassManager.destroy();
 
     LOGGER.info("BetterVanilla DISABLED");
   }
@@ -109,5 +116,9 @@ public class Main extends JavaPlugin {
 
   public AFKManager getAFKManager() {
     return afkManager;
+  }
+
+  public CompassManager getCompassManager() {
+    return compassManager;
   }
 }

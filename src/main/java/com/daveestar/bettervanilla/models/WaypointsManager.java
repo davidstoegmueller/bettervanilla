@@ -89,9 +89,11 @@ public class WaypointsManager {
     cancelTask(p);
 
     // hide the particle beam and remove reference
-    ParticleBeam beam = waypointBeams.get(p);
-    beam.removeBeam();
-    waypointBeams.remove(p);
+    if (waypointBeams.containsKey(p)) {
+      ParticleBeam beam = waypointBeams.get(p);
+      beam.removeBeam();
+      waypointBeams.remove(p);
+    }
   }
 
   public void addPlayerActiveWaypointNavigation(Player p, Location location, String locationName, Color waypointColor) {

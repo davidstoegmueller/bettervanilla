@@ -42,6 +42,7 @@ public class ToggleLocationCommand implements CommandExecutor {
 
       return true;
     }
+
     return false;
   }
 }

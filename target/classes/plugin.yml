@@ -35,6 +35,10 @@ commands:
     description: Turn on/off action bar location.
     usage: /togglelocation
     permission: bettervanilla.togglelocation
+  togglecompass:
+    description: Turn on/off bossbar compass.
+    usage: /togglecompass
+    permission: bettervanilla.togglecompass
   playerhead:
     description: Get a head from a player
     usage: /playerhead
