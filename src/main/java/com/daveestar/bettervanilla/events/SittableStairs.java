@@ -60,7 +60,7 @@ public class SittableStairs implements Listener {
 
           mount(p, location);
 
-          p.sendMessage(Main.getPrefix() + "We'll have a rest. Stand up using the 'Shift' key.");
+          p.sendMessage(Main.getPrefix() + "Well have a rest. Stand up using the 'Shift' key.");
         }
       }
     }
