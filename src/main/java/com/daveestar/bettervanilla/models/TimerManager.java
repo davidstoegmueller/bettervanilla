@@ -13,110 +13,111 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class TimerManager {
-  private boolean running;
-  private boolean runningOverride;
-  private int time;
+  private boolean _running;
+  private boolean _runningOverride;
+  private int _time;
 
-  private Config config;
-  private FileConfiguration fileCfgn;
+  private Config _config;
+  private FileConfiguration _fileCfgn;
 
   public TimerManager(Config config) {
-    this.config = config;
-    this.fileCfgn = config.getFileCfgrn();
+    this._config = config;
+    this._fileCfgn = config.getFileCfgrn();
 
-    this.running = fileCfgn.getBoolean("running");
-    this.runningOverride = fileCfgn.getBoolean("runningOverride");
-    this.time = fileCfgn.getInt("time");
+    this._running = _fileCfgn.getBoolean("running");
+    this._runningOverride = _fileCfgn.getBoolean("runningOverride");
+    this._time = _fileCfgn.getInt("time");
 
-    run();
+    _run();
   }
 
   public void checkAndSetTimerRunning(int amountPlayers) {
-    if (isRunningOverride()) {
+    if (is_runningOverride()) {
       if (amountPlayers > 0) {
-        if (!isRunning()) {
-          setRunning(true);
+        if (!is_running()) {
+          set_running(true);
         }
       }
 
       if (amountPlayers == 0) {
-        if (isRunning()) {
-          setRunning(false);
+        if (is_running()) {
+          set_running(false);
         }
       }
     }
   }
 
-  public boolean isRunning() {
-    return running;
+  public boolean is_running() {
+    return _running;
   }
 
-  public boolean isRunningOverride() {
-    return runningOverride;
+  public boolean is_runningOverride() {
+    return _runningOverride;
   }
 
-  public void setRunning(boolean running) {
-    this.running = running;
+  public void set_running(boolean running) {
+    this._running = running;
 
-    fileCfgn.set("running", running);
-    config.save();
+    _fileCfgn.set("running", running);
+    _config.save();
   }
 
-  public void setRunningOverride(boolean running) {
-    this.runningOverride = running;
+  public void set_runningOverride(boolean running) {
+    this._runningOverride = running;
 
-    fileCfgn.set("runningOverride", running);
-    config.save();
+    _fileCfgn.set("runningOverride", running);
+    _config.save();
   }
 
-  public int getTime() {
-    return time;
+  public int get_time() {
+    return _time;
   }
 
-  public void setTime(int time) {
-    this.time = time;
+  public void set_time(int time) {
+    this._time = time;
 
-    fileCfgn.set("time", time);
-    config.save();
+    _fileCfgn.set("time", time);
+    _config.save();
   }
 
   public void displayTimerActionBar() {
-    WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+    WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
     for (Player p : Bukkit.getOnlinePlayers()) {
       if (!waypointsManager.checkPlayerActiveWaypointNavigation(p)
           && !waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
 
-        if (!isRunning()) {
+        if (!is_running()) {
           p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
               new TextComponent(
                   ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "Paused " + ChatColor.GRAY.toString() + "("
-                      + ChatColor.RED.toString() + convertTimeIntoDMS(getTime()) + ChatColor.GRAY.toString() + ")"));
+                      + ChatColor.RED.toString() + _convertTimeIntoDMS(get_time()) + ChatColor.GRAY.toString() + ")"));
           continue;
         }
 
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-            new TextComponent(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + convertTimeIntoDMS(getTime())));
+            new TextComponent(
+                ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + _convertTimeIntoDMS(get_time())));
       }
     }
   }
 
-  private void run() {
+  private void _run() {
     new BukkitRunnable() {
       @Override
       public void run() {
 
         displayTimerActionBar();
 
-        if (!isRunning()) {
+        if (!is_running()) {
           return;
         }
 
-        setTime(getTime() + 1);
+        set_time(get_time() + 1);
       }
     }.runTaskTimer(Main.getInstance(), 20, 20);
   }
 
-  private String convertTimeIntoDMS(int time) {
+  private String _convertTimeIntoDMS(int time) {
     if (time < 0) {
       return "error: contact dev";
     }

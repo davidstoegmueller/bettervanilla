@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 import com.daveestar.bettervanilla.Main;
 
 public class SittableStairs implements Listener {
-  private final HashMap<Player, ArmorStand> sittingPlayers = new HashMap<>();
+  private final HashMap<Player, ArmorStand> _sittingPlayers = new HashMap<>();
 
   @EventHandler
   public void onPlayerRightClick(PlayerInteractEvent e) {
@@ -32,7 +32,7 @@ public class SittableStairs implements Listener {
         // only allow to sit on a chair with an empty hand
         if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
           // unmount before mounting again to a chair (stair)
-          unmount(p);
+          _unmountFromStair(p);
 
           // create armor stand at the block location for the player to sit on
           Location location = clickedBlock.getLocation().add(0.5, 0.5, 0.5);
@@ -58,7 +58,7 @@ public class SittableStairs implements Listener {
             }
           }
 
-          mount(p, location);
+          _mountToStair(p, location);
 
           p.sendMessage(Main.getPrefix() + "Well have a rest. Stand up using the 'Shift' key.");
         }
@@ -69,10 +69,10 @@ public class SittableStairs implements Listener {
   @EventHandler
   public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
     Player p = e.getPlayer();
-    unmount(p);
+    _unmountFromStair(p);
   }
 
-  private void mount(Player p, Location location) {
+  private void _mountToStair(Player p, Location location) {
     ArmorStand armorStand = p.getWorld().spawn(location, ArmorStand.class);
     armorStand.setVisible(false);
     armorStand.setGravity(false);
@@ -81,17 +81,17 @@ public class SittableStairs implements Listener {
 
     // mount player on the armor stand and track it
     armorStand.addPassenger(p);
-    sittingPlayers.put(p, armorStand);
+    _sittingPlayers.put(p, armorStand);
   }
 
-  private void unmount(Player p) {
+  private void _unmountFromStair(Player p) {
     // check if player is seated on an armor stand
-    if (sittingPlayers.containsKey(p)) {
-      ArmorStand armorStand = sittingPlayers.get(p);
+    if (_sittingPlayers.containsKey(p)) {
+      ArmorStand armorStand = _sittingPlayers.get(p);
 
       // unmount player and remove armor stand
       armorStand.remove();
-      sittingPlayers.remove(p);
+      _sittingPlayers.remove(p);
     }
   }
 }

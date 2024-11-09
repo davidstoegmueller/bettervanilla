@@ -16,7 +16,7 @@ public class ToggleLocationCommand implements CommandExecutor {
     if (c.getName().equalsIgnoreCase("togglelocation") && cs instanceof Player) {
       Player p = (Player) cs;
 
-      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+      WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
 
       if (args.length == 0) {
         if (waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {

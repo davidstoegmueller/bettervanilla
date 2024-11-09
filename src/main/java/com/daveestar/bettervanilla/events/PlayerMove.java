@@ -20,16 +20,16 @@ public class PlayerMove implements Listener {
   public void onPlayerMove(PlayerMoveEvent e) {
     Player p = (Player) e.getPlayer();
 
-    handleLocationPlayerMove(p);
-    handleAFKPlayerMove(p);
+    _handleLocationPlayerMove(p);
+    _handleAFKPlayerMove(p);
   }
 
-  private void handleAFKPlayerMove(Player p) {
+  private void _handleAFKPlayerMove(Player p) {
     Main.getInstance().getAFKManager().playerMoved(p);
   }
 
-  private void handleLocationPlayerMove(Player p) {
-    WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+  private void _handleLocationPlayerMove(Player p) {
+    WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
 
     if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
       int locX = p.getLocation().getBlockX();

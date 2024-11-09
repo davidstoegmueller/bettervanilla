@@ -60,7 +60,7 @@ public class DeathChest implements Listener {
         + "/lastdeath");
   }
 
-  private Block openedDeathChestBlock;
+  private Block _openedDeathChestBlock;
 
   @EventHandler
   public void onOpenDeathChest(PlayerInteractEvent e) {
@@ -74,7 +74,7 @@ public class DeathChest implements Listener {
             e.setCancelled(true);
             e.getPlayer().openInventory(deathChest.get(blocks));
 
-            openedDeathChestBlock = blocks;
+            _openedDeathChestBlock = blocks;
           }
         }
       }
@@ -90,9 +90,9 @@ public class DeathChest implements Listener {
         }
       }
 
-      deathChest.remove(openedDeathChestBlock);
-      openedDeathChestBlock.setType(Material.AIR);
-      openedDeathChestBlock = null;
+      deathChest.remove(_openedDeathChestBlock);
+      _openedDeathChestBlock.setType(Material.AIR);
+      _openedDeathChestBlock = null;
 
       Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
       FileConfiguration cfgn = lastDeaths.getFileCfgrn();

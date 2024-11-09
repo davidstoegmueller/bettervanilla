@@ -8,42 +8,42 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Config {
-  private FileConfiguration fileConfiguration;
-  private File file;
+  private FileConfiguration _fileConfiguration;
+  private File _file;
 
   public Config(String configName, File path) {
-    file = new File(path, configName);
+    _file = new File(path, configName);
 
-    if (!file.exists()) {
+    if (!_file.exists()) {
       path.mkdirs();
 
       try {
-        file.createNewFile();
+        _file.createNewFile();
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
 
-    fileConfiguration = new YamlConfiguration();
+    _fileConfiguration = new YamlConfiguration();
 
     try {
-      fileConfiguration.load(file);
+      _fileConfiguration.load(_file);
     } catch (IOException | InvalidConfigurationException e) {
       e.printStackTrace();
     }
   }
 
-  public File getFile() {
-    return file;
+  public File get_file() {
+    return _file;
   }
 
   public FileConfiguration getFileCfgrn() {
-    return fileConfiguration;
+    return _fileConfiguration;
   }
 
   public void save() {
     try {
-      fileConfiguration.save(file);
+      _fileConfiguration.save(_file);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -51,7 +51,7 @@ public class Config {
 
   public void reload() {
     try {
-      fileConfiguration.load(file);
+      _fileConfiguration.load(_file);
     } catch (IOException | InvalidConfigurationException e) {
       e.printStackTrace();
     }

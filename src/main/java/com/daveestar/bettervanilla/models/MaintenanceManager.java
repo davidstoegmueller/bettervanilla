@@ -11,27 +11,27 @@ import com.daveestar.bettervanilla.utils.Config;
 import net.md_5.bungee.api.ChatColor;
 
 public class MaintenanceManager {
-  private Boolean isMaintenance;
+  private Boolean _isMaintenance;
 
-  private Config config;
-  private FileConfiguration fileCfgn;
+  private Config _config;
+  private FileConfiguration _fileCfgn;
 
   public MaintenanceManager(Config config) {
-    this.config = config;
-    this.fileCfgn = config.getFileCfgrn();
+    this._config = config;
+    this._fileCfgn = config.getFileCfgrn();
 
-    this.isMaintenance = fileCfgn.getBoolean("isMaintenance");
+    this._isMaintenance = _fileCfgn.getBoolean("isMaintenance");
   }
 
   public void setState(boolean isMaintenance) {
-    this.isMaintenance = isMaintenance;
+    this._isMaintenance = isMaintenance;
 
-    fileCfgn.set("isMaintenance", isMaintenance);
-    config.save();
+    _fileCfgn.set("isMaintenance", isMaintenance);
+    _config.save();
   }
 
   public boolean getState() {
-    return isMaintenance;
+    return _isMaintenance;
   }
 
   public void kickAll(Collection<? extends Player> players) {
@@ -42,7 +42,7 @@ public class MaintenanceManager {
   }
 
   public void sendMaintenance(Player p) {
-    if (isMaintenance) {
+    if (_isMaintenance) {
       if (!p.hasPermission("bettervanilla.maintenance.bypass")) {
 
         String maintenanceMsg = ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "MAINTENANCE\n\n"

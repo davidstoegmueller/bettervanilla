@@ -16,7 +16,7 @@ public class ToggleCompassCommand implements CommandExecutor {
       Player p = (Player) cs;
 
       if (args.length == 0) {
-        CompassManager compassManager = Main.getInstance().getCompassManager();
+        CompassManager compassManager = Main.getInstance().get_compassManager();
 
         if (compassManager.checkPlayerActiveCompass(p)) {
           compassManager.removePlayerFromCompass(p);

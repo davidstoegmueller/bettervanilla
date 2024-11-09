@@ -1,6 +1,9 @@
 package com.daveestar.bettervanilla.models;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -20,42 +23,50 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class WaypointsManager {
-  private Config config;
-  private FileConfiguration fileCfgn;
+  private Config _config;
+  private FileConfiguration _fileCfgn;
 
-  private HashMap<Player, LocationStorage> activeWaypointNavigations;
-  private HashMap<Player, Location> activeToggleLocationNavigations;
+  private HashMap<Player, LocationStorage> _activeWaypointNavigations;
+  private HashMap<Player, Location> _activeToggleLocationNavigations;
 
-  private BukkitScheduler navigationScheduler;
-  private HashMap<Player, BukkitTask> navigationTasks;
+  private BukkitScheduler _navigationScheduler;
+  private HashMap<Player, BukkitTask> _navigationTasks;
 
-  private HashMap<Player, ParticleBeam> waypointBeams;
+  private HashMap<Player, ParticleBeam> _waypointBeams;
 
   public WaypointsManager(Config config) {
-    this.config = config;
-    this.fileCfgn = config.getFileCfgrn();
+    this._config = config;
+    this._fileCfgn = config.getFileCfgrn();
 
-    this.activeWaypointNavigations = new HashMap<Player, LocationStorage>();
-    this.activeToggleLocationNavigations = new HashMap<Player, Location>();
-    this.navigationScheduler = Bukkit.getScheduler();
-    this.navigationTasks = new HashMap<Player, BukkitTask>();
-    this.waypointBeams = new HashMap<Player, ParticleBeam>();
+    this._activeWaypointNavigations = new HashMap<Player, LocationStorage>();
+    this._activeToggleLocationNavigations = new HashMap<Player, Location>();
+    this._navigationScheduler = Bukkit.getScheduler();
+    this._navigationTasks = new HashMap<Player, BukkitTask>();
+    this._waypointBeams = new HashMap<Player, ParticleBeam>();
   }
 
   // waypoints list helper
-  public Set<String> getAllWaypoints(String wordlName) {
-    ConfigurationSection waypointsCfgnSecetion = fileCfgn.getConfigurationSection(wordlName);
-    Set<String> allWaypoints = null;
+  public List<String> getAllWaypointNames(String worldName) {
+    ConfigurationSection waypointsCfgnSection = _fileCfgn.getConfigurationSection(worldName);
+    Set<String> allWaypointNames = null;
 
-    if (waypointsCfgnSecetion != null) {
-      allWaypoints = waypointsCfgnSecetion.getKeys(false);
+    if (waypointsCfgnSection != null) {
+      allWaypointNames = waypointsCfgnSection.getKeys(false);
     }
 
-    return allWaypoints;
+    if (allWaypointNames == null) {
+      return new ArrayList<>(); // return empty list if no waypoints are found
+    }
+
+    // Convert to list and sort alphabetically
+    List<String> sortedWaypointNames = new ArrayList<>(allWaypointNames);
+    Collections.sort(sortedWaypointNames);
+
+    return sortedWaypointNames;
   }
 
   public HashMap<String, Integer> getSpecificWaypoint(String worldName, String waypointName) {
-    ConfigurationSection waypoint = fileCfgn.getConfigurationSection(worldName + "." + waypointName);
+    ConfigurationSection waypoint = _fileCfgn.getConfigurationSection(worldName + "." + waypointName);
 
     HashMap<String, Integer> coordinates = new HashMap<String, Integer>();
 
@@ -67,91 +78,91 @@ public class WaypointsManager {
   }
 
   public Boolean checkWaypointExists(String worldName, String waypointName) {
-    return fileCfgn.contains(worldName + "." + waypointName);
+    return _fileCfgn.contains(worldName + "." + waypointName);
   }
 
   public void setWaypoint(String worldName, String waypointName, Integer x, Integer y, Integer z) {
-    fileCfgn.set(worldName + "." + waypointName + ".x", x);
-    fileCfgn.set(worldName + "." + waypointName + ".y", y);
-    fileCfgn.set(worldName + "." + waypointName + ".z", z);
+    _fileCfgn.set(worldName + "." + waypointName + ".x", x);
+    _fileCfgn.set(worldName + "." + waypointName + ".y", y);
+    _fileCfgn.set(worldName + "." + waypointName + ".z", z);
 
-    config.save();
+    _config.save();
   }
 
   public void removeWaypoint(String worldName, String waypointName) {
-    fileCfgn.set(worldName + "." + waypointName, null);
+    _fileCfgn.set(worldName + "." + waypointName, null);
 
-    config.save();
+    _config.save();
   }
 
   // waypoint navigation helper
   public Boolean checkPlayerActiveWaypointNavigation(Player p) {
-    return activeWaypointNavigations.containsKey(p);
+    return _activeWaypointNavigations.containsKey(p);
   }
 
   public void removePlayerActiveWaypointNavigation(Player p) {
-    activeWaypointNavigations.remove(p);
+    _activeWaypointNavigations.remove(p);
     cancelTask(p);
 
     // hide the particle beam and remove reference
-    if (waypointBeams.containsKey(p)) {
-      ParticleBeam beam = waypointBeams.get(p);
+    if (_waypointBeams.containsKey(p)) {
+      ParticleBeam beam = _waypointBeams.get(p);
       beam.removeBeam();
-      waypointBeams.remove(p);
+      _waypointBeams.remove(p);
     }
   }
 
   public void addPlayerActiveWaypointNavigation(Player p, Location location, String locationName, Color waypointColor) {
-    activeWaypointNavigations.put(p, new LocationStorage(location, locationName));
+    _activeWaypointNavigations.put(p, new LocationStorage(location, locationName));
 
     // display the particle beam
     ParticleBeam beam = new ParticleBeam(p, location, waypointColor);
     beam.displayBeam();
 
-    waypointBeams.put(p, beam);
+    _waypointBeams.put(p, beam);
   }
 
   public LocationStorage getPlayerActiveWaypointNavigation(Player p) {
-    return activeWaypointNavigations.get(p);
+    return _activeWaypointNavigations.get(p);
   }
 
   // togglelocation navigation helper
   public Boolean checkPlayerActiveToggleLocationNavigation(Player p) {
-    return activeToggleLocationNavigations.containsKey(p);
+    return _activeToggleLocationNavigations.containsKey(p);
   }
 
   public void removePlayerActiveToggleLocationNavigation(Player p) {
-    activeToggleLocationNavigations.remove(p);
+    _activeToggleLocationNavigations.remove(p);
     cancelTask(p);
   }
 
   public void addPlayerActiveToggleLocationNavigation(Player p, Location location) {
-    activeToggleLocationNavigations.put(p, location);
+    _activeToggleLocationNavigations.put(p, location);
   }
 
   public Location getPlayerActiveToggleLocationNavigation(Player p) {
-    return activeToggleLocationNavigations.get(p);
+    return _activeToggleLocationNavigations.get(p);
   }
 
   // display action bar helper
   public void displayActionBar(Player p, String displayText) {
     cancelTask(p);
 
-    BukkitTask task = navigationScheduler.runTaskTimerAsynchronously(Main.getInstance(), new Runnable() {
+    BukkitTask task = _navigationScheduler.runTaskTimerAsynchronously(Main.getInstance(), new Runnable() {
       public void run() {
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(displayText));
 
       }
     }, 0, 3 * 10);
 
-    navigationTasks.put(p, task);
+    _navigationTasks.put(p, task);
   }
 
   // scheduler task helper
   public void cancelTask(Player p) {
-    if (navigationTasks.containsKey(p)) {
-      navigationTasks.get(p).cancel();
-      navigationTasks.remove(p);
+    if (_navigationTasks.containsKey(p)) {
+      _navigationTasks.get(p).cancel();
+      _navigationTasks.remove(p);
     }
   }
 }

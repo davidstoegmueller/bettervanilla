@@ -24,7 +24,7 @@ public class LastDeathCommand implements CommandExecutor {
     if (c.getName().equalsIgnoreCase("lastdeath") && cs instanceof Player) {
       Player p = (Player) cs;
 
-      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+      WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
 
       if (args.length == 0) {
         Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());

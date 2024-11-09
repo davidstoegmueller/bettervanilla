@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CompassManager {
-  private static final int SCALE_LENGTH = 80;
-  private static final int ARROW_POSITION = SCALE_LENGTH / 2;
-  private static final ChatColor DIRECTION_COLOR = ChatColor.YELLOW; // Static color for all directions
-  private static final DirectionInfo[] DIRECTIONS = {
+  private static final int _SCALE_LENGTH = 80;
+  private static final int _ARROW_POSITION = _SCALE_LENGTH / 2;
+  private static final ChatColor _DIRECTION_COLOR = ChatColor.YELLOW; // Static color for all directions
+  private static final DirectionInfo[] _DIRECTIONS = {
       new DirectionInfo("N"), // N
       new DirectionInfo("NE"), // NE
       new DirectionInfo("E"), // E
@@ -27,28 +27,28 @@ public class CompassManager {
       new DirectionInfo("W"), // W
       new DirectionInfo("NW") // NW
   }; // Directions with text only
-  private static final int UPDATE_INTERVAL = 1; // Tick interval for compass updates
-  private static final char FILL_CHARACTER = '·'; // Enhanced visual fill character
-  private static final String ARROW_CHARACTER = "▲"; // Enhanced arrow character without color
-  private static final int FILL_CHAR_AMOUNT = 20; // Number of fill characters between directions
+  private static final int _UPDATE_INTERVAL = 1; // Tick interval for compass updates
+  private static final char _FILL_CHARACTER = '·'; // Enhanced visual fill character
+  private static final String _ARROW_CHARACTER = "▲"; // Enhanced arrow character without color
+  private static final int _FILL_CHAR_AMOUNT = 20; // Number of fill characters between directions
 
-  private final Map<Player, BossBar> activeCompass = new HashMap<>();
+  private final Map<Player, BossBar> _activeCompass = new HashMap<>();
 
   public CompassManager() {
-    startCompassUpdateTask();
+    _startCompassUpdateTask();
   }
 
   public void destroy() {
-    activeCompass.values().forEach(BossBar::removeAll);
-    activeCompass.clear();
+    _activeCompass.values().forEach(BossBar::removeAll);
+    _activeCompass.clear();
   }
 
   public Boolean checkPlayerActiveCompass(Player p) {
-    return activeCompass.containsKey(p);
+    return _activeCompass.containsKey(p);
   }
 
   public void addPlayerToCompass(Player player) {
-    activeCompass.computeIfAbsent(player, p -> {
+    _activeCompass.computeIfAbsent(player, p -> {
       BossBar compassBossBar = Bukkit.createBossBar("", BarColor.YELLOW, BarStyle.SOLID);
       compassBossBar.addPlayer(player);
       return compassBossBar;
@@ -56,35 +56,35 @@ public class CompassManager {
   }
 
   public void removePlayerFromCompass(Player player) {
-    BossBar compassBossBar = activeCompass.remove(player);
+    BossBar compassBossBar = _activeCompass.remove(player);
     if (compassBossBar != null) {
       compassBossBar.removePlayer(player);
     }
   }
 
-  private void startCompassUpdateTask() {
+  private void _startCompassUpdateTask() {
     new BukkitRunnable() {
       @Override
       public void run() {
-        activeCompass.forEach((player, compassBossBar) -> updateCompassDirection(player, compassBossBar));
+        _activeCompass.forEach((player, compassBossBar) -> _updateCompassDirection(player, compassBossBar));
       }
-    }.runTaskTimer(Main.getInstance(), 0, UPDATE_INTERVAL); // Updates every tick (0.05 seconds)
+    }.runTaskTimer(Main.getInstance(), 0, _UPDATE_INTERVAL); // Updates every tick (0.05 seconds)
   }
 
-  private void updateCompassDirection(Player player, BossBar compassBossBar) {
+  private void _updateCompassDirection(Player player, BossBar compassBossBar) {
     float yaw = player.getLocation().getYaw();
     yaw = (yaw + 180) % 360; // Adjust to align North and South correctly // Normalize yaw to the 0-360 range
 
-    String compassScale = getDynamicCompassScale(yaw);
+    String compassScale = _getDynamicCompassScale(yaw);
     compassBossBar.setTitle(compassScale);
   }
 
-  private String getDynamicCompassScale(double yaw) {
+  private String _getDynamicCompassScale(double yaw) {
     StringBuilder fullScale = new StringBuilder();
-    for (DirectionInfo direction : DIRECTIONS) {
+    for (DirectionInfo direction : _DIRECTIONS) {
       fullScale.append(direction.name);
-      for (int i = 0; i < FILL_CHAR_AMOUNT; i++) {
-        fullScale.append(FILL_CHARACTER);
+      for (int i = 0; i < _FILL_CHAR_AMOUNT; i++) {
+        fullScale.append(_FILL_CHARACTER);
       }
     }
 
@@ -92,27 +92,27 @@ public class CompassManager {
     String completeCompass = fullScale.toString() + fullScale.toString();
 
     // Calculate the starting point based on the yaw, centering the arrow position
-    int startIndex = (int) Math.round((yaw / 360) * fullScale.length()) - ARROW_POSITION;
+    int startIndex = (int) Math.round((yaw / 360) * fullScale.length()) - _ARROW_POSITION;
     if (startIndex < 0) {
       startIndex += fullScale.length();
     }
 
     // Extract the visible portion of the compass
-    String visibleCompass = completeCompass.substring(startIndex, startIndex + SCALE_LENGTH);
+    String visibleCompass = completeCompass.substring(startIndex, startIndex + _SCALE_LENGTH);
 
     // Insert the arrow at the center
     StringBuilder finalCompass = new StringBuilder(visibleCompass);
-    finalCompass.replace(ARROW_POSITION, ARROW_POSITION + 1, ChatColor.RED + ARROW_CHARACTER + ChatColor.RESET);
+    finalCompass.replace(_ARROW_POSITION, _ARROW_POSITION + 1, ChatColor.RED + _ARROW_CHARACTER + ChatColor.RESET);
 
     // Build the final string with colors applied
     StringBuilder coloredCompass = new StringBuilder();
     int currentIndex = 0;
     while (currentIndex < finalCompass.length()) {
       boolean matched = false;
-      for (DirectionInfo direction : DIRECTIONS) {
+      for (DirectionInfo direction : _DIRECTIONS) {
         if (finalCompass.indexOf(direction.name, currentIndex) == currentIndex) {
           // Apply static color to the direction name
-          coloredCompass.append(DIRECTION_COLOR).append(direction.name).append(ChatColor.RESET);
+          coloredCompass.append(_DIRECTION_COLOR).append(direction.name).append(ChatColor.RESET);
           currentIndex += direction.name.length();
           matched = true;
           break;

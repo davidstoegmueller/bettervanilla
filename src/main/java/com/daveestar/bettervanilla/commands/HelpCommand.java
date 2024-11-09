@@ -16,7 +16,8 @@ public class HelpCommand implements CommandExecutor {
 
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "Commands:");
       p.sendMessage("");
-      p.sendMessage(Main.getPrefix() + "/waypoints - List all waypoints");
+      p.sendMessage(Main.getPrefix() + "/waypoints - Open the waypoints GUI");
+      p.sendMessage(Main.getPrefix() + "/waypoints list - List all waypoints");
       p.sendMessage(Main.getPrefix() + "/waypoints add <name> - Add a waypoint to the list");
       p.sendMessage(Main.getPrefix() + "/waypoints <name> - Start navigation to waypoint");
       p.sendMessage(Main.getPrefix() + "/waypoints cancel - Cancel the current navigation");

@@ -12,34 +12,34 @@ import org.bukkit.scheduler.BukkitTask;
 import com.daveestar.bettervanilla.Main;
 
 public class ParticleBeam {
-  private Player player;
-  private Location location;
-  private Color color;
+  private Player _player;
+  private Location _location;
+  private Color _color;
 
-  private BukkitTask task;
+  private BukkitTask _task;
 
   public ParticleBeam(Player player, Location location, Color color) {
-    this.player = player;
-    this.location = location;
-    this.color = color;
+    this._player = player;
+    this._location = location;
+    this._color = color;
   }
 
   /**
    * Starts the particle beam effect indefinitely.
    */
   public void displayBeam() {
-    task = new BukkitRunnable() {
+    _task = new BukkitRunnable() {
       @Override
       public void run() {
-        World world = location.getWorld();
+        World world = _location.getWorld();
         double maxHeight = world.getMaxHeight();
 
         // Generate the beam effect upwards from the given location
         for (double y = 0; y <= maxHeight; y += 0.5) { // Adjust y to control beam height
-          Location particleLocation = location.clone().add(0, y, 0);
-          DustOptions options = new DustOptions(color, 3);
+          Location particleLocation = _location.clone().add(0, y, 0);
+          DustOptions options = new DustOptions(_color, 3);
 
-          player.spawnParticle(Particle.DUST, particleLocation, 1, 0.1, 0.1, 0.1, 0, options, true);
+          _player.spawnParticle(Particle.DUST, particleLocation, 1, 0.1, 0.1, 0.1, 0, options, true);
         }
       }
     }.runTaskTimer(Main.getInstance(), 0, 20); // Run every 20 ticks (1 seconds)
@@ -49,9 +49,9 @@ public class ParticleBeam {
    * Cancels the particle beam effect.
    */
   public void removeBeam() {
-    if (task != null && !task.isCancelled()) {
-      task.cancel();
-      task = null;
+    if (_task != null && !_task.isCancelled()) {
+      _task.cancel();
+      _task = null;
     }
   }
 }

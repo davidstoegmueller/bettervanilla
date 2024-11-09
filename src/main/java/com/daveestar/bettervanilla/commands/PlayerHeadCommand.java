@@ -23,7 +23,7 @@ public class PlayerHeadCommand implements CommandExecutor {
         @SuppressWarnings("deprecation")
         OfflinePlayer target = (OfflinePlayer) Bukkit.getOfflinePlayer(args[0]);
 
-        p.getInventory().addItem(getPlayerHead(target));
+        p.getInventory().addItem(_getPlayerHead(target));
 
         p.sendMessage(Main.getPrefix() + "You've recieved the player head of: " + ChatColor.YELLOW + args[0]);
 
@@ -35,7 +35,7 @@ public class PlayerHeadCommand implements CommandExecutor {
     return false;
   }
 
-  private ItemStack getPlayerHead(OfflinePlayer offlinePlayer) {
+  private ItemStack _getPlayerHead(OfflinePlayer offlinePlayer) {
     ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD, 1);
     SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
 

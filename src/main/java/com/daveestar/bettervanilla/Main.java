@@ -33,31 +33,31 @@ import com.daveestar.bettervanilla.utils.Config;
  * Bettervanilla Java Plugin
  */
 public class Main extends JavaPlugin {
-  private static Main mainInstance;
-  private static final Logger LOGGER = Logger.getLogger("bettervanilla");
+  private static Main _mainInstance;
+  private static final Logger _LOGGER = Logger.getLogger("bettervanilla");
 
-  private WaypointsManager waypointsManager;
-  private TimerManager timerManager;
-  private MaintenanceManager maintenanceManager;
-  private AFKManager afkManager;
-  private CompassManager compassManager;
+  private WaypointsManager _waypointsManager;
+  private TimerManager _timerManager;
+  private MaintenanceManager _maintenanceManager;
+  private AFKManager _afkManager;
+  private CompassManager _compassManager;
 
   public void onEnable() {
-    mainInstance = this;
+    _mainInstance = this;
 
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
-    waypointsManager = new WaypointsManager(waypointsConfig);
+    _waypointsManager = new WaypointsManager(waypointsConfig);
 
     Config timerConfig = new Config("timer.yml", getDataFolder());
-    timerManager = new TimerManager(timerConfig);
+    _timerManager = new TimerManager(timerConfig);
 
     Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
-    maintenanceManager = new MaintenanceManager(maintenanceConfig);
+    _maintenanceManager = new MaintenanceManager(maintenanceConfig);
 
-    afkManager = new AFKManager();
-    compassManager = new CompassManager();
+    _afkManager = new AFKManager();
+    _compassManager = new CompassManager();
 
-    LOGGER.info("BetterVanilla ENABLED");
+    _LOGGER.info("BetterVanilla ENABLED");
 
     // register commands
     getCommand("waypoints").setExecutor(new WaypointsCommand());
@@ -81,16 +81,16 @@ public class Main extends JavaPlugin {
   }
 
   public void onDisable() {
-    mainInstance = null;
+    _mainInstance = null;
 
     // remove all deathchest blocks on plugin reload
     for (Block block : DeathChest.deathChest.keySet()) {
       block.setType(Material.AIR);
     }
 
-    compassManager.destroy();
+    _compassManager.destroy();
 
-    LOGGER.info("BetterVanilla DISABLED");
+    _LOGGER.info("BetterVanilla DISABLED");
   }
 
   public static String getPrefix() {
@@ -99,26 +99,26 @@ public class Main extends JavaPlugin {
   }
 
   public static Main getInstance() {
-    return mainInstance;
+    return _mainInstance;
   }
 
-  public WaypointsManager getWaypointsManager() {
-    return waypointsManager;
+  public WaypointsManager get_waypointsManager() {
+    return _waypointsManager;
   }
 
-  public TimerManager getTimerManager() {
-    return timerManager;
+  public TimerManager get_timerManager() {
+    return _timerManager;
   }
 
-  public MaintenanceManager getMaintenanceManager() {
-    return maintenanceManager;
+  public MaintenanceManager get_maintenanceManager() {
+    return _maintenanceManager;
   }
 
   public AFKManager getAFKManager() {
-    return afkManager;
+    return _afkManager;
   }
 
-  public CompassManager getCompassManager() {
-    return compassManager;
+  public CompassManager get_compassManager() {
+    return _compassManager;
   }
 }

@@ -12,66 +12,66 @@ import com.daveestar.bettervanilla.Main;
 import net.md_5.bungee.api.ChatColor;
 
 public class AFKManager {
-  private HashMap<Player, Long> lastMovement;
-  private HashMap<Player, Boolean> afkStates;
-  private int MAX_AFK_TIME = 60000 * 10;
+  private HashMap<Player, Long> _lastMovement;
+  private HashMap<Player, Boolean> _afkStates;
+  private int _MAX_AFK_TIME = 60000 * 10;
 
   public AFKManager() {
-    this.lastMovement = new HashMap<Player, Long>();
-    this.afkStates = new HashMap<Player, Boolean>();
+    this._lastMovement = new HashMap<Player, Long>();
+    this._afkStates = new HashMap<Player, Boolean>();
 
-    run();
+    _run();
   }
 
   public void playerJoined(Player p) {
-    lastMovement.put(p, System.currentTimeMillis());
-    afkStates.put(p, false);
+    _lastMovement.put(p, System.currentTimeMillis());
+    _afkStates.put(p, false);
   }
 
   public void playerLeft(Player p) {
-    lastMovement.remove(p);
-    afkStates.remove(p);
+    _lastMovement.remove(p);
+    _afkStates.remove(p);
   }
 
   public void playerMoved(Player p) {
 
-    lastMovement.put(p, System.currentTimeMillis());
+    _lastMovement.put(p, System.currentTimeMillis());
 
     setPlayerAFKState(p);
 
   }
 
   public boolean isAFK(Player p) {
-    if (lastMovement.containsKey(p)) {
-      long timeElapsed = System.currentTimeMillis() - lastMovement.get(p);
+    if (_lastMovement.containsKey(p)) {
+      long timeElapsed = System.currentTimeMillis() - _lastMovement.get(p);
 
-      if (timeElapsed >= MAX_AFK_TIME) {
+      if (timeElapsed >= _MAX_AFK_TIME) {
         return true;
       }
 
     } else {
-      lastMovement.put(p, System.currentTimeMillis());
+      _lastMovement.put(p, System.currentTimeMillis());
     }
 
     return false;
   }
 
   public void checkAllPlayersAFKStatus() {
-    for (Map.Entry<Player, Long> entry : lastMovement.entrySet()) {
+    for (Map.Entry<Player, Long> entry : _lastMovement.entrySet()) {
       setPlayerAFKState(entry.getKey());
     }
 
-    boolean allPlayersAFK = afkStates.values().stream().allMatch(entry -> entry == true);
-    TimerManager timer = Main.getInstance().getTimerManager();
+    boolean allPlayersAFK = _afkStates.values().stream().allMatch(entry -> entry == true);
+    TimerManager timer = Main.getInstance().get_timerManager();
 
     if (Bukkit.getOnlinePlayers().size() > 0) {
       if (allPlayersAFK) {
-        if (timer.isRunning()) {
-          timer.setRunning(false);
+        if (timer.is_running()) {
+          timer.set_running(false);
         }
       } else {
-        if (!timer.isRunning() && timer.isRunningOverride()) {
-          timer.setRunning(true);
+        if (!timer.is_running() && timer.is_runningOverride()) {
+          timer.set_running(true);
         }
       }
     }
@@ -79,18 +79,18 @@ public class AFKManager {
   }
 
   public void setPlayerAFKState(Player p) {
-    if (lastMovement.containsKey(p)) {
+    if (_lastMovement.containsKey(p)) {
 
       boolean nowAFK = isAFK(p);
 
-      if (afkStates.containsKey(p)) {
+      if (_afkStates.containsKey(p)) {
 
-        boolean wasAFK = afkStates.get(p);
+        boolean wasAFK = _afkStates.get(p);
 
         if (wasAFK && !nowAFK) {
           p.sendMessage(Main.getPrefix() + "You are no longer AFK");
           p.setPlayerListName(ChatColor.YELLOW + "     " + p.getName() + "     ");
-          afkStates.put(p, false);
+          _afkStates.put(p, false);
 
           announceToOthers(p, false);
 
@@ -98,13 +98,13 @@ public class AFKManager {
           p.sendMessage(Main.getPrefix() + "You are now AFK!");
           p.setPlayerListName("     " + ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
               + ChatColor.YELLOW + p.getName() + "     ");
-          afkStates.put(p, true);
+          _afkStates.put(p, true);
 
           announceToOthers(p, true);
         }
 
       } else {
-        afkStates.put(p, nowAFK);
+        _afkStates.put(p, nowAFK);
       }
     }
   }
@@ -124,7 +124,7 @@ public class AFKManager {
 
   }
 
-  private void run() {
+  private void _run() {
     new BukkitRunnable() {
       @Override
       public void run() {
