@@ -44,7 +44,12 @@ public class WaypointsManager {
 
   // waypoints list helper
   public Set<String> getAllWaypoints(String wordlName) {
-    Set<String> allWaypoints = fileCfgn.getConfigurationSection(wordlName).getKeys(false);
+    ConfigurationSection waypointsCfgnSecetion = fileCfgn.getConfigurationSection(wordlName);
+    Set<String> allWaypoints = null;
+
+    if (waypointsCfgnSecetion != null) {
+      allWaypoints = waypointsCfgnSecetion.getKeys(false);
+    }
 
     return allWaypoints;
   }
