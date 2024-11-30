@@ -14,7 +14,8 @@ import net.md_5.bungee.api.ChatColor;
 public class AFKManager {
   private HashMap<Player, Long> _lastMovement;
   private HashMap<Player, Boolean> _afkStates;
-  private int _MAX_AFK_TIME = 1000 * 10; // max afk time 10 minutes
+  // 1000ms = 1s * 60 (seconds per minute) * 10 (amount of minutes) = 10 minutes
+  private int _MAX_AFK_TIME = 1000 * 60 * 10;
 
   public AFKManager() {
     this._lastMovement = new HashMap<Player, Long>();
@@ -89,15 +90,15 @@ public class AFKManager {
 
         if (wasAFK && !nowAFK) {
           p.sendMessage(Main.getPrefix() + "You are no longer AFK");
-          p.setPlayerListName(ChatColor.YELLOW + "     " + p.getName() + "     ");
+          p.setPlayerListName(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName());
           _afkStates.put(p, false);
 
           announceToOthers(p, false);
 
         } else if (!wasAFK && nowAFK) {
           p.sendMessage(Main.getPrefix() + "You are now AFK!");
-          p.setPlayerListName("     " + ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
-              + ChatColor.YELLOW + p.getName() + "     ");
+          p.setPlayerListName(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
+              + ChatColor.YELLOW + p.getName());
           _afkStates.put(p, true);
 
           announceToOthers(p, true);
