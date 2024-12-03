@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -38,7 +40,20 @@ public class DeathChest implements Listener {
     cfgn.set(p.getName() + ".world", p.getLocation().getWorld().getName());
     lastDeaths.save();
 
-    Block blockChest = p.getWorld().getBlockAt(p.getLocation().add(0, 0.5, 0));
+    Location loc = p.getLocation();
+    Boolean isEnd = loc.getWorld().getEnvironment() == Environment.THE_END;
+    Boolean fellIntoVoid = isEnd && loc.getY() < 1;
+
+    // define the death chests y coordinate
+    // if the player is in the end and fell into the void
+    // we set the y location to 100.5
+    // this makes sure that the deathchest is always accessible by the player
+    Location deathChestLocation = loc.add(0, 0.5, 0);
+    if (fellIntoVoid) {
+      deathChestLocation.setY(100.5);
+    }
+
+    Block blockChest = p.getWorld().getBlockAt(deathChestLocation);
     blockChest.setType(Material.CHEST);
 
     Inventory inv = Bukkit.createInventory(null, 45, "DeathChest from " + p.getName());
@@ -56,6 +71,16 @@ public class DeathChest implements Listener {
             + ChatColor.GRAY + blockChest.getLocation().getBlockZ());
     p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
         + " As soon as you close or break the chest all items will be dropped!");
+
+    // display a hint message to the player if he fell into the void that the
+    // chest will spawn above him at y = 100
+    if (fellIntoVoid) {
+      p.sendMessage(
+          Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+              + " You fell into the void! Your deathchest will spawn at " + ChatColor.YELLOW + "Y: "
+              + ChatColor.GRAY + "100");
+    }
+
     p.sendMessage(Main.getPrefix() + "If you want to navigate to you latest deathpoint please use: " + ChatColor.YELLOW
         + "/lastdeath");
   }
