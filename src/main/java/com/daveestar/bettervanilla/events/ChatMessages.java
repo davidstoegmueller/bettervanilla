@@ -24,9 +24,9 @@ public class ChatMessages implements Listener {
         ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName());
 
     Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-    Main.getInstance().get_timerManager().checkAndSetTimerRunning(onlinePlayers.size());
+    Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size());
 
-    Main.getInstance().get_maintenanceManager().sendMaintenance(p);
+    Main.getInstance().getMaintenanceManager().sendMaintenance(p);
 
     Main.getInstance().getAFKManager().playerJoined(p);
   }
@@ -38,7 +38,7 @@ public class ChatMessages implements Listener {
     e.setQuitMessage(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName());
 
     Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-    Main.getInstance().get_timerManager().checkAndSetTimerRunning(onlinePlayers.size() - 1);
+    Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size() - 1);
 
     Main.getInstance().getAFKManager().playerLeft(p);
   }

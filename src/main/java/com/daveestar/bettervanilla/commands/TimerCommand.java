@@ -25,29 +25,29 @@ public class TimerCommand implements CommandExecutor {
 
       // store the timer model to use later in switch case to handle different timer
       // arguments
-      TimerManager timer = Main.getInstance().get_timerManager();
+      TimerManager timer = Main.getInstance().getTimerManager();
 
       switch (args[0].toLowerCase()) {
         case "resume":
-          if (timer.is_running()) {
+          if (timer.isRunning()) {
             p.sendMessage(Main.getPrefix() + ChatColor.RED + "The timer is currently running.");
             break;
           }
 
-          timer.set_running(true);
-          timer.set_runningOverride(true);
+          timer.setRunning(true);
+          timer.setRunningOverride(true);
 
           p.sendMessage(Main.getPrefix() + "Timer has been resumed.");
 
           break;
         case "pause":
-          if (!timer.is_running()) {
+          if (!timer.isRunning()) {
             p.sendMessage(Main.getPrefix() + ChatColor.RED + "Timer could not be paused. No Timer currently active.");
             break;
           }
 
-          timer.set_running(false);
-          timer.set_runningOverride(false);
+          timer.setRunning(false);
+          timer.setRunningOverride(false);
 
           p.sendMessage(Main.getPrefix() + "Timer has been paused.");
 
@@ -61,10 +61,10 @@ public class TimerCommand implements CommandExecutor {
           }
 
           try {
-            timer.set_running(false);
-            timer.set_runningOverride(false);
+            timer.setRunning(false);
+            timer.setRunningOverride(false);
 
-            timer.set_time(Integer.parseInt(args[1]));
+            timer.setTime(Integer.parseInt(args[1]));
 
             p.sendMessage(Main.getPrefix() + "Timer has been set to " + ChatColor.YELLOW + args[1] + ChatColor.GRAY
                 + " seconds.");
@@ -74,9 +74,9 @@ public class TimerCommand implements CommandExecutor {
 
           break;
         case "reset":
-          timer.set_running(false);
-          timer.set_runningOverride(false);
-          timer.set_time(0);
+          timer.setRunning(false);
+          timer.setRunningOverride(false);
+          timer.setTime(0);
 
           p.sendMessage(Main.getPrefix() + "Timer has been reseted to 0 seconds.");
 

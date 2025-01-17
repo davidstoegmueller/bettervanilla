@@ -33,7 +33,7 @@ public class Config {
     }
   }
 
-  public File get_file() {
+  public File getFile() {
     return _file;
   }
 

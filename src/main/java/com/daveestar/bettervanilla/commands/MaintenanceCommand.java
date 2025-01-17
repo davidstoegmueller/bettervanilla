@@ -25,7 +25,7 @@ public class MaintenanceCommand implements CommandExecutor {
       }
 
       // set new maintenance state based on the current maintenance state
-      MaintenanceManager maintenance = Main.getInstance().get_maintenanceManager();
+      MaintenanceManager maintenance = Main.getInstance().getMaintenanceManager();
       Boolean newState = !maintenance.getState();
 
       maintenance.setState(newState);

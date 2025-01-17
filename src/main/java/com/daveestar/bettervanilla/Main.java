@@ -25,8 +25,11 @@ import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.models.AFKManager;
 import com.daveestar.bettervanilla.models.CompassManager;
 import com.daveestar.bettervanilla.models.MaintenanceManager;
+import com.daveestar.bettervanilla.models.NavigationManager;
+import com.daveestar.bettervanilla.models.SettingsManager;
 import com.daveestar.bettervanilla.models.TimerManager;
 import com.daveestar.bettervanilla.models.WaypointsManager;
+import com.daveestar.bettervanilla.utils.ActionBarManager;
 import com.daveestar.bettervanilla.utils.Config;
 
 /*
@@ -36,14 +39,26 @@ public class Main extends JavaPlugin {
   private static Main _mainInstance;
   private static final Logger _LOGGER = Logger.getLogger("bettervanilla");
 
-  private WaypointsManager _waypointsManager;
-  private TimerManager _timerManager;
-  private MaintenanceManager _maintenanceManager;
+  private ActionBarManager _actionBarManager;
+  private NavigationManager _navigationManager;
   private AFKManager _afkManager;
   private CompassManager _compassManager;
 
+  private SettingsManager _settingsManager;
+  private WaypointsManager _waypointsManager;
+  private TimerManager _timerManager;
+  private MaintenanceManager _maintenanceManager;
+
   public void onEnable() {
     _mainInstance = this;
+
+    _actionBarManager = new ActionBarManager();
+    _navigationManager = new NavigationManager();
+    _afkManager = new AFKManager();
+    _compassManager = new CompassManager();
+
+    Config settingsConfig = new Config("settings.yml", getDataFolder());
+    _settingsManager = new SettingsManager(settingsConfig);
 
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
     _waypointsManager = new WaypointsManager(waypointsConfig);
@@ -53,9 +68,6 @@ public class Main extends JavaPlugin {
 
     Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
     _maintenanceManager = new MaintenanceManager(maintenanceConfig);
-
-    _afkManager = new AFKManager();
-    _compassManager = new CompassManager();
 
     _LOGGER.info("BetterVanilla ENABLED");
 
@@ -102,23 +114,36 @@ public class Main extends JavaPlugin {
     return _mainInstance;
   }
 
-  public WaypointsManager get_waypointsManager() {
-    return _waypointsManager;
+  public ActionBarManager getActionBarManager() {
+    return _actionBarManager;
   }
 
-  public TimerManager get_timerManager() {
-    return _timerManager;
-  }
-
-  public MaintenanceManager get_maintenanceManager() {
-    return _maintenanceManager;
+  public NavigationManager getNavigationManager() {
+    return _navigationManager;
   }
 
   public AFKManager getAFKManager() {
     return _afkManager;
   }
 
-  public CompassManager get_compassManager() {
+  public CompassManager getCompassManager() {
     return _compassManager;
   }
+
+  public SettingsManager getSettingsManager() {
+    return _settingsManager;
+  }
+
+  public WaypointsManager getWaypointsManager() {
+    return _waypointsManager;
+  }
+
+  public TimerManager getTimerManager() {
+    return _timerManager;
+  }
+
+  public MaintenanceManager getMaintenanceManager() {
+    return _maintenanceManager;
+  }
+
 }

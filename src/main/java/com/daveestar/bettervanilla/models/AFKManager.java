@@ -63,16 +63,16 @@ public class AFKManager {
     }
 
     boolean allPlayersAFK = _afkStates.values().stream().allMatch(entry -> entry == true);
-    TimerManager timer = Main.getInstance().get_timerManager();
+    TimerManager timer = Main.getInstance().getTimerManager();
 
     if (Bukkit.getOnlinePlayers().size() > 0) {
       if (allPlayersAFK) {
-        if (timer.is_running()) {
-          timer.set_running(false);
+        if (timer.isRunning()) {
+          timer.setRunning(false);
         }
       } else {
-        if (!timer.is_running() && timer.is_runningOverride()) {
-          timer.set_running(true);
+        if (!timer.isRunning() && timer.isRunningOverride()) {
+          timer.setRunning(true);
         }
       }
     }

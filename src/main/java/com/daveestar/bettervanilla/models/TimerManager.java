@@ -32,48 +32,48 @@ public class TimerManager {
   }
 
   public void checkAndSetTimerRunning(int amountPlayers) {
-    if (is_runningOverride()) {
+    if (isRunningOverride()) {
       if (amountPlayers > 0) {
-        if (!is_running()) {
-          set_running(true);
+        if (!isRunning()) {
+          setRunning(true);
         }
       }
 
       if (amountPlayers == 0) {
-        if (is_running()) {
-          set_running(false);
+        if (isRunning()) {
+          setRunning(false);
         }
       }
     }
   }
 
-  public boolean is_running() {
+  public boolean isRunning() {
     return _running;
   }
 
-  public boolean is_runningOverride() {
+  public boolean isRunningOverride() {
     return _runningOverride;
   }
 
-  public void set_running(boolean running) {
+  public void setRunning(boolean running) {
     this._running = running;
 
     _fileCfgn.set("running", running);
     _config.save();
   }
 
-  public void set_runningOverride(boolean running) {
+  public void setRunningOverride(boolean running) {
     this._runningOverride = running;
 
     _fileCfgn.set("runningOverride", running);
     _config.save();
   }
 
-  public int get_time() {
+  public int getTime() {
     return _time;
   }
 
-  public void set_time(int time) {
+  public void setTime(int time) {
     this._time = time;
 
     _fileCfgn.set("time", time);
@@ -81,22 +81,23 @@ public class TimerManager {
   }
 
   public void displayTimerActionBar() {
-    WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
-    for (Player p : Bukkit.getOnlinePlayers()) {
-      if (!waypointsManager.checkPlayerActiveWaypointNavigation(p)
-          && !waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+    NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
-        if (!is_running()) {
+    for (Player p : Bukkit.getOnlinePlayers()) {
+      if (!navigationManager.checkActiveNavigation(p) && !settingsManager.getToggleLocation(p)) {
+
+        if (!isRunning()) {
           p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
               new TextComponent(
                   ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "Paused " + ChatColor.GRAY.toString() + "("
-                      + ChatColor.RED.toString() + _convertTimeIntoDMS(get_time()) + ChatColor.GRAY.toString() + ")"));
+                      + ChatColor.RED.toString() + _convertTimeIntoDMS(getTime()) + ChatColor.GRAY.toString() + ")"));
           continue;
         }
 
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
             new TextComponent(
-                ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + _convertTimeIntoDMS(get_time())));
+                ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + _convertTimeIntoDMS(getTime())));
       }
     }
   }
@@ -108,11 +109,11 @@ public class TimerManager {
 
         displayTimerActionBar();
 
-        if (!is_running()) {
+        if (!isRunning()) {
           return;
         }
 
-        set_time(get_time() + 1);
+        setTime(getTime() + 1);
       }
     }.runTaskTimer(Main.getInstance(), 20, 20);
   }

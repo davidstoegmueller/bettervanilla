@@ -23,7 +23,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.models.CustomGUI;
+import com.daveestar.bettervanilla.models.NavigationManager;
+import com.daveestar.bettervanilla.models.SettingsManager;
 import com.daveestar.bettervanilla.models.WaypointsManager;
+import com.daveestar.bettervanilla.utils.ActionBarManager;
+import com.daveestar.bettervanilla.utils.NavigationData;
 
 public class WaypointsCommand implements TabExecutor {
   @Override
@@ -33,10 +37,12 @@ public class WaypointsCommand implements TabExecutor {
       Player p = (Player) cs;
       String worldName = p.getWorld().getName();
 
-      WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
+      ActionBarManager actionBarManager = Main.getInstance().getActionBarManager();
+      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+      NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
       if (args.length == 0) {
-        _displayWaypointsGUI(p, waypointsManager.getAllWaypointNames(worldName));
+        _displayWaypointsGUI(p, waypointsManager.getWaypoints(worldName));
       }
 
       if (args.length > 0) {
@@ -51,7 +57,7 @@ public class WaypointsCommand implements TabExecutor {
 
             if (!waypointsManager.checkWaypointExists(worldName, waypointName)) {
               // if the waypoint doesnt already exist in the waypoints yml
-              waypointsManager.setWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
+              waypointsManager.addWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
 
               // send the player the success message
               p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
@@ -69,7 +75,7 @@ public class WaypointsCommand implements TabExecutor {
 
               if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
                 if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
-                  waypointsManager.setWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
+                  waypointsManager.addWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
 
                   // send the player the success message
                   p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
@@ -122,10 +128,10 @@ public class WaypointsCommand implements TabExecutor {
 
         if (args[0].equalsIgnoreCase("cancel")) {
           if (args.length == 1) {
-            if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
-              waypointsManager.removePlayerActiveWaypointNavigation(p);
+            if (navigationManager.checkActiveNavigation(p)) {
+              navigationManager.stopNavigation(p);
 
-              p.sendMessage(ChatColor.RED + "You've canceled navigation!");
+              actionBarManager.sendActionBarOnce(p, ChatColor.RED + "You've canceled active navigation!");
             } else {
               p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no current destination!");
             }
@@ -142,12 +148,12 @@ public class WaypointsCommand implements TabExecutor {
             p.sendMessage("");
 
             // get all waypoints
-            List<String> allWaypointNames = waypointsManager.getAllWaypointNames(worldName);
+            List<String> allWaypointNames = waypointsManager.getWaypoints(worldName);
 
             // loop through all waypoints and send them to the player
             if (allWaypointNames != null && allWaypointNames.size() > 0) {
               for (String waypointName : allWaypointNames) {
-                HashMap<String, Integer> waypointCoordinates = waypointsManager.getSpecificWaypoint(worldName,
+                HashMap<String, Integer> waypointCoordinates = waypointsManager.getWaypointByName(worldName,
                     waypointName);
 
                 Location waypointLocation = new Location(Bukkit.getWorld(worldName), waypointCoordinates.get("x"),
@@ -176,7 +182,7 @@ public class WaypointsCommand implements TabExecutor {
           String waypointName = args[0];
 
           if (waypointsManager.checkWaypointExists(worldName, waypointName)) {
-            _startNavigation(p, waypointName);
+            _handleStartNavigation(p, waypointName);
           } else {
             // send a message that the waypoint doesnt exist
             p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
@@ -192,13 +198,15 @@ public class WaypointsCommand implements TabExecutor {
     return false;
   }
 
-  private void _startNavigation(Player p, String waypointName) {
-    WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
+  private void _handleStartNavigation(Player p, String waypointName) {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+    WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+    NavigationManager navigationManager = Main.getInstance().getNavigationManager();
     String worldName = p.getWorld().getName();
 
     // check if the waypoint exists in the file configuration
     if (waypointsManager.checkWaypointExists(worldName, waypointName)) {
-      HashMap<String, Integer> waypointCoordinates = waypointsManager.getSpecificWaypoint(worldName,
+      HashMap<String, Integer> waypointCoordinates = waypointsManager.getWaypointByName(worldName,
           waypointName);
 
       int waypointX = waypointCoordinates.get("x");
@@ -216,41 +224,9 @@ public class WaypointsCommand implements TabExecutor {
               + ChatColor.RED + " » " + ChatColor.YELLOW
               + Math.round(p.getLocation().distance(waypointLocation)) + "m");
 
-      if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
-        waypointsManager.removePlayerActiveWaypointNavigation(p);
-      }
-
-      if (waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
-        waypointsManager.removePlayerActiveToggleLocationNavigation(p);
-      }
-
-      waypointsManager.addPlayerActiveWaypointNavigation(p, waypointLocation, waypointName, Color.YELLOW);
-
-      int locX = p.getLocation().getBlockX();
-      int locY = p.getLocation().getBlockY();
-      int locZ = p.getLocation().getBlockZ();
-
-      String displayCoordsWp = ChatColor.YELLOW + "" + ChatColor.BOLD + waypointName.toUpperCase() + ": "
-          + ChatColor.RESET
-          + ChatColor.YELLOW
-          + "X: " + ChatColor.GRAY
-          + waypointX + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + waypointY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + waypointZ;
-
-      String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW
-          + ChatColor.BOLD
-          + "CURRENT: " + ChatColor.RESET + ChatColor.YELLOW + "X: "
-          + ChatColor.GRAY
-          + locX + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
-
-      String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
-          + "DISTANCE: "
-          + ChatColor.RESET + ChatColor.GRAY + Math.round(p.getLocation().distance(waypointLocation));
-
-      String displayText = displayCoordsWp + displayCoordsCurrent + distanceToTarget;
-
-      waypointsManager.displayActionBar(p, displayText);
+      settingsManager.setToggleLocation(p, false);
+      NavigationData navigationData = new NavigationData(waypointName, waypointLocation, Color.YELLOW);
+      navigationManager.startNavigation(p, navigationData);
     }
   }
 
@@ -258,11 +234,11 @@ public class WaypointsCommand implements TabExecutor {
     HashMap<String, ItemStack> pageEntries = new HashMap<>();
 
     String worldName = p.getWorld().getName();
-    WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
+    WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
 
     // Create entries for each waypoint
     for (String waypointName : allWaypointNames) {
-      HashMap<String, Integer> waypointData = waypointsManager.getSpecificWaypoint(worldName, waypointName);
+      HashMap<String, Integer> waypointData = waypointsManager.getWaypointByName(worldName, waypointName);
 
       int waypointX = waypointData.get("x");
       int waypointY = waypointData.get("y");
@@ -295,7 +271,7 @@ public class WaypointsCommand implements TabExecutor {
     }
 
     BiConsumer<Player, String> onItemClick = (player, waypointName) -> {
-      _startNavigation(p, waypointName);
+      _handleStartNavigation(p, waypointName);
       p.closeInventory();
 
       p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
@@ -320,10 +296,10 @@ public class WaypointsCommand implements TabExecutor {
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
       Player p = (Player) cs;
-      WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
+      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
 
       // filter waypoints based on current args[0] input
-      List<String> allWaypointNames = waypointsManager.getAllWaypointNames(p.getWorld().getName());
+      List<String> allWaypointNames = waypointsManager.getWaypoints(p.getWorld().getName());
 
       if (allWaypointNames != null) {
         allWaypointNames.removeIf(waypointName -> !waypointName.toLowerCase().startsWith(args[0].toLowerCase()));

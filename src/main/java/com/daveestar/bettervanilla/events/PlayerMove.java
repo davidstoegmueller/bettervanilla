@@ -9,8 +9,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.WaypointsManager;
-import com.daveestar.bettervanilla.utils.LocationStorage;
+import com.daveestar.bettervanilla.models.NavigationManager;
+import com.daveestar.bettervanilla.models.SettingsManager;
+import com.daveestar.bettervanilla.utils.ActionBarManager;
+import com.daveestar.bettervanilla.utils.NavigationData;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -20,6 +22,7 @@ public class PlayerMove implements Listener {
   public void onPlayerMove(PlayerMoveEvent e) {
     Player p = (Player) e.getPlayer();
 
+    _handleNavigationPlayerMove(p);
     _handleLocationPlayerMove(p);
     _handleAFKPlayerMove(p);
   }
@@ -28,71 +31,55 @@ public class PlayerMove implements Listener {
     Main.getInstance().getAFKManager().playerMoved(p);
   }
 
-  private void _handleLocationPlayerMove(Player p) {
-    WaypointsManager waypointsManager = Main.getInstance().get_waypointsManager();
+  private void _handleNavigationPlayerMove(Player p) {
+    NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
-    if (waypointsManager.checkPlayerActiveWaypointNavigation(p)) {
-      int locX = p.getLocation().getBlockX();
-      int locY = p.getLocation().getBlockY();
-      int locZ = p.getLocation().getBlockZ();
+    if (navigationManager.checkActiveNavigation(p)) {
+      NavigationData navigationData = navigationManager.getActiveNavigation(p);
 
-      LocationStorage locationName = waypointsManager.getPlayerActiveWaypointNavigation(p);
+      Location targetLocation = navigationData.getLocation();
+      Location playerLocation = p.getLocation();
 
-      if (locationName.getCoordinates().getWorld().getName() != p.getWorld().getName()) {
-        waypointsManager.removePlayerActiveWaypointNavigation(p);
-
+      // check if the target world and player world name is different and abort
+      // navigation
+      if (targetLocation.getWorld().getName() != playerLocation.getWorld().getName()) {
+        navigationManager.stopNavigation(p);
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
 
         return;
       }
 
-      if (p.getLocation().distance(locationName.getCoordinates()) <= 25) {
-        waypointsManager.removePlayerActiveWaypointNavigation(p);
-
+      // if the player is in range of the target location we abort the navigation
+      if (p.getLocation().distance(navigationData.getLocation()) <= 25) {
+        navigationManager.stopNavigation(p);
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
-            ChatColor.YELLOW + "" + ChatColor.BOLD + locationName.getName() + ChatColor.GRAY
+            ChatColor.YELLOW + "" + ChatColor.BOLD + navigationData.getName() +
+                ChatColor.GRAY
                 + " is in a range of 25 blocks!"));
 
         return;
       }
 
-      int wpX = locationName.getCoordinates().getBlockX();
-      int wpY = locationName.getCoordinates().getBlockY();
-      int wpZ = locationName.getCoordinates().getBlockZ();
+      navigationManager.updateNavigation(p, navigationData);
+    }
+  }
 
-      Location waypointLocation = new Location(p.getWorld(), wpX, wpY, wpZ);
+  private void _handleLocationPlayerMove(Player p) {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+    ActionBarManager actionBarManager = Main.getInstance().getActionBarManager();
 
-      String displayCoordsWp = ChatColor.YELLOW + "" + ChatColor.BOLD + locationName.getName().toUpperCase() + ": "
-          + ChatColor.RESET
-          + ChatColor.YELLOW
-          + "X: " + ChatColor.GRAY
-          + wpX + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + wpY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + wpZ;
-
-      String displayCoordsCurrent = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
-          + "CURRENT: " + ChatColor.RESET + ChatColor.YELLOW + "X: "
-          + ChatColor.GRAY
-          + locX + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + locY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + locZ;
-
-      String distanceToTarget = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
-          + "DISTANCE: "
-          + ChatColor.RESET + ChatColor.GRAY + Math.round(p.getLocation().distance(waypointLocation));
-
-      String displayText = displayCoordsWp + displayCoordsCurrent + distanceToTarget;
-
-      waypointsManager.displayActionBar(p, displayText);
-    } else if (waypointsManager.checkPlayerActiveToggleLocationNavigation(p)) {
+    if (settingsManager.getToggleLocation(p)) {
       Biome playerBiome = p.getWorld().getBiome(p.getLocation());
 
-      String displayCoordsCurrent = ChatColor.YELLOW + "X: "
+      String locationText = ChatColor.YELLOW + "X: "
           + ChatColor.GRAY
           + p.getLocation().getBlockX() + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
+          + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW +
+          " Z: " + ChatColor.GRAY
           + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
           + ChatColor.GRAY + playerBiome.getKey();
 
-      waypointsManager.displayActionBar(p, displayCoordsCurrent);
+      actionBarManager.sendActionBar(p, locationText);
     }
   }
 }
