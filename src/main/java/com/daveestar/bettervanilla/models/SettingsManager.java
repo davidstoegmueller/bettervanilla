@@ -22,4 +22,13 @@ public class SettingsManager {
     _fileCfgn.set(p.getUniqueId() + ".togglelocation", value);
     _config.save();
   }
+
+  public boolean getToggleCompass(Player p) {
+    return _fileCfgn.getBoolean(p.getUniqueId() + ".togglecompass");
+  }
+
+  public void setToggleCompass(Player p, boolean value) {
+    _fileCfgn.set(p.getUniqueId() + ".togglecompass", value);
+    _config.save();
+  }
 }

@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.models.SettingsManager;
 
 public class ChatMessages implements Listener {
   @EventHandler
@@ -29,6 +30,11 @@ public class ChatMessages implements Listener {
     Main.getInstance().getMaintenanceManager().sendMaintenance(p);
 
     Main.getInstance().getAFKManager().playerJoined(p);
+
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+    if (settingsManager.getToggleCompass(p)) {
+      Main.getInstance().getCompassManager().addPlayerToCompass(p);
+    }
   }
 
   @EventHandler

@@ -51,12 +51,20 @@ public class CompassManager {
     _activeCompass.computeIfAbsent(player, p -> {
       BossBar compassBossBar = Bukkit.createBossBar("", BarColor.YELLOW, BarStyle.SOLID);
       compassBossBar.addPlayer(player);
+
+      SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+      settingsManager.setToggleCompass(player, true);
+
       return compassBossBar;
     });
   }
 
   public void removePlayerFromCompass(Player player) {
     BossBar compassBossBar = _activeCompass.remove(player);
+
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+    settingsManager.setToggleCompass(player, false);
+
     if (compassBossBar != null) {
       compassBossBar.removePlayer(player);
     }
