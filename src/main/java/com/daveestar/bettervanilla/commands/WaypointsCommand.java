@@ -1,14 +1,5 @@
 package com.daveestar.bettervanilla.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -29,288 +20,314 @@ import com.daveestar.bettervanilla.models.WaypointsManager;
 import com.daveestar.bettervanilla.utils.ActionBarManager;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
 public class WaypointsCommand implements TabExecutor {
+
+  private final WaypointsManager waypointsManager;
+  private final NavigationManager navigationManager;
+  private final ActionBarManager actionBarManager;
+  private final SettingsManager settingsManager;
+
+  public WaypointsCommand() {
+    Main plugin = Main.getInstance();
+    this.waypointsManager = plugin.getWaypointsManager();
+    this.navigationManager = plugin.getNavigationManager();
+    this.actionBarManager = plugin.getActionBarManager();
+    this.settingsManager = plugin.getSettingsManager();
+  }
+
   @Override
-  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-
-    if (c.getName().equalsIgnoreCase("waypoints") && cs instanceof Player) {
-      Player p = (Player) cs;
-      String worldName = p.getWorld().getName();
-
-      ActionBarManager actionBarManager = Main.getInstance().getActionBarManager();
-      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
-      NavigationManager navigationManager = Main.getInstance().getNavigationManager();
-
-      if (args.length == 0) {
-        _displayWaypointsGUI(p, waypointsManager.getWaypoints(worldName));
-      }
-
-      if (args.length > 0) {
-        if (args[0].equalsIgnoreCase("add")) {
-          if ((args.length == 2) || (args.length == 3 && args[2].equalsIgnoreCase("confirm"))) {
-            String waypointName = args[1];
-            Location playerLocation = p.getLocation();
-
-            int pLocX = playerLocation.getBlockX();
-            int pLocY = playerLocation.getBlockY();
-            int pLocZ = playerLocation.getBlockZ();
-
-            if (!waypointsManager.checkWaypointExists(worldName, waypointName)) {
-              // if the waypoint doesnt already exist in the waypoints yml
-              waypointsManager.addWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
-
-              // send the player the success message
-              p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-                  + " was successfully added!");
-              p.sendMessage(
-                  Main.getPrefix() + "It is set to your current location: " + ChatColor.YELLOW + "X: " + ChatColor.GRAY
-                      + pLocX + ChatColor.YELLOW
-                      + " Y: " + ChatColor.GRAY + pLocY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + pLocZ);
-            } else {
-              // if it already exists give a hint how to overwrite the pos
-              p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
-                  + ChatColor.RED + " already exists!");
-              p.sendMessage(Main.getPrefix() + ChatColor.RED + "If you want to overwrite this waypoint please use: "
-                  + ChatColor.YELLOW + " /waypoints add " + waypointName + " confirm");
-
-              if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
-                if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
-                  waypointsManager.addWaypoint(worldName, waypointName, pLocX, pLocY, pLocZ);
-
-                  // send the player the success message
-                  p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-                      + " was successfully updated!");
-                  p.sendMessage(
-                      Main.getPrefix() + "It is reset to your current location: " + ChatColor.YELLOW + "X: "
-                          + ChatColor.GRAY
-                          + pLocX + ChatColor.YELLOW
-                          + " Y: " + ChatColor.GRAY + pLocY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + pLocZ);
-                } else {
-                  p.sendMessage(Main.getPrefix() + ChatColor.RED
-                      + "Sorry! You don't have permissions to overwrite existing waypoints. Please ask to gain "
-                      + ChatColor.YELLOW + "bettervanilla.waypoints.overwrite");
-                }
-              }
-            }
-          } else {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "To add an waypoint please use: "
-                + ChatColor.YELLOW + "/waypoints add <name>");
-          }
-        }
-
-        if (args[0].equalsIgnoreCase("remove")) {
-          if (p.hasPermission("bettervanilla.waypoints.remove")) {
-            if (args.length == 2) {
-              String waypointName = args[1];
-
-              if (waypointsManager.checkWaypointExists(worldName, waypointName)) {
-                // if the waypoint exists -> remove it
-                waypointsManager.removeWaypoint(worldName, waypointName);
-
-                p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-                    + " was successfully removed!");
-              } else {
-                // send a message that the waypoint doesnt exist
-                p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
-                    + waypointName + ChatColor.RED
-                    + ". Please try an existing one!");
-              }
-            } else {
-              p.sendMessage(Main.getPrefix() + ChatColor.RED + "To remove an existing waypoint please use: "
-                  + ChatColor.YELLOW + "/waypoints remove <name>");
-            }
-          } else {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED
-                + "Sorry! You don't have permissions to remove existing waypoints. Please ask to gain "
-                + ChatColor.YELLOW + "bettervanilla.waypoints.remove");
-          }
-        }
-
-        if (args[0].equalsIgnoreCase("cancel")) {
-          if (args.length == 1) {
-            if (navigationManager.checkActiveNavigation(p)) {
-              navigationManager.stopNavigation(p);
-
-              actionBarManager.sendActionBarOnce(p, ChatColor.RED + "You've canceled active navigation!");
-            } else {
-              p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no current destination!");
-            }
-          } else {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "To cancel navigation to an existing waypoint please use: "
-                + ChatColor.YELLOW + "/waypoints cancel");
-          }
-        }
-
-        if (args[0].equalsIgnoreCase("list")) {
-          if (args.length == 1) {
-            p.sendMessage(
-                Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "All waypoints in " + worldName + ":");
-            p.sendMessage("");
-
-            // get all waypoints
-            List<String> allWaypointNames = waypointsManager.getWaypoints(worldName);
-
-            // loop through all waypoints and send them to the player
-            if (allWaypointNames != null && allWaypointNames.size() > 0) {
-              for (String waypointName : allWaypointNames) {
-                HashMap<String, Integer> waypointCoordinates = waypointsManager.getWaypointByName(worldName,
-                    waypointName);
-
-                Location waypointLocation = new Location(Bukkit.getWorld(worldName), waypointCoordinates.get("x"),
-                    waypointCoordinates.get("y"), waypointCoordinates.get("z"));
-
-                p.sendMessage(
-                    Main.getPrefix() + ChatColor.YELLOW + waypointName + ChatColor.GRAY + " is at " + ChatColor.YELLOW
-                        + "X: " + ChatColor.GRAY
-                        + waypointCoordinates.get("x") + ChatColor.YELLOW
-                        + " Y: " + ChatColor.GRAY + waypointCoordinates.get("y") + ChatColor.YELLOW + " Z: "
-                        + ChatColor.GRAY + waypointCoordinates.get("z")
-                        + ChatColor.RED + " » " + ChatColor.YELLOW
-                        + Math.round(p.getLocation().distance(waypointLocation)) + "m");
-              }
-            } else {
-              p.sendMessage(Main.getPrefix() + ChatColor.RED + "There are no existing waypoints!");
-            }
-          } else {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "To list all existing waypoints please use: "
-                + ChatColor.YELLOW + "/waypoints list");
-          }
-        }
-
-        if (!args[0].equalsIgnoreCase("add") && !args[0].equalsIgnoreCase("remove")
-            && !args[0].equalsIgnoreCase("cancel") && !args[0].equalsIgnoreCase("list")) {
-          String waypointName = args[0];
-
-          if (waypointsManager.checkWaypointExists(worldName, waypointName)) {
-            _handleStartNavigation(p, waypointName);
-          } else {
-            // send a message that the waypoint doesnt exist
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
-                + waypointName + ChatColor.RED
-                + ". Please try an existing one!");
-          }
-        }
-      }
-
+  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    if (!(sender instanceof Player)) {
+      sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
       return true;
     }
 
-    return false;
-  }
-
-  private void _handleStartNavigation(Player p, String waypointName) {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-    WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
-    NavigationManager navigationManager = Main.getInstance().getNavigationManager();
-    String worldName = p.getWorld().getName();
-
-    // check if the waypoint exists in the file configuration
-    if (waypointsManager.checkWaypointExists(worldName, waypointName)) {
-      HashMap<String, Integer> waypointCoordinates = waypointsManager.getWaypointByName(worldName,
-          waypointName);
-
-      int waypointX = waypointCoordinates.get("x");
-      int waypointY = waypointCoordinates.get("y");
-      int waypointZ = waypointCoordinates.get("z");
-
-      Location waypointLocation = new Location(p.getWorld(), waypointX, waypointY, waypointZ);
-
-      p.sendMessage(
-          Main.getPrefix() + ChatColor.GRAY + "Start navigation to " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-              + " at " + ChatColor.YELLOW
-              + "X: " + ChatColor.GRAY
-              + waypointX + ChatColor.YELLOW
-              + " Y: " + ChatColor.GRAY + waypointY + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + waypointZ
-              + ChatColor.RED + " » " + ChatColor.YELLOW
-              + Math.round(p.getLocation().distance(waypointLocation)) + "m");
-
-      settingsManager.setToggleLocation(p, false);
-      NavigationData navigationData = new NavigationData(waypointName, waypointLocation, Color.YELLOW);
-      navigationManager.startNavigation(p, navigationData);
-    }
-  }
-
-  private void _displayWaypointsGUI(Player p, List<String> allWaypointNames) {
-    HashMap<String, ItemStack> pageEntries = new HashMap<>();
-
-    String worldName = p.getWorld().getName();
-    WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
-
-    // Create entries for each waypoint
-    for (String waypointName : allWaypointNames) {
-      HashMap<String, Integer> waypointData = waypointsManager.getWaypointByName(worldName, waypointName);
-
-      int waypointX = waypointData.get("x");
-      int waypointY = waypointData.get("y");
-      int waypointZ = waypointData.get("z");
-
-      Location waypointLocation = new Location(p.getWorld(), waypointX, waypointY, waypointZ);
-
-      long distance = Math.round(p.getLocation().distance(waypointLocation));
-
-      ItemStack waypointItem = new ItemStack(Material.PAPER);
-      ItemMeta waypointItemMeta = waypointItem.getItemMeta();
-      waypointItemMeta.setDisplayName(
-          ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "" + ChatColor.BOLD + waypointName);
-
-      List<String> waypointItemLore = new ArrayList<>();
-      waypointItemLore.add("");
-      waypointItemLore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + waypointX);
-      waypointItemLore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + waypointY);
-      waypointItemLore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + waypointZ);
-      waypointItemLore.add("");
-      waypointItemLore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distance
-          + ChatColor.GRAY + " blocks");
-      waypointItemLore.add("");
-      waypointItemLore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation");
-      waypointItemMeta.setLore(waypointItemLore);
-
-      waypointItem.setItemMeta(waypointItemMeta);
-
-      pageEntries.put(waypointName, waypointItem);
+    Player p = (Player) sender;
+    if (args.length == 0) {
+      displayGUI(p);
+      return true;
     }
 
+    String subCommand = args[0].toLowerCase();
+    switch (subCommand) {
+      case "add":
+        handleAdd(p, args);
+        break;
+      case "remove":
+        handleRemove(p, args);
+        break;
+      case "list":
+        handleList(p);
+        break;
+      case "nav":
+        handleNavigation(p, args);
+        break;
+      case "player":
+        handlePlayerNavigation(p, args);
+        break;
+      case "coords":
+        handleCoordsNavigation(p, args);
+        break;
+      case "cancel":
+        handleCancel(p);
+        break;
+      case "help":
+        handleHelp(p);
+        break;
+      default:
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Unknown waypoints command. Use /waypoints help for help.");
+    }
+    return true;
+  }
+
+  private void displayGUI(Player p) {
+    String worldName = p.getWorld().getName();
+    List<String> allWaypointNames = waypointsManager.getWaypoints(worldName);
+    Location playerLocation = p.getLocation();
+
+    // Map to store GUI entries
+    Map<String, ItemStack> pageEntries = allWaypointNames.parallelStream()
+        .collect(Collectors.toMap(
+            waypointName -> waypointName,
+            waypointName -> createWaypointItem(playerLocation, worldName, waypointName),
+            (oldValue, newValue) -> oldValue,
+            LinkedHashMap::new));
+
+    // Handle item click
     BiConsumer<Player, String> onItemClick = (player, waypointName) -> {
-      _handleStartNavigation(p, waypointName);
+      handleNavigation(p, new String[] { "nav", waypointName });
       p.closeInventory();
-
       p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
     };
 
-    HashMap<String, ItemStack> sortedPageEntries = pageEntries.entrySet().stream()
-        .sorted(Map.Entry.comparingByKey())
-        .collect(Collectors.toMap(
-            Map.Entry::getKey,
-            Map.Entry::getValue,
-            (oldValue, newValue) -> oldValue,
-            LinkedHashMap::new // Use LinkedHashMap to maintain order
-        ));
-
+    // Create and open the GUI
     CustomGUI waypointsGUI = new CustomGUI(Main.getInstance(), p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Waypoints",
-        sortedPageEntries, onItemClick);
+        pageEntries, onItemClick);
     waypointsGUI.open(p);
   }
 
-  @Override
-  public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
-    if (args.length == 1) {
-      Player p = (Player) cs;
-      WaypointsManager waypointsManager = Main.getInstance().getWaypointsManager();
+  /**
+   * Creates a formatted ItemStack for a waypoint.
+   */
+  private ItemStack createWaypointItem(Location playerLocation, String worldName, String waypointName) {
+    Map<String, Integer> waypointData = waypointsManager.getWaypointByName(worldName, waypointName);
 
-      // filter waypoints based on current args[0] input
-      List<String> allWaypointNames = waypointsManager.getWaypoints(p.getWorld().getName());
+    int x = waypointData.get("x");
+    int y = waypointData.get("y");
+    int z = waypointData.get("z");
+    Location waypointLocation = new Location(playerLocation.getWorld(), x, y, z);
+    long distance = Math.round(playerLocation.distance(waypointLocation));
 
-      if (allWaypointNames != null) {
-        allWaypointNames.removeIf(waypointName -> !waypointName.toLowerCase().startsWith(args[0].toLowerCase()));
+    ItemStack item = new ItemStack(Material.PAPER);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + waypointName);
+      meta.setLore(Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + x,
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + y,
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + z,
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distance + ChatColor.GRAY
+              + " blocks",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation"));
+      item.setItemMeta(meta);
+    }
+    return item;
+  }
 
-        List<String> filteredWaypoints = new ArrayList<String>(allWaypointNames);
-        filteredWaypoints.add("cancel");
-        return filteredWaypoints;
-      }
-
+  private void handleAdd(Player p, String[] args) {
+    if (args.length < 2) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To add a waypoint please use: "
+          + ChatColor.YELLOW + "/waypoints add <name>");
+      return;
     }
 
-    return new ArrayList<>();
+    String waypointName = args[1];
+    Location location = p.getLocation();
+    String world = p.getWorld().getName();
+
+    if (waypointsManager.checkWaypointExists(world, waypointName)) {
+      if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
+        if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
+          waypointsManager.addWaypoint(world, waypointName, location.getBlockX(), location.getBlockY(),
+              location.getBlockZ());
+          p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+              + " was successfully updated!");
+          p.sendMessage(Main.getPrefix() + "It is reset to your current location: " + ChatColor.YELLOW + "X: "
+              + ChatColor.GRAY + location.getBlockX() + ChatColor.YELLOW
+              + " Y: " + ChatColor.GRAY + location.getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
+              + location.getBlockZ());
+        } else {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED
+              + "Sorry! You don't have permissions to overwrite existing waypoints.");
+        }
+      } else {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
+            + ChatColor.RED + " already exists!");
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "If you want to overwrite this waypoint please use: "
+            + ChatColor.YELLOW + "/waypoints add " + waypointName + " confirm");
+      }
+    } else {
+      waypointsManager.addWaypoint(world, waypointName, location.getBlockX(), location.getBlockY(),
+          location.getBlockZ());
+      p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+          + " was successfully added!");
+      p.sendMessage(
+          Main.getPrefix() + "It is set to your current location: " + ChatColor.YELLOW + "X: " + ChatColor.GRAY
+              + location.getBlockX() + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + location.getBlockY()
+              + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + location.getBlockZ());
+    }
+  }
+
+  private void handleRemove(Player p, String[] args) {
+    if (!p.hasPermission("bettervanilla.waypoints.remove")) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED
+          + "Sorry! You don't have permissions to remove existing waypoints. Please ask to gain "
+          + ChatColor.YELLOW + "bettervanilla.waypoints.remove");
+      return;
+    }
+
+    if (args.length < 2) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To remove an existing waypoint please use: "
+          + ChatColor.YELLOW + "/waypoints remove <name>");
+      return;
+    }
+
+    String waypointName = args[1];
+    String world = p.getWorld().getName();
+
+    if (waypointsManager.checkWaypointExists(world, waypointName)) {
+      waypointsManager.removeWaypoint(world, waypointName);
+      p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+          + " was successfully removed!");
+    } else {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
+          + waypointName + ChatColor.RED + ". Please try an existing one!");
+    }
+  }
+
+  private void handleList(Player p) {
+    String world = p.getWorld().getName();
+    List<String> waypoints = waypointsManager.getWaypoints(world);
+
+    if (waypoints.isEmpty()) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "There are no existing waypoints!");
+      return;
+    }
+
+    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "All waypoints in " + world + ":");
+
+    for (String waypoint : waypoints) {
+      Map<String, Integer> coords = waypointsManager.getWaypointByName(world, waypoint);
+      Location playerLocation = p.getLocation();
+      Location waypointLocation = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
+      long distance = Math.round(playerLocation.distance(waypointLocation));
+
+      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + waypoint + ChatColor.GRAY + " is at " + ChatColor.YELLOW
+          + "X: " + ChatColor.GRAY + coords.get("x") + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + coords.get("y")
+          + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + coords.get("z") + ChatColor.RED + " » " + ChatColor.YELLOW
+          + distance + "m");
+    }
+  }
+
+  private void handleNavigation(Player p, String[] args) {
+    if (args.length < 2) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To navigate to a waypoint please use: "
+          + ChatColor.YELLOW + "/waypoints nav <name>");
+      return;
+    }
+
+    String waypointName = args[1];
+    String world = p.getWorld().getName();
+
+    if (!waypointsManager.checkWaypointExists(world, waypointName)) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
+          + waypointName + ChatColor.RED + ". Please try an existing one!");
+      return;
+    }
+
+    Map<String, Integer> coords = waypointsManager.getWaypointByName(world, waypointName);
+    Location destination = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
+
+    settingsManager.setToggleLocation(p, false);
+    NavigationData navigationData = new NavigationData(waypointName, destination, Color.YELLOW);
+    navigationManager.startNavigation(p, navigationData);
+
+    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to " + ChatColor.YELLOW + waypointName
+        + ChatColor.GRAY + " at " + ChatColor.YELLOW + "X: " + ChatColor.GRAY + coords.get("x") + ChatColor.YELLOW
+        + " Y: " + ChatColor.GRAY + coords.get("y") + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + coords.get("z"));
+  }
+
+  private void handleCoordsNavigation(Player p, String[] args) {
+    if (args.length < 4) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To navigate to coordinates, use: "
+          + ChatColor.YELLOW + "/waypoints coords <x> <y> <z>");
+      return;
+    }
+
+    try {
+      int x = Integer.parseInt(args[1]);
+      int y = Integer.parseInt(args[2]);
+      int z = Integer.parseInt(args[3]);
+
+      Location destination = new Location(p.getWorld(), x, y, z);
+      settingsManager.setToggleLocation(p, false);
+      NavigationData navigationData = new NavigationData("Custom Coordinates", destination, Color.BLUE);
+      navigationManager.startNavigation(p, navigationData);
+
+      p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to coordinates "
+          + ChatColor.YELLOW + "X: " + ChatColor.GRAY + x + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + y
+          + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + z);
+    } catch (NumberFormatException e) {
+      p.sendMessage(
+          Main.getPrefix() + ChatColor.RED + "Invalid coordinates. Please use numbers for <x>, <y>, <z>.");
+    }
+  }
+
+  private void handlePlayerNavigation(Player p, String[] args) {
+    // Placeholder for player navigation logic
+    p.sendMessage(Main.getPrefix() + "Player navigation is not yet implemented.");
+  }
+
+  private void handleCancel(Player p) {
+    if (navigationManager.checkActiveNavigation(p)) {
+      navigationManager.stopNavigation(p);
+      actionBarManager.sendActionBarOnce(p, ChatColor.RED + "You've canceled active navigation!");
+    } else {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no current destination!");
+    }
+  }
+
+  private void handleHelp(Player p) {
+    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "WAYPOINTS HELP:");
+    p.sendMessage(Main.getPrefix() + "/waypoints - Opens the waypoints GUI.");
+    p.sendMessage(Main.getPrefix() + "/waypoints add <name> - Adds a waypoint at your current location.");
+    p.sendMessage(Main.getPrefix() + "/waypoints remove <name> - Removes a waypoint by name (requires permission).");
+    p.sendMessage(Main.getPrefix() + "/waypoints list - Lists all waypoints in the current world.");
+    p.sendMessage(Main.getPrefix() + "/waypoints nav <name> - Starts navigation to a specified waypoint.");
+    p.sendMessage(Main.getPrefix() + "/waypoints player <player> - Navigates to another player's location.");
+    p.sendMessage(Main.getPrefix() + "/waypoints coords <x> <y> <z> - Navigates to specific coordinates.");
+    p.sendMessage(Main.getPrefix() + "/waypoints cancel - Cancels the current navigation.");
+  }
+
+  @Override
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    List<String> suggestions = new ArrayList<>();
+
+    if (args.length == 1) {
+      suggestions.addAll(Arrays.asList("add", "remove", "list", "nav", "player", "coords", "cancel", "help"));
+    } else if (args.length == 2 && (args[0].equalsIgnoreCase("nav") || args[0].equalsIgnoreCase("remove"))) {
+      Player p = (Player) sender;
+      suggestions.addAll(waypointsManager.getWaypoints(p.getWorld().getName()));
+    }
+
+    return suggestions;
   }
 }
