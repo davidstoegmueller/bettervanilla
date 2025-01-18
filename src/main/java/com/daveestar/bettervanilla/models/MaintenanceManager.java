@@ -18,10 +18,10 @@ public class MaintenanceManager {
     this._isMaintenance = _settingsManager.getMaintenance();
   }
 
-  public void setState(boolean isMaintenance) {
+  public void setState(boolean isMaintenance, String message) {
     this._isMaintenance = isMaintenance;
 
-    _settingsManager.setMaintenance(isMaintenance);
+    _settingsManager.setMaintenance(isMaintenance, isMaintenance ? message : null);
   }
 
   public boolean getState() {
@@ -39,9 +39,14 @@ public class MaintenanceManager {
     if (_isMaintenance) {
       if (!p.hasPermission("bettervanilla.maintenance.bypass")) {
 
+        SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+        String message = settingsManager.getMaintenanceMessage();
+
         String maintenanceMsg = ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "MAINTENANCE\n\n"
             + ChatColor.GRAY
-            + "The server is currently in maintenance mode.\nCheck back later or notify the admin of the server.";
+            + "The server is currently in maintenance mode.\nCheck back later or notify the admin of the server.\n\n"
+            + (message != null ? ChatColor.YELLOW + "" + ChatColor.BOLD + "Message: " + ChatColor.GRAY + message
+                : "");
         p.kickPlayer(maintenanceMsg);
       } else {
         p.sendMessage(Main.getPrefix() + "You bypassed maintenance mode.");

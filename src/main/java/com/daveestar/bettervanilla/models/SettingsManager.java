@@ -38,8 +38,17 @@ public class SettingsManager {
     return _fileCfgn.getBoolean("global.maintenance");
   }
 
-  public void setMaintenance(boolean value) {
+  public String getMaintenanceMessage() {
+    return _fileCfgn.getString("global.maintenance.message");
+  }
+
+  public void setMaintenance(boolean value, String message) {
     _fileCfgn.set("global.maintenance", value);
+
+    if (message != null) {
+      _fileCfgn.set("global.maintenance.message", message);
+    }
+
     _config.save();
   }
 }
