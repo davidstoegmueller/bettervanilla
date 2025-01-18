@@ -1,6 +1,7 @@
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\models\SettingsManager.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleCompassCommand.java
+s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventEnd.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SettingsCommand.java

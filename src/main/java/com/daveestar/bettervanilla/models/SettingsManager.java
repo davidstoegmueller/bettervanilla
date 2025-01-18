@@ -60,4 +60,13 @@ public class SettingsManager {
     _fileCfgn.set("global.creeperdamage", value);
     _config.save();
   }
+
+  public boolean getToggleEnd() {
+    return _fileCfgn.getBoolean("global.toggleend");
+  }
+
+  public void setToggleEnd(boolean value) {
+    _fileCfgn.set("global.toggleend", value);
+    _config.save();
+  }
 }

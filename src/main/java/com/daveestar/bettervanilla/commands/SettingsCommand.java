@@ -39,6 +39,11 @@ public class SettingsCommand implements TabExecutor {
             Main.getPrefix() + "/settings creeperdamage - Toggle creeper entity damage");
         p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
             + (settingsManager.getToggleCreeperDamage() ? "ON" : "OFF"));
+        p.sendMessage("");
+        p.sendMessage(
+            Main.getPrefix() + "/settings toggleend - Toggle 'the end' entry");
+        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            + (settingsManager.getToggleEnd() ? "ON" : "OFF"));
 
         return true;
       }
@@ -59,7 +64,17 @@ public class SettingsCommand implements TabExecutor {
         return true;
       }
 
-      // TODO: spot to implement more global settings
+      if (args[0].equalsIgnoreCase("toggleend")) {
+        if (args.length > 1) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW + "/settings toggleend");
+          return true;
+        }
+
+        _toggleEnd(p);
+        return true;
+      }
+
       return true;
     }
 
@@ -69,7 +84,7 @@ public class SettingsCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
-      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage");
+      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "toggleend");
       return availableSettings;
     }
 
@@ -121,5 +136,16 @@ public class SettingsCommand implements TabExecutor {
     settingsManager.setToggleCreeperDamage(newState);
 
     p.sendMessage(Main.getPrefix() + "Creeper damage is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleEnd(Player p) {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+
+    Boolean newState = !settingsManager.getToggleEnd();
+    String stateText = newState ? "ON" : "OFF";
+
+    settingsManager.setToggleEnd(newState);
+
+    p.sendMessage(Main.getPrefix() + "The End is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }
