@@ -35,7 +35,7 @@ public class SettingsManager {
 
   // GLOBAL SETTINGS
   public boolean getMaintenance() {
-    return _fileCfgn.getBoolean("global.maintenance");
+    return _fileCfgn.getBoolean("global.maintenance.value");
   }
 
   public String getMaintenanceMessage() {
@@ -43,12 +43,21 @@ public class SettingsManager {
   }
 
   public void setMaintenance(boolean value, String message) {
-    _fileCfgn.set("global.maintenance", value);
+    _fileCfgn.set("global.maintenance.value", value);
 
     if (message != null) {
       _fileCfgn.set("global.maintenance.message", message);
     }
 
+    _config.save();
+  }
+
+  public boolean getToggleCreeperDamage() {
+    return _fileCfgn.getBoolean("global.creeperdamage");
+  }
+
+  public void setToggleCreeperDamage(boolean value) {
+    _fileCfgn.set("global.creeperdamage", value);
     _config.save();
   }
 }

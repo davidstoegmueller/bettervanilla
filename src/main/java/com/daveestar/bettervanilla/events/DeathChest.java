@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +24,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.models.SettingsManager;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class DeathChest implements Listener {
@@ -35,10 +37,10 @@ public class DeathChest implements Listener {
     Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
     FileConfiguration cfgn = lastDeaths.getFileCfgrn();
 
-    cfgn.set(p.getName() + ".x", p.getLocation().getBlockX());
-    cfgn.set(p.getName() + ".y", p.getLocation().getBlockY());
-    cfgn.set(p.getName() + ".z", p.getLocation().getBlockZ());
-    cfgn.set(p.getName() + ".world", p.getLocation().getWorld().getName());
+    cfgn.set(p.getUniqueId() + ".x", p.getLocation().getBlockX());
+    cfgn.set(p.getUniqueId() + ".y", p.getLocation().getBlockY());
+    cfgn.set(p.getUniqueId() + ".z", p.getLocation().getBlockZ());
+    cfgn.set(p.getUniqueId() + ".world", p.getLocation().getWorld().getName());
     lastDeaths.save();
 
     Location loc = p.getLocation();
@@ -122,7 +124,7 @@ public class DeathChest implements Listener {
 
       Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
       FileConfiguration cfgn = lastDeaths.getFileCfgrn();
-      cfgn.set(e.getPlayer().getName(), null);
+      cfgn.set(e.getPlayer().getUniqueId().toString(), null);
       lastDeaths.save();
     }
   }
@@ -142,7 +144,7 @@ public class DeathChest implements Listener {
 
       Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
       FileConfiguration cfgn = lastDeaths.getFileCfgrn();
-      cfgn.set(e.getPlayer().getName(), null);
+      cfgn.set(e.getPlayer().getUniqueId().toString(), null);
       lastDeaths.save();
     }
   }
@@ -150,6 +152,13 @@ public class DeathChest implements Listener {
   @EventHandler
   public void onEntityExplode(EntityExplodeEvent e) {
     e.blockList().removeIf(block -> deathChest.containsKey(block));
+
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+    if (!settingsManager.getToggleCreeperDamage()) {
+      if (e.getEntity() != null && e.getEntity().getType() == EntityType.CREEPER) {
+        e.blockList().clear();
+      }
+    }
   }
 
   @EventHandler

@@ -14,7 +14,7 @@ public class HelpCommand implements CommandExecutor {
     if (c.getName().equalsIgnoreCase("help") && cs instanceof Player) {
       Player p = (Player) cs;
 
-      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "Commands:");
+      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "COMMANDS:");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/waypoints - Open the waypoints GUI");
       p.sendMessage(Main.getPrefix() + "/waypoints list - List all waypoints");
@@ -43,7 +43,7 @@ public class HelpCommand implements CommandExecutor {
     if (c.getName().equalsIgnoreCase("adminhelp") && cs instanceof Player) {
       Player p = (Player) cs;
 
-      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "Admin Commands:");
+      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "ADMIN COMMANDS:");
       p.sendMessage(Main.getPrefix() + "/waypoints remove <name> - Remove an existing waypoint");
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/timer resume - Resume the timer");
@@ -53,7 +53,7 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/invsee <name> - See the inventory of a given player");
       p.sendMessage("");
-      p.sendMessage(Main.getPrefix() + "/settings <maintenance> - Set global settings");
+      p.sendMessage(Main.getPrefix() + "/settings <settingname> - Set and list global settings");
 
       return true;
     }

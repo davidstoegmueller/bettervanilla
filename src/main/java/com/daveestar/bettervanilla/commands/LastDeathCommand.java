@@ -36,7 +36,7 @@ public class LastDeathCommand implements TabExecutor {
         Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
         FileConfiguration cfgn = lastDeaths.getFileCfgrn();
 
-        ConfigurationSection playerSection = cfgn.getConfigurationSection(p.getName());
+        ConfigurationSection playerSection = cfgn.getConfigurationSection(p.getUniqueId().toString());
 
         if (playerSection != null) {
           int locX = playerSection.getInt("x");
