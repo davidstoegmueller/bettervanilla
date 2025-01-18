@@ -24,10 +24,10 @@ commands:
     description: Get help for admin commands of better vanilla.
     usage: /adminhelp
     permission: bettervanilla.adminhelp
-  maintenance:
-    description: Toggle the maintenance mode.
-    usage: /maintenance
-    permission: bettervanilla.maintenance
+  settings:
+    description: A command to toggle different global settings.
+    usage: /settings
+    permission: bettervanilla.settings
   help:
     description: Get help for better vanilla.
     usage: /help
@@ -39,10 +39,6 @@ commands:
     description: Turn on/off bossbar compass.
     usage: /togglecompass
     permission: bettervanilla.togglecompass
-  playerhead:
-    description: Get a head from a player
-    usage: /playerhead
-    permission: bettervanilla.playerhead
   lastdeath:
     description: Navigate to the last death point
     usage: /lastdeath

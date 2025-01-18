@@ -11,9 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.daveestar.bettervanilla.commands.HelpCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
 import com.daveestar.bettervanilla.commands.LastDeathCommand;
-import com.daveestar.bettervanilla.commands.MaintenanceCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
-import com.daveestar.bettervanilla.commands.PlayerHeadCommand;
+import com.daveestar.bettervanilla.commands.SettingsCommand;
 import com.daveestar.bettervanilla.commands.TimerCommand;
 import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
@@ -79,10 +78,9 @@ public class Main extends JavaPlugin {
     getCommand("adminhelp").setExecutor(new HelpCommand());
     getCommand("togglelocation").setExecutor(new ToggleLocationCommand());
     getCommand("togglecompass").setExecutor(new ToggleCompassCommand());
-    getCommand("playerhead").setExecutor(new PlayerHeadCommand());
     getCommand("lastdeath").setExecutor(new LastDeathCommand());
     getCommand("timer").setExecutor(new TimerCommand());
-    getCommand("maintenance").setExecutor(new MaintenanceCommand());
+    getCommand("settings").setExecutor(new SettingsCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();

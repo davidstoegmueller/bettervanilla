@@ -14,6 +14,7 @@ public class SettingsManager {
     this._fileCfgn = config.getFileCfgrn();
   }
 
+  // USER SETTINGS
   public boolean getToggleLocation(Player p) {
     return _fileCfgn.getBoolean(p.getUniqueId() + ".togglelocation");
   }
@@ -29,6 +30,16 @@ public class SettingsManager {
 
   public void setToggleCompass(Player p, boolean value) {
     _fileCfgn.set(p.getUniqueId() + ".togglecompass", value);
+    _config.save();
+  }
+
+  // GLOBAL SETTINGS
+  public boolean getMaintenance() {
+    return _fileCfgn.getBoolean("global.maintenance");
+  }
+
+  public void setMaintenance(boolean value) {
+    _fileCfgn.set("global.maintenance", value);
     _config.save();
   }
 }

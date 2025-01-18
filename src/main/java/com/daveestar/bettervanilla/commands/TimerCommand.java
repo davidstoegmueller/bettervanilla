@@ -1,15 +1,19 @@
 package com.daveestar.bettervanilla.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.models.TimerManager;
 
-public class TimerCommand implements CommandExecutor {
+public class TimerCommand implements TabExecutor {
 
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
@@ -92,5 +96,15 @@ public class TimerCommand implements CommandExecutor {
     }
 
     return false;
+  }
+
+  @Override
+  public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
+    if (args.length == 1) {
+      List<String> availableSettings = Arrays.asList("resume", "pause", "reset", "set");
+      return availableSettings;
+    }
+
+    return new ArrayList<>();
   }
 }

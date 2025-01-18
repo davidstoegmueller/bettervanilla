@@ -3,6 +3,7 @@ s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Pin
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleCompassCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
+s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SettingsCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\NavigationData.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\InvseeCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\models\MaintenanceManager.java
@@ -14,10 +15,8 @@ s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Tog
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PlayerMove.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\LastDeathCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\models\TimerManager.java
-s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PlayerHeadCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ActionBarManager.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleBeam.java
-s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\MaintenanceCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SittableStairs.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChatMessages.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\models\AFKManager.java

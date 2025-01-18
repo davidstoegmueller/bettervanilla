@@ -305,6 +305,7 @@ public class WaypointsCommand implements TabExecutor {
         allWaypointNames.removeIf(waypointName -> !waypointName.toLowerCase().startsWith(args[0].toLowerCase()));
 
         List<String> filteredWaypoints = new ArrayList<String>(allWaypointNames);
+        filteredWaypoints.add("cancel");
         return filteredWaypoints;
       }
 

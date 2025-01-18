@@ -2,7 +2,6 @@ package com.daveestar.bettervanilla.models;
 
 import java.util.Collection;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
@@ -12,22 +11,17 @@ import net.md_5.bungee.api.ChatColor;
 
 public class MaintenanceManager {
   private Boolean _isMaintenance;
-
-  private Config _config;
-  private FileConfiguration _fileCfgn;
+  private SettingsManager _settingsManager;
 
   public MaintenanceManager(Config config) {
-    this._config = config;
-    this._fileCfgn = config.getFileCfgrn();
-
-    this._isMaintenance = _fileCfgn.getBoolean("isMaintenance");
+    this._settingsManager = Main.getInstance().getSettingsManager();
+    this._isMaintenance = _settingsManager.getMaintenance();
   }
 
   public void setState(boolean isMaintenance) {
     this._isMaintenance = isMaintenance;
 
-    _fileCfgn.set("isMaintenance", isMaintenance);
-    _config.save();
+    _settingsManager.setMaintenance(isMaintenance);
   }
 
   public boolean getState() {

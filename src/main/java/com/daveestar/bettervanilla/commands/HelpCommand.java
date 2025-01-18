@@ -31,8 +31,6 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getPrefix() + "/togglelocation - Display your current location in action bar");
       p.sendMessage(Main.getPrefix() + "/togglecompass - Display you directions as a compass in the bossbar");
       p.sendMessage("");
-      p.sendMessage(Main.getPrefix() + "/playerhead <name> - Get a head of a player");
-      p.sendMessage("");
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
           + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-clicl any kind of stairs.");
       p.sendMessage("");
@@ -55,7 +53,7 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage("");
       p.sendMessage(Main.getPrefix() + "/invsee <name> - See the inventory of a given player");
       p.sendMessage("");
-      p.sendMessage(Main.getPrefix() + "/maintenance - Toggle the maintenance mode of the server");
+      p.sendMessage(Main.getPrefix() + "/settings <maintenance> - Set global settings");
 
       return true;
     }

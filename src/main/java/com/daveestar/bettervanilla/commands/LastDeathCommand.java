@@ -1,12 +1,16 @@
 package com.daveestar.bettervanilla.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -18,7 +22,7 @@ import com.daveestar.bettervanilla.utils.ActionBarManager;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
-public class LastDeathCommand implements CommandExecutor {
+public class LastDeathCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (c.getName().equalsIgnoreCase("lastdeath") && cs instanceof Player) {
@@ -68,5 +72,15 @@ public class LastDeathCommand implements CommandExecutor {
     }
 
     return false;
+  }
+
+  @Override
+  public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
+    if (args.length == 1) {
+      List<String> availableSettings = Arrays.asList("cancel");
+      return availableSettings;
+    }
+
+    return new ArrayList<>();
   }
 }
