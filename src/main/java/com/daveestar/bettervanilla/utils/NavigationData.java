@@ -6,35 +6,35 @@ import org.bukkit.Location;
 import com.daveestar.bettervanilla.enums.NavigationType;
 
 public class NavigationData {
-  private final String name;
-  private Location location;
-  private final NavigationType type;
-  private final Color color;
+  private final String _name;
+  private Location _location;
+  private final NavigationType _type;
+  private final Color _color;
 
   public NavigationData(String name, Location location, NavigationType type, Color color) {
-    this.name = name;
-    this.location = location;
-    this.type = type;
-    this.color = color;
+    this._name = name;
+    this._location = location;
+    this._type = type;
+    this._color = color;
   }
 
   public String getName() {
-    return name;
+    return _name;
   }
 
   public Location getLocation() {
-    return location;
+    return _location;
   }
 
   public void setLocation(Location newLocation) {
-    location = newLocation;
+    _location = newLocation;
   }
 
   public NavigationType getType() {
-    return type;
+    return _type;
   }
 
   public Color getColor() {
-    return color;
+    return _color;
   }
 }

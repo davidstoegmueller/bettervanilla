@@ -35,16 +35,16 @@ public class PlayerMove implements Listener {
   private void _handleNavigationPlayerMove(Player p) {
     NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
-    // Check if any player is navigating to the current player
+    // check if any player is navigating to the current player
     for (Player navigatingPlayer : p.getServer().getOnlinePlayers()) {
       if (navigationManager.checkActiveNavigation(navigatingPlayer)) {
         NavigationData navigationData = navigationManager.getActiveNavigation(navigatingPlayer);
 
-        // Check if the navigation targets the moving player
+        // check if the navigation targets the moving player
         if (navigationData.getType() == NavigationType.PLAYER && navigationData.getName().equals(p.getName())) {
           Location newTargetLocation = p.getLocation();
 
-          // Update navigation data for the navigating player
+          // update navigation data for the navigating player
           navigationData.setLocation(newTargetLocation);
 
           navigationManager.updateNavigation(navigatingPlayer, navigationData);
@@ -52,21 +52,21 @@ public class PlayerMove implements Listener {
       }
     }
 
-    // Handle the player’s own navigation logic
+    // handle the player’s own navigation logic
     if (navigationManager.checkActiveNavigation(p)) {
       NavigationData navigationData = navigationManager.getActiveNavigation(p);
 
       Location targetLocation = navigationData.getLocation();
       Location playerLocation = p.getLocation();
 
-      // Handle world change and cancel navigation if different worlds
+      // handle world change and cancel navigation if different worlds
       if (!targetLocation.getWorld().getName().equals(playerLocation.getWorld().getName())) {
         navigationManager.stopNavigation(p);
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
         return;
       }
 
-      // Handle proximity to target location (25-block range)
+      // handle proximity to target location (25-block range)
       if (playerLocation.distance(targetLocation) <= 25) {
         navigationManager.stopNavigation(p);
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
@@ -75,7 +75,7 @@ public class PlayerMove implements Listener {
         return;
       }
 
-      // Handle dynamic updates for player-based navigation
+      // handle dynamic updates for player-based navigation
       if (navigationData.getType() == NavigationType.PLAYER) {
         String targetPlayerName = navigationData.getName();
         Player targetPlayer = p.getServer().getPlayer(targetPlayerName);
@@ -86,12 +86,12 @@ public class PlayerMove implements Listener {
           return;
         }
 
-        // Update the target location to the current position of the target player
+        // update the target location to the current position of the target player
         targetLocation = targetPlayer.getLocation();
         navigationData.setLocation(targetLocation);
       }
 
-      // Update navigation data
+      // update navigation data
       navigationManager.updateNavigation(p, navigationData);
     }
   }
