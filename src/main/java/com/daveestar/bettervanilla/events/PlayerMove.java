@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.NavigationType;
 import com.daveestar.bettervanilla.models.NavigationManager;
 import com.daveestar.bettervanilla.models.SettingsManager;
 import com.daveestar.bettervanilla.utils.ActionBarManager;
@@ -34,32 +35,63 @@ public class PlayerMove implements Listener {
   private void _handleNavigationPlayerMove(Player p) {
     NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
+    // Check if any player is navigating to the current player
+    for (Player navigatingPlayer : p.getServer().getOnlinePlayers()) {
+      if (navigationManager.checkActiveNavigation(navigatingPlayer)) {
+        NavigationData navigationData = navigationManager.getActiveNavigation(navigatingPlayer);
+
+        // Check if the navigation targets the moving player
+        if (navigationData.getType() == NavigationType.PLAYER && navigationData.getName().equals(p.getName())) {
+          Location newTargetLocation = p.getLocation();
+
+          // Update navigation data for the navigating player
+          navigationData.setLocation(newTargetLocation);
+
+          navigationManager.updateNavigation(navigatingPlayer, navigationData);
+        }
+      }
+    }
+
+    // Handle the player’s own navigation logic
     if (navigationManager.checkActiveNavigation(p)) {
       NavigationData navigationData = navigationManager.getActiveNavigation(p);
 
       Location targetLocation = navigationData.getLocation();
       Location playerLocation = p.getLocation();
 
-      // check if the target world and player world name is different and abort
-      // navigation
-      if (targetLocation.getWorld().getName() != playerLocation.getWorld().getName()) {
+      // Handle world change and cancel navigation if different worlds
+      if (!targetLocation.getWorld().getName().equals(playerLocation.getWorld().getName())) {
         navigationManager.stopNavigation(p);
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
-
         return;
       }
 
-      // if the player is in range of the target location we abort the navigation
-      if (p.getLocation().distance(navigationData.getLocation()) <= 25) {
+      // Handle proximity to target location (25-block range)
+      if (playerLocation.distance(targetLocation) <= 25) {
         navigationManager.stopNavigation(p);
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
             ChatColor.YELLOW + "" + ChatColor.BOLD + navigationData.getName() +
-                ChatColor.GRAY
-                + " is in a range of 25 blocks!"));
-
+                ChatColor.GRAY + " is within 25 blocks!"));
         return;
       }
 
+      // Handle dynamic updates for player-based navigation
+      if (navigationData.getType() == NavigationType.PLAYER) {
+        String targetPlayerName = navigationData.getName();
+        Player targetPlayer = p.getServer().getPlayer(targetPlayerName);
+
+        if (targetPlayer == null || !targetPlayer.isOnline()) {
+          navigationManager.stopNavigation(p);
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Navigation canceled as the target player is offline!");
+          return;
+        }
+
+        // Update the target location to the current position of the target player
+        targetLocation = targetPlayer.getLocation();
+        navigationData.setLocation(targetLocation);
+      }
+
+      // Update navigation data
       navigationManager.updateNavigation(p, navigationData);
     }
   }

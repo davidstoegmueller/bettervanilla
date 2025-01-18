@@ -24,6 +24,10 @@ public class ParticleBeam {
     this._color = color;
   }
 
+  public void updateLocation(Location newLocation) {
+    _location = newLocation;
+  }
+
   /**
    * Starts the particle beam effect indefinitely.
    */

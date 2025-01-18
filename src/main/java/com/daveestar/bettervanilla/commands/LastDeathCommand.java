@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.NavigationType;
 import com.daveestar.bettervanilla.models.NavigationManager;
 import com.daveestar.bettervanilla.models.SettingsManager;
 import com.daveestar.bettervanilla.utils.ActionBarManager;
@@ -49,7 +50,8 @@ public class LastDeathCommand implements TabExecutor {
 
           settingsManager.setToggleLocation(p, false);
 
-          NavigationData navigationData = new NavigationData("LAST DEATH", lastDeathLocation, Color.RED);
+          NavigationData navigationData = new NavigationData("LAST DEATH", lastDeathLocation, NavigationType.WAYPOINT,
+              Color.RED);
           navigationManager.startNavigation(p, navigationData);
 
         } else {

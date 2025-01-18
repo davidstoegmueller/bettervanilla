@@ -37,13 +37,14 @@ public class NavigationManager {
     Location targetLocation = navigationData.getLocation();
     Color beamColor = navigationData.getColor();
 
-    // update the action bar with navigation details
-    updateNavigation(p, navigationData);
-
     // create and display the particle beam
     ParticleBeam beam = new ParticleBeam(p, targetLocation, beamColor);
     beam.displayBeam();
     _activeBeams.put(p, beam);
+
+    // update the action bar with navigation details
+    updateNavigation(p, navigationData);
+
   }
 
   public void updateNavigation(Player p, NavigationData navigationData) {
@@ -59,6 +60,9 @@ public class NavigationManager {
       // generate the navigation text
       String navigationText = _getNavigationText(targetName, targetLocation, playerLocation);
       Main.getInstance().getActionBarManager().sendActionBar(p, navigationText);
+
+      ParticleBeam beam = _activeBeams.get(p);
+      beam.updateLocation(targetLocation);
     }
   }
 

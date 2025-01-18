@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.NavigationType;
 import com.daveestar.bettervanilla.models.CustomGUI;
 import com.daveestar.bettervanilla.models.NavigationManager;
 import com.daveestar.bettervanilla.models.SettingsManager;
@@ -257,7 +258,8 @@ public class WaypointsCommand implements TabExecutor {
     Location destination = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
 
     settingsManager.setToggleLocation(p, false);
-    NavigationData navigationData = new NavigationData(waypointName, destination, Color.YELLOW);
+    NavigationData navigationData = new NavigationData(waypointName, destination, NavigationType.WAYPOINT,
+        Color.YELLOW);
     navigationManager.startNavigation(p, navigationData);
 
     p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to " + ChatColor.YELLOW + waypointName
@@ -279,7 +281,8 @@ public class WaypointsCommand implements TabExecutor {
 
       Location destination = new Location(p.getWorld(), x, y, z);
       settingsManager.setToggleLocation(p, false);
-      NavigationData navigationData = new NavigationData("Custom Coordinates", destination, Color.BLUE);
+      NavigationData navigationData = new NavigationData("Custom Coordinates", destination, NavigationType.WAYPOINT,
+          Color.YELLOW);
       navigationManager.startNavigation(p, navigationData);
 
       p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to coordinates "
@@ -292,8 +295,32 @@ public class WaypointsCommand implements TabExecutor {
   }
 
   private void handlePlayerNavigation(Player p, String[] args) {
-    // Placeholder for player navigation logic
-    p.sendMessage(Main.getPrefix() + "Player navigation is not yet implemented.");
+    if (args.length < 2) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To navigate to a player please use: "
+          + ChatColor.YELLOW + "/waypoints player <player>");
+      return;
+    }
+
+    String targetPlayerName = args[1];
+    Player targetPlayer = p.getServer().getPlayer(targetPlayerName);
+
+    if (targetPlayer == null || !targetPlayer.isOnline()) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "The player " + ChatColor.YELLOW + targetPlayerName
+          + ChatColor.RED + " is not online or does not exist.");
+      return;
+    }
+
+    Location targetLocation = targetPlayer.getLocation();
+    settingsManager.setToggleLocation(p, false);
+    NavigationData navigationData = new NavigationData(targetPlayerName, targetLocation, NavigationType.PLAYER,
+        Color.YELLOW);
+    navigationManager.startNavigation(p, navigationData);
+
+    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to player "
+        + ChatColor.YELLOW + targetPlayerName + ChatColor.GRAY + " at "
+        + ChatColor.YELLOW + "X: " + ChatColor.GRAY + targetLocation.getBlockX()
+        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + targetLocation.getBlockY()
+        + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + targetLocation.getBlockZ());
   }
 
   private void handleCancel(Player p) {
@@ -326,6 +353,9 @@ public class WaypointsCommand implements TabExecutor {
     } else if (args.length == 2 && (args[0].equalsIgnoreCase("nav") || args[0].equalsIgnoreCase("remove"))) {
       Player p = (Player) sender;
       suggestions.addAll(waypointsManager.getWaypoints(p.getWorld().getName()));
+    } else if (args.length == 2 && args[0].equalsIgnoreCase("player")) {
+      Collection<? extends Player> onlinePlayers = Main.getInstance().getServer().getOnlinePlayers();
+      suggestions.addAll(onlinePlayers.stream().map(Player::getName).collect(Collectors.toList()));
     }
 
     return suggestions;
