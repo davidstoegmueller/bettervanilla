@@ -111,7 +111,39 @@ public class NavigationManager {
         + "DISTANCE: "
         + ChatColor.RESET + ChatColor.GRAY + Math.round(playerLocation.distance(targetLocation));
 
+    // calculate the direction to the target location
+    String directionText = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
+        + "DIRECTION: " + ChatColor.RESET + ChatColor.GRAY + _getDirection(playerLocation, targetLocation);
+
     // combine all parts into the final navigation string
-    return targetLocationText + playerLocationText + distanceText;
+    return targetLocationText + playerLocationText + distanceText + directionText;
+  }
+
+  private String _getDirection(Location playerLocation, Location targetLocation) {
+    double dx = targetLocation.getX() - playerLocation.getX();
+    double dz = targetLocation.getZ() - playerLocation.getZ();
+    double angle = Math.toDegrees(Math.atan2(dz, dx)) - playerLocation.getYaw();
+
+    if (angle < 0) {
+      angle += 360;
+    }
+
+    if (angle >= 337.5 || angle < 22.5) {
+      return "⬅"; // West
+    } else if (angle >= 22.5 && angle < 67.5) {
+      return "⬉"; // North-West
+    } else if (angle >= 67.5 && angle < 112.5) {
+      return "⬆"; // North
+    } else if (angle >= 112.5 && angle < 157.5) {
+      return "⬈"; // North-East
+    } else if (angle >= 157.5 && angle < 202.5) {
+      return "➡"; // East
+    } else if (angle >= 202.5 && angle < 247.5) {
+      return "⬊"; // South-East
+    } else if (angle >= 247.5 && angle < 292.5) {
+      return "⬇"; // South
+    } else {
+      return "⬋"; // South-West
+    }
   }
 }
