@@ -14,11 +14,12 @@ import net.md_5.bungee.api.ChatColor;
 public class AFKManager {
   private HashMap<Player, Long> _lastMovement;
   private HashMap<Player, Boolean> _afkStates;
-  // 1000ms * 60s * 10m = 10 minutes
-  private int _MAX_AFK_TIME = 1000 * 60 * 10;
-  // private int _MAX_AFK_TIME = 1000 * 10; // TESTING
+
+  private final SettingsManager _settingsManager;
 
   public AFKManager() {
+    this._settingsManager = Main.getInstance().getSettingsManager();
+
     this._lastMovement = new HashMap<Player, Long>();
     this._afkStates = new HashMap<Player, Boolean>();
 
@@ -44,7 +45,7 @@ public class AFKManager {
     if (_lastMovement.containsKey(p)) {
       long timeElapsed = System.currentTimeMillis() - _lastMovement.get(p);
 
-      if (timeElapsed >= _MAX_AFK_TIME) {
+      if (timeElapsed >= _getAFKTime()) {
         return true;
       }
 
@@ -116,6 +117,11 @@ public class AFKManager {
             }
           }
         });
+  }
+
+  private int _getAFKTime() {
+    int afkTimeInMinutes = _settingsManager.getAFKTime();
+    return 1000 * 60 * afkTimeInMinutes;
   }
 
   private void _startAFKTask() {

@@ -35,6 +35,14 @@ public class CompassManager {
   private final Map<Player, BossBar> _activeCompass = new HashMap<>();
 
   public CompassManager() {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+
+    Bukkit.getOnlinePlayers().forEach(p -> {
+      if (settingsManager.getToggleCompass(p)) {
+        addPlayerToCompass(p);
+      }
+    });
+
     _startCompassUpdateTask();
   }
 

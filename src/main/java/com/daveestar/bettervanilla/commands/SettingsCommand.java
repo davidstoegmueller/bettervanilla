@@ -44,6 +44,16 @@ public class SettingsCommand implements TabExecutor {
             Main.getPrefix() + "/settings toggleend - Toggle 'the end' entry");
         p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
             + (settingsManager.getToggleEnd() ? "ON" : "OFF"));
+        p.sendMessage("");
+        p.sendMessage(
+            Main.getPrefix() + "/settings sleepingrain - Toggle sleep during rain");
+        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            + (settingsManager.getSleepingRain() ? "ON" : "OFF"));
+        p.sendMessage("");
+        p.sendMessage(
+            Main.getPrefix() + "/settings afktime <minutes> - Set the time in minutes until a player is marked as AFK");
+        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            + settingsManager.getAFKTime() + " minutes");
 
         return true;
       }
@@ -86,6 +96,17 @@ public class SettingsCommand implements TabExecutor {
         return true;
       }
 
+      if (args[0].equalsIgnoreCase("afktime")) {
+        if (args.length != 2) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings afktime <minutes>");
+          return true;
+        }
+
+        _setAFKTime(p, args);
+        return true;
+      }
+
       return true;
     }
 
@@ -95,7 +116,8 @@ public class SettingsCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
-      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "toggleend", "sleepingrain");
+      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "toggleend", "sleepingrain",
+          "afktime");
       return availableSettings;
     }
 
@@ -169,5 +191,15 @@ public class SettingsCommand implements TabExecutor {
     settingsManager.setSleepingRain(newState);
 
     p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _setAFKTime(Player p, String[] args) {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+
+    int minutes = Integer.parseInt(args[1]);
+    settingsManager.setAFKTime(minutes);
+
+    p.sendMessage(
+        Main.getPrefix() + "AFK time was set to: " + ChatColor.YELLOW + ChatColor.BOLD + minutes + " minutes");
   }
 }

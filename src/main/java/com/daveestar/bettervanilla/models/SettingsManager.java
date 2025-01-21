@@ -35,11 +35,11 @@ public class SettingsManager {
 
   // GLOBAL SETTINGS
   public boolean getMaintenance() {
-    return _fileCfgn.getBoolean("global.maintenance.value");
+    return _fileCfgn.getBoolean("global.maintenance.value", false);
   }
 
   public String getMaintenanceMessage() {
-    return _fileCfgn.getString("global.maintenance.message");
+    return _fileCfgn.getString("global.maintenance.message", "");
   }
 
   public void setMaintenance(boolean value, String message) {
@@ -53,7 +53,7 @@ public class SettingsManager {
   }
 
   public boolean getToggleCreeperDamage() {
-    return _fileCfgn.getBoolean("global.creeperdamage");
+    return _fileCfgn.getBoolean("global.creeperdamage", true);
   }
 
   public void setToggleCreeperDamage(boolean value) {
@@ -62,7 +62,7 @@ public class SettingsManager {
   }
 
   public boolean getToggleEnd() {
-    return _fileCfgn.getBoolean("global.toggleend");
+    return _fileCfgn.getBoolean("global.toggleend", false);
   }
 
   public void setToggleEnd(boolean value) {
@@ -71,11 +71,20 @@ public class SettingsManager {
   }
 
   public boolean getSleepingRain() {
-    return _fileCfgn.getBoolean("global.sleepingrain");
+    return _fileCfgn.getBoolean("global.sleepingrain", false);
   }
 
   public void setSleepingRain(boolean value) {
     _fileCfgn.set("global.sleepingrain", value);
+    _config.save();
+  }
+
+  public int getAFKTime() {
+    return _fileCfgn.getInt("global.afktime", 10);
+  }
+
+  public void setAFKTime(int value) {
+    _fileCfgn.set("global.afktime", value);
     _config.save();
   }
 }

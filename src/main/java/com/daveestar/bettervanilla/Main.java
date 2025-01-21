@@ -53,13 +53,13 @@ public class Main extends JavaPlugin {
   public void onEnable() {
     _mainInstance = this;
 
+    Config settingsConfig = new Config("settings.yml", getDataFolder());
+    _settingsManager = new SettingsManager(settingsConfig);
+
     _actionBarManager = new ActionBarManager();
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
-
-    Config settingsConfig = new Config("settings.yml", getDataFolder());
-    _settingsManager = new SettingsManager(settingsConfig);
 
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
     _waypointsManager = new WaypointsManager(waypointsConfig);
