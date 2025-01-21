@@ -75,6 +75,17 @@ public class SettingsCommand implements TabExecutor {
         return true;
       }
 
+      if (args[0].equalsIgnoreCase("sleepingrain")) {
+        if (args.length > 1) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings sleepingrain");
+          return true;
+        }
+
+        _toggleSleepingRain(p);
+        return true;
+      }
+
       return true;
     }
 
@@ -84,7 +95,7 @@ public class SettingsCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
-      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "toggleend");
+      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "toggleend", "sleepingrain");
       return availableSettings;
     }
 
@@ -147,5 +158,16 @@ public class SettingsCommand implements TabExecutor {
     settingsManager.setToggleEnd(newState);
 
     p.sendMessage(Main.getPrefix() + "The End is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleSleepingRain(Player p) {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+
+    Boolean newState = !settingsManager.getSleepingRain();
+    String stateText = newState ? "ON" : "OFF";
+
+    settingsManager.setSleepingRain(newState);
+
+    p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

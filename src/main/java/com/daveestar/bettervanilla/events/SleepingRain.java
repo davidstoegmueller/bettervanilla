@@ -10,12 +10,15 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.models.SettingsManager;
 
 public class SleepingRain implements Listener {
 
   @EventHandler
   public void onPlayerBedEnter(PlayerBedEnterEvent e) {
-    if (e.getBedEnterResult() == BedEnterResult.NOT_POSSIBLE_NOW) {
+    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+
+    if (e.getBedEnterResult() == BedEnterResult.NOT_POSSIBLE_NOW && settingsManager.getSleepingRain()) {
       Player p = e.getPlayer();
       World world = p.getWorld();
 

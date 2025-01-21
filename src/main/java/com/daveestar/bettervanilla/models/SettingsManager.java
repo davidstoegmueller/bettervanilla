@@ -69,4 +69,13 @@ public class SettingsManager {
     _fileCfgn.set("global.toggleend", value);
     _config.save();
   }
+
+  public boolean getSleepingRain() {
+    return _fileCfgn.getBoolean("global.sleepingrain");
+  }
+
+  public void setSleepingRain(boolean value) {
+    _fileCfgn.set("global.sleepingrain", value);
+    _config.save();
+  }
 }
