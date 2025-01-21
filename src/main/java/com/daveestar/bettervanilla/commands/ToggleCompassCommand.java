@@ -24,7 +24,7 @@ public class ToggleCompassCommand implements CommandExecutor {
           compassManager.addPlayerToCompass(p);
         }
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Plase use: " + ChatColor.YELLOW + "/togglecompass");
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/togglecompass");
       }
 
       return true;

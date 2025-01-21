@@ -66,8 +66,7 @@ public class LastDeathCommand implements TabExecutor {
           p.sendMessage(Main.getPrefix() + ChatColor.RED + "You are currently not navigating to your last deathpoint");
         }
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please use: " +
-            ChatColor.YELLOW + "/lastdeath [cancel]");
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/lastdeath [cancel]");
       }
 
       return true;

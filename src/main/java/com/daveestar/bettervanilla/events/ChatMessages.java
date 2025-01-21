@@ -1,8 +1,5 @@
 package com.daveestar.bettervanilla.events;
 
-import java.util.Collection;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,12 +21,13 @@ public class ChatMessages implements Listener {
     e.setJoinMessage(
         ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName());
 
-    Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-    Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size());
+    // Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+    // Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size());
 
     Main.getInstance().getMaintenanceManager().sendMaintenance(p);
 
-    Main.getInstance().getAFKManager().playerJoined(p);
+    Main.getInstance().getAFKManager().onPlayerJoined(p);
+    Main.getInstance().getTimerManager().onPlayerJoined(p);
 
     SettingsManager settingsManager = Main.getInstance().getSettingsManager();
     if (settingsManager.getToggleCompass(p)) {
@@ -43,10 +41,12 @@ public class ChatMessages implements Listener {
 
     e.setQuitMessage(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName());
 
-    Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-    Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size() - 1);
+    // Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+    // Main.getInstance().getTimerManager().checkAndSetTimerRunning(onlinePlayers.size()
+    // - 1);
 
-    Main.getInstance().getAFKManager().playerLeft(p);
+    Main.getInstance().getAFKManager().onPlayerLeft(p);
+    Main.getInstance().getTimerManager().onPlayerLeft(p);
   }
 
   @EventHandler

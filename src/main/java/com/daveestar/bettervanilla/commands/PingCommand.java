@@ -34,7 +34,7 @@ public class PingCommand implements CommandExecutor {
         }
 
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW + "/ping [name]");
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/ping [name]");
       }
 
       return true;

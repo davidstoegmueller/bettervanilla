@@ -29,7 +29,7 @@ public class PlayerMove implements Listener {
   }
 
   private void _handleAFKPlayerMove(Player p) {
-    Main.getInstance().getAFKManager().playerMoved(p);
+    Main.getInstance().getAFKManager().onPlayerMoved(p);
   }
 
   private void _handleNavigationPlayerMove(Player p) {

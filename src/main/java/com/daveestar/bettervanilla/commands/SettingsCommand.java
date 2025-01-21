@@ -56,7 +56,7 @@ public class SettingsCommand implements TabExecutor {
       if (args[0].equalsIgnoreCase("creeperdamage")) {
         if (args.length > 1) {
           p.sendMessage(
-              Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW + "/settings creeperdamage");
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings creeperdamage");
           return true;
         }
 
@@ -67,7 +67,7 @@ public class SettingsCommand implements TabExecutor {
       if (args[0].equalsIgnoreCase("toggleend")) {
         if (args.length > 1) {
           p.sendMessage(
-              Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW + "/settings toggleend");
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings toggleend");
           return true;
         }
 

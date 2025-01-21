@@ -14,32 +14,30 @@ import net.md_5.bungee.api.ChatColor;
 public class AFKManager {
   private HashMap<Player, Long> _lastMovement;
   private HashMap<Player, Boolean> _afkStates;
-  // 1000ms = 1s * 60 (seconds per minute) * 10 (amount of minutes) = 10 minutes
-  private int _MAX_AFK_TIME = 1000 * 60 * 10;
+  // 20 ticks = 1 second * 60 = 1 minute * 10 = 10 minutes
+  // private int _MAX_AFK_TIME = 20 * 60 * 10;
+  private int _MAX_AFK_TIME = 1000 * 10;
 
   public AFKManager() {
     this._lastMovement = new HashMap<Player, Long>();
     this._afkStates = new HashMap<Player, Boolean>();
 
-    _run();
+    _startAFKTask();
   }
 
-  public void playerJoined(Player p) {
+  public void onPlayerJoined(Player p) {
     _lastMovement.put(p, System.currentTimeMillis());
     _afkStates.put(p, false);
   }
 
-  public void playerLeft(Player p) {
+  public void onPlayerLeft(Player p) {
     _lastMovement.remove(p);
     _afkStates.remove(p);
   }
 
-  public void playerMoved(Player p) {
-
+  public void onPlayerMoved(Player p) {
     _lastMovement.put(p, System.currentTimeMillis());
-
     setPlayerAFKState(p);
-
   }
 
   public boolean isAFK(Player p) {
@@ -81,11 +79,9 @@ public class AFKManager {
 
   public void setPlayerAFKState(Player p) {
     if (_lastMovement.containsKey(p)) {
-
       boolean nowAFK = isAFK(p);
 
       if (_afkStates.containsKey(p)) {
-
         boolean wasAFK = _afkStates.get(p);
 
         if (wasAFK && !nowAFK) {
@@ -93,24 +89,22 @@ public class AFKManager {
           p.setPlayerListName(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName());
           _afkStates.put(p, false);
 
-          announceToOthers(p, false);
-
+          announceAFKToOthers(p, false);
         } else if (!wasAFK && nowAFK) {
           p.sendMessage(Main.getPrefix() + "You are now AFK!");
           p.setPlayerListName(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
               + ChatColor.YELLOW + p.getName());
           _afkStates.put(p, true);
 
-          announceToOthers(p, true);
+          announceAFKToOthers(p, true);
         }
-
       } else {
         _afkStates.put(p, nowAFK);
       }
     }
   }
 
-  public void announceToOthers(Player p, boolean isAFK) {
+  public void announceAFKToOthers(Player p, boolean isAFK) {
     Bukkit.getServer().getOnlinePlayers().stream()
         .forEach(player -> {
           if (!player.equals(p)) {
@@ -122,10 +116,9 @@ public class AFKManager {
             }
           }
         });
-
   }
 
-  private void _run() {
+  private void _startAFKTask() {
     new BukkitRunnable() {
       @Override
       public void run() {

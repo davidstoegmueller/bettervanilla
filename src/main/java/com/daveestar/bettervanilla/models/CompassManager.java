@@ -79,8 +79,8 @@ public class CompassManager {
     }.runTaskTimer(Main.getInstance(), 0, _UPDATE_INTERVAL); // updates every tick (0.05 seconds)
   }
 
-  private void _updateCompassDirection(Player player, BossBar compassBossBar) {
-    float yaw = player.getLocation().getYaw();
+  private void _updateCompassDirection(Player p, BossBar compassBossBar) {
+    float yaw = p.getLocation().getYaw();
     yaw = (yaw + 180) % 360; // adjust to align North and South correctly // normalize yaw to the 0-360 range
 
     String compassScale = _getDynamicCompassScale(yaw);

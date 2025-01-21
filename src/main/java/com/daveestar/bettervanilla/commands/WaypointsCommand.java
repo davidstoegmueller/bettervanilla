@@ -145,8 +145,7 @@ public class WaypointsCommand implements TabExecutor {
 
   private void handleAdd(Player p, String[] args) {
     if (args.length < 2) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To add a waypoint please use: "
-          + ChatColor.YELLOW + "/waypoints add <name>");
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/waypoints add <name>");
       return;
     }
 
@@ -172,7 +171,7 @@ public class WaypointsCommand implements TabExecutor {
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
             + ChatColor.RED + " already exists!");
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "If you want to overwrite this waypoint please use: "
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Overwrite Usage: "
             + ChatColor.YELLOW + "/waypoints add " + waypointName + " confirm");
       }
     } else {
@@ -196,7 +195,7 @@ public class WaypointsCommand implements TabExecutor {
     }
 
     if (args.length < 2) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To remove an existing waypoint please use: "
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
           + ChatColor.YELLOW + "/waypoints remove <name>");
       return;
     }
@@ -240,8 +239,7 @@ public class WaypointsCommand implements TabExecutor {
 
   private void _handleNavigation(Player p, String[] args) {
     if (args.length < 2) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To navigate to a waypoint please use: "
-          + ChatColor.YELLOW + "/waypoints nav <name>");
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/waypoints nav <name>");
       return;
     }
 
@@ -269,7 +267,7 @@ public class WaypointsCommand implements TabExecutor {
 
   private void _handleCoordsNavigation(Player p, String[] args) {
     if (args.length < 4) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To navigate to coordinates, use: "
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
           + ChatColor.YELLOW + "/waypoints coords <x> <y> <z>");
       return;
     }
@@ -296,7 +294,7 @@ public class WaypointsCommand implements TabExecutor {
 
   private void _handlePlayerNavigation(Player p, String[] args) {
     if (args.length < 2) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "To navigate to a player please use: "
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
           + ChatColor.YELLOW + "/waypoints player <player>");
       return;
     }

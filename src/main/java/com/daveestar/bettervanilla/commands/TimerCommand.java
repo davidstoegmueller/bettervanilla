@@ -16,95 +16,96 @@ import com.daveestar.bettervanilla.models.TimerManager;
 public class TimerCommand implements TabExecutor {
 
   @Override
-  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("timer") && cs instanceof Player) {
-      Player p = (Player) cs;
-
-      if (args.length == 0) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW
-            + "/timer <resume | pause | reset | set> [time]");
-
-        return true;
-      }
-
-      // store the timer model to use later in switch case to handle different timer
-      // arguments
-      TimerManager timer = Main.getInstance().getTimerManager();
-
-      switch (args[0].toLowerCase()) {
-        case "resume":
-          if (timer.isRunning()) {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "The timer is currently running.");
-            break;
-          }
-
-          timer.setRunning(true);
-          timer.setRunningOverride(true);
-
-          p.sendMessage(Main.getPrefix() + "Timer has been resumed.");
-
-          break;
-        case "pause":
-          if (!timer.isRunning()) {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "Timer could not be paused. No Timer currently active.");
-            break;
-          }
-
-          timer.setRunning(false);
-          timer.setRunningOverride(false);
-
-          p.sendMessage(Main.getPrefix() + "Timer has been paused.");
-
-          break;
-        case "set":
-          if (args.length != 2) {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW
-                + "/timer set <time>");
-
-            break;
-          }
-
-          try {
-            timer.setRunning(false);
-            timer.setRunningOverride(false);
-
-            timer.setTime(Integer.parseInt(args[1]));
-
-            p.sendMessage(Main.getPrefix() + "Timer has been set to " + ChatColor.YELLOW + args[1] + ChatColor.GRAY
-                + " seconds.");
-          } catch (NumberFormatException ex) {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a number to set the current timer value.");
-          }
-
-          break;
-        case "reset":
-          timer.setRunning(false);
-          timer.setRunningOverride(false);
-          timer.setTime(0);
-
-          p.sendMessage(Main.getPrefix() + "Timer has been reseted to 0 seconds.");
-
-          break;
-        default:
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW
-              + "/timer <resume | pause | reset | set> [time]");
-          break;
-      }
-
-      return true;
-
+  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    if (!command.getName().equalsIgnoreCase("timer") || !(sender instanceof Player)) {
+      return false;
     }
 
-    return false;
+    Player player = (Player) sender;
+    TimerManager timer = Main.getInstance().getTimerManager();
+
+    if (args.length == 0) {
+      sendUsageMessage(player);
+      return true;
+    }
+
+    switch (args[0].toLowerCase()) {
+      case "resume":
+        handleResume(player, timer);
+        break;
+      case "pause":
+        handlePause(player, timer);
+        break;
+      case "set":
+        handleSet(player, timer, args);
+        break;
+      case "reset":
+        handleReset(player, timer);
+        break;
+      default:
+        sendUsageMessage(player);
+        break;
+    }
+    return true;
+  }
+
+  private void handleResume(Player p, TimerManager timer) {
+    if (timer.isRunning()) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "The timer is already running.");
+    } else {
+      timer.setRunning(true);
+      timer.setRunningOverride(true);
+      p.sendMessage(Main.getPrefix() + "Timer has been resumed.");
+    }
+  }
+
+  private void handlePause(Player p, TimerManager timer) {
+    if (!timer.isRunning()) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "No active timer to pause.");
+    } else {
+      timer.setRunning(false);
+      timer.setRunningOverride(false);
+      p.sendMessage(Main.getPrefix() + "Timer has been paused.");
+    }
+  }
+
+  private void handleSet(Player p, TimerManager timer, String[] args) {
+    if (args.length != 2) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/timer set <time>");
+      return;
+    }
+
+    try {
+      int time = Integer.parseInt(args[1]);
+      timer.setRunning(false);
+      timer.setRunningOverride(false);
+      timer.setGlobalTimer(time);
+      p.sendMessage(Main.getPrefix() + "Timer has been set to " + ChatColor.YELLOW + time
+          + ChatColor.GRAY + " seconds.");
+    } catch (NumberFormatException e) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Invalid number. Please provide a valid time in seconds.");
+    }
+  }
+
+  private void handleReset(Player p, TimerManager timer) {
+    timer.setRunning(false);
+    timer.setRunningOverride(false);
+    timer.setGlobalTimer(0);
+    timer.resetPlayerTimers();
+    p.sendMessage(
+        Main.getPrefix() + "Timer has been reset to" + ChatColor.YELLOW + " 0 " + ChatColor.GRAY + "seconds.");
+  }
+
+  private void sendUsageMessage(Player p) {
+    p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
+        + "/timer <resume | pause | reset | set> [time]");
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
     if (args.length == 1) {
-      List<String> availableSettings = Arrays.asList("resume", "pause", "reset", "set");
-      return availableSettings;
+      return Arrays.asList("resume", "pause", "reset", "set");
     }
-
     return new ArrayList<>();
   }
 }

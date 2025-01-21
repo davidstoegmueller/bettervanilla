@@ -46,8 +46,8 @@ public class CustomGUI implements Listener {
     Bukkit.getPluginManager().registerEvents(this, pluginInstance);
   }
 
-  public void open(Player player) {
-    player.openInventory(_gui);
+  public void open(Player p) {
+    p.openInventory(_gui);
   }
 
   private void _clear() {
@@ -112,29 +112,29 @@ public class CustomGUI implements Listener {
       return;
 
     e.setCancelled(true);
-    Player player = (Player) e.getWhoClicked();
+    Player p = (Player) e.getWhoClicked();
     int slot = e.getRawSlot();
 
     if (slot == _POS_SWITCH_PAGE_BUTTON) {
-      _handlePageSwitch(player, e.isRightClick());
+      _handlePageSwitch(p, e.isRightClick());
     } else if (slot >= 0 && slot < _pageSize) {
-      _handleItemClick(player, slot);
+      _handleItemClick(p, slot);
     } else {
-      player.playSound(player, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
     }
   }
 
-  private void _handlePageSwitch(Player player, boolean isNextPage) {
+  private void _handlePageSwitch(Player p, boolean isNextPage) {
     if (isNextPage && _currentPage < _maxPage) {
       _currentPage++;
     } else if (!isNextPage && _currentPage > 1) {
       _currentPage--;
     } else {
-      player.playSound(player, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
       return;
     }
     _updatePage();
-    player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
+    p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
 
   private void _handleItemClick(Player player, int slot) {

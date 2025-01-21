@@ -43,7 +43,7 @@ public class ToggleLocationCommand implements CommandExecutor {
           actionBarManager.sendActionBar(p, locationText);
         }
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Plase use: " +
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " +
             ChatColor.YELLOW + "/togglelocation");
       }
 

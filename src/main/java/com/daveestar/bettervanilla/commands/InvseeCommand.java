@@ -25,7 +25,7 @@ public class InvseeCommand implements CommandExecutor {
               + ChatColor.RED + " is currently not online!");
         }
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please use: " + ChatColor.YELLOW + "/invsee <name>");
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/invsee <name>");
       }
 
       return true;
