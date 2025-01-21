@@ -36,6 +36,9 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
           + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-clicl any kind of stairs.");
       p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "Sleeping Rain: " + ChatColor.GRAY
+          + "You can skip rainy days by sleeping in a bed. If you sleep in a bed while it is raining the rain will stop and the day will be skipped.");
+      p.sendMessage("");
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "DeathChest-Feature: " + ChatColor.GRAY
           + "If you die a chest will be created on the location where you died. You can come back to the chest and open it. This enables us to never lose our items. If you close the chest inventory -> items will be dropped. If you break the chest -> items will be dropped.");
 
