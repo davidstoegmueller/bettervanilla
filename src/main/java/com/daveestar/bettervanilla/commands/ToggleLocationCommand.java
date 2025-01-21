@@ -15,7 +15,7 @@ import com.daveestar.bettervanilla.utils.ActionBarManager;
 public class ToggleLocationCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("togglelocation") && cs instanceof Player) {
+    if (cs instanceof Player) {
       Player p = (Player) cs;
 
       SettingsManager settingsManager = Main.getInstance().getSettingsManager();

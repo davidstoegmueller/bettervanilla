@@ -16,34 +16,34 @@ import com.daveestar.bettervanilla.models.TimerManager;
 public class TimerCommand implements TabExecutor {
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    if (!command.getName().equalsIgnoreCase("timer") || !(sender instanceof Player)) {
+  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+    if (!(cs instanceof Player)) {
       return false;
     }
 
-    Player player = (Player) sender;
+    Player p = (Player) cs;
     TimerManager timer = Main.getInstance().getTimerManager();
 
     if (args.length == 0) {
-      sendUsageMessage(player);
+      sendUsageMessage(p);
       return true;
     }
 
     switch (args[0].toLowerCase()) {
       case "resume":
-        handleResume(player, timer);
+        handleResume(p, timer);
         break;
       case "pause":
-        handlePause(player, timer);
+        handlePause(p, timer);
         break;
       case "set":
-        handleSet(player, timer, args);
+        handleSet(p, timer, args);
         break;
       case "reset":
-        handleReset(player, timer);
+        handleReset(p, timer);
         break;
       default:
-        sendUsageMessage(player);
+        sendUsageMessage(p);
         break;
     }
     return true;

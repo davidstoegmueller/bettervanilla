@@ -13,7 +13,7 @@ import net.md_5.bungee.api.ChatColor;
 public class PingCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("ping") && cs instanceof Player) {
+    if (cs instanceof Player) {
       Player p = (Player) cs;
 
       if (args.length == 0) {

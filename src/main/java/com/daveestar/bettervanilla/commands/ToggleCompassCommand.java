@@ -12,7 +12,7 @@ import com.daveestar.bettervanilla.models.CompassManager;
 public class ToggleCompassCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("togglecompass") && cs instanceof Player) {
+    if (cs instanceof Player) {
       Player p = (Player) cs;
 
       if (args.length == 0) {

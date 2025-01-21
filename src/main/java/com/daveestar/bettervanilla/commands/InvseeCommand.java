@@ -12,7 +12,7 @@ import com.daveestar.bettervanilla.Main;
 public class InvseeCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("invsee") && cs instanceof Player) {
+    if (cs instanceof Player) {
       Player p = (Player) cs;
 
       if (args.length == 1) {

@@ -20,7 +20,7 @@ public class SettingsCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
 
-    if (c.getName().equalsIgnoreCase("settings") && cs instanceof Player) {
+    if (cs instanceof Player) {
       Player p = (Player) cs;
 
       if (args.length == 0) {

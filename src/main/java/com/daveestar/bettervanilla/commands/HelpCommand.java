@@ -11,7 +11,7 @@ import com.daveestar.bettervanilla.Main;
 public class HelpCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("help") && cs instanceof Player) {
+    if (cs instanceof Player) {
       Player p = (Player) cs;
 
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "COMMANDS:");

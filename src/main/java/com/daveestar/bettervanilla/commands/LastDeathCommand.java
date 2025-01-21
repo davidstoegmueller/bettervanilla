@@ -26,7 +26,7 @@ import com.daveestar.bettervanilla.utils.NavigationData;
 public class LastDeathCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("lastdeath") && cs instanceof Player) {
+    if (cs instanceof Player) {
       Player p = (Player) cs;
 
       SettingsManager settingsManager = Main.getInstance().getSettingsManager();
