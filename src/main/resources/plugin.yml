@@ -5,9 +5,15 @@ api-version: 1.20
 authors: ["daveestar"]
 commands:
   waypoints:
+    aliases: [wp]
     description: Set or Remove waypoints. And display a list of all available waypoints.
     usage: /waypoints
     permission: bettervanilla.waypoints
+  playtime:
+    aliases: [pt]
+    description: Get the playtime of either yourself or of another user.
+    usage: /playtime
+    permission: bettervanilla.playtime
   ping:
     description: Get the ping of either yourself or of another user.
     usage: /ping
@@ -25,6 +31,7 @@ commands:
     usage: /adminhelp
     permission: bettervanilla.adminhelp
   settings:
+    aliases: [set]
     description: A command to toggle different global settings.
     usage: /settings
     permission: bettervanilla.settings
@@ -32,14 +39,17 @@ commands:
     description: Get help for better vanilla.
     usage: /help
   togglelocation:
+    aliases: [tl]
     description: Turn on/off action bar location.
     usage: /togglelocation
     permission: bettervanilla.togglelocation
   togglecompass:
+    aliases: [tc]
     description: Turn on/off bossbar compass.
     usage: /togglecompass
     permission: bettervanilla.togglecompass
   lastdeath:
+    aliases: [ld]
     description: Navigate to the last death point
     usage: /lastdeath
     permission: bettervanilla.lastdeath

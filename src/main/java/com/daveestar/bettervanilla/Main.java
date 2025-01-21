@@ -4,8 +4,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,6 +11,7 @@ import com.daveestar.bettervanilla.commands.HelpCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
 import com.daveestar.bettervanilla.commands.LastDeathCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
+import com.daveestar.bettervanilla.commands.PlayTimeCommand;
 import com.daveestar.bettervanilla.commands.SettingsCommand;
 import com.daveestar.bettervanilla.commands.TimerCommand;
 import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
@@ -82,6 +81,7 @@ public class Main extends JavaPlugin {
     getCommand("togglecompass").setExecutor(new ToggleCompassCommand());
     getCommand("lastdeath").setExecutor(new LastDeathCommand());
     getCommand("timer").setExecutor(new TimerCommand());
+    getCommand("playtime").setExecutor(new PlayTimeCommand());
     getCommand("settings").setExecutor(new SettingsCommand());
 
     // register events
@@ -93,18 +93,14 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new PreventEnd(), this);
   }
 
+  @Override
   public void onDisable() {
     _mainInstance = null;
 
-    // remove all deathchest blocks on plugin reload
-    for (Block block : DeathChest.deathChest.keySet()) {
-      block.setType(Material.AIR);
-    }
-
-    for (Player p : getServer().getOnlinePlayers()) {
-      _timerManager.onPlayerLeft(p);
-    }
-
+    // prepare all features for plugin disable
+    DeathChest.deathChest.keySet().forEach(block -> block.setType(Material.AIR));
+    _timerManager.setRunning(false);
+    getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();
 
     _LOGGER.info("BetterVanilla DISABLED");

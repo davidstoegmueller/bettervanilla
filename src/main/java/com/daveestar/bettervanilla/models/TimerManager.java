@@ -25,12 +25,16 @@ public class TimerManager {
 
   private final Config _config;
   private final FileConfiguration _fileConfig;
+  private final SettingsManager _settingsManager;
+  private final NavigationManager _navigationManager;
   private final ActionBarManager _actionBarManager;
   private final AFKManager _afkManager;
 
   public TimerManager(Config config) {
     this._config = config;
     this._fileConfig = config.getFileCfgrn();
+    this._settingsManager = Main.getInstance().getSettingsManager();
+    this._navigationManager = Main.getInstance().getNavigationManager();
     this._actionBarManager = Main.getInstance().getActionBarManager();
     this._afkManager = Main.getInstance().getAFKManager();
 
@@ -75,6 +79,14 @@ public class TimerManager {
           _playerTimers.put(playerId, newPlayerTimer);
           _savePlayerTimer(playerId, newPlayerTimer);
         }));
+  }
+
+  public int getPlayTime(Player p) {
+    return _playerTimers.getOrDefault(p.getUniqueId(), new PlayerTimer(0, 0)).getPlayTime();
+  }
+
+  public int getAFKTime(Player p) {
+    return _playerTimers.getOrDefault(p.getUniqueId(), new PlayerTimer(0, 0)).getAFKTime();
   }
 
   private PlayerTimer _loadPlayerTimer(UUID playerId) {
@@ -165,11 +177,16 @@ public class TimerManager {
 
   private void _displayTimerActionBar() {
     String message = _generateTimerMessage();
-    Bukkit.getOnlinePlayers().forEach(player -> _actionBarManager.sendActionBarOnce(player, message));
+
+    Bukkit.getOnlinePlayers().forEach(p -> {
+      if (!_settingsManager.getToggleLocation(p) && !_navigationManager.checkActiveNavigation(p)) {
+        _actionBarManager.sendActionBarOnce(p, message);
+      }
+    });
   }
 
   private String _generateTimerMessage() {
-    String formattedTime = _formatTime(_globalTimer);
+    String formattedTime = formatTime(_globalTimer);
     return _running
         ? ChatColor.YELLOW + "" + ChatColor.BOLD + formattedTime
         : ChatColor.YELLOW + "" + ChatColor.BOLD + "Paused " + ChatColor.GRAY + "("
@@ -178,21 +195,7 @@ public class TimerManager {
 
   // Timer task and formatting
 
-  private void _startTimerTask() {
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        _displayTimerActionBar();
-
-        if (_running) {
-          _incrementGlobalTimer();
-          _handlePlayerTimers();
-        }
-      }
-    }.runTaskTimer(Main.getInstance(), 20L, 20L);
-  }
-
-  private String _formatTime(int totalSeconds) {
+  public String formatTime(int totalSeconds) {
     int days = totalSeconds / (24 * 3600);
     int hours = (totalSeconds % (24 * 3600)) / 3600;
     int minutes = (totalSeconds % 3600) / 60;
@@ -209,4 +212,19 @@ public class TimerManager {
 
     return timeBuilder.toString().trim();
   }
+
+  private void _startTimerTask() {
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        _displayTimerActionBar();
+
+        if (_running) {
+          _incrementGlobalTimer();
+          _handlePlayerTimers();
+        }
+      }
+    }.runTaskTimer(Main.getInstance(), 20L, 20L);
+  }
+
 }

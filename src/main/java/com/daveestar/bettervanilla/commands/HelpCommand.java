@@ -31,6 +31,8 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getPrefix() + "/togglelocation - Display your current location in action bar");
       p.sendMessage(Main.getPrefix() + "/togglecompass - Display you directions as a compass in the bossbar");
       p.sendMessage("");
+      p.sendMessage(Main.getPrefix() + "/playtime - Display the playtime of yourself or another player");
+      p.sendMessage("");
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
           + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-clicl any kind of stairs.");
       p.sendMessage("");

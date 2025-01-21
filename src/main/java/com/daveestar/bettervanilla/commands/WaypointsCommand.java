@@ -41,13 +41,13 @@ public class WaypointsCommand implements TabExecutor {
   }
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    if (!(sender instanceof Player)) {
-      sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
+  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+    if (!(cs instanceof Player) || !c.getName().equalsIgnoreCase("waypoints")) {
+      cs.sendMessage(ChatColor.RED + "This command can only be used by players.");
       return true;
     }
 
-    Player p = (Player) sender;
+    Player p = (Player) cs;
     if (args.length == 0) {
       _displayGUI(p);
       return true;
