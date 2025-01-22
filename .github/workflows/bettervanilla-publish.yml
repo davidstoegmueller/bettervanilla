@@ -29,11 +29,6 @@ jobs:
 
     - name: Build .jar
       run: mvn -B package --file pom.xml
-
-    - name: Publish .jar to Packages
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml -DskipTests -Doverwrite=true
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
     
     - name: Create GitHub Release
       uses: actions/create-release@v1
