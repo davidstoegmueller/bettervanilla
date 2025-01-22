@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -29,7 +31,7 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Publish .jar to Packages
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml -DskipTests -Doverwrite=true
       env:
         GITHUB_TOKEN: ${{ github.token }}
     
