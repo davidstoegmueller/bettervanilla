@@ -1,7 +1,6 @@
 package com.daveestar.bettervanilla.models;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,10 +18,9 @@ import net.md_5.bungee.api.ChatColor;
 
 public class CustomGUI implements Listener {
 
-  private static final int _INVENTORY_SIZE = 54;
-  private static final int _INVENTORY_RESERVED_ROWS = 1;
   private static final int _INVENTORY_ROW_SIZE = 9;
-  private static final int _POS_SWITCH_PAGE_BUTTON = 53;
+  private final int _POS_SWITCH_PAGE_BUTTON;
+  private final int _POS_BACK_BUTTON;
 
   private final int _pageSize;
   private int _currentPage;
@@ -30,17 +28,26 @@ public class CustomGUI implements Listener {
 
   private final Inventory _gui;
   private final Map<String, ItemStack> _pageEntries;
-  private final BiConsumer<Player, String> _onItemClick;
+  private final Map<String, Integer> _customSlots;
+  private final CustomGUI _parentMenu;
+  private Map<String, ClickAction> _clickActions;
+  private final Set<Option> _options;
 
   public CustomGUI(Plugin pluginInstance, Player player, String title, Map<String, ItemStack> pageEntries,
-      BiConsumer<Player, String> onItemClick) {
+      int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
+    int inventorySize = rows * _INVENTORY_ROW_SIZE;
     this._currentPage = 1;
     this._pageEntries = pageEntries;
-    this._pageSize = _INVENTORY_SIZE - (_INVENTORY_RESERVED_ROWS * _INVENTORY_ROW_SIZE);
+    this._customSlots = customSlots != null ? customSlots : new HashMap<>();
+    this._pageSize = inventorySize - _INVENTORY_ROW_SIZE;
     this._maxPage = (int) Math.ceil((double) pageEntries.size() / _pageSize);
-    this._onItemClick = onItemClick;
+    this._parentMenu = parentMenu;
+    this._options = options != null ? options : EnumSet.noneOf(Option.class);
 
-    this._gui = Bukkit.createInventory(null, _INVENTORY_SIZE, title);
+    this._POS_SWITCH_PAGE_BUTTON = inventorySize - 1;
+    this._POS_BACK_BUTTON = inventorySize - _INVENTORY_ROW_SIZE;
+
+    this._gui = Bukkit.createInventory(null, inventorySize, title);
     _updatePage();
 
     Bukkit.getPluginManager().registerEvents(this, pluginInstance);
@@ -50,13 +57,22 @@ public class CustomGUI implements Listener {
     p.openInventory(_gui);
   }
 
+  public void setClickActions(Map<String, ClickAction> clickActions) {
+    this._clickActions = clickActions;
+  }
+
   private void _clear() {
     _gui.clear();
   }
 
   private void _createActionButtons() {
-    _createSwitchPageButton();
+    if (!_options.contains(Option.DISABLE_PAGE_BUTTON)) {
+      _createSwitchPageButton();
+    }
     _createPlaceholderButtons();
+    if (_parentMenu != null) {
+      _createBackButton();
+    }
   }
 
   private void _createSwitchPageButton() {
@@ -67,13 +83,17 @@ public class CustomGUI implements Listener {
             ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Previous Page"));
   }
 
+  private void _createBackButton() {
+    _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW, ChatColor.YELLOW + "Back", null);
+  }
+
   private void _createPlaceholderButtons() {
-    int startIdx = _INVENTORY_SIZE - (_INVENTORY_RESERVED_ROWS * _INVENTORY_ROW_SIZE);
-    int endIdx = startIdx + (_INVENTORY_RESERVED_ROWS * _INVENTORY_ROW_SIZE);
+    int startIdx = _gui.getSize() - _INVENTORY_ROW_SIZE;
+    int endIdx = _gui.getSize();
 
     for (int i = startIdx; i < endIdx; i++) {
       if (_gui.getItem(i) == null) {
-        _addItemToSlot(i, Material.YELLOW_STAINED_GLASS_PANE, ChatColor.YELLOW + "Coming Soon", null);
+        _addItemToSlot(i, Material.YELLOW_STAINED_GLASS_PANE, ChatColor.YELLOW + "*", null);
       }
     }
   }
@@ -102,7 +122,9 @@ public class CustomGUI implements Listener {
 
     List<Map.Entry<String, ItemStack>> currentEntries = _getPageEntries();
     for (int i = 0; i < currentEntries.size(); i++) {
-      _gui.setItem(i, currentEntries.get(i).getValue());
+      String key = currentEntries.get(i).getKey();
+      int slot = _customSlots.containsKey(key) ? _customSlots.get(key) : i;
+      _gui.setItem(slot, currentEntries.get(i).getValue());
     }
   }
 
@@ -117,8 +139,19 @@ public class CustomGUI implements Listener {
 
     if (slot == _POS_SWITCH_PAGE_BUTTON) {
       _handlePageSwitch(p, e.isRightClick());
+    } else if (slot == _POS_BACK_BUTTON && _parentMenu != null) {
+      _parentMenu.open(p);
+    } else if (_customSlots.containsValue(slot)) {
+      String key = _customSlots.entrySet().stream()
+          .filter(entry -> entry.getValue().equals(slot))
+          .map(Map.Entry::getKey)
+          .findFirst()
+          .orElse(null);
+      if (key != null) {
+        _handleItemClick(p, key, e.isShiftClick(), e.isRightClick());
+      }
     } else if (slot >= 0 && slot < _pageSize) {
-      _handleItemClick(p, slot);
+      _handleItemClick(p, slot, e.isShiftClick(), e.isRightClick());
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
     }
@@ -137,11 +170,46 @@ public class CustomGUI implements Listener {
     p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
 
-  private void _handleItemClick(Player player, int slot) {
-    int entryIndex = (_currentPage - 1) * _pageSize + slot;
-    List<Map.Entry<String, ItemStack>> entries = new ArrayList<>(_pageEntries.entrySet());
-    if (entryIndex < entries.size()) {
-      _onItemClick.accept(player, entries.get(entryIndex).getKey());
+  private void _handleItemClick(Player player, Object keyOrSlot, boolean isShiftClick, boolean isRightClick) {
+    String key = null;
+    if (keyOrSlot instanceof Integer) {
+      int slot = (int) keyOrSlot;
+      int entryIndex = (_currentPage - 1) * _pageSize + slot;
+      List<Map.Entry<String, ItemStack>> entries = new ArrayList<>(_pageEntries.entrySet());
+      if (entryIndex < entries.size()) {
+        key = entries.get(entryIndex).getKey();
+      }
+    } else if (keyOrSlot instanceof String) {
+      key = (String) keyOrSlot;
     }
+
+    if (key != null) {
+      ClickAction action = _clickActions.get(key);
+      if (action != null) {
+        if (isShiftClick && isRightClick) {
+          action.onShiftRightClick(player);
+        } else if (isShiftClick) {
+          action.onShiftLeftClick(player);
+        } else if (isRightClick) {
+          action.onRightClick(player);
+        } else {
+          action.onLeftClick(player);
+        }
+      }
+    }
+  }
+
+  public interface ClickAction {
+    void onLeftClick(Player player);
+
+    void onRightClick(Player player);
+
+    void onShiftLeftClick(Player player);
+
+    void onShiftRightClick(Player player);
+  }
+
+  public enum Option {
+    DISABLE_PAGE_BUTTON,
   }
 }

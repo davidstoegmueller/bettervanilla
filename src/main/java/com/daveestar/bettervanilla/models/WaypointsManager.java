@@ -68,4 +68,15 @@ public class WaypointsManager {
 
     _config.save();
   }
+
+  public void renameWaypoint(String worldName, String oldName, String newName) {
+    ConfigurationSection waypoint = _fileCfgn.getConfigurationSection(worldName + "." + oldName);
+    if (waypoint != null) {
+      _fileCfgn.set(worldName + "." + newName + ".x", waypoint.getInt("x"));
+      _fileCfgn.set(worldName + "." + newName + ".y", waypoint.getInt("y"));
+      _fileCfgn.set(worldName + "." + newName + ".z", waypoint.getInt("z"));
+      _fileCfgn.set(worldName + "." + oldName, null);
+      _config.save();
+    }
+  }
 }

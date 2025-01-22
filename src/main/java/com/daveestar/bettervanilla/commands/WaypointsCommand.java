@@ -3,18 +3,14 @@ package com.daveestar.bettervanilla.commands;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
-import com.daveestar.bettervanilla.models.CustomGUI;
+import com.daveestar.bettervanilla.gui.WaypointsGUI;
 import com.daveestar.bettervanilla.models.NavigationManager;
 import com.daveestar.bettervanilla.models.SettingsManager;
 import com.daveestar.bettervanilla.models.WaypointsManager;
@@ -22,7 +18,6 @@ import com.daveestar.bettervanilla.utils.ActionBarManager;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class WaypointsCommand implements TabExecutor {
@@ -31,6 +26,7 @@ public class WaypointsCommand implements TabExecutor {
   private final NavigationManager _navigationManager;
   private final ActionBarManager _actionBarManager;
   private final SettingsManager _settingsManager;
+  private final WaypointsGUI _waypointsGUI;
 
   public WaypointsCommand() {
     Main plugin = Main.getInstance();
@@ -38,6 +34,7 @@ public class WaypointsCommand implements TabExecutor {
     this._navigationManager = plugin.getNavigationManager();
     this._actionBarManager = plugin.getActionBarManager();
     this._settingsManager = plugin.getSettingsManager();
+    this._waypointsGUI = new WaypointsGUI();
   }
 
   @Override
@@ -49,7 +46,7 @@ public class WaypointsCommand implements TabExecutor {
 
     Player p = (Player) cs;
     if (args.length == 0) {
-      _displayGUI(p);
+      _waypointsGUI.displayGUI(p);
       return true;
     }
 
@@ -83,64 +80,6 @@ public class WaypointsCommand implements TabExecutor {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Unknown waypoints command. Use /waypoints help for help.");
     }
     return true;
-  }
-
-  private void _displayGUI(Player p) {
-    String worldName = p.getWorld().getName();
-    List<String> allWaypointNames = _waypointsManager.getWaypoints(worldName);
-    Location playerLocation = p.getLocation();
-
-    // map to store GUI entries
-    Map<String, ItemStack> pageEntries = allWaypointNames.parallelStream()
-        .collect(Collectors.toMap(
-            waypointName -> waypointName,
-            waypointName -> _createWaypointItem(playerLocation, worldName, waypointName),
-            (oldValue, newValue) -> oldValue,
-            LinkedHashMap::new));
-
-    // handle item click
-    BiConsumer<Player, String> onItemClick = (player, waypointName) -> {
-      _handleNavigation(p, new String[] { "nav", waypointName });
-      p.closeInventory();
-      p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-    };
-
-    // create and open the GUI
-    CustomGUI waypointsGUI = new CustomGUI(Main.getInstance(), p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Waypoints",
-        pageEntries, onItemClick);
-    waypointsGUI.open(p);
-  }
-
-  /**
-   * Creates a formatted ItemStack for a waypoint.
-   */
-  private ItemStack _createWaypointItem(Location playerLocation, String worldName, String waypointName) {
-    Map<String, Integer> waypointData = _waypointsManager.getWaypointByName(worldName, waypointName);
-
-    int x = waypointData.get("x");
-    int y = waypointData.get("y");
-    int z = waypointData.get("z");
-    Location waypointLocation = new Location(playerLocation.getWorld(), x, y, z);
-    long distance = Math.round(playerLocation.distance(waypointLocation));
-
-    ItemStack item = new ItemStack(Material.PAPER);
-    ItemMeta meta = item.getItemMeta();
-    if (meta != null) {
-      meta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + waypointName);
-      meta.setLore(Arrays.asList(
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + x,
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + y,
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + z,
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distance + ChatColor.GRAY
-              + " blocks",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation"));
-      item.setItemMeta(meta);
-    }
-    return item;
   }
 
   private void handleAdd(Player p, String[] args) {
