@@ -14,8 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
-      actions: write
 
     steps:
     - name: Checkout Code
@@ -26,8 +24,6 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Set Maven Version Output
       id: build-version
@@ -36,12 +32,8 @@ jobs:
     - name: Build .jar
       run: mvn -B package --file pom.xml
 
-    - name: Publish .jar to GitHub Packages
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml -DskipTests -Doverwrite=true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Create GitHub Release
+      id: create-release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,3 +42,13 @@ jobs:
         release_name: Release v${{ env.version }}
         draft: false
         prerelease: false
+
+    - name: Upload .jar to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        asset_path: target/bettervanilla-1.0.0.jar
+        asset_name: bettervanilla-1.0.0.jar
+        asset_content_type: application/java-archive
