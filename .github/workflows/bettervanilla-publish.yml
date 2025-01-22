@@ -13,12 +13,13 @@ jobs:
 
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       actions: write
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
     
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -28,19 +29,24 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+    - name: Set Maven Version Output
+      id: build-version
+      run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
     - name: Build .jar
       run: mvn -B package --file pom.xml
+
+    - name: Publish .jar to GitHub Packages
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml -DskipTests -Doverwrite=true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.build.outputs.version }}
-        release_name: Release v${{ steps.build.outputs.version }}-SNAPSHOT
+        tag_name: v${{ env.version }}
+        release_name: Release v${{ env.version }}
         draft: false
         prerelease: false
-
-    - name: Set version output
-      id: build
-      run: echo "::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
