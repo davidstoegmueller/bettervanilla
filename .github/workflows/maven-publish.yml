@@ -3,10 +3,8 @@ name: Build and Release
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
-  release:
-    types: [created]
 
 jobs:
   build:
