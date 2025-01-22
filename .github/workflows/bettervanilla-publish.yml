@@ -1,54 +1,52 @@
-name: Build & Package (BetterVanilla)
+name: Build & Deploy BetterVanilla
 
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
-  release:
-    types: [created]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-    
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Set Maven Version Output
-      id: build-version
-      run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Build .jar
-      run: mvn -B package --file pom.xml
+      - name: Set Maven Version Output
+        id: build-version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
-    - name: Create GitHub Release
-      id: create-release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ env.version }}
-        release_name: Release v${{ env.version }}
-        draft: false
-        prerelease: false
+      - name: Build .jar
+        run: mvn -B package --file pom.xml
 
-    - name: Upload .jar to Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: target/bettervanilla-1.0.0.jar
-        asset_name: bettervanilla-1.0.0.jar
-        asset_content_type: application/java-archive
+      - name: Create GitHub Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.version }}
+          release_name: Release v${{ env.version }}
+          draft: false
+          prerelease: false
+          overwrite: true
+
+      - name: Upload .jar to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: target/bettervanilla-${{ env.version }}.jar
+          asset_name: bettervanilla-${{ env.version }}.jar
+          asset_content_type: application/java-archive
