@@ -34,11 +34,12 @@ jobs:
         run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
       - name: Delete existing release
-        if: github.event_name == 'release'
         run: |
-          gh release delete "v${{ env.version }}" --yes
-          git tag -d "v${{ env.version }}"
-          git push origin :refs/tags/v${{ env.version }}
+          if gh release view "v${{ env.version }}" &>/dev/null; then
+            gh release delete "v${{ env.version }}" --yes
+            git tag -d "v${{ env.version }}"
+            git push origin :refs/tags/v${{ env.version }}
+          fi
 
       - name: Create GitHub Release
         id: create_release
