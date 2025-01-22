@@ -70,7 +70,7 @@ public class Main extends JavaPlugin {
     Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
     _maintenanceManager = new MaintenanceManager(maintenanceConfig);
 
-    _LOGGER.info("BetterVanilla ENABLED");
+    _LOGGER.info("BetterVanilla - ENABLED");
 
     // register commands
     getCommand("waypoints").setExecutor(new WaypointsCommand());
@@ -105,7 +105,7 @@ public class Main extends JavaPlugin {
     getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();
 
-    _LOGGER.info("BetterVanilla DISABLED");
+    _LOGGER.info("BetterVanilla - DISABLED");
   }
 
   public static String getPrefix() {
