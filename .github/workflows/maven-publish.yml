@@ -31,15 +31,9 @@ jobs:
 
       - name: Set version output
         id: build
-        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-
-      - name: Delete existing release
         run: |
-          if gh release view "v${{ env.version }}" &>/dev/null; then
-            gh release delete "v${{ env.version }}" --yes
-            git tag -d "v${{ env.version }}"
-            git push origin :refs/tags/v${{ env.version }}
-          fi
+          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          echo "timestamp=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release
@@ -47,8 +41,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.MY_PAT }}
         with:
-          tag_name: v${{ env.version }}
-          release_name: Release v${{ env.version }}
+          tag_name: v${{ env.version }}-${{ env.timestamp }}
+          release_name: Release v${{ env.version }}-${{ env.timestamp }}
           draft: false
           prerelease: false
 
