@@ -2,13 +2,14 @@ package com.daveestar.bettervanilla.manager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.daveestar.bettervanilla.Main;
 
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
@@ -107,7 +108,7 @@ public class AFKManager {
   }
 
   public void announceAFKToOthers(Player p, boolean isAFK) {
-    Bukkit.getServer().getOnlinePlayers().stream()
+    Main.getInstance().getServer().getOnlinePlayers().stream()
         .forEach(player -> {
           if (!player.equals(p)) {
             if (isAFK) {
@@ -126,11 +127,10 @@ public class AFKManager {
   }
 
   private void _startAFKTask() {
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        checkAllPlayersAFKStatus();
-      }
-    }.runTaskTimer(Main.getInstance(), 0, 20);
+    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
+
+    scheduler.runAtFixedRate(Main.getInstance(), task -> {
+      checkAllPlayersAFKStatus();
+    }, 0, 1, TimeUnit.SECONDS);
   }
 }

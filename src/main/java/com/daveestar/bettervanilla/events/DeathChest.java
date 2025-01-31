@@ -40,13 +40,13 @@ public class DeathChest implements Listener {
     Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
     FileConfiguration cfgn = lastDeaths.getFileCfgrn();
 
-    cfgn.set(p.getUniqueId() + ".x", p.getLocation().getBlockX());
-    cfgn.set(p.getUniqueId() + ".y", p.getLocation().getBlockY());
-    cfgn.set(p.getUniqueId() + ".z", p.getLocation().getBlockZ());
-    cfgn.set(p.getUniqueId() + ".world", p.getLocation().getWorld().getName());
+    cfgn.set(p.getUniqueId() + ".x", p.getLocation().toBlockLocation().getBlockX());
+    cfgn.set(p.getUniqueId() + ".y", p.getLocation().toBlockLocation().getBlockY());
+    cfgn.set(p.getUniqueId() + ".z", p.getLocation().toBlockLocation().getBlockZ());
+    cfgn.set(p.getUniqueId() + ".world", p.getLocation().toBlockLocation().getWorld().getName());
     lastDeaths.save();
 
-    Location loc = p.getLocation();
+    Location loc = p.getLocation().toBlockLocation();
     Boolean isEnd = loc.getWorld().getEnvironment() == Environment.THE_END;
     Boolean fellIntoVoid = isEnd && loc.getY() < 1;
 
@@ -60,7 +60,7 @@ public class DeathChest implements Listener {
     }
 
     Block blockChest = p.getWorld().getBlockAt(deathChestLocation);
-    blockChest.setType(Material.CHEST);
+    blockChest.setType(Material.CHEST, false);
 
     Inventory inv = Bukkit.createInventory(null, 45, Component.text("DeathChest from " + p.getName()));
     inv.clear();
@@ -72,9 +72,10 @@ public class DeathChest implements Listener {
     p.sendMessage(
         Main.getPrefix() + "You died. All your items are stored in the death chest on: " + ChatColor.YELLOW
             + "X: " + ChatColor.GRAY
-            + blockChest.getLocation().getBlockX() + ChatColor.YELLOW
-            + " Y: " + ChatColor.GRAY + blockChest.getLocation().getBlockY() + ChatColor.YELLOW + " Z: "
-            + ChatColor.GRAY + blockChest.getLocation().getBlockZ());
+            + blockChest.getLocation().toBlockLocation().getBlockX() + ChatColor.YELLOW
+            + " Y: " + ChatColor.GRAY + blockChest.getLocation().toBlockLocation().getBlockY() + ChatColor.YELLOW
+            + " Z: "
+            + ChatColor.GRAY + blockChest.getLocation().toBlockLocation().getBlockZ());
     p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
         + " As soon as you close or break the chest all items will be dropped!");
 
@@ -101,7 +102,7 @@ public class DeathChest implements Listener {
         Block block = e.getClickedBlock();
 
         for (Block blocks : deathChest.keySet()) {
-          if (blocks.getLocation().equals(block.getLocation())) {
+          if (blocks.getLocation().toBlockLocation().equals(block.getLocation().toBlockLocation())) {
             e.setCancelled(true);
             e.getPlayer().openInventory(deathChest.get(blocks));
 
@@ -118,12 +119,12 @@ public class DeathChest implements Listener {
         .equalsIgnoreCase("DeathChest from " + e.getPlayer().getName())) {
       for (ItemStack item : e.getInventory().getContents()) {
         if (item != null) {
-          e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), item);
+          e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation().toBlockLocation(), item);
         }
       }
 
       deathChest.remove(_openedDeathChestBlock);
-      _openedDeathChestBlock.setType(Material.AIR);
+      _openedDeathChestBlock.setType(Material.AIR, false);
       _openedDeathChestBlock = null;
 
       Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
@@ -140,7 +141,7 @@ public class DeathChest implements Listener {
 
       for (ItemStack item : inv.getContents()) {
         if (item != null) {
-          e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), item);
+          e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation().toBlockLocation(), item);
         }
       }
 

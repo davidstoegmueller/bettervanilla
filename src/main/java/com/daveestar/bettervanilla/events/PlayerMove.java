@@ -40,7 +40,7 @@ public class PlayerMove implements Listener {
 
         // check if the navigation targets the moving player
         if (navigationData.getType() == NavigationType.PLAYER && navigationData.getName().equals(p.getName())) {
-          Location newTargetLocation = p.getLocation();
+          Location newTargetLocation = p.getLocation().toBlockLocation();
 
           // update navigation data for the navigating player
           navigationData.setLocation(newTargetLocation);
@@ -54,8 +54,8 @@ public class PlayerMove implements Listener {
     if (navigationManager.checkActiveNavigation(p)) {
       NavigationData navigationData = navigationManager.getActiveNavigation(p);
 
-      Location targetLocation = navigationData.getLocation();
-      Location playerLocation = p.getLocation();
+      Location targetLocation = navigationData.getLocation().toBlockLocation();
+      Location playerLocation = p.getLocation().toBlockLocation();
 
       // handle world change and cancel navigation if different worlds
       if (!targetLocation.getWorld().getName().equals(playerLocation.getWorld().getName())) {
@@ -86,7 +86,7 @@ public class PlayerMove implements Listener {
         }
 
         // update the target location to the current position of the target player
-        targetLocation = targetPlayer.getLocation();
+        targetLocation = targetPlayer.getLocation().toBlockLocation();
         navigationData.setLocation(targetLocation);
       }
 
@@ -100,14 +100,14 @@ public class PlayerMove implements Listener {
     ActionBar actionBarManager = Main.getInstance().getActionBar();
 
     if (settingsManager.getToggleLocation(p)) {
-      Biome playerBiome = p.getWorld().getBiome(p.getLocation());
+      Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 
       String locationText = ChatColor.YELLOW + "X: "
           + ChatColor.GRAY
-          + p.getLocation().getBlockX() + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW +
+          + p.getLocation().toBlockLocation().getBlockX() + ChatColor.YELLOW
+          + " Y: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockY() + ChatColor.YELLOW +
           " Z: " + ChatColor.GRAY
-          + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
+          + p.getLocation().toBlockLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
           + ChatColor.GRAY + playerBiome.getKey();
 
       actionBarManager.sendActionBar(p, locationText);

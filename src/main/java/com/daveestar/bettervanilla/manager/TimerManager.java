@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.md_5.bungee.api.ChatColor;
 
 public class TimerManager {
@@ -56,7 +56,7 @@ public class TimerManager {
     PlayerTimer timer = _loadPlayerTimer(playerId);
     _playerTimers.put(playerId, timer);
 
-    updateRunningState(Bukkit.getOnlinePlayers().size());
+    updateRunningState(Main.getInstance().getServer().getOnlinePlayers().size());
   }
 
   public void onPlayerLeft(Player p) {
@@ -67,7 +67,7 @@ public class TimerManager {
       _savePlayerTimer(playerId, timer);
     }
 
-    updateRunningState(Bukkit.getOnlinePlayers().size() - 1);
+    updateRunningState(Main.getInstance().getServer().getOnlinePlayers().size() - 1);
   }
 
   public void resetPlayerTimers() {
@@ -110,7 +110,7 @@ public class TimerManager {
   }
 
   private void _handlePlayerTimers() {
-    for (Player player : Bukkit.getOnlinePlayers()) {
+    for (Player player : Main.getInstance().getServer().getOnlinePlayers()) {
       PlayerTimer timer = _playerTimers.get(player.getUniqueId());
       if (timer != null) {
         if (_afkManager.isAFK(player)) {
@@ -178,7 +178,7 @@ public class TimerManager {
   private void _displayTimerActionBar() {
     String message = _generateTimerMessage();
 
-    Bukkit.getOnlinePlayers().forEach(p -> {
+    Main.getInstance().getServer().getOnlinePlayers().forEach(p -> {
       if (!_settingsManager.getToggleLocation(p) && !_navigationManager.checkActiveNavigation(p)) {
         _actionBarManager.sendActionBarOnce(p, message);
       }
@@ -214,17 +214,15 @@ public class TimerManager {
   }
 
   private void _startTimerTask() {
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        _displayTimerActionBar();
+    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
 
-        if (_running) {
-          _incrementGlobalTimer();
-          _handlePlayerTimers();
-        }
+    scheduler.runAtFixedRate(Main.getInstance(), task -> {
+      _displayTimerActionBar();
+
+      if (_running) {
+        _incrementGlobalTimer();
+        _handlePlayerTimers();
       }
-    }.runTaskTimer(Main.getInstance(), 20L, 20L);
+    }, 0, 1, TimeUnit.SECONDS);
   }
-
 }

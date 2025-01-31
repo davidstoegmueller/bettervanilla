@@ -101,7 +101,7 @@ public class Main extends JavaPlugin {
     _mainInstance = null;
 
     // prepare all features for plugin disable
-    DeathChest.deathChest.keySet().forEach(block -> block.setType(Material.AIR));
+    DeathChest.deathChest.keySet().forEach(block -> block.setType(Material.AIR, false));
     _timerManager.setRunning(false);
     getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();

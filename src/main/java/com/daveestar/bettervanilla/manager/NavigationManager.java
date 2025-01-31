@@ -32,7 +32,7 @@ public class NavigationManager {
     // store the new navigation data
     _activeNavigations.put(p, navigationData);
 
-    Location targetLocation = navigationData.getLocation();
+    Location targetLocation = navigationData.getLocation().toBlockLocation();
     Color beamColor = navigationData.getColor();
 
     // create and display the particle beam
@@ -51,8 +51,8 @@ public class NavigationManager {
       // update the navigation data
       _activeNavigations.put(p, navigationData);
 
-      Location playerLocation = p.getLocation();
-      Location targetLocation = navigationData.getLocation();
+      Location playerLocation = p.getLocation().toBlockLocation();
+      Location targetLocation = navigationData.getLocation().toBlockLocation();
       String targetName = navigationData.getName();
 
       // generate the navigation text

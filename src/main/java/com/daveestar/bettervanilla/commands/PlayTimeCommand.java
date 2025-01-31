@@ -42,7 +42,8 @@ public class PlayTimeCommand implements TabExecutor {
         int afkTime = timerManager.getAFKTime(targetPlayer);
 
         p.sendMessage(
-            Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME (" + targetPlayer.getName() + ")");
+            Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
+                + " of " + ChatColor.GRAY + targetPlayer.getName());
         p.sendMessage("");
         p.sendMessage(Main.getPrefix() +
             "Playtime (TOTAL): " + ChatColor.YELLOW + timerManager.formatTime(playTime + afkTime));

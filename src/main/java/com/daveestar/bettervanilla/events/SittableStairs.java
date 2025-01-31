@@ -35,7 +35,7 @@ public class SittableStairs implements Listener {
           _unmountFromStair(p);
 
           // create armor stand at the block location for the player to sit on
-          Location location = clickedBlock.getLocation().add(0.5, 0.5, 0.5);
+          Location location = clickedBlock.getLocation().toBlockLocation().add(0.5, 0.5, 0.5);
 
           // adjust direction based on the lower side of the stairs
           if (clickedBlock.getBlockData() instanceof Stairs) {

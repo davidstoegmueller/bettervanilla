@@ -45,7 +45,7 @@ public class WaypointsGUI implements Listener {
   public void displayGUI(Player p) {
     String worldName = p.getWorld().getName();
     List<String> allWaypointNames = _waypointsManager.getWaypoints(worldName);
-    Location playerLocation = p.getLocation();
+    Location playerLocation = p.getLocation().toBlockLocation();
 
     // map to store GUI entries
     Map<String, ItemStack> pageEntries = allWaypointNames.parallelStream()

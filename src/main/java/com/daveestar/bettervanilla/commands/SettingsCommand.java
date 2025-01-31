@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -159,7 +157,7 @@ public class SettingsCommand implements TabExecutor {
       p.sendMessage(Main.getPrefix() + "Message was set to: " + ChatColor.YELLOW + message);
     }
 
-    maintenance.kickAll(Bukkit.getOnlinePlayers());
+    maintenance.kickAll(Main.getInstance().getServer().getOnlinePlayers());
   }
 
   private void _toggleCreeperDamage(Player p) {

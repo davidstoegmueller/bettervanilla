@@ -90,7 +90,7 @@ public class WaypointsCommand implements TabExecutor {
     }
 
     String waypointName = args[1];
-    Location location = p.getLocation();
+    Location location = p.getLocation().toBlockLocation();
     String world = p.getWorld().getName();
 
     if (_waypointsManager.checkWaypointExists(world, waypointName)) {
@@ -166,7 +166,7 @@ public class WaypointsCommand implements TabExecutor {
 
     for (String waypoint : waypoints) {
       Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypoint);
-      Location playerLocation = p.getLocation();
+      Location playerLocation = p.getLocation().toBlockLocation();
       Location waypointLocation = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
       long distance = Math.round(playerLocation.distance(waypointLocation));
 
@@ -248,7 +248,7 @@ public class WaypointsCommand implements TabExecutor {
       return;
     }
 
-    Location targetLocation = targetPlayer.getLocation();
+    Location targetLocation = targetPlayer.getLocation().toBlockLocation();
     _settingsManager.setToggleLocation(p, false);
     NavigationData navigationData = new NavigationData(targetPlayerName, targetLocation, NavigationType.PLAYER,
         Color.YELLOW);

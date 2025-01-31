@@ -31,14 +31,14 @@ public class ToggleLocationCommand implements CommandExecutor {
           navigationManager.stopNavigation(p);
           settingsManager.setToggleLocation(p, true);
 
-          Biome playerBiome = p.getWorld().getBiome(p.getLocation());
+          Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 
           String locationText = ChatColor.YELLOW + "X: "
               + ChatColor.GRAY
-              + p.getLocation().getBlockX() + ChatColor.YELLOW
-              + " Y: " + ChatColor.GRAY + p.getLocation().getBlockY() + ChatColor.YELLOW +
+              + p.getLocation().toBlockLocation().getBlockX() + ChatColor.YELLOW
+              + " Y: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockY() + ChatColor.YELLOW +
               " Z: " + ChatColor.GRAY
-              + p.getLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
+              + p.getLocation().toBlockLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
               + ChatColor.GRAY + playerBiome.getKey();
 
           actionBarManager.sendActionBar(p, locationText);

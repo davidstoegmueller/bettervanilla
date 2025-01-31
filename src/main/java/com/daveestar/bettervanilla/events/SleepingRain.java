@@ -22,7 +22,7 @@ public class SleepingRain implements Listener {
       Player p = e.getPlayer();
       World world = p.getWorld();
 
-      if (world.getEnvironment() == Environment.NORMAL && world.hasStorm()) {
+      if (world.getEnvironment() == Environment.NORMAL && p.isInRain()) {
         world.setStorm(false);
         world.setTime(0);
         e.setUseBed(Result.ALLOW);

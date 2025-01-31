@@ -5,14 +5,15 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.daveestar.bettervanilla.Main;
 
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class CompassManager {
   private static final int _SCALE_LENGTH = 80;
@@ -38,7 +39,7 @@ public class CompassManager {
   public CompassManager() {
     SettingsManager settingsManager = Main.getInstance().getSettingsManager();
 
-    Bukkit.getOnlinePlayers().forEach(p -> {
+    Main.getInstance().getServer().getOnlinePlayers().forEach(p -> {
       if (settingsManager.getToggleCompass(p)) {
         addPlayerToCompass(p);
       }
@@ -80,16 +81,15 @@ public class CompassManager {
   }
 
   private void _startCompassUpdateTask() {
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        _activeCompass.forEach((player, compassBossBar) -> _updateCompassDirection(player, compassBossBar));
-      }
-    }.runTaskTimer(Main.getInstance(), 0, _UPDATE_INTERVAL); // updates every tick (0.05 seconds)
+    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
+
+    scheduler.runAtFixedRate(Main.getInstance(), task -> {
+      _activeCompass.forEach((player, compassBossBar) -> _updateCompassDirection(player, compassBossBar));
+    }, 0, _UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
   }
 
   private void _updateCompassDirection(Player p, BossBar compassBossBar) {
-    float yaw = p.getLocation().getYaw();
+    float yaw = p.getLocation().toBlockLocation().getYaw();
     yaw = (yaw + 180) % 360; // adjust to align North and South correctly // normalize yaw to the 0-360 range
 
     String compassScale = _getDynamicCompassScale(yaw);

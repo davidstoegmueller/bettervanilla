@@ -2,17 +2,18 @@ package com.daveestar.bettervanilla.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import com.daveestar.bettervanilla.Main;
 
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
 
 public class ActionBar {
-  private final Map<Player, BukkitTask> _actionBarTasks = new HashMap<>();
+  private final Map<Player, ScheduledTask> _actionBarTasks = new HashMap<>();
 
   public void sendActionBarOnce(Player p, String message) {
     p.sendActionBar(Component.text(message));
@@ -21,12 +22,12 @@ public class ActionBar {
   public void sendActionBar(Player p, String message) {
     this.removeActionBar(p);
 
-    BukkitTask task = Bukkit.getScheduler().runTaskTimerAsynchronously(
-        Main.getInstance(),
-        () -> this.sendActionBarOnce(p, message),
-        0, 40L); // update every 2 seconds to make sure the actionbar doesnt dissappear
+    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
+    ScheduledTask schduledTask = scheduler.runAtFixedRate(Main.getInstance(), task -> {
+      this.sendActionBarOnce(p, message);
+    }, 0, 2, TimeUnit.SECONDS);
 
-    _actionBarTasks.put(p, task);
+    _actionBarTasks.put(p, schduledTask);
   }
 
   public void removeActionBar(Player player) {
