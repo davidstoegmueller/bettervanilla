@@ -12,8 +12,8 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.MaintenanceManager;
-import com.daveestar.bettervanilla.models.SettingsManager;
+import com.daveestar.bettervanilla.manager.MaintenanceManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 public class SettingsCommand implements TabExecutor {
 

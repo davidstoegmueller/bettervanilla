@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.models;
+package com.daveestar.bettervanilla.manager;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.NavigationData;

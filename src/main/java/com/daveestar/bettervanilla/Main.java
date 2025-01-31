@@ -23,14 +23,14 @@ import com.daveestar.bettervanilla.events.PlayerMove;
 import com.daveestar.bettervanilla.events.PreventEnd;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
-import com.daveestar.bettervanilla.models.AFKManager;
-import com.daveestar.bettervanilla.models.CompassManager;
-import com.daveestar.bettervanilla.models.MaintenanceManager;
-import com.daveestar.bettervanilla.models.NavigationManager;
-import com.daveestar.bettervanilla.models.SettingsManager;
-import com.daveestar.bettervanilla.models.TimerManager;
-import com.daveestar.bettervanilla.models.WaypointsManager;
-import com.daveestar.bettervanilla.utils.ActionBarManager;
+import com.daveestar.bettervanilla.manager.AFKManager;
+import com.daveestar.bettervanilla.manager.CompassManager;
+import com.daveestar.bettervanilla.manager.MaintenanceManager;
+import com.daveestar.bettervanilla.manager.NavigationManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.WaypointsManager;
+import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
 /*
@@ -40,7 +40,7 @@ public class Main extends JavaPlugin {
   private static Main _mainInstance;
   private static final Logger _LOGGER = Logger.getLogger("bettervanilla");
 
-  private ActionBarManager _actionBarManager;
+  private ActionBar _actionBarManager;
   private NavigationManager _navigationManager;
   private AFKManager _afkManager;
   private CompassManager _compassManager;
@@ -56,7 +56,7 @@ public class Main extends JavaPlugin {
     Config settingsConfig = new Config("settings.yml", getDataFolder());
     _settingsManager = new SettingsManager(settingsConfig);
 
-    _actionBarManager = new ActionBarManager();
+    _actionBarManager = new ActionBar();
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
@@ -117,7 +117,7 @@ public class Main extends JavaPlugin {
     return _mainInstance;
   }
 
-  public ActionBarManager getActionBarManager() {
+  public ActionBar getActionBarManager() {
     return _actionBarManager;
   }
 

@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.models;
+package com.daveestar.bettervanilla.utils;
 
 import java.util.*;
 

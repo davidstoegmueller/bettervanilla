@@ -12,7 +12,7 @@ import com.daveestar.bettervanilla.Main;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class ActionBarManager {
+public class ActionBar {
   private final Map<Player, BukkitTask> _actionBarTasks = new HashMap<>();
 
   public void sendActionBarOnce(Player p, String message) {

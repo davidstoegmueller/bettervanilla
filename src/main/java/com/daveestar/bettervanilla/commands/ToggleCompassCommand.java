@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.CompassManager;
+import com.daveestar.bettervanilla.manager.CompassManager;
 
 public class ToggleCompassCommand implements CommandExecutor {
   @Override

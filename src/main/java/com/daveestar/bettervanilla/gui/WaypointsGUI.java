@@ -14,10 +14,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
-import com.daveestar.bettervanilla.models.CustomGUI;
-import com.daveestar.bettervanilla.models.NavigationManager;
-import com.daveestar.bettervanilla.models.SettingsManager;
-import com.daveestar.bettervanilla.models.WaypointsManager;
+import com.daveestar.bettervanilla.manager.NavigationManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.WaypointsManager;
+import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
 import java.util.*;

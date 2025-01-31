@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.models;
+package com.daveestar.bettervanilla.manager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.utils.ActionBarManager;
+import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
 import net.md_5.bungee.api.ChatColor;
@@ -27,7 +27,7 @@ public class TimerManager {
   private final FileConfiguration _fileConfig;
   private final SettingsManager _settingsManager;
   private final NavigationManager _navigationManager;
-  private final ActionBarManager _actionBarManager;
+  private final ActionBar _actionBarManager;
   private final AFKManager _afkManager;
 
   public TimerManager(Config config) {

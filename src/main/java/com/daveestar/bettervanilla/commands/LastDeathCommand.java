@@ -17,9 +17,9 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
-import com.daveestar.bettervanilla.models.NavigationManager;
-import com.daveestar.bettervanilla.models.SettingsManager;
-import com.daveestar.bettervanilla.utils.ActionBarManager;
+import com.daveestar.bettervanilla.manager.NavigationManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
@@ -30,7 +30,7 @@ public class LastDeathCommand implements TabExecutor {
       Player p = (Player) cs;
 
       SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-      ActionBarManager actionBarManager = Main.getInstance().getActionBarManager();
+      ActionBar actionBarManager = Main.getInstance().getActionBarManager();
       NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
       if (args.length == 0) {

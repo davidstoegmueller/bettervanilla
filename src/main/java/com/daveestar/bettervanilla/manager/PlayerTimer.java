@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.models;
+package com.daveestar.bettervanilla.manager;
 
 public class PlayerTimer {
   private int _playTime;

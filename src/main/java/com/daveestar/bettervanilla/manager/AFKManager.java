@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.models;
+package com.daveestar.bettervanilla.manager;
 
 import java.util.HashMap;
 import java.util.Map;

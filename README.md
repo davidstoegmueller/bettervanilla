@@ -58,7 +58,7 @@ A simple Minecraft plugin designed to enhance the vanilla gameplay experience by
 
 ### Settings
 
-- `/settings`: List all current settings with their values/states.
+- `/settings` or `/set`: List all current settings with their values/states.
 - `/settings maintenance [message]`: Toggle maintenance mode and set a message.
 - `/settings creeperdamage`: Toggle creeper entity damage.
 - `/settings toggleend`: Toggle 'the end' entry.

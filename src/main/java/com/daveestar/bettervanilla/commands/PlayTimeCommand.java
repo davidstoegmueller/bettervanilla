@@ -12,7 +12,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.TimerManager;
+import com.daveestar.bettervanilla.manager.TimerManager;
 
 import net.md_5.bungee.api.ChatColor;
 

@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPortalEvent;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.SettingsManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.md_5.bungee.api.ChatColor;
 

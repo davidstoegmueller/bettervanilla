@@ -10,9 +10,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
-import com.daveestar.bettervanilla.models.NavigationManager;
-import com.daveestar.bettervanilla.models.SettingsManager;
-import com.daveestar.bettervanilla.utils.ActionBarManager;
+import com.daveestar.bettervanilla.manager.NavigationManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
 import net.md_5.bungee.api.ChatMessageType;
@@ -98,7 +98,7 @@ public class PlayerMove implements Listener {
 
   private void _handleLocationPlayerMove(Player p) {
     SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-    ActionBarManager actionBarManager = Main.getInstance().getActionBarManager();
+    ActionBar actionBarManager = Main.getInstance().getActionBarManager();
 
     if (settingsManager.getToggleLocation(p)) {
       Biome playerBiome = p.getWorld().getBiome(p.getLocation());

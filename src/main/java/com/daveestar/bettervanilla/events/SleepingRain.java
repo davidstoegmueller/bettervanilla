@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.SettingsManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 public class SleepingRain implements Listener {
 

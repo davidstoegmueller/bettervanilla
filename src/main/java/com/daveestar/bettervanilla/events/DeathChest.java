@@ -24,7 +24,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.SettingsManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class DeathChest implements Listener {

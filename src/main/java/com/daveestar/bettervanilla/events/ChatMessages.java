@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.SettingsManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 public class ChatMessages implements Listener {
   @EventHandler

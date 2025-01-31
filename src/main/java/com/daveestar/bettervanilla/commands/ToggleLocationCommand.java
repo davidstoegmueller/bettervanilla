@@ -8,9 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.models.NavigationManager;
-import com.daveestar.bettervanilla.models.SettingsManager;
-import com.daveestar.bettervanilla.utils.ActionBarManager;
+import com.daveestar.bettervanilla.manager.NavigationManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.ActionBar;
 
 public class ToggleLocationCommand implements CommandExecutor {
   @Override
@@ -19,7 +19,7 @@ public class ToggleLocationCommand implements CommandExecutor {
       Player p = (Player) cs;
 
       SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-      ActionBarManager actionBarManager = Main.getInstance().getActionBarManager();
+      ActionBar actionBarManager = Main.getInstance().getActionBarManager();
       NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
       if (args.length == 0) {

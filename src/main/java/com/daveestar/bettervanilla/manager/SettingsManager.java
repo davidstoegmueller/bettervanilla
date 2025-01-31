@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.models;
+package com.daveestar.bettervanilla.manager;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
