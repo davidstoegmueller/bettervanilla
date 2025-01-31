@@ -1,6 +1,5 @@
 package com.daveestar.bettervanilla.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -17,6 +16,8 @@ import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
+import net.md_5.bungee.api.ChatColor;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class WaypointsCommand implements TabExecutor {
     Main plugin = Main.getInstance();
     this._waypointsManager = plugin.getWaypointsManager();
     this._navigationManager = plugin.getNavigationManager();
-    this._actionBarManager = plugin.getActionBarManager();
+    this._actionBarManager = plugin.getActionBar();
     this._settingsManager = plugin.getSettingsManager();
     this._waypointsGUI = new WaypointsGUI();
   }

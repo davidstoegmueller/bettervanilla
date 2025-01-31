@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -23,6 +22,8 @@ import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class LastDeathCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
@@ -30,7 +31,7 @@ public class LastDeathCommand implements TabExecutor {
       Player p = (Player) cs;
 
       SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-      ActionBar actionBarManager = Main.getInstance().getActionBarManager();
+      ActionBar actionBarManager = Main.getInstance().getActionBar();
       NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
       if (args.length == 0) {

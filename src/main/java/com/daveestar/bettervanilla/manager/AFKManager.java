@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.daveestar.bettervanilla.Main;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class AFKManager {
@@ -87,14 +88,14 @@ public class AFKManager {
 
         if (wasAFK && !nowAFK) {
           p.sendMessage(Main.getPrefix() + "You are no longer AFK");
-          p.setPlayerListName(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName());
+          p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
           _afkStates.put(p, false);
 
           announceAFKToOthers(p, false);
         } else if (!wasAFK && nowAFK) {
           p.sendMessage(Main.getPrefix() + "You are now AFK!");
-          p.setPlayerListName(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
-              + ChatColor.YELLOW + p.getName());
+          p.playerListName(Component.text(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
+              + ChatColor.YELLOW + p.getName()));
           _afkStates.put(p, true);
 
           announceAFKToOthers(p, true);

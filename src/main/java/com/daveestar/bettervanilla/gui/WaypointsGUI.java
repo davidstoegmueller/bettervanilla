@@ -1,6 +1,5 @@
 package com.daveestar.bettervanilla.gui;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -8,7 +7,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -19,6 +17,11 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.NavigationData;
+
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -154,11 +157,12 @@ public class WaypointsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "RENAME");
-      meta.setLore(Arrays.asList(
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "RENAME"));
+      meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to reaname the waypoint: " + ChatColor.YELLOW
-              + waypointName));
+              + waypointName)
+          .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
     return item;
@@ -169,11 +173,12 @@ public class WaypointsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "DELETE");
-      meta.setLore(Arrays.asList(
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "DELETE"));
+      meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to delete the waypoint: " + ChatColor.YELLOW
-              + waypointName));
+              + waypointName)
+          .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
     return item;
@@ -194,8 +199,8 @@ public class WaypointsGUI implements Listener {
     ItemStack item = new ItemStack(Material.PAPER);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + waypointName);
-      meta.setLore(Arrays.asList(
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + waypointName));
+      meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + x,
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + y,
@@ -205,7 +210,8 @@ public class WaypointsGUI implements Listener {
               + " blocks",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options"));
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options").stream().map(Component::text)
+          .collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
     return item;
@@ -254,16 +260,17 @@ public class WaypointsGUI implements Listener {
   }
 
   @EventHandler
-  public void onPlayerChat(AsyncPlayerChatEvent e) {
+  public void onPlayerChat(AsyncChatEvent e) {
     Player player = e.getPlayer();
     UUID playerId = player.getUniqueId();
 
     if (_renamePending.containsKey(playerId)) {
       e.setCancelled(true);
       String oldName = _renamePending.remove(playerId);
-      String newName = e.getMessage().trim();
+      String newName = ((TextComponent) e.message()).content();
 
-      if (newName.isEmpty() || _waypointsManager.checkWaypointExists(player.getWorld().getName(), newName)) {
+      if (newName.split(" ").length > 1 || newName.isEmpty()
+          || _waypointsManager.checkWaypointExists(player.getWorld().getName(), newName)) {
         player.sendMessage(
             Main.getPrefix() + ChatColor.RED + "Invalid name or waypoint already exists.");
         return;

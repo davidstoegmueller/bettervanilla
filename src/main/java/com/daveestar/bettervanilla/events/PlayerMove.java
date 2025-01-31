@@ -1,6 +1,5 @@
 package com.daveestar.bettervanilla.events;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
@@ -15,8 +14,7 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerMove implements Listener {
   @EventHandler
@@ -69,9 +67,10 @@ public class PlayerMove implements Listener {
       // handle proximity to target location (25-block range)
       if (playerLocation.distance(targetLocation) <= 25) {
         navigationManager.stopNavigation(p);
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
-            ChatColor.YELLOW + "" + ChatColor.BOLD + navigationData.getName() +
-                ChatColor.GRAY + " is within 25 blocks!"));
+
+        ActionBar actionBar = Main.getInstance().getActionBar();
+        actionBar.sendActionBarOnce(p, ChatColor.YELLOW + "" + ChatColor.BOLD + navigationData.getName() +
+            ChatColor.GRAY + " is within 25 blocks!");
         return;
       }
 
@@ -98,7 +97,7 @@ public class PlayerMove implements Listener {
 
   private void _handleLocationPlayerMove(Player p) {
     SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-    ActionBar actionBarManager = Main.getInstance().getActionBarManager();
+    ActionBar actionBarManager = Main.getInstance().getActionBar();
 
     if (settingsManager.getToggleLocation(p)) {
       Biome playerBiome = p.getWorld().getBiome(p.getLocation());

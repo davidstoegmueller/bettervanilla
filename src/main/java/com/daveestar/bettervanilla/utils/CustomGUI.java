@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class CustomGUI implements Listener {
@@ -47,7 +48,7 @@ public class CustomGUI implements Listener {
     this._POS_SWITCH_PAGE_BUTTON = inventorySize - 1;
     this._POS_BACK_BUTTON = inventorySize - _INVENTORY_ROW_SIZE;
 
-    this._gui = Bukkit.createInventory(null, inventorySize, title);
+    this._gui = Bukkit.createInventory(null, inventorySize, Component.text(title));
     _updatePage();
 
     Bukkit.getPluginManager().registerEvents(this, pluginInstance);
@@ -102,9 +103,9 @@ public class CustomGUI implements Listener {
     ItemStack item = new ItemStack(material);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.setDisplayName(displayName);
+      meta.displayName(Component.text(displayName));
       if (lore != null)
-        meta.setLore(lore);
+        meta.lore(lore.stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
     _gui.setItem(slot, item);

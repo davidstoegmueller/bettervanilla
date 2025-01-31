@@ -2,7 +2,6 @@ package com.daveestar.bettervanilla;
 
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +32,8 @@ import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
+import net.md_5.bungee.api.ChatColor;
+
 /*
  * Bettervanilla Java Plugin
  */
@@ -40,7 +41,7 @@ public class Main extends JavaPlugin {
   private static Main _mainInstance;
   private static final Logger _LOGGER = Logger.getLogger("bettervanilla");
 
-  private ActionBar _actionBarManager;
+  private ActionBar _actionBar;
   private NavigationManager _navigationManager;
   private AFKManager _afkManager;
   private CompassManager _compassManager;
@@ -56,7 +57,7 @@ public class Main extends JavaPlugin {
     Config settingsConfig = new Config("settings.yml", getDataFolder());
     _settingsManager = new SettingsManager(settingsConfig);
 
-    _actionBarManager = new ActionBar();
+    _actionBar = new ActionBar();
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
@@ -109,7 +110,8 @@ public class Main extends JavaPlugin {
   }
 
   public static String getPrefix() {
-    return ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "]" + ChatColor.YELLOW + " » "
+    return ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "]"
+        + ChatColor.YELLOW + " » "
         + ChatColor.GRAY;
   }
 
@@ -117,8 +119,8 @@ public class Main extends JavaPlugin {
     return _mainInstance;
   }
 
-  public ActionBar getActionBarManager() {
-    return _actionBarManager;
+  public ActionBar getActionBar() {
+    return _actionBar;
   }
 
   public NavigationManager getNavigationManager() {

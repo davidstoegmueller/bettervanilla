@@ -9,14 +9,13 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.daveestar.bettervanilla.Main;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
 
 public class ActionBar {
   private final Map<Player, BukkitTask> _actionBarTasks = new HashMap<>();
 
   public void sendActionBarOnce(Player p, String message) {
-    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
+    p.sendActionBar(Component.text(message));
   }
 
   public void sendActionBar(Player p, String message) {
@@ -24,7 +23,7 @@ public class ActionBar {
 
     BukkitTask task = Bukkit.getScheduler().runTaskTimerAsynchronously(
         Main.getInstance(),
-        () -> p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message)),
+        () -> this.sendActionBarOnce(p, message),
         0, 40L); // update every 2 seconds to make sure the actionbar doesnt dissappear
 
     _actionBarTasks.put(p, task);

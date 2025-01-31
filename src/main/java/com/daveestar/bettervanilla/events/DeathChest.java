@@ -3,7 +3,6 @@ package com.daveestar.bettervanilla.events;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
@@ -26,6 +25,10 @@ import org.bukkit.inventory.ItemStack;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.Config;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.md_5.bungee.api.ChatColor;
 
 public class DeathChest implements Listener {
   public static HashMap<Block, Inventory> deathChest = new HashMap<Block, Inventory>();
@@ -59,7 +62,7 @@ public class DeathChest implements Listener {
     Block blockChest = p.getWorld().getBlockAt(deathChestLocation);
     blockChest.setType(Material.CHEST);
 
-    Inventory inv = Bukkit.createInventory(null, 45, "DeathChest from " + p.getName());
+    Inventory inv = Bukkit.createInventory(null, 45, Component.text("DeathChest from " + p.getName()));
     inv.clear();
     inv.setContents(p.getInventory().getContents());
 
@@ -111,7 +114,8 @@ public class DeathChest implements Listener {
 
   @EventHandler
   public void onDeathChestClose(InventoryCloseEvent e) {
-    if (e.getView().getTitle().equalsIgnoreCase("DeathChest from " + e.getPlayer().getName())) {
+    if (((TextComponent) e.getView().title()).content()
+        .equalsIgnoreCase("DeathChest from " + e.getPlayer().getName())) {
       for (ItemStack item : e.getInventory().getContents()) {
         if (item != null) {
           e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), item);

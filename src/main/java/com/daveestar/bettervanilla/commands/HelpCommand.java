@@ -1,12 +1,13 @@
 package com.daveestar.bettervanilla.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class HelpCommand implements CommandExecutor {
   @Override

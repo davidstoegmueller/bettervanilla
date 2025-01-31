@@ -1,6 +1,5 @@
 package com.daveestar.bettervanilla.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +11,8 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class ToggleLocationCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
@@ -19,7 +20,7 @@ public class ToggleLocationCommand implements CommandExecutor {
       Player p = (Player) cs;
 
       SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-      ActionBar actionBarManager = Main.getInstance().getActionBarManager();
+      ActionBar actionBarManager = Main.getInstance().getActionBar();
       NavigationManager navigationManager = Main.getInstance().getNavigationManager();
 
       if (args.length == 0) {

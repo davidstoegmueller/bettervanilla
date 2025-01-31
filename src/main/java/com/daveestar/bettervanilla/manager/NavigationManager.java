@@ -4,7 +4,8 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.NavigationData;
 import com.daveestar.bettervanilla.utils.ParticleBeam;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,9 +19,6 @@ public class NavigationManager {
 
   // stores active particle beams for players
   private final Map<Player, ParticleBeam> _activeBeams = new HashMap<>();
-
-  public NavigationManager() {
-  }
 
   public boolean checkActiveNavigation(Player player) {
     // check if the player has an active navigation
@@ -59,7 +57,7 @@ public class NavigationManager {
 
       // generate the navigation text
       String navigationText = _getNavigationText(targetName, targetLocation, playerLocation);
-      Main.getInstance().getActionBarManager().sendActionBar(p, navigationText);
+      Main.getInstance().getActionBar().sendActionBar(p, navigationText);
 
       ParticleBeam beam = _activeBeams.get(p);
       beam.updateLocation(targetLocation);
@@ -79,7 +77,7 @@ public class NavigationManager {
     }
 
     // clear the action bar for the player
-    Main.getInstance().getActionBarManager().removeActionBar(p);
+    Main.getInstance().getActionBar().removeActionBar(p);
   }
 
   public NavigationData getActiveNavigation(Player p) {

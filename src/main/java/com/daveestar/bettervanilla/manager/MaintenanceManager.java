@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Config;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class MaintenanceManager {
@@ -47,7 +48,7 @@ public class MaintenanceManager {
             + "The server is currently in maintenance mode.\nCheck back later or notify the admin of the server.\n\n"
             + (message != null ? ChatColor.YELLOW + "" + ChatColor.BOLD + "Message: " + ChatColor.GRAY + message
                 : "");
-        p.kickPlayer(maintenanceMsg);
+        p.kick(Component.text(maintenanceMsg));
       } else {
         p.sendMessage(Main.getPrefix() + "You bypassed maintenance mode.");
       }

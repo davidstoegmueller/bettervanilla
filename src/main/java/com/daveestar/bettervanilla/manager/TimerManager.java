@@ -35,7 +35,7 @@ public class TimerManager {
     this._fileConfig = config.getFileCfgrn();
     this._settingsManager = Main.getInstance().getSettingsManager();
     this._navigationManager = Main.getInstance().getNavigationManager();
-    this._actionBarManager = Main.getInstance().getActionBarManager();
+    this._actionBarManager = Main.getInstance().getActionBar();
     this._afkManager = Main.getInstance().getAFKManager();
 
     _loadConfiguration();
