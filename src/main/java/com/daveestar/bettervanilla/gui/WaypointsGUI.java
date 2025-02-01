@@ -64,24 +64,14 @@ public class WaypointsGUI implements Listener {
     Map<String, CustomGUI.ClickAction> clickActions = new HashMap<>();
     for (String waypointName : allWaypointNames) {
       clickActions.put(waypointName, new CustomGUI.ClickAction() {
-        @Override
         public void onLeftClick(Player player) {
           _handleNavigation(p, waypointName);
           p.closeInventory();
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         }
 
-        @Override
         public void onRightClick(Player player) {
           _displayOptionsGUI(player, waypointName, waypointsGUI);
-        }
-
-        @Override
-        public void onShiftLeftClick(Player player) {
-        }
-
-        @Override
-        public void onShiftRightClick(Player player) {
         }
       });
     }
@@ -106,7 +96,6 @@ public class WaypointsGUI implements Listener {
 
     Map<String, CustomGUI.ClickAction> optionClickActions = new HashMap<>();
     optionClickActions.put("rename", new CustomGUI.ClickAction() {
-      @Override
       public void onLeftClick(Player player) {
         player.sendMessage(
             Main.getPrefix() + "Enter the new name for the waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
@@ -114,37 +103,12 @@ public class WaypointsGUI implements Listener {
         _renamePending.put(player.getUniqueId(), waypointName);
         player.closeInventory();
       }
-
-      @Override
-      public void onRightClick(Player player) {
-      }
-
-      @Override
-      public void onShiftLeftClick(Player player) {
-      }
-
-      @Override
-      public void onShiftRightClick(Player player) {
-      }
     });
 
     optionClickActions.put("delete", new CustomGUI.ClickAction() {
-      @Override
       public void onLeftClick(Player player) {
         _handleRemove(player, waypointName);
         player.closeInventory();
-      }
-
-      @Override
-      public void onRightClick(Player player) {
-      }
-
-      @Override
-      public void onShiftLeftClick(Player player) {
-      }
-
-      @Override
-      public void onShiftRightClick(Player player) {
       }
     });
 

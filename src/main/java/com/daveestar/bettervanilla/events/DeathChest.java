@@ -27,7 +27,6 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.Config;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
 
 public class DeathChest implements Listener {
@@ -115,8 +114,7 @@ public class DeathChest implements Listener {
 
   @EventHandler
   public void onDeathChestClose(InventoryCloseEvent e) {
-    if (((TextComponent) e.getView().title()).content()
-        .equalsIgnoreCase("DeathChest from " + e.getPlayer().getName())) {
+    if (e.getView().title().equals(Component.text("DeathChest from " + e.getPlayer().getName()))) {
       for (ItemStack item : e.getInventory().getContents()) {
         if (item != null) {
           e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation().toBlockLocation(), item);

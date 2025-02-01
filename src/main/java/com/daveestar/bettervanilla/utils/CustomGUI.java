@@ -201,13 +201,21 @@ public class CustomGUI implements Listener {
   }
 
   public interface ClickAction {
-    void onLeftClick(Player player);
+    default void onLeftClick(Player player) {
+      // Default implementation (no action)
+    }
 
-    void onRightClick(Player player);
+    default void onRightClick(Player player) {
+      // Default implementation (no action)
+    }
 
-    void onShiftLeftClick(Player player);
+    default void onShiftLeftClick(Player player) {
+      // Default implementation (no action)
+    }
 
-    void onShiftRightClick(Player player);
+    default void onShiftRightClick(Player player) {
+      // Default implementation (no action)
+    }
   }
 
   public enum Option {
