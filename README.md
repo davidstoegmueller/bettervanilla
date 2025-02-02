@@ -17,6 +17,7 @@ A simple Minecraft plugin designed to enhance the vanilla gameplay experience by
 - **Sittable Stairs**: Sit on stairs using an empty hand.
 - **Sleeping Rain**: Skip rainy days by sleeping in a bed.
 - **Death Chest**: Create a chest with your items at your death location.
+- **Permissions**: Manage and assign plugin permissions to users and groups.
 
 ## Commands
 
@@ -82,6 +83,15 @@ A simple Minecraft plugin designed to enhance the vanilla gameplay experience by
 
 - `/help`: Get help for better vanilla.
 
+### Permissions
+
+- `/permissions group addperm <group> <permission>`: Add a permission to a group.
+- `/permissions group removeperm <group> <permission>`: Remove a permission from a group.
+- `/permissions user addperm <username> <permission>`: Add a permission to a user.
+- `/permissions user removeperm <username> <permission>`: Remove a permission from a user.
+- `/permissions user setgroup <username> <group>`: Set the user's group.
+- `/permissions list`: List all group and user permission assignments.
+
 ## Installation
 
 1. Download the plugin jar file from the [releases](https://github.com/davidstoegmueller/bettervanilla/releases) page.
@@ -91,6 +101,22 @@ A simple Minecraft plugin designed to enhance the vanilla gameplay experience by
 ## Configuration
 
 The plugin generates configuration files in the `plugins/bettervanilla` directory. You can edit these files to customize the plugin's behavior.
+
+## Permissions
+
+- `bettervanilla.waypoints`
+- `bettervanilla.waypoints.overwrite`
+- `bettervanilla.waypoints.remove`
+- `bettervanilla.maintenance.bypass`
+- `bettervanilla.playtime`
+- `bettervanilla.ping`
+- `bettervanilla.invsee`
+- `bettervanilla.timer`
+- `bettervanilla.adminhelp`
+- `bettervanilla.settings`
+- `bettervanilla.togglelocation`
+- `bettervanilla.togglecompass`
+- `bettervanilla.lastdeath`
 
 ## Contributing
 
