@@ -29,30 +29,31 @@ public class SettingsCommand implements TabExecutor {
         p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "SETTINGS:");
         p.sendMessage("");
         p.sendMessage(
-            Main.getPrefix() + "/settings maintenance [message] - Toggle maintenance mode and set a message");
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            Main.getShortPrefix() + "/settings maintenance [message] - Toggle maintenance mode and set a message");
+        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
             + (settingsManager.getMaintenance() ? "ON" : "OFF"));
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "MESSAGE: " + ChatColor.GRAY
+        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "MESSAGE: " + ChatColor.GRAY
             + settingsManager.getMaintenanceMessage());
         p.sendMessage("");
         p.sendMessage(
-            Main.getPrefix() + "/settings creeperdamage - Toggle creeper entity damage");
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            Main.getShortPrefix() + "/settings creeperdamage - Toggle creeper entity damage");
+        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
             + (settingsManager.getToggleCreeperDamage() ? "ON" : "OFF"));
         p.sendMessage("");
         p.sendMessage(
-            Main.getPrefix() + "/settings toggleend - Toggle 'the end' entry");
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            Main.getShortPrefix() + "/settings toggleend - Toggle 'the end' entry");
+        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
             + (settingsManager.getToggleEnd() ? "ON" : "OFF"));
         p.sendMessage("");
         p.sendMessage(
-            Main.getPrefix() + "/settings sleepingrain - Toggle sleep during rain");
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            Main.getShortPrefix() + "/settings sleepingrain - Toggle sleep during rain");
+        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
             + (settingsManager.getSleepingRain() ? "ON" : "OFF"));
         p.sendMessage("");
         p.sendMessage(
-            Main.getPrefix() + "/settings afktime <minutes> - Set the time in minutes until a player is marked as AFK");
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
+            Main.getShortPrefix()
+                + "/settings afktime <minutes> - Set the time in minutes until a player is marked as AFK");
+        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
             + settingsManager.getAFKTime() + " minutes");
 
         return true;

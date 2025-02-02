@@ -1,6 +1,6 @@
 name: bettervanilla
 main: com.daveestar.bettervanilla.Main
-version: 1.0.3
+version: 1.1.0
 api-version: 1.20
 authors: ["daveestar"]
 commands:
@@ -53,3 +53,8 @@ commands:
     description: Navigate to the last death point
     usage: /lastdeath
     permission: bettervanilla.lastdeath
+  permissions:
+    aliases: [perms]
+    description: Add/Remove permissions to/from players and groups.
+    usage: /permissions
+    permission: bettervanilla.permissions

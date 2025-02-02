@@ -43,14 +43,13 @@ public class PlayTimeCommand implements TabExecutor {
 
         p.sendMessage(
             Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
-                + " of " + ChatColor.GRAY + targetPlayer.getName());
-        p.sendMessage("");
-        p.sendMessage(Main.getPrefix() +
-            "Playtime (TOTAL): " + ChatColor.YELLOW + timerManager.formatTime(playTime + afkTime));
-        p.sendMessage(Main.getPrefix() +
-            "Playtime (REAL): " + ChatColor.YELLOW + timerManager.formatTime(playTime));
-        p.sendMessage(Main.getPrefix() +
-            "AFKtime: " + ChatColor.YELLOW + timerManager.formatTime(afkTime));
+                + " » " + ChatColor.GRAY + targetPlayer.getName());
+        p.sendMessage(Main.getShortPrefix() +
+            "Totaltime: " + ChatColor.YELLOW + timerManager.formatTime(playTime + afkTime));
+        p.sendMessage(Main.getShortPrefix() +
+            "Playtime: " + ChatColor.YELLOW + timerManager.formatTime(playTime));
+        p.sendMessage(Main.getShortPrefix() +
+            "AFK: " + ChatColor.YELLOW + timerManager.formatTime(afkTime));
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " +
             ChatColor.YELLOW + "/playtime [player]");

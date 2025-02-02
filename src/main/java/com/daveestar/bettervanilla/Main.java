@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.daveestar.bettervanilla.commands.HelpCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
 import com.daveestar.bettervanilla.commands.LastDeathCommand;
+import com.daveestar.bettervanilla.commands.PermissionsCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
 import com.daveestar.bettervanilla.commands.PlayTimeCommand;
 import com.daveestar.bettervanilla.commands.SettingsCommand;
@@ -26,6 +27,7 @@ import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
+import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
@@ -47,6 +49,7 @@ public class Main extends JavaPlugin {
   private CompassManager _compassManager;
 
   private SettingsManager _settingsManager;
+  private PermissionsManager _permissionsManager;
   private WaypointsManager _waypointsManager;
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
@@ -56,6 +59,9 @@ public class Main extends JavaPlugin {
 
     Config settingsConfig = new Config("settings.yml", getDataFolder());
     _settingsManager = new SettingsManager(settingsConfig);
+
+    Config permissionsConfig = new Config("permissions.yml", getDataFolder());
+    _permissionsManager = new PermissionsManager(permissionsConfig);
 
     _actionBar = new ActionBar();
     _navigationManager = new NavigationManager();
@@ -85,6 +91,7 @@ public class Main extends JavaPlugin {
     getCommand("timer").setExecutor(new TimerCommand());
     getCommand("playtime").setExecutor(new PlayTimeCommand());
     getCommand("settings").setExecutor(new SettingsCommand());
+    getCommand("permissions").setExecutor(new PermissionsCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -115,6 +122,10 @@ public class Main extends JavaPlugin {
         + ChatColor.GRAY;
   }
 
+  public static String getShortPrefix() {
+    return ChatColor.YELLOW + " » " + ChatColor.GRAY;
+  }
+
   public static Main getInstance() {
     return _mainInstance;
   }
@@ -137,6 +148,10 @@ public class Main extends JavaPlugin {
 
   public SettingsManager getSettingsManager() {
     return _settingsManager;
+  }
+
+  public PermissionsManager getPermissionsManager() {
+    return _permissionsManager;
   }
 
   public WaypointsManager getWaypointsManager() {

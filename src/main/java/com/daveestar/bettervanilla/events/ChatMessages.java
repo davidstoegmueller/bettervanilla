@@ -27,6 +27,7 @@ public class ChatMessages implements Listener {
 
     Main.getInstance().getMaintenanceManager().sendMaintenance(p);
 
+    Main.getInstance().getPermissionsManager().onPlayerJoined(p);
     Main.getInstance().getAFKManager().onPlayerJoined(p);
     Main.getInstance().getTimerManager().onPlayerJoined(p);
 
@@ -43,6 +44,7 @@ public class ChatMessages implements Listener {
     e.quitMessage(Component
         .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
 
+    Main.getInstance().getPermissionsManager().onPlayerLeft(p);
     Main.getInstance().getAFKManager().onPlayerLeft(p);
     Main.getInstance().getTimerManager().onPlayerLeft(p);
   }

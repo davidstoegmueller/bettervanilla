@@ -162,7 +162,7 @@ public class WaypointsCommand implements TabExecutor {
       return;
     }
 
-    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "All waypoints in " + world + ":");
+    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "Waypoints » " + world + ":");
 
     for (String waypoint : waypoints) {
       Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypoint);
@@ -170,10 +170,11 @@ public class WaypointsCommand implements TabExecutor {
       Location waypointLocation = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
       long distance = Math.round(playerLocation.distance(waypointLocation));
 
-      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + waypoint + ChatColor.GRAY + " is at " + ChatColor.YELLOW
-          + "X: " + ChatColor.GRAY + coords.get("x") + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + coords.get("y")
-          + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + coords.get("z") + ChatColor.RED + " » " + ChatColor.YELLOW
-          + distance + "m");
+      p.sendMessage(
+          Main.getShortPrefix() + ChatColor.YELLOW + waypoint + ChatColor.GRAY + " is at " + ChatColor.YELLOW
+              + "X: " + ChatColor.GRAY + coords.get("x") + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + coords.get("y")
+              + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + coords.get("z") + ChatColor.RED + " » " + ChatColor.YELLOW
+              + distance + "m");
     }
   }
 
@@ -272,14 +273,14 @@ public class WaypointsCommand implements TabExecutor {
 
   private void _handleHelp(Player p) {
     p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "WAYPOINTS HELP:");
-    p.sendMessage(Main.getPrefix() + "/waypoints - Opens the waypoints GUI.");
-    p.sendMessage(Main.getPrefix() + "/waypoints add <name> - Adds a waypoint at your current location.");
-    p.sendMessage(Main.getPrefix() + "/waypoints remove <name> - Removes a waypoint by name (requires permission).");
-    p.sendMessage(Main.getPrefix() + "/waypoints list - Lists all waypoints in the current world.");
-    p.sendMessage(Main.getPrefix() + "/waypoints nav <name> - Starts navigation to a specified waypoint.");
-    p.sendMessage(Main.getPrefix() + "/waypoints player <player> - Navigates to another player's location.");
-    p.sendMessage(Main.getPrefix() + "/waypoints coords <x> <y> <z> - Navigates to specific coordinates.");
-    p.sendMessage(Main.getPrefix() + "/waypoints cancel - Cancels the current navigation.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints - Opens the waypoints GUI.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints add <name> - Adds a waypoint at your current location.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints remove <name> - Removes a waypoint by name.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints list - Lists all waypoints in the current world.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints nav <name> - Starts navigation to a specified waypoint.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints player <player> - Navigates to another player's location.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints coords <x> <y> <z> - Navigates to specific coordinates.");
+    p.sendMessage(Main.getShortPrefix() + "/waypoints cancel - Cancels the current navigation.");
   }
 
   @Override
