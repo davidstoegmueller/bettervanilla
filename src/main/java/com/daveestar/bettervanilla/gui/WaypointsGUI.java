@@ -206,8 +206,7 @@ public class WaypointsGUI implements Listener {
   private void _handleRemove(Player p, String waypointName) {
     if (!p.hasPermission("bettervanilla.waypoints.remove")) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED
-          + "Sorry! You don't have permissions to remove existing waypoints. Please ask to gain "
-          + ChatColor.YELLOW + "bettervanilla.waypoints.remove");
+          + "Sorry! You don't have permissions to remove existing waypoints.");
       return;
     }
 

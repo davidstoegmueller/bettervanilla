@@ -129,8 +129,7 @@ public class WaypointsCommand implements TabExecutor {
   private void _handleRemove(Player p, String[] args) {
     if (!p.hasPermission("bettervanilla.waypoints.remove")) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED
-          + "Sorry! You don't have permissions to remove existing waypoints. Please ask to gain "
-          + ChatColor.YELLOW + "bettervanilla.waypoints.remove");
+          + "Sorry! You don't have permissions to remove existing waypoints.");
       return;
     }
 

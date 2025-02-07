@@ -320,20 +320,20 @@ public class PermissionsCommand implements TabExecutor {
             completions.addAll(permissionsManager.getUserPermissions(user));
           }
         }
-      }
-    } else if (args[0].equalsIgnoreCase("group")) {
-      String action = args[1].toLowerCase();
+      } else if (args[0].equalsIgnoreCase("group")) {
+        String action = args[1].toLowerCase();
 
-      if (action.equals("addperm")) {
-        Permissions[] availablePermission = Permissions.values();
+        if (action.equals("addperm")) {
+          Permissions[] availablePermission = Permissions.values();
 
-        completions.addAll(Arrays.stream(availablePermission)
-            .map(Permissions::getName)
-            .collect(Collectors.toList()));
-      }
+          completions.addAll(Arrays.stream(availablePermission)
+              .map(Permissions::getName)
+              .collect(Collectors.toList()));
+        }
 
-      if (action.equals("removeperm")) {
-        completions.addAll(permissionsManager.getGroupPermissions(args[2]));
+        if (action.equals("removeperm")) {
+          completions.addAll(permissionsManager.getGroupPermissions(args[2]));
+        }
       }
     }
 
