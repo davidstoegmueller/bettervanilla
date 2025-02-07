@@ -220,4 +220,30 @@ public class PermissionsManager {
       activeAttachments.remove(uid);
     }
   }
+
+  // -------------------------
+  // RELOAD PERMISSIONS METHOD
+  // -------------------------
+
+  public void reloadPermissions() {
+    // Iterate over all online players and re-apply permissions
+    for (Player p : plugin.getServer().getOnlinePlayers()) {
+      UUID uid = p.getUniqueId();
+
+      // Remove existing permission attachment if present
+      if (activeAttachments.containsKey(uid)) {
+        p.removeAttachment(activeAttachments.get(uid));
+        activeAttachments.remove(uid);
+      }
+
+      // Retrieve effective permissions and create new attachment
+      List<String> effectivePermissions = getEffectivePermissions(p);
+      PermissionAttachment attachment = p.addAttachment(plugin);
+      for (String perm : effectivePermissions) {
+        attachment.setPermission(perm, true);
+      }
+      activeAttachments.put(uid, attachment);
+      p.updateCommands();
+    }
+  }
 }

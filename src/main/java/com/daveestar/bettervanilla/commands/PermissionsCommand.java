@@ -8,14 +8,17 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PermissionsCommand implements TabExecutor {
 
@@ -28,8 +31,8 @@ public class PermissionsCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     if (args.length < 1) {
-      sender.sendMessage(
-          Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/permissions <group | user | list>");
+      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
+          + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");
       return true;
     }
 
@@ -41,15 +44,20 @@ public class PermissionsCommand implements TabExecutor {
       case "user":
         handleUserCommand(sender, args);
         break;
+      case "assignments":
+        handleAssignmentsCommand(sender);
+        break;
       case "list":
-        listAssignments(sender);
+        handleListCommand(sender);
+        break;
+      case "reload":
+        handleReloadCommand(sender, args);
         break;
       default:
-        sender.sendMessage(
-            Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/permissions <group | user | list>");
+        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
+            + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");
         break;
     }
-
     return true;
   }
 
@@ -144,6 +152,7 @@ public class PermissionsCommand implements TabExecutor {
           sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Permission " + ChatColor.YELLOW + permission
               + ChatColor.RED + " has already been added to user " + ChatColor.YELLOW + p.getName());
         }
+        break;
       case "removeperm":
         // syntax: /permissions user removeperm <username> <permission>
         if (args.length != 4) {
@@ -189,7 +198,7 @@ public class PermissionsCommand implements TabExecutor {
   // LIST COMMAND
   // ------------
 
-  private void listAssignments(CommandSender sender) {
+  private void handleAssignmentsCommand(CommandSender sender) {
     if (!(sender instanceof Player)) {
       sender.sendMessage(Main.getPrefix() + ChatColor.RED + "You must be a player to use this command.");
       return;
@@ -235,6 +244,33 @@ public class PermissionsCommand implements TabExecutor {
     }
   }
 
+  // -------------------
+  // ASSIGNMENTS COMMAND
+  // -------------------
+
+  public void handleListCommand(CommandSender sender) {
+    if (!(sender instanceof Player)) {
+      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "You must be a player to use this command.");
+      return;
+    }
+
+    Player p = (Player) sender;
+
+    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PERMISSIONS: List of Permissions");
+    for (Permissions permission : Permissions.values()) {
+      p.sendMessage(Main.getShortPrefix() + permission.getName());
+    }
+  }
+
+  // ---------------------
+  // RELOAD COMMAND METHOD
+  // ---------------------
+
+  private void handleReloadCommand(CommandSender sender, String[] args) {
+    permissionsManager.reloadPermissions();
+    sender.sendMessage(Main.getPrefix() + "Permissions reloaded successfully.");
+  }
+
   // --------------
   // TAB COMPLETION
   // --------------
@@ -245,7 +281,7 @@ public class PermissionsCommand implements TabExecutor {
     Set<String> groupNames = permissionsManager.getAllGroupNames();
 
     if (args.length == 1) {
-      List<String> sections = List.of("group", "user", "list");
+      List<String> sections = List.of("group", "user", "assignments", "list", "reload");
       completions.addAll(sections);
     } else if (args.length == 2) {
       if (args[0].equalsIgnoreCase("group")) {
@@ -267,19 +303,37 @@ public class PermissionsCommand implements TabExecutor {
 
         if (action.equals("setgroup")) {
           completions.addAll(groupNames);
-        } else if (action.equals("removeperm")) {
+        }
+
+        if (action.equals("addperm")) {
+          Permissions[] availablePermission = Permissions.values();
+
+          completions.addAll(Arrays.stream(availablePermission)
+              .map(Permissions::getName)
+              .collect(Collectors.toList()));
+        }
+
+        if (action.equals("removeperm")) {
           OfflinePlayer user = Bukkit.getOfflinePlayer(args[2]);
 
           if (user != null) {
             completions.addAll(permissionsManager.getUserPermissions(user));
           }
         }
-      } else if (args[0].equalsIgnoreCase("group")) {
-        String action = args[1].toLowerCase();
+      }
+    } else if (args[0].equalsIgnoreCase("group")) {
+      String action = args[1].toLowerCase();
 
-        if (action.equals("removeperm")) {
-          completions.addAll(permissionsManager.getGroupPermissions(args[2]));
-        }
+      if (action.equals("addperm")) {
+        Permissions[] availablePermission = Permissions.values();
+
+        completions.addAll(Arrays.stream(availablePermission)
+            .map(Permissions::getName)
+            .collect(Collectors.toList()));
+      }
+
+      if (action.equals("removeperm")) {
+        completions.addAll(permissionsManager.getGroupPermissions(args[2]));
       }
     }
 

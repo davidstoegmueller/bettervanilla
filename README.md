@@ -1,6 +1,38 @@
-# bettervanilla
+# BetterVanilla AIO
 
-A simple Minecraft plugin designed to enhance the vanilla gameplay experience by adding various features and commands to improve the overall player experience.
+bettervanilla is a simple yet powerful Minecraft plugin designed to enhance the vanilla gameplay experience on SMP servers while maintaining the classic feel of Minecraft.
+
+## Key Enhancements
+
+- **Intuitive Navigation:**  
+  Interactive waypoints and the bossbar compass guide you effortlessly through your world.
+
+- **Enhanced Quality of Life:**
+
+  - A range of intuitive features that streamline navigation and interaction
+  - Integrated tools offering natural orientation and ease of use
+  - Comprehensive enhancements designed to improve the overall gameplay experience for everyone
+
+- **Admin Features:**  
+  Robust command functionalities and configuration settings streamline server management and gameplay control.
+
+## Designed for Vanilla SMP Servers
+
+bettervanilla enriches your server by:
+
+- Preserving the authentic charm of vanilla Minecraft
+- Providing customizable, quality-of-life enhancements
+- Enabling precise permission management for improved security and control
+
+## Why Choose bettervanilla?
+
+By integrating both player-friendly features and administrative tools, bettervanilla offers:
+
+- A balance between modern enhancements and a classic gaming experience
+- An easy-to-use solution that adds depth and interactivity to your server
+- Improved enjoyment and efficient server management for both players and admins
+
+Upgrade your SMP server with bettervanilla for a richer, more immersive gameplay experience.
 
 ## Features
 
@@ -85,12 +117,15 @@ A simple Minecraft plugin designed to enhance the vanilla gameplay experience by
 
 ### Permissions
 
+- `/permissions` or `/perms`: Access a permissions usage message.
 - `/permissions group addperm <group> <permission>`: Add a permission to a group.
 - `/permissions group removeperm <group> <permission>`: Remove a permission from a group.
 - `/permissions user addperm <username> <permission>`: Add a permission to a user.
 - `/permissions user removeperm <username> <permission>`: Remove a permission from a user.
 - `/permissions user setgroup <username> <group>`: Set the user's group.
+- `/permissions assignments`: List all assignments made to groups and users.
 - `/permissions list`: List all group and user permission assignments.
+- `/permissions reload`: Reload the permissions config and reapply all the defined permissions to all players.
 
 ## Installation
 
@@ -117,11 +152,16 @@ The plugin generates configuration files in the `plugins/bettervanilla` director
 - `bettervanilla.togglelocation`
 - `bettervanilla.togglecompass`
 - `bettervanilla.lastdeath`
+- `bettervanilla.permissions`
 
 ## Contributing
 
 Feel free to contribute to the project by opening issues or submitting pull requests on the [GitHub repository](https://github.com/davidstoegmueller/bettervanilla).
 
+## GitHub Issues
+
+For tracking and managing issues, please visit the repository's [Issues](https://github.com/davidstoegmueller/bettervanilla/issues) page. When creating a new issue, include a clear description of the problem, steps to reproduce, and any related logs or screenshots. Your detailed feedback helps us improve the project!
+
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
