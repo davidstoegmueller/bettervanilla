@@ -85,10 +85,12 @@ public class WaypointsGUI implements Listener {
     Map<String, ItemStack> optionPageEntries = new HashMap<>();
     optionPageEntries.put("rename", _createRenameItem(waypointName));
     optionPageEntries.put("delete", _createDeleteItem(waypointName));
+    optionPageEntries.put("seticon", _createSetIconItem(waypointName));
 
     Map<String, Integer> customSlots = new HashMap<>();
-    customSlots.put("rename", 3);
-    customSlots.put("delete", 5);
+    customSlots.put("rename", 2);
+    customSlots.put("seticon", 4);
+    customSlots.put("delete", 6);
 
     CustomGUI optionsGUI = new CustomGUI(Main.getInstance(), p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Waypoint Options",
@@ -112,6 +114,12 @@ public class WaypointsGUI implements Listener {
       }
     });
 
+    optionClickActions.put("seticon", new CustomGUI.ClickAction() {
+      public void onLeftClick(Player player) {
+        _displaySetIconGUI(player, waypointName, optionsGUI);
+      }
+    });
+
     optionsGUI.setClickActions(optionClickActions);
     optionsGUI.open(p);
   }
@@ -121,7 +129,7 @@ public class WaypointsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "RENAME"));
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Remove"));
       meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to reaname the waypoint: " + ChatColor.YELLOW
@@ -137,7 +145,7 @@ public class WaypointsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "DELETE"));
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Delete"));
       meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to delete the waypoint: " + ChatColor.YELLOW
@@ -148,20 +156,33 @@ public class WaypointsGUI implements Listener {
     return item;
   }
 
-  /**
-   * Creates a formatted ItemStack for a waypoint.
-   */
+  private ItemStack _createSetIconItem(String waypointName) {
+    ItemStack item = new ItemStack(Material.ENDER_EYE);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Set Icon"));
+      meta.lore(Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to set custom icon for: " + ChatColor.YELLOW + waypointName)
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createWaypointItem(Location playerLocation, String worldName, String waypointName) {
     Map<String, Integer> waypointData = _waypointsManager.getWaypointByName(worldName, waypointName);
-
     int x = waypointData.get("x");
     int y = waypointData.get("y");
     int z = waypointData.get("z");
     Location waypointLocation = new Location(playerLocation.getWorld(), x, y, z);
     long distance = Math.round(playerLocation.distance(waypointLocation));
 
-    ItemStack item = new ItemStack(Material.PAPER);
+    ItemStack item = _waypointsManager.getWaypointIcon(worldName, waypointName);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + waypointName));
       meta.lore(Arrays.asList(
@@ -174,10 +195,11 @@ public class WaypointsGUI implements Listener {
               + " blocks",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options").stream().map(Component::text)
-          .collect(Collectors.toList()));
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options").stream()
+          .map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -222,6 +244,59 @@ public class WaypointsGUI implements Listener {
     }
   }
 
+  private void _displaySetIconGUI(Player player, String waypointName, CustomGUI parentGUI) {
+    Material[] allMaterials = Material.values();
+    Map<String, ItemStack> itemEntries = new LinkedHashMap<>();
+
+    for (Material m : allMaterials) {
+      if (m == Material.AIR)
+        continue;
+      try {
+        ItemStack item = new ItemStack(m);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.displayName(
+            Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + m.name()));
+        meta.lore(Arrays.asList(
+            "",
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to set this as the icon for: " + ChatColor.YELLOW
+                + waypointName)
+            .stream().map(Component::text).collect(Collectors.toList()));
+        item.setItemMeta(meta);
+
+        itemEntries.put(m.name(), item);
+      } catch (Exception ex) {
+      }
+    }
+
+    CustomGUI itemsGui = new CustomGUI(Main.getInstance(), player,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Icon for: " + ChatColor.GRAY + waypointName,
+        itemEntries, 6, null, parentGUI, null);
+    Map<String, CustomGUI.ClickAction> itemClickActions = new HashMap<>();
+
+    for (String key : itemEntries.keySet()) {
+      itemClickActions.put(key, new CustomGUI.ClickAction() {
+        public void onLeftClick(Player p) {
+          Material selMat = Material.matchMaterial(key);
+          if (selMat == null)
+            return;
+
+          ItemStack icon = new ItemStack(selMat);
+
+          _waypointsManager.setWaypointIcon(p.getWorld().getName(), waypointName,
+              icon);
+
+          p.sendMessage(Main.getPrefix() + "Custom icon set for waypoint " + ChatColor.YELLOW + waypointName
+              + ChatColor.GRAY + ".");
+          p.closeInventory();
+        }
+      });
+    }
+
+    itemsGui.setClickActions(itemClickActions);
+    itemsGui.open(player);
+  }
+
   @EventHandler
   public void onPlayerChat(AsyncChatEvent e) {
     Player player = e.getPlayer();
@@ -242,6 +317,7 @@ public class WaypointsGUI implements Listener {
       _waypointsManager.renameWaypoint(player.getWorld().getName(), oldName, newName);
       player.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + oldName + ChatColor.GRAY
           + " has been renamed to " + ChatColor.YELLOW + newName + ChatColor.GRAY + ".");
+      return;
     }
   }
 }

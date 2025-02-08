@@ -36,7 +36,7 @@ Upgrade your SMP server with bettervanilla for a richer, more immersive gameplay
 
 ## Features
 
-- **Waypoints**: Set, remove, and navigate to waypoints.
+- **Waypoints**: Add, remove, and navigate to waypoints withh GUI. Custom icons for waypoints can be set in the GUI.
 - **Playtime**: Track and display playtime for players.
 - **Ping**: Check the ping of yourself or other players.
 - **Inventory Viewer**: View the inventory of other players.

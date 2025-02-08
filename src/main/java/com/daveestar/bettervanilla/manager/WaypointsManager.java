@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -75,8 +78,41 @@ public class WaypointsManager {
       _fileCfgn.set(worldName + "." + newName + ".x", waypoint.getInt("x"));
       _fileCfgn.set(worldName + "." + newName + ".y", waypoint.getInt("y"));
       _fileCfgn.set(worldName + "." + newName + ".z", waypoint.getInt("z"));
+
+      if (_fileCfgn.contains(worldName + "." + oldName + ".icon")) {
+        Object iconData = _fileCfgn.get(worldName + "." + oldName + ".icon");
+        _fileCfgn.set(worldName + "." + newName + ".icon", iconData);
+      }
+
       _fileCfgn.set(worldName + "." + oldName, null);
       _config.save();
     }
+  }
+
+  public void setWaypointIcon(String worldName, String waypointName, ItemStack iconItem) {
+    Map<String, Object> serializedIcon = iconItem.serialize();
+    _fileCfgn.set(worldName + "." + waypointName + ".icon", serializedIcon);
+    _config.save();
+  }
+
+  public ItemStack getWaypointIcon(String worldName, String waypointName) {
+    String path = worldName + "." + waypointName + ".icon";
+    if (_fileCfgn.contains(path)) {
+      Object raw = _fileCfgn.get(path);
+      Map<String, Object> map = null;
+
+      if (raw instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> temp = (Map<String, Object>) raw;
+        map = temp;
+      } else if (raw instanceof ConfigurationSection) {
+        map = ((ConfigurationSection) raw).getValues(false);
+      }
+
+      if (map != null) {
+        return ItemStack.deserialize(map);
+      }
+    }
+    return new ItemStack(Material.PAPER);
   }
 }
