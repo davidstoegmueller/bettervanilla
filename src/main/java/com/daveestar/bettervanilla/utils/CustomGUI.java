@@ -34,32 +34,33 @@ public class CustomGUI implements Listener {
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
 
-  public CustomGUI(Plugin pluginInstance, Player player, String title, Map<String, ItemStack> pageEntries,
+  public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
-    this._currentPage = 1;
-    this._pageEntries = pageEntries;
-    this._customSlots = customSlots != null ? customSlots : new HashMap<>();
-    this._pageSize = inventorySize - _INVENTORY_ROW_SIZE;
-    this._maxPage = (int) Math.ceil((double) pageEntries.size() / _pageSize);
-    this._parentMenu = parentMenu;
-    this._options = options != null ? options : EnumSet.noneOf(Option.class);
+    _currentPage = 1;
+    _pageEntries = pageEntries;
+    _customSlots = customSlots != null ? customSlots : new HashMap<>();
+    _pageSize = inventorySize - _INVENTORY_ROW_SIZE;
+    _maxPage = (int) Math.ceil((double) pageEntries.size() / _pageSize);
+    _parentMenu = parentMenu;
+    _options = options != null ? options : EnumSet.noneOf(Option.class);
 
-    this._POS_SWITCH_PAGE_BUTTON = inventorySize - 1;
-    this._POS_BACK_BUTTON = inventorySize - _INVENTORY_ROW_SIZE;
+    _POS_SWITCH_PAGE_BUTTON = inventorySize - 1;
+    _POS_BACK_BUTTON = inventorySize - _INVENTORY_ROW_SIZE;
 
-    this._gui = Bukkit.createInventory(null, inventorySize, Component.text(title));
+    _gui = Bukkit.createInventory(null, inventorySize, Component.text(title));
     _updatePage();
 
     Bukkit.getPluginManager().registerEvents(this, pluginInstance);
   }
 
   public void open(Player p) {
+    p.playSound(p, Sound.ENTITY_ITEM_PICKUP, 0.5F, 1);
     p.openInventory(_gui);
   }
 
   public void setClickActions(Map<String, ClickAction> clickActions) {
-    this._clickActions = clickActions;
+    _clickActions = clickActions;
   }
 
   private void _clear() {
@@ -171,7 +172,7 @@ public class CustomGUI implements Listener {
     p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
 
-  private void _handleItemClick(Player player, Object keyOrSlot, boolean isShiftClick, boolean isRightClick) {
+  private void _handleItemClick(Player p, Object keyOrSlot, boolean isShiftClick, boolean isRightClick) {
     String key = null;
     if (keyOrSlot instanceof Integer) {
       int slot = (int) keyOrSlot;
@@ -188,32 +189,32 @@ public class CustomGUI implements Listener {
       ClickAction action = _clickActions.get(key);
       if (action != null) {
         if (isShiftClick && isRightClick) {
-          action.onShiftRightClick(player);
+          action.onShiftRightClick(p);
         } else if (isShiftClick) {
-          action.onShiftLeftClick(player);
+          action.onShiftLeftClick(p);
         } else if (isRightClick) {
-          action.onRightClick(player);
+          action.onRightClick(p);
         } else {
-          action.onLeftClick(player);
+          action.onLeftClick(p);
         }
       }
     }
   }
 
   public interface ClickAction {
-    default void onLeftClick(Player player) {
+    default void onLeftClick(Player p) {
       // Default implementation (no action)
     }
 
-    default void onRightClick(Player player) {
+    default void onRightClick(Player p) {
       // Default implementation (no action)
     }
 
-    default void onShiftLeftClick(Player player) {
+    default void onShiftLeftClick(Player p) {
       // Default implementation (no action)
     }
 
-    default void onShiftRightClick(Player player) {
+    default void onShiftRightClick(Player p) {
       // Default implementation (no action)
     }
   }

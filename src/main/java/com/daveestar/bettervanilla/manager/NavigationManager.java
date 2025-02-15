@@ -1,6 +1,7 @@
 package com.daveestar.bettervanilla.manager;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
 import com.daveestar.bettervanilla.utils.ParticleBeam;
 
@@ -20,9 +21,20 @@ public class NavigationManager {
   // stores active particle beams for players
   private final Map<Player, ParticleBeam> _activeBeams = new HashMap<>();
 
-  public boolean checkActiveNavigation(Player player) {
+  private final Main _plugin;
+  private ActionBar _actionBar;
+
+  public NavigationManager() {
+    _plugin = Main.getInstance();
+  }
+
+  public void initManagers() {
+    _actionBar = _plugin.getActionBar();
+  }
+
+  public boolean checkActiveNavigation(Player p) {
     // check if the player has an active navigation
-    return _activeNavigations.containsKey(player);
+    return _activeNavigations.containsKey(p);
   }
 
   public void startNavigation(Player p, NavigationData navigationData) {
@@ -57,7 +69,7 @@ public class NavigationManager {
 
       // generate the navigation text
       String navigationText = _getNavigationText(targetName, targetLocation, playerLocation);
-      Main.getInstance().getActionBar().sendActionBar(p, navigationText);
+      _actionBar.sendActionBar(p, navigationText);
 
       ParticleBeam beam = _activeBeams.get(p);
       beam.updateLocation(targetLocation);
@@ -77,7 +89,7 @@ public class NavigationManager {
     }
 
     // clear the action bar for the player
-    Main.getInstance().getActionBar().removeActionBar(p);
+    _actionBar.removeActionBar(p);
   }
 
   public NavigationData getActiveNavigation(Player p) {

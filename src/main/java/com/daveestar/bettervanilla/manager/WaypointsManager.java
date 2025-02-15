@@ -19,8 +19,8 @@ public class WaypointsManager {
   private FileConfiguration _fileCfgn;
 
   public WaypointsManager(Config config) {
-    this._config = config;
-    this._fileCfgn = config.getFileCfgrn();
+    _config = config;
+    _fileCfgn = config.getFileCfgrn();
   }
 
   public List<String> getWaypoints(String worldName) {

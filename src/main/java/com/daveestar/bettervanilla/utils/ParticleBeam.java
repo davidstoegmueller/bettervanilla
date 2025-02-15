@@ -15,16 +15,21 @@ import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 public class ParticleBeam {
+
+  private final Main _plugin;
+
   private Player _player;
   private Location _location;
   private Color _color;
 
   private ScheduledTask _task;
 
-  public ParticleBeam(Player player, Location location, Color color) {
-    this._player = player;
-    this._location = location;
-    this._color = color;
+  public ParticleBeam(Player p, Location location, Color color) {
+    _plugin = Main.getInstance();
+
+    _player = p;
+    _location = location;
+    _color = color;
   }
 
   public void updateLocation(Location newLocation) {
@@ -36,8 +41,8 @@ public class ParticleBeam {
    */
   public void displayBeam() {
 
-    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
-    _task = scheduler.runAtFixedRate(Main.getInstance(), task -> {
+    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
+    _task = scheduler.runAtFixedRate(_plugin, task -> {
       World world = _location.getWorld();
       double maxHeight = world.getMaxHeight();
 

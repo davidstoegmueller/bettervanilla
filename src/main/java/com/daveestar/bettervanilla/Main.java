@@ -2,13 +2,12 @@ package com.daveestar.bettervanilla;
 
 import java.util.logging.Logger;
 
-import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.daveestar.bettervanilla.commands.HelpCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
-import com.daveestar.bettervanilla.commands.LastDeathCommand;
+import com.daveestar.bettervanilla.commands.DeathPointsCommand;
 import com.daveestar.bettervanilla.commands.PermissionsCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
 import com.daveestar.bettervanilla.commands.PlayTimeCommand;
@@ -25,6 +24,7 @@ import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
+import com.daveestar.bettervanilla.manager.DeathPointsManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
@@ -50,6 +50,7 @@ public class Main extends JavaPlugin {
 
   private SettingsManager _settingsManager;
   private PermissionsManager _permissionsManager;
+  private DeathPointsManager _deathPointManager;
   private WaypointsManager _waypointsManager;
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
@@ -58,24 +59,30 @@ public class Main extends JavaPlugin {
     _mainInstance = this;
 
     Config settingsConfig = new Config("settings.yml", getDataFolder());
-    _settingsManager = new SettingsManager(settingsConfig);
-
     Config permissionsConfig = new Config("permissions.yml", getDataFolder());
+    Config timerConfig = new Config("timer.yml", getDataFolder());
+    Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
+    Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
+    Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
+
+    _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
+    _timerManager = new TimerManager(timerConfig);
+    _deathPointManager = new DeathPointsManager(deathPointConfig);
+    _waypointsManager = new WaypointsManager(waypointsConfig);
+    _maintenanceManager = new MaintenanceManager(maintenanceConfig);
 
     _actionBar = new ActionBar();
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
 
-    Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
-    _waypointsManager = new WaypointsManager(waypointsConfig);
-
-    Config timerConfig = new Config("timer.yml", getDataFolder());
-    _timerManager = new TimerManager(timerConfig);
-
-    Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
-    _maintenanceManager = new MaintenanceManager(maintenanceConfig);
+    // initialize managers with dependencies
+    _afkManager.initManagers();
+    _compassManager.initManagers();
+    _maintenanceManager.initManagers();
+    _navigationManager.initManagers();
+    _timerManager.initManagers();
 
     _LOGGER.info("BetterVanilla - ENABLED");
 
@@ -87,7 +94,7 @@ public class Main extends JavaPlugin {
     getCommand("adminhelp").setExecutor(new HelpCommand());
     getCommand("togglelocation").setExecutor(new ToggleLocationCommand());
     getCommand("togglecompass").setExecutor(new ToggleCompassCommand());
-    getCommand("lastdeath").setExecutor(new LastDeathCommand());
+    getCommand("deathpoints").setExecutor(new DeathPointsCommand());
     getCommand("timer").setExecutor(new TimerCommand());
     getCommand("playtime").setExecutor(new PlayTimeCommand());
     getCommand("settings").setExecutor(new SettingsCommand());
@@ -108,7 +115,6 @@ public class Main extends JavaPlugin {
     _mainInstance = null;
 
     // prepare all features for plugin disable
-    DeathChest.deathChest.keySet().forEach(block -> block.setType(Material.AIR, false));
     _timerManager.setRunning(false);
     getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();
@@ -154,6 +160,10 @@ public class Main extends JavaPlugin {
     return _permissionsManager;
   }
 
+  public DeathPointsManager getDeathPointsManager() {
+    return _deathPointManager;
+  }
+
   public WaypointsManager getWaypointsManager() {
     return _waypointsManager;
   }
@@ -165,5 +175,4 @@ public class Main extends JavaPlugin {
   public MaintenanceManager getMaintenanceManager() {
     return _maintenanceManager;
   }
-
 }

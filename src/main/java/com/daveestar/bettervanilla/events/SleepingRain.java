@@ -14,11 +14,17 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 
 public class SleepingRain implements Listener {
 
+  private final Main _plugin;
+  private final SettingsManager _settingsManager;
+
+  public SleepingRain() {
+    _plugin = Main.getInstance();
+    _settingsManager = _plugin.getSettingsManager();
+  }
+
   @EventHandler
   public void onPlayerBedEnter(PlayerBedEnterEvent e) {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-
-    if (e.getBedEnterResult() == BedEnterResult.NOT_POSSIBLE_NOW && settingsManager.getSleepingRain()) {
+    if (e.getBedEnterResult() == BedEnterResult.NOT_POSSIBLE_NOW && _settingsManager.getSleepingRain()) {
       Player p = e.getPlayer();
       World world = p.getWorld();
 

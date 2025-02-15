@@ -14,22 +14,31 @@ import com.daveestar.bettervanilla.utils.ActionBar;
 import net.md_5.bungee.api.ChatColor;
 
 public class ToggleLocationCommand implements CommandExecutor {
+
+  private final Main _plugin;
+  private final SettingsManager _settingsManager;
+  private final ActionBar _actionBar;
+  private final NavigationManager _navigationManager;
+
+  public ToggleLocationCommand() {
+    _plugin = Main.getInstance();
+    _settingsManager = _plugin.getSettingsManager();
+    _actionBar = _plugin.getActionBar();
+    _navigationManager = _plugin.getNavigationManager();
+  }
+
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (cs instanceof Player) {
       Player p = (Player) cs;
 
-      SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-      ActionBar actionBarManager = Main.getInstance().getActionBar();
-      NavigationManager navigationManager = Main.getInstance().getNavigationManager();
-
       if (args.length == 0) {
-        if (settingsManager.getToggleLocation(p)) {
-          settingsManager.setToggleLocation(p, false);
-          actionBarManager.removeActionBar(p);
+        if (_settingsManager.getToggleLocation(p)) {
+          _settingsManager.setToggleLocation(p, false);
+          _actionBar.removeActionBar(p);
         } else {
-          navigationManager.stopNavigation(p);
-          settingsManager.setToggleLocation(p, true);
+          _navigationManager.stopNavigation(p);
+          _settingsManager.setToggleLocation(p, true);
 
           Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 
@@ -41,7 +50,7 @@ public class ToggleLocationCommand implements CommandExecutor {
               + p.getLocation().toBlockLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
               + ChatColor.GRAY + playerBiome.getKey();
 
-          actionBarManager.sendActionBar(p, locationText);
+          _actionBar.sendActionBar(p, locationText);
         }
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " +

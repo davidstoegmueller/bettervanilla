@@ -20,20 +20,20 @@ public class ActionBar {
   }
 
   public void sendActionBar(Player p, String message) {
-    this.removeActionBar(p);
+    removeActionBar(p);
 
     AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
     ScheduledTask schduledTask = scheduler.runAtFixedRate(Main.getInstance(), task -> {
-      this.sendActionBarOnce(p, message);
+      sendActionBarOnce(p, message);
     }, 0, 2, TimeUnit.SECONDS);
 
     _actionBarTasks.put(p, schduledTask);
   }
 
-  public void removeActionBar(Player player) {
-    if (_actionBarTasks.containsKey(player)) {
-      _actionBarTasks.get(player).cancel();
-      _actionBarTasks.remove(player);
+  public void removeActionBar(Player p) {
+    if (_actionBarTasks.containsKey(p)) {
+      _actionBarTasks.get(p).cancel();
+      _actionBarTasks.remove(p);
     }
   }
 }

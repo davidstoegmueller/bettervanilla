@@ -7,15 +7,15 @@ public class Waypoint {
   private String _name;
 
   public Waypoint(String name, Location location) {
-    this._location = location;
-    this._name = name;
+    _location = location;
+    _name = name;
   }
 
   public String getName() {
-    return this._name;
+    return _name;
   }
 
   public Location getLocation() {
-    return this._location;
+    return _location;
   }
 }

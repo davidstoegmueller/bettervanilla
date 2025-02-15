@@ -45,7 +45,7 @@ Upgrade your SMP server with bettervanilla for a richer, more immersive gameplay
 - **Settings**: Toggle various global settings.
 - **Action Bar Location**: Display your current location in the action bar.
 - **Bossbar Compass**: Display directions as a compass in the bossbar.
-- **Last Death**: Navigate to your last death point.
+- **Death Points**: Manage your deathpoints using a GUI.
 - **Sittable Stairs**: Sit on stairs using an empty hand.
 - **Sleeping Rain**: Skip rainy days by sleeping in a bed.
 - **Death Chest**: Create a chest with your items at your death location.
@@ -106,10 +106,10 @@ Upgrade your SMP server with bettervanilla for a richer, more immersive gameplay
 
 - `/togglecompass` or `/tc`: Turn on/off bossbar compass.
 
-### Last Death
+### Death Points
 
-- `/lastdeath` or `/ld`: Navigate to the last death point.
-- `/lastdeath cancel`: Cancel the death point navigation.
+- `/deathpoints` or `/dp`: Open deathpoints GUI.
+- `/deathpoints cancel`: Cancel the deathpoint navigation.
 
 ### Help
 
@@ -151,7 +151,7 @@ The plugin generates configuration files in the `plugins/bettervanilla` director
 - `bettervanilla.settings`
 - `bettervanilla.togglelocation`
 - `bettervanilla.togglecompass`
-- `bettervanilla.lastdeath`
+- `bettervanilla.deathpoints`
 - `bettervanilla.permissions`
 
 ## Contributing

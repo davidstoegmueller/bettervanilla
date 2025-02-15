@@ -13,16 +13,16 @@ public enum Permissions {
   SETTINGS("bettervanilla.settings"),
   TOGGLELOCATION("bettervanilla.togglelocation"),
   TOGGLECOMPASS("bettervanilla.togglecompass"),
-  LASTDEATH("bettervanilla.lastdeath"),
+  LASTDEATH("bettervanilla.deathpoints"),
   PERMISSION("bettervanilla.permissions");
 
-  private final String permission;
+  private final String _permission;
 
   Permissions(String permission) {
-    this.permission = permission;
+    _permission = permission;
   }
 
   public String getName() {
-    return permission;
+    return _permission;
   }
 }

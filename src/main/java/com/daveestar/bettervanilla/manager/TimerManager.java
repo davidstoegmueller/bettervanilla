@@ -25,21 +25,29 @@ public class TimerManager {
 
   private final Config _config;
   private final FileConfiguration _fileConfig;
-  private final SettingsManager _settingsManager;
-  private final NavigationManager _navigationManager;
-  private final ActionBar _actionBarManager;
-  private final AFKManager _afkManager;
+
+  private Main _plugin;
+  private SettingsManager _settingsManager;
+  private NavigationManager _navigationManager;
+  private ActionBar _actionBarManager;
+  private AFKManager _afkManager;
 
   public TimerManager(Config config) {
-    this._config = config;
-    this._fileConfig = config.getFileCfgrn();
-    this._settingsManager = Main.getInstance().getSettingsManager();
-    this._navigationManager = Main.getInstance().getNavigationManager();
-    this._actionBarManager = Main.getInstance().getActionBar();
-    this._afkManager = Main.getInstance().getAFKManager();
+    _plugin = Main.getInstance();
+
+    _config = config;
+    _fileConfig = config.getFileCfgrn();
 
     _loadConfiguration();
     _initializePlayerTimers();
+  }
+
+  public void initManagers() {
+    _settingsManager = _plugin.getSettingsManager();
+    _navigationManager = _plugin.getNavigationManager();
+    _actionBarManager = _plugin.getActionBar();
+    _afkManager = _plugin.getAFKManager();
+
     _startTimerTask();
   }
 
@@ -56,7 +64,7 @@ public class TimerManager {
     PlayerTimer timer = _loadPlayerTimer(playerId);
     _playerTimers.put(playerId, timer);
 
-    updateRunningState(Main.getInstance().getServer().getOnlinePlayers().size());
+    updateRunningState(_plugin.getServer().getOnlinePlayers().size());
   }
 
   public void onPlayerLeft(Player p) {
@@ -67,7 +75,7 @@ public class TimerManager {
       _savePlayerTimer(playerId, timer);
     }
 
-    updateRunningState(Main.getInstance().getServer().getOnlinePlayers().size() - 1);
+    updateRunningState(_plugin.getServer().getOnlinePlayers().size() - 1);
   }
 
   public void resetPlayerTimers() {
@@ -110,10 +118,10 @@ public class TimerManager {
   }
 
   private void _handlePlayerTimers() {
-    for (Player player : Main.getInstance().getServer().getOnlinePlayers()) {
-      PlayerTimer timer = _playerTimers.get(player.getUniqueId());
+    for (Player p : _plugin.getServer().getOnlinePlayers()) {
+      PlayerTimer timer = _playerTimers.get(p.getUniqueId());
       if (timer != null) {
-        if (_afkManager.isAFK(player)) {
+        if (_afkManager.isAFK(p)) {
           timer.incrementAFKTime();
         } else {
           timer.incrementPlayTime();
@@ -142,8 +150,8 @@ public class TimerManager {
   }
 
   public void setRunning(boolean state) {
-    if (this._running != state) {
-      this._running = state;
+    if (_running != state) {
+      _running = state;
       _fileConfig.set("running", state);
       _config.save();
     }
@@ -154,16 +162,16 @@ public class TimerManager {
   }
 
   public void setRunningOverride(boolean state) {
-    if (this._runningOverride != state) {
-      this._runningOverride = state;
+    if (_runningOverride != state) {
+      _runningOverride = state;
       _fileConfig.set("runningOverride", state);
       _config.save();
     }
   }
 
   public void setGlobalTimer(int time) {
-    if (this._globalTimer != time) {
-      this._globalTimer = time;
+    if (_globalTimer != time) {
+      _globalTimer = time;
       _fileConfig.set("globalTimer", time);
       _config.save();
     }
@@ -178,7 +186,7 @@ public class TimerManager {
   private void _displayTimerActionBar() {
     String message = _generateTimerMessage();
 
-    Main.getInstance().getServer().getOnlinePlayers().forEach(p -> {
+    _plugin.getServer().getOnlinePlayers().forEach(p -> {
       if (!_settingsManager.getToggleLocation(p) && !_navigationManager.checkActiveNavigation(p)) {
         _actionBarManager.sendActionBarOnce(p, message);
       }
@@ -214,9 +222,9 @@ public class TimerManager {
   }
 
   private void _startTimerTask() {
-    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
+    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
-    scheduler.runAtFixedRate(Main.getInstance(), task -> {
+    scheduler.runAtFixedRate(_plugin, task -> {
       _displayTimerActionBar();
 
       if (_running) {

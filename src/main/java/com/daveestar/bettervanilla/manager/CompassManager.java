@@ -36,16 +36,23 @@ public class CompassManager {
 
   private final Map<Player, BossBar> _activeCompass = new HashMap<>();
 
-  public CompassManager() {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
+  private final Main _plugin;
+  private SettingsManager _settingsManager;
 
-    Main.getInstance().getServer().getOnlinePlayers().forEach(p -> {
-      if (settingsManager.getToggleCompass(p)) {
+  public CompassManager() {
+    _plugin = Main.getInstance();
+
+    _plugin.getServer().getOnlinePlayers().forEach(p -> {
+      if (_settingsManager.getToggleCompass(p)) {
         addPlayerToCompass(p);
       }
     });
 
     _startCompassUpdateTask();
+  }
+
+  public void initManagers() {
+    _settingsManager = _plugin.getSettingsManager();
   }
 
   public void destroy() {
@@ -62,28 +69,26 @@ public class CompassManager {
       BossBar compassBossBar = Bukkit.createBossBar("", BarColor.YELLOW, BarStyle.SOLID);
       compassBossBar.addPlayer(player);
 
-      SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-      settingsManager.setToggleCompass(player, true);
+      _settingsManager.setToggleCompass(player, true);
 
       return compassBossBar;
     });
   }
 
-  public void removePlayerFromCompass(Player player) {
-    BossBar compassBossBar = _activeCompass.remove(player);
+  public void removePlayerFromCompass(Player p) {
+    BossBar compassBossBar = _activeCompass.remove(p);
 
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-    settingsManager.setToggleCompass(player, false);
+    _settingsManager.setToggleCompass(p, false);
 
     if (compassBossBar != null) {
-      compassBossBar.removePlayer(player);
+      compassBossBar.removePlayer(p);
     }
   }
 
   private void _startCompassUpdateTask() {
-    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
+    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
-    scheduler.runAtFixedRate(Main.getInstance(), task -> {
+    scheduler.runAtFixedRate(_plugin, task -> {
       _activeCompass.forEach((player, compassBossBar) -> _updateCompassDirection(player, compassBossBar));
     }, 0, _UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
   }
@@ -99,7 +104,7 @@ public class CompassManager {
   private String _getDynamicCompassScale(double yaw) {
     StringBuilder fullScale = new StringBuilder();
     for (DirectionInfo direction : _DIRECTIONS) {
-      fullScale.append(direction.name);
+      fullScale.append(direction._name);
       for (int i = 0; i < _FILL_CHAR_AMOUNT; i++) {
         fullScale.append(_FILL_CHARACTER);
       }
@@ -127,10 +132,10 @@ public class CompassManager {
     while (currentIndex < finalCompass.length()) {
       boolean matched = false;
       for (DirectionInfo direction : _DIRECTIONS) {
-        if (finalCompass.indexOf(direction.name, currentIndex) == currentIndex) {
+        if (finalCompass.indexOf(direction._name, currentIndex) == currentIndex) {
           // apply static color to the direction name
-          coloredCompass.append(_DIRECTION_COLOR).append(direction.name).append(ChatColor.RESET);
-          currentIndex += direction.name.length();
+          coloredCompass.append(_DIRECTION_COLOR).append(direction._name).append(ChatColor.RESET);
+          currentIndex += direction._name.length();
           matched = true;
           break;
         }
@@ -145,10 +150,10 @@ public class CompassManager {
   }
 
   private static class DirectionInfo {
-    String name;
+    public String _name;
 
     DirectionInfo(String name) {
-      this.name = name;
+      _name = name;
     }
   }
 }

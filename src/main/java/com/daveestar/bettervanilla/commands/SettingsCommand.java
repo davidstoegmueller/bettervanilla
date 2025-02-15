@@ -17,6 +17,16 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SettingsCommand implements TabExecutor {
 
+  private final Main _plugin;
+  private final SettingsManager _settingsManager;
+  private final MaintenanceManager _maintenanceManager;
+
+  public SettingsCommand() {
+    _plugin = Main.getInstance();
+    _settingsManager = _plugin.getSettingsManager();
+    _maintenanceManager = _plugin.getMaintenanceManager();
+  }
+
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
 
@@ -25,36 +35,35 @@ public class SettingsCommand implements TabExecutor {
 
       if (args.length == 0) {
         // list all current settings whith their values/states
-        SettingsManager settingsManager = Main.getInstance().getSettingsManager();
         p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "SETTINGS:");
         p.sendMessage("");
         p.sendMessage(
             Main.getShortPrefix() + "/settings maintenance [message] - Toggle maintenance mode and set a message");
         p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (settingsManager.getMaintenance() ? "ON" : "OFF"));
+            + (_settingsManager.getMaintenance() ? "ON" : "OFF"));
         p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "MESSAGE: " + ChatColor.GRAY
-            + settingsManager.getMaintenanceMessage());
+            + _settingsManager.getMaintenanceMessage());
         p.sendMessage("");
         p.sendMessage(
             Main.getShortPrefix() + "/settings creeperdamage - Toggle creeper entity damage");
         p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (settingsManager.getToggleCreeperDamage() ? "ON" : "OFF"));
+            + (_settingsManager.getToggleCreeperDamage() ? "ON" : "OFF"));
         p.sendMessage("");
         p.sendMessage(
             Main.getShortPrefix() + "/settings toggleend - Toggle 'the end' entry");
         p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (settingsManager.getToggleEnd() ? "ON" : "OFF"));
+            + (_settingsManager.getToggleEnd() ? "ON" : "OFF"));
         p.sendMessage("");
         p.sendMessage(
             Main.getShortPrefix() + "/settings sleepingrain - Toggle sleep during rain");
         p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (settingsManager.getSleepingRain() ? "ON" : "OFF"));
+            + (_settingsManager.getSleepingRain() ? "ON" : "OFF"));
         p.sendMessage("");
         p.sendMessage(
             Main.getShortPrefix()
                 + "/settings afktime <minutes> - Set the time in minutes until a player is marked as AFK");
         p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + settingsManager.getAFKTime() + " minutes");
+            + _settingsManager.getAFKTime() + " minutes");
 
         return true;
       }
@@ -144,10 +153,9 @@ public class SettingsCommand implements TabExecutor {
     }
 
     // set new maintenance state based on the current maintenance state
-    MaintenanceManager maintenance = Main.getInstance().getMaintenanceManager();
-    Boolean newState = !maintenance.getState();
+    Boolean newState = !_maintenanceManager.getState();
 
-    maintenance.setState(newState, message);
+    _maintenanceManager.setState(newState, message);
 
     String stateText = newState ? "ON" : "OFF";
 
@@ -158,47 +166,39 @@ public class SettingsCommand implements TabExecutor {
       p.sendMessage(Main.getPrefix() + "Message was set to: " + ChatColor.YELLOW + message);
     }
 
-    maintenance.kickAll(Main.getInstance().getServer().getOnlinePlayers());
+    _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
   }
 
   private void _toggleCreeperDamage(Player p) {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-
-    Boolean newState = !settingsManager.getToggleCreeperDamage();
+    Boolean newState = !_settingsManager.getToggleCreeperDamage();
     String stateText = newState ? "ON" : "OFF";
 
-    settingsManager.setToggleCreeperDamage(newState);
+    _settingsManager.setToggleCreeperDamage(newState);
 
     p.sendMessage(Main.getPrefix() + "Creeper damage is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleEnd(Player p) {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-
-    Boolean newState = !settingsManager.getToggleEnd();
+    Boolean newState = !_settingsManager.getToggleEnd();
     String stateText = newState ? "ON" : "OFF";
 
-    settingsManager.setToggleEnd(newState);
+    _settingsManager.setToggleEnd(newState);
 
     p.sendMessage(Main.getPrefix() + "The End is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleSleepingRain(Player p) {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-
-    Boolean newState = !settingsManager.getSleepingRain();
+    Boolean newState = !_settingsManager.getSleepingRain();
     String stateText = newState ? "ON" : "OFF";
 
-    settingsManager.setSleepingRain(newState);
+    _settingsManager.setSleepingRain(newState);
 
     p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _setAFKTime(Player p, String[] args) {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-
     int minutes = Integer.parseInt(args[1]);
-    settingsManager.setAFKTime(minutes);
+    _settingsManager.setAFKTime(minutes);
 
     p.sendMessage(
         Main.getPrefix() + "AFK time was set to: " + ChatColor.YELLOW + ChatColor.BOLD + minutes + " minutes");

@@ -22,10 +22,12 @@ import java.util.stream.Collectors;
 
 public class PermissionsCommand implements TabExecutor {
 
+  private final Main _plugin;
   private final PermissionsManager permissionsManager;
 
   public PermissionsCommand() {
-    this.permissionsManager = Main.getInstance().getPermissionsManager();
+    _plugin = Main.getInstance();
+    permissionsManager = _plugin.getPermissionsManager();
   }
 
   @Override
@@ -343,9 +345,9 @@ public class PermissionsCommand implements TabExecutor {
   private List<String> getAvailableUsernames() {
     List<String> userNames = new ArrayList<>();
 
-    for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-      if (player.getName() != null) {
-        userNames.add(player.getName());
+    for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
+      if (p.getName() != null) {
+        userNames.add(p.getName());
       }
     }
 

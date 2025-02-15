@@ -12,10 +12,18 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 import net.md_5.bungee.api.ChatColor;
 
 public class PreventEnd implements Listener {
+
+  private final Main _plugin;
+  private final SettingsManager _settingsManager;
+
+  public PreventEnd() {
+    _plugin = Main.getInstance();
+    _settingsManager = _plugin.getSettingsManager();
+  }
+
   @EventHandler
   public void onPlayerPortal(PlayerPortalEvent event) {
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-    if (settingsManager.getToggleEnd()) {
+    if (_settingsManager.getToggleEnd()) {
       return;
     }
 

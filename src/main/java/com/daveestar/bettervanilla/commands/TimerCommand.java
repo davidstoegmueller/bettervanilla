@@ -16,6 +16,14 @@ import net.md_5.bungee.api.ChatColor;
 
 public class TimerCommand implements TabExecutor {
 
+  private final Main _plugin;
+  private final TimerManager _timerManager;
+
+  public TimerCommand() {
+    _plugin = Main.getInstance();
+    _timerManager = _plugin.getTimerManager();
+  }
+
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (!(cs instanceof Player)) {
@@ -23,7 +31,6 @@ public class TimerCommand implements TabExecutor {
     }
 
     Player p = (Player) cs;
-    TimerManager timer = Main.getInstance().getTimerManager();
 
     if (args.length == 0) {
       sendUsageMessage(p);
@@ -32,16 +39,16 @@ public class TimerCommand implements TabExecutor {
 
     switch (args[0].toLowerCase()) {
       case "resume":
-        handleResume(p, timer);
+        handleResume(p, _timerManager);
         break;
       case "pause":
-        handlePause(p, timer);
+        handlePause(p, _timerManager);
         break;
       case "set":
-        handleSet(p, timer, args);
+        handleSet(p, _timerManager, args);
         break;
       case "reset":
-        handleReset(p, timer);
+        handleReset(p, _timerManager);
         break;
       default:
         sendUsageMessage(p);

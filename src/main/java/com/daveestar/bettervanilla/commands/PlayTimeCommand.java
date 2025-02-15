@@ -17,13 +17,21 @@ import com.daveestar.bettervanilla.manager.TimerManager;
 import net.md_5.bungee.api.ChatColor;
 
 public class PlayTimeCommand implements TabExecutor {
+
+  private final Main _plugin;
+  private final TimerManager _timerManager;
+
+  public PlayTimeCommand() {
+    _plugin = Main.getInstance();
+    _timerManager = _plugin.getTimerManager();
+  }
+
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (cs instanceof Player) {
       Player p = (Player) cs;
 
       if (args.length >= 0 && args.length <= 1) {
-        TimerManager timerManager = Main.getInstance().getTimerManager();
         Player targetPlayer;
 
         if (args.length == 1) {
@@ -38,18 +46,18 @@ public class PlayTimeCommand implements TabExecutor {
           return true;
         }
 
-        int playTime = timerManager.getPlayTime(targetPlayer);
-        int afkTime = timerManager.getAFKTime(targetPlayer);
+        int playTime = _timerManager.getPlayTime(targetPlayer);
+        int afkTime = _timerManager.getAFKTime(targetPlayer);
 
         p.sendMessage(
             Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
                 + " » " + ChatColor.GRAY + targetPlayer.getName());
         p.sendMessage(Main.getShortPrefix() +
-            "Totaltime: " + ChatColor.YELLOW + timerManager.formatTime(playTime + afkTime));
+            "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
         p.sendMessage(Main.getShortPrefix() +
-            "Playtime: " + ChatColor.YELLOW + timerManager.formatTime(playTime));
+            "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime));
         p.sendMessage(Main.getShortPrefix() +
-            "AFK: " + ChatColor.YELLOW + timerManager.formatTime(afkTime));
+            "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime));
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " +
             ChatColor.YELLOW + "/playtime [player]");
@@ -66,7 +74,7 @@ public class PlayTimeCommand implements TabExecutor {
     List<String> suggestions = new ArrayList<>();
 
     if (args.length == 1) {
-      Collection<? extends Player> onlinePlayers = Main.getInstance().getServer().getOnlinePlayers();
+      Collection<? extends Player> onlinePlayers = _plugin.getServer().getOnlinePlayers();
       suggestions.addAll(onlinePlayers.stream().map(Player::getName).collect(Collectors.toList()));
     }
 

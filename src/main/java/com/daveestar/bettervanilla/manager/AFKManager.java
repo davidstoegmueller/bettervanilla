@@ -14,16 +14,25 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class AFKManager {
+
+  private final Main _plugin;
+
   private HashMap<Player, Long> _lastMovement;
   private HashMap<Player, Boolean> _afkStates;
 
-  private final SettingsManager _settingsManager;
+  private TimerManager _timerManager;
+  private SettingsManager _settingsManager;
 
   public AFKManager() {
-    this._settingsManager = Main.getInstance().getSettingsManager();
+    _plugin = Main.getInstance();
 
-    this._lastMovement = new HashMap<Player, Long>();
-    this._afkStates = new HashMap<Player, Boolean>();
+    _lastMovement = new HashMap<Player, Long>();
+    _afkStates = new HashMap<Player, Boolean>();
+  }
+
+  public void initManagers() {
+    _timerManager = _plugin.getTimerManager();
+    _settingsManager = _plugin.getSettingsManager();
 
     _startAFKTask();
   }
@@ -64,16 +73,14 @@ public class AFKManager {
     }
 
     boolean allPlayersAFK = _afkStates.values().stream().allMatch(entry -> entry == true);
-    TimerManager timer = Main.getInstance().getTimerManager();
-
     if (Bukkit.getOnlinePlayers().size() > 0) {
       if (allPlayersAFK) {
-        if (timer.isRunning()) {
-          timer.setRunning(false);
+        if (_timerManager.isRunning()) {
+          _timerManager.setRunning(false);
         }
       } else {
-        if (!timer.isRunning() && timer.isRunningOverride()) {
-          timer.setRunning(true);
+        if (!_timerManager.isRunning() && _timerManager.isRunningOverride()) {
+          _timerManager.setRunning(true);
         }
       }
     }
@@ -107,15 +114,16 @@ public class AFKManager {
     }
   }
 
-  public void announceAFKToOthers(Player p, boolean isAFK) {
-    Main.getInstance().getServer().getOnlinePlayers().stream()
+  public void announceAFKToOthers(Player targetPlayer, boolean isAFK) {
+    _plugin.getServer().getOnlinePlayers().stream()
         .forEach(player -> {
-          if (!player.equals(p)) {
+          if (!player.equals(targetPlayer)) {
             if (isAFK) {
-              player.sendMessage(Main.getPrefix() + ChatColor.YELLOW + p.getName() + ChatColor.GRAY + " is now AFK.");
+              player.sendMessage(
+                  Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is now AFK.");
             } else {
               player.sendMessage(
-                  Main.getPrefix() + ChatColor.YELLOW + p.getName() + ChatColor.GRAY + " is no longer AFK.");
+                  Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is no longer AFK.");
             }
           }
         });
@@ -127,9 +135,9 @@ public class AFKManager {
   }
 
   private void _startAFKTask() {
-    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
+    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
-    scheduler.runAtFixedRate(Main.getInstance(), task -> {
+    scheduler.runAtFixedRate(_plugin, task -> {
       checkAllPlayersAFKStatus();
     }, 0, 1, TimeUnit.SECONDS);
   }

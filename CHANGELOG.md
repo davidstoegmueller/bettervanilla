@@ -1,0 +1,13 @@
+**Note:** This changelog begins at version 1.2.0 as earlier changes were not tracked.
+
+# Changelog
+
+## [1.2.0] - 15.02.2025
+
+- **Complete Deathpoints Overhaul:** Rebuilt deathpoint management entirely:
+  - Renamed and replaced the legacy “Last Death” system with a new “Death Points” feature.
+  - Introduced a dedicated GUI for managing deathpoints.
+  - Integrated DeathPointsManager and DeathPointsCommand to streamline deathpoint navigation.
+- **Documentation Update:** Updated README to reflect the change from “Last Death” to “Death Points” with clear usage instructions.
+- **Dependency Injection Enhancements:** Refactored commands (e.g., PermissionsCommand, PlayTimeCommand, SettingsCommand) to use constructor injection for better modularity.
+- **General Refactor:** Improved overall code consistency and dependency management across the repository.

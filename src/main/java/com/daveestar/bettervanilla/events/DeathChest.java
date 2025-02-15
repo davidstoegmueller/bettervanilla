@@ -1,13 +1,12 @@
 package com.daveestar.bettervanilla.events;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,141 +22,152 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.DeathPointsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
-import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.manager.DeathPointsManager.DeathPointReference;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class DeathChest implements Listener {
-  public static HashMap<Block, Inventory> deathChest = new HashMap<Block, Inventory>();
+
+  private final HashMap<Player, Location> openedDeathChests = new HashMap<>();
+
+  private final Main _plugin;
+  private final DeathPointsManager _deathPointsManager;
+  private final SettingsManager _settingsManager;
+
+  public DeathChest() {
+    _plugin = Main.getInstance();
+    _deathPointsManager = _plugin.getDeathPointsManager();
+    _settingsManager = _plugin.getSettingsManager();
+  }
 
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent e) {
     Player p = (Player) e.getEntity();
 
-    Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
-    FileConfiguration cfgn = lastDeaths.getFileCfgrn();
+    Location blockLoc = p.getLocation().toBlockLocation();
+    Boolean isEnd = blockLoc.getWorld().getEnvironment() == Environment.THE_END;
+    Boolean fellIntoVoid = isEnd && blockLoc.getY() < 1;
 
-    cfgn.set(p.getUniqueId() + ".x", p.getLocation().toBlockLocation().getBlockX());
-    cfgn.set(p.getUniqueId() + ".y", p.getLocation().toBlockLocation().getBlockY());
-    cfgn.set(p.getUniqueId() + ".z", p.getLocation().toBlockLocation().getBlockZ());
-    cfgn.set(p.getUniqueId() + ".world", p.getLocation().toBlockLocation().getWorld().getName());
-    lastDeaths.save();
-
-    Location loc = p.getLocation().toBlockLocation();
-    Boolean isEnd = loc.getWorld().getEnvironment() == Environment.THE_END;
-    Boolean fellIntoVoid = isEnd && loc.getY() < 1;
-
-    // define the death chests y coordinate
-    // if the player is in the end and fell into the void
-    // we set the y location to 100.5
-    // this makes sure that the deathchest is always accessible by the player
-    Location deathChestLocation = loc.add(0, 0.5, 0);
+    Location deathChestLocation = blockLoc.clone().add(0, 0.5, 0);
     if (fellIntoVoid) {
       deathChestLocation.setY(100.5);
     }
 
-    Block blockChest = p.getWorld().getBlockAt(deathChestLocation);
-    blockChest.setType(Material.CHEST, false);
-
-    Inventory inv = Bukkit.createInventory(null, 45, Component.text("DeathChest from " + p.getName()));
-    inv.clear();
-    inv.setContents(p.getInventory().getContents());
-
-    deathChest.put(blockChest, inv);
+    _deathPointsManager.addDeathPoint(p, deathChestLocation);
     e.getDrops().clear();
 
-    p.sendMessage(
-        Main.getPrefix() + "You died. All your items are stored in the death chest on: " + ChatColor.YELLOW
-            + "X: " + ChatColor.GRAY
-            + blockChest.getLocation().toBlockLocation().getBlockX() + ChatColor.YELLOW
-            + " Y: " + ChatColor.GRAY + blockChest.getLocation().toBlockLocation().getBlockY() + ChatColor.YELLOW
-            + " Z: "
-            + ChatColor.GRAY + blockChest.getLocation().toBlockLocation().getBlockZ());
+    int chestX = deathChestLocation.getBlockX();
+    int chestY = deathChestLocation.getBlockY();
+    int chestZ = deathChestLocation.getBlockZ();
+
+    p.sendMessage(Main.getPrefix() + "You died. All your items are stored in the death chest on: "
+        + ChatColor.YELLOW + "X: " + ChatColor.GRAY + chestX
+        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + chestY
+        + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + chestZ);
     p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
         + " As soon as you close or break the chest all items will be dropped!");
 
-    // display a hint message to the player if he fell into the void that the
-    // chest will spawn above him at y = 100
     if (fellIntoVoid) {
-      p.sendMessage(
-          Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
-              + " You fell into the void! Your deathchest will spawn at " + ChatColor.YELLOW + "Y: "
-              + ChatColor.GRAY + "100");
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+          + " You fell into the void! Your deathchest will spawn at "
+          + ChatColor.YELLOW + "Y: " + ChatColor.GRAY + "100");
     }
 
-    p.sendMessage(Main.getPrefix() + "If you want to navigate to you latest deathpoint please use: " + ChatColor.YELLOW
-        + "/lastdeath");
+    p.sendMessage(Main.getPrefix() + "If you want to list your deathpoints please use: "
+        + ChatColor.YELLOW + "/deathpoints");
   }
-
-  private Block _openedDeathChestBlock;
 
   @EventHandler
   public void onOpenDeathChest(PlayerInteractEvent e) {
-    if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+    if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null) {
       if (e.getClickedBlock().getType() == Material.CHEST) {
+        Player p = e.getPlayer();
 
-        Block block = e.getClickedBlock();
+        Location clickedLoc = e.getClickedBlock().getLocation().toBlockLocation();
+        DeathPointReference ref = _deathPointsManager.getDeathPointAtLocation(clickedLoc);
 
-        for (Block blocks : deathChest.keySet()) {
-          if (blocks.getLocation().toBlockLocation().equals(block.getLocation().toBlockLocation())) {
-            e.setCancelled(true);
-            e.getPlayer().openInventory(deathChest.get(blocks));
+        if (ref != null) {
+          e.setCancelled(true);
 
-            _openedDeathChestBlock = blocks;
-          }
+          String playerName = Bukkit.getOfflinePlayer(UUID.fromString(ref.ownerUUID)).getName();
+          ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
+          Inventory inv = Bukkit.createInventory(null, 45,
+              Component.text(ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Chest: " + playerName));
+
+          inv.setContents(items);
+          p.openInventory(inv);
+
+          openedDeathChests.put(p, clickedLoc);
         }
+      }
+    }
+  }
+
+  private void removeAndDropDeathChestItems(Player p, Location dropLocation, String ownerUUID, String pointUUID,
+      ItemStack[] items) {
+    for (ItemStack item : items) {
+      if (item != null) {
+        p.getWorld().dropItem(dropLocation, item);
+      }
+    }
+
+    _deathPointsManager.removeDeathPoint(ownerUUID, pointUUID);
+
+    String playerUUID = p.getUniqueId().toString();
+    if (playerUUID.equals(ownerUUID)) {
+      p.sendMessage(Main.getPrefix() + "You've claimed your deathchest.");
+    } else {
+      Player ownerPlayer = (Player) Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
+      p.sendMessage(Main.getPrefix() + "You've claimed the deathchest of " + ChatColor.YELLOW
+          + ownerPlayer.getName());
+
+      if (ownerPlayer.isOnline()) {
+        ownerPlayer.sendMessage(Main.getPrefix() + "Your deathchest has been claimed by " + ChatColor.YELLOW
+            + p.getName());
       }
     }
   }
 
   @EventHandler
   public void onDeathChestClose(InventoryCloseEvent e) {
-    if (e.getView().title().equals(Component.text("DeathChest from " + e.getPlayer().getName()))) {
-      for (ItemStack item : e.getInventory().getContents()) {
-        if (item != null) {
-          e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation().toBlockLocation(), item);
-        }
+    Player p = (Player) e.getPlayer();
+
+    if (openedDeathChests.containsKey(p)) {
+      Location chestLoc = openedDeathChests.get(p);
+      DeathPointReference ref = _deathPointsManager.getDeathPointAtLocation(chestLoc);
+
+      if (ref != null) {
+        Location playerLoc = p.getLocation().toBlockLocation();
+        removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, e.getInventory().getContents());
       }
-
-      deathChest.remove(_openedDeathChestBlock);
-      _openedDeathChestBlock.setType(Material.AIR, false);
-      _openedDeathChestBlock = null;
-
-      Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
-      FileConfiguration cfgn = lastDeaths.getFileCfgrn();
-      cfgn.set(e.getPlayer().getUniqueId().toString(), null);
-      lastDeaths.save();
     }
   }
 
   @EventHandler
   public void onDeathChestBreak(BlockBreakEvent e) {
-    if (deathChest.containsKey(e.getBlock())) {
-      Inventory inv = deathChest.get(e.getBlock());
+    if (e.getBlock().getType() == Material.CHEST) {
+      Player p = e.getPlayer();
 
-      for (ItemStack item : inv.getContents()) {
-        if (item != null) {
-          e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation().toBlockLocation(), item);
-        }
+      Location breakLoc = e.getBlock().getLocation().toBlockLocation();
+      DeathPointReference ref = _deathPointsManager.getDeathPointAtLocation(breakLoc);
+
+      if (ref != null) {
+        Location playerLoc = p.getLocation().toBlockLocation();
+        ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
+
+        removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, items);
       }
-
-      deathChest.remove(e.getBlock());
-
-      Config lastDeaths = new Config("lastDeaths.yml", Main.getInstance().getDataFolder());
-      FileConfiguration cfgn = lastDeaths.getFileCfgrn();
-      cfgn.set(e.getPlayer().getUniqueId().toString(), null);
-      lastDeaths.save();
     }
   }
 
   @EventHandler
   public void onEntityExplode(EntityExplodeEvent e) {
-    e.blockList().removeIf(block -> deathChest.containsKey(block));
+    e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
 
-    SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-    if (!settingsManager.getToggleCreeperDamage()) {
+    if (!_settingsManager.getToggleCreeperDamage()) {
       if (e.getEntity() != null && e.getEntity().getType() == EntityType.CREEPER) {
         e.blockList().clear();
       }
@@ -166,6 +176,6 @@ public class DeathChest implements Listener {
 
   @EventHandler
   public void onBlockExplode(BlockExplodeEvent e) {
-    e.blockList().removeIf(block -> deathChest.containsKey(block));
+    e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
   }
 }

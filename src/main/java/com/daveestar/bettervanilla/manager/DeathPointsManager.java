@@ -1,0 +1,151 @@
+package com.daveestar.bettervanilla.manager;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.utils.ItemStackUtils;
+import org.bukkit.block.Block;
+
+public class DeathPointsManager {
+  private final Config _config;
+  private final FileConfiguration _fileConfig;
+
+  public DeathPointsManager(Config config) {
+    _config = config;
+    _fileConfig = config.getFileCfgrn();
+  }
+
+  public void addDeathPoint(Player p, Location loc) {
+    String playerUUID = p.getUniqueId().toString();
+    String pointUUID = UUID.randomUUID().toString();
+
+    String deathPointPath = playerUUID + ".deathpoints." + pointUUID;
+
+    String world = loc.getWorld().getName();
+    int x = loc.getBlockX();
+    int y = loc.getBlockY();
+    int z = loc.getBlockZ();
+
+    _fileConfig.set(deathPointPath + ".world", world);
+    _fileConfig.set(deathPointPath + ".x", x);
+    _fileConfig.set(deathPointPath + ".y", y);
+    _fileConfig.set(deathPointPath + ".z", z);
+
+    long timestamp = System.currentTimeMillis();
+    _fileConfig.set(deathPointPath + ".timestamp", timestamp);
+
+    List<Map<String, Object>> serializedItemStacks = ItemStackUtils.serializeArray(p.getInventory().getContents());
+
+    _fileConfig.set(deathPointPath + ".inventory", serializedItemStacks);
+    _config.save();
+
+    _createDeathChest(loc);
+  }
+
+  public void removeDeathPoint(String ownerUUID, String pointUUID) {
+    Location loc = getDeathPointLocation(ownerUUID, pointUUID);
+    if (loc != null && loc.getBlock() != null) {
+      loc.getBlock().setType(Material.AIR, false);
+    }
+
+    String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
+
+    _fileConfig.set(deathPointPath, null);
+    _config.save();
+  }
+
+  public String[] getDeathPointUUIDs(Player p) {
+    String playerUUID = p.getUniqueId().toString();
+    String deathPointsPath = playerUUID + ".deathpoints";
+    ConfigurationSection deathPointsSection = _fileConfig.getConfigurationSection(deathPointsPath);
+
+    return deathPointsSection != null ? deathPointsSection.getKeys(false).toArray(new String[0]) : new String[0];
+  }
+
+  public Location getDeathPointLocation(String ownerUUID, String pointUUID) {
+    String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
+    return _readLocation(deathPointPath);
+  }
+
+  public String getDeathPointDateTime(Player p, String pointUUID) {
+    String playerUUID = p.getUniqueId().toString();
+    String deathPointPath = playerUUID + ".deathpoints." + pointUUID;
+
+    long timestamp = _fileConfig.getLong(deathPointPath + ".timestamp", 0);
+    SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy » HH:mm:ss");
+    return timestamp != 0 ? sdf.format(new Date(timestamp)) : "-";
+  }
+
+  public ItemStack[] getDeathPointItems(Player p, String pointUUID) {
+    return getDeathPointItems(p.getUniqueId().toString(), pointUUID);
+  }
+
+  public ItemStack[] getDeathPointItems(String ownerUUID, String pointUUID) {
+    String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
+
+    List<Map<?, ?>> inventoryList = _fileConfig.getMapList(deathPointPath + ".inventory");
+    return ItemStackUtils.deserializeArray(inventoryList);
+  }
+
+  public DeathPointReference getDeathPointAtLocation(Location loc) {
+    for (String playerUUID : _fileConfig.getKeys(false)) {
+      ConfigurationSection deathpointsSection = _fileConfig.getConfigurationSection(playerUUID + ".deathpoints");
+
+      if (deathpointsSection != null) {
+        for (String pointUUID : deathpointsSection.getKeys(false)) {
+          String path = playerUUID + ".deathpoints." + pointUUID;
+          Location pointLoc = _readLocation(path);
+          if (loc.getWorld().getName().equals(pointLoc.getWorld().getName())
+              && loc.getBlockX() == pointLoc.getBlockX()
+              && loc.getBlockY() == pointLoc.getBlockY()
+              && loc.getBlockZ() == pointLoc.getBlockZ()) {
+            return new DeathPointReference(playerUUID, pointUUID);
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  public boolean isDeathPointBlock(Block block) {
+    return getDeathPointAtLocation(block.getLocation().toBlockLocation()) != null;
+  }
+
+  // --------------
+  // HELPER METHODS
+  // --------------
+
+  private void _createDeathChest(Location loc) {
+    loc.getBlock().setType(Material.CHEST, false);
+  }
+
+  private Location _readLocation(String path) {
+    String world = _fileConfig.getString(path + ".world", "-");
+    int x = _fileConfig.getInt(path + ".x", 0);
+    int y = _fileConfig.getInt(path + ".y", 0);
+    int z = _fileConfig.getInt(path + ".z", 0);
+    return new Location(Main.getInstance().getServer().getWorld(world), x, y, z);
+  }
+
+  public static class DeathPointReference {
+    public final String ownerUUID;
+    public final String pointUUID;
+
+    public DeathPointReference(String ownerUUID, String pointUUID) {
+      this.ownerUUID = ownerUUID;
+      this.pointUUID = pointUUID;
+    }
+  }
+}

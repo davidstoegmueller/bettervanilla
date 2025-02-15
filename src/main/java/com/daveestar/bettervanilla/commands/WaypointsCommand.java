@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 public class WaypointsCommand implements TabExecutor {
 
+  private final Main _plugin;
   private final WaypointsManager _waypointsManager;
   private final NavigationManager _navigationManager;
   private final ActionBar _actionBarManager;
@@ -30,12 +31,12 @@ public class WaypointsCommand implements TabExecutor {
   private final WaypointsGUI _waypointsGUI;
 
   public WaypointsCommand() {
-    Main plugin = Main.getInstance();
-    this._waypointsManager = plugin.getWaypointsManager();
-    this._navigationManager = plugin.getNavigationManager();
-    this._actionBarManager = plugin.getActionBar();
-    this._settingsManager = plugin.getSettingsManager();
-    this._waypointsGUI = new WaypointsGUI();
+    _plugin = Main.getInstance();
+    _waypointsManager = _plugin.getWaypointsManager();
+    _navigationManager = _plugin.getNavigationManager();
+    _actionBarManager = _plugin.getActionBar();
+    _settingsManager = _plugin.getSettingsManager();
+    _waypointsGUI = new WaypointsGUI();
   }
 
   @Override
@@ -292,7 +293,7 @@ public class WaypointsCommand implements TabExecutor {
       Player p = (Player) sender;
       suggestions.addAll(_waypointsManager.getWaypoints(p.getWorld().getName()));
     } else if (args.length == 2 && args[0].equalsIgnoreCase("player")) {
-      Collection<? extends Player> onlinePlayers = Main.getInstance().getServer().getOnlinePlayers();
+      Collection<? extends Player> onlinePlayers = _plugin.getServer().getOnlinePlayers();
       suggestions.addAll(onlinePlayers.stream().map(Player::getName).collect(Collectors.toList()));
     }
 

@@ -7,6 +7,7 @@ s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PermissionsManager.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SettingsCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\NavigationData.java
+s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\DeathPointsGUI.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\TimerManager.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PlayTimeCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\InvseeCommand.java
@@ -19,9 +20,11 @@ s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\Wayp
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\CompassManager.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\MaintenanceManager.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleLocationCommand.java
+s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PlayerMove.java
-s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\LastDeathCommand.java
+s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\DeathPointsCommand.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SleepingRain.java
+s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\WaypointsGUI.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleBeam.java
 s:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SittableStairs.java

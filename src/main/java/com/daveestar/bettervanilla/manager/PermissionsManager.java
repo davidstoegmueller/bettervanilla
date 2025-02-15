@@ -21,14 +21,14 @@ public class PermissionsManager {
   private final Map<UUID, PermissionAttachment> activeAttachments = new HashMap<>();
 
   public PermissionsManager(Config config) {
-    this.plugin = Main.getInstance();
-    this._config = config;
-    this._fileCfgn = config.getFileCfgrn();
+    plugin = Main.getInstance();
+    _config = config;
+    _fileCfgn = config.getFileCfgrn();
 
-    _init();
+    _loadConfig();
   }
 
-  private void _init() {
+  private void _loadConfig() {
     // create sections for groups and users if not present
     if (!_fileCfgn.contains("groups")) {
       _fileCfgn.createSection("groups");

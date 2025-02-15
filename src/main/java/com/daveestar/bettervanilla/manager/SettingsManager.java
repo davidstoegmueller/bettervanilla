@@ -10,8 +10,8 @@ public class SettingsManager {
   private FileConfiguration _fileCfgn;
 
   public SettingsManager(Config config) {
-    this._config = config;
-    this._fileCfgn = config.getFileCfgrn();
+    _config = config;
+    _fileCfgn = config.getFileCfgrn();
   }
 
   // USER SETTINGS

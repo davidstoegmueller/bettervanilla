@@ -5,8 +5,8 @@ public class PlayerTimer {
   private int _afkTime;
 
   public PlayerTimer(int playTime, int afkTime) {
-    this._playTime = playTime;
-    this._afkTime = afkTime;
+    _playTime = playTime;
+    _afkTime = afkTime;
   }
 
   public void incrementPlayTime() {

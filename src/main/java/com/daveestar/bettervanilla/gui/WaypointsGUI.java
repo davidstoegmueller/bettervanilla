@@ -28,18 +28,20 @@ import java.util.stream.Collectors;
 
 public class WaypointsGUI implements Listener {
 
+  private final Main _plugin;
   private final WaypointsManager _waypointsManager;
   private final NavigationManager _navigationManager;
   private final SettingsManager _settingsManager;
   private final Map<UUID, String> _renamePending;
 
   public WaypointsGUI() {
-    Main plugin = Main.getInstance();
-    this._waypointsManager = plugin.getWaypointsManager();
-    this._navigationManager = plugin.getNavigationManager();
-    this._settingsManager = plugin.getSettingsManager();
-    this._renamePending = new HashMap<>();
-    plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    _plugin = Main.getInstance();
+    _waypointsManager = _plugin.getWaypointsManager();
+    _navigationManager = _plugin.getNavigationManager();
+    _settingsManager = _plugin.getSettingsManager();
+    _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
+
+    _renamePending = new HashMap<>();
   }
 
   public void displayGUI(Player p) {
@@ -56,7 +58,7 @@ public class WaypointsGUI implements Listener {
             LinkedHashMap::new));
 
     // create and open the GUI
-    CustomGUI waypointsGUI = new CustomGUI(Main.getInstance(), p,
+    CustomGUI waypointsGUI = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Waypoints",
         pageEntries, 3, null, null, null);
 
@@ -64,14 +66,14 @@ public class WaypointsGUI implements Listener {
     Map<String, CustomGUI.ClickAction> clickActions = new HashMap<>();
     for (String waypointName : allWaypointNames) {
       clickActions.put(waypointName, new CustomGUI.ClickAction() {
-        public void onLeftClick(Player player) {
+        public void onLeftClick(Player p) {
           _handleNavigation(p, waypointName);
           p.closeInventory();
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         }
 
-        public void onRightClick(Player player) {
-          _displayOptionsGUI(player, waypointName, waypointsGUI);
+        public void onRightClick(Player p) {
+          _displayOptionsGUI(p, waypointName, waypointsGUI);
         }
       });
     }
@@ -92,31 +94,32 @@ public class WaypointsGUI implements Listener {
     customSlots.put("seticon", 4);
     customSlots.put("delete", 6);
 
-    CustomGUI optionsGUI = new CustomGUI(Main.getInstance(), p,
+    CustomGUI optionsGUI = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Waypoint Options",
         optionPageEntries, 2, customSlots, parentMenu, EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     Map<String, CustomGUI.ClickAction> optionClickActions = new HashMap<>();
     optionClickActions.put("rename", new CustomGUI.ClickAction() {
-      public void onLeftClick(Player player) {
-        player.sendMessage(
+      public void onLeftClick(Player p) {
+        p.sendMessage(
             Main.getPrefix() + "Enter the new name for the waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
                 + ":");
-        _renamePending.put(player.getUniqueId(), waypointName);
-        player.closeInventory();
+        _renamePending.put(p.getUniqueId(), waypointName);
+        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        p.closeInventory();
       }
     });
 
     optionClickActions.put("delete", new CustomGUI.ClickAction() {
-      public void onLeftClick(Player player) {
-        _handleRemove(player, waypointName);
-        player.closeInventory();
+      public void onLeftClick(Player p) {
+        _handleRemove(p, waypointName);
+        p.closeInventory();
       }
     });
 
     optionClickActions.put("seticon", new CustomGUI.ClickAction() {
-      public void onLeftClick(Player player) {
-        _displaySetIconGUI(player, waypointName, optionsGUI);
+      public void onLeftClick(Player p) {
+        _displaySetIconGUI(p, waypointName, optionsGUI);
       }
     });
 
@@ -132,7 +135,7 @@ public class WaypointsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Remove"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to reaname the waypoint: " + ChatColor.YELLOW
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Reaname waypoint: " + ChatColor.YELLOW
               + waypointName)
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -148,7 +151,7 @@ public class WaypointsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Delete"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to delete the waypoint: " + ChatColor.YELLOW
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Delete waypoint: " + ChatColor.YELLOW
               + waypointName)
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -164,7 +167,8 @@ public class WaypointsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Set Icon"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Click to set custom icon for: " + ChatColor.YELLOW + waypointName)
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set custom icon for: " + ChatColor.YELLOW
+              + waypointName)
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -236,6 +240,8 @@ public class WaypointsGUI implements Listener {
 
     if (_waypointsManager.checkWaypointExists(world, waypointName)) {
       _waypointsManager.removeWaypoint(world, waypointName);
+      p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
       p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
           + " was successfully removed!");
     } else {
@@ -244,7 +250,7 @@ public class WaypointsGUI implements Listener {
     }
   }
 
-  private void _displaySetIconGUI(Player player, String waypointName, CustomGUI parentGUI) {
+  private void _displaySetIconGUI(Player p, String waypointName, CustomGUI parentGUI) {
     Material[] allMaterials = Material.values();
     Map<String, ItemStack> itemEntries = new LinkedHashMap<>();
 
@@ -269,8 +275,8 @@ public class WaypointsGUI implements Listener {
       }
     }
 
-    CustomGUI itemsGui = new CustomGUI(Main.getInstance(), player,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Icon for: " + ChatColor.GRAY + waypointName,
+    CustomGUI itemsGui = new CustomGUI(_plugin, p,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Icon for: " + waypointName,
         itemEntries, 6, null, parentGUI, null);
     Map<String, CustomGUI.ClickAction> itemClickActions = new HashMap<>();
 
@@ -285,6 +291,7 @@ public class WaypointsGUI implements Listener {
 
           _waypointsManager.setWaypointIcon(p.getWorld().getName(), waypointName,
               icon);
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
           p.sendMessage(Main.getPrefix() + "Custom icon set for waypoint " + ChatColor.YELLOW + waypointName
               + ChatColor.GRAY + ".");
@@ -294,13 +301,13 @@ public class WaypointsGUI implements Listener {
     }
 
     itemsGui.setClickActions(itemClickActions);
-    itemsGui.open(player);
+    itemsGui.open(p);
   }
 
   @EventHandler
   public void onPlayerChat(AsyncChatEvent e) {
-    Player player = e.getPlayer();
-    UUID playerId = player.getUniqueId();
+    Player p = e.getPlayer();
+    UUID playerId = p.getUniqueId();
 
     if (_renamePending.containsKey(playerId)) {
       e.setCancelled(true);
@@ -308,14 +315,16 @@ public class WaypointsGUI implements Listener {
       String newName = ((TextComponent) e.message()).content();
 
       if (newName.split(" ").length > 1 || newName.isEmpty()
-          || _waypointsManager.checkWaypointExists(player.getWorld().getName(), newName)) {
-        player.sendMessage(
+          || _waypointsManager.checkWaypointExists(p.getWorld().getName(), newName)) {
+        p.sendMessage(
             Main.getPrefix() + ChatColor.RED + "Invalid name or waypoint already exists.");
         return;
       }
 
-      _waypointsManager.renameWaypoint(player.getWorld().getName(), oldName, newName);
-      player.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + oldName + ChatColor.GRAY
+      _waypointsManager.renameWaypoint(p.getWorld().getName(), oldName, newName);
+      p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+      p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + oldName + ChatColor.GRAY
           + " has been renamed to " + ChatColor.YELLOW + newName + ChatColor.GRAY + ".");
       return;
     }

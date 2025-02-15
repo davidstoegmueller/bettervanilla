@@ -12,10 +12,10 @@ public class NavigationData {
   private final Color _color;
 
   public NavigationData(String name, Location location, NavigationType type, Color color) {
-    this._name = name;
-    this._location = location;
-    this._type = type;
-    this._color = color;
+    _name = name;
+    _location = location;
+    _type = type;
+    _color = color;
   }
 
   public String getName() {

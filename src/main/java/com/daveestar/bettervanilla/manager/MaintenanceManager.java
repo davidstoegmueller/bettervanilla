@@ -12,15 +12,21 @@ import net.md_5.bungee.api.ChatColor;
 
 public class MaintenanceManager {
   private Boolean _isMaintenance;
+
+  private final Main _plugin;
   private SettingsManager _settingsManager;
 
   public MaintenanceManager(Config config) {
-    this._settingsManager = Main.getInstance().getSettingsManager();
-    this._isMaintenance = _settingsManager.getMaintenance();
+    _plugin = Main.getInstance();
+  }
+
+  public void initManagers() {
+    _settingsManager = _plugin.getSettingsManager();
+    _isMaintenance = _settingsManager.getMaintenance();
   }
 
   public void setState(boolean isMaintenance, String message) {
-    this._isMaintenance = isMaintenance;
+    _isMaintenance = isMaintenance;
 
     _settingsManager.setMaintenance(isMaintenance, isMaintenance ? message : null);
   }
@@ -40,8 +46,7 @@ public class MaintenanceManager {
     if (_isMaintenance) {
       if (!p.hasPermission("bettervanilla.maintenance.bypass")) {
 
-        SettingsManager settingsManager = Main.getInstance().getSettingsManager();
-        String message = settingsManager.getMaintenanceMessage();
+        String message = _settingsManager.getMaintenanceMessage();
 
         String maintenanceMsg = ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "MAINTENANCE\n\n"
             + ChatColor.GRAY
