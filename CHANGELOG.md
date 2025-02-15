@@ -13,6 +13,8 @@
 - **Waypoints GUI:**
   - Fixed options title for "reaname" which was "remove" previously
   - Re-Open GUI after setting a custom icon
+- **AFK-Time Setting:**
+  - validate input to make sure it is an integer
 - **Documentation Update:** Updated README to reflect the change from “Last Death” to “Death Points” with clear usage instructions.
 - **Dependency Injection Enhancements:** Refactored commands (e.g., PermissionsCommand, PlayTimeCommand, SettingsCommand) to use constructor injection for better modularity.
 - **General Refactor:** Improved overall code consistency and dependency management across the repository.
