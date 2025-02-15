@@ -197,7 +197,15 @@ public class SettingsCommand implements TabExecutor {
   }
 
   private void _setAFKTime(Player p, String[] args) {
-    int minutes = Integer.parseInt(args[1]);
+    int minutes;
+
+    try {
+      minutes = Integer.parseInt(args[1]);
+    } catch (NumberFormatException e) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number of minutes.");
+      return;
+    }
+
     _settingsManager.setAFKTime(minutes);
 
     p.sendMessage(
