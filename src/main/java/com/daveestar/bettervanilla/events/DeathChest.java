@@ -16,6 +16,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -32,6 +33,7 @@ import net.md_5.bungee.api.ChatColor;
 public class DeathChest implements Listener {
 
   private final HashMap<Player, Location> openedDeathChests = new HashMap<>();
+  private final HashMap<Inventory, String> deathChestInventories = new HashMap<>();
 
   private final Main _plugin;
   private final DeathPointsManager _deathPointsManager;
@@ -101,6 +103,7 @@ public class DeathChest implements Listener {
           p.openInventory(inv);
 
           openedDeathChests.put(p, clickedLoc);
+          deathChestInventories.put(inv, ref.ownerUUID);
         }
       }
     }
@@ -132,6 +135,22 @@ public class DeathChest implements Listener {
   }
 
   @EventHandler
+  public void onDeathChestClick(InventoryClickEvent e) {
+    Inventory topInv = e.getView().getTopInventory();
+
+    if (!deathChestInventories.containsKey(topInv))
+      return;
+
+    String ownerUUID = deathChestInventories.get(topInv);
+    Player p = (Player) e.getWhoClicked();
+
+    if (!p.getUniqueId().toString().equals(ownerUUID)) {
+      e.setCancelled(true);
+      return;
+    }
+  }
+
+  @EventHandler
   public void onDeathChestClose(InventoryCloseEvent e) {
     Player p = (Player) e.getPlayer();
 
@@ -140,10 +159,16 @@ public class DeathChest implements Listener {
       DeathPointReference ref = _deathPointsManager.getDeathPointAtLocation(chestLoc);
 
       if (ref != null) {
-        Location playerLoc = p.getLocation().toBlockLocation();
-        removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, e.getInventory().getContents());
+        if (p.getUniqueId().toString().equals(ref.ownerUUID)) {
+          Location playerLoc = p.getLocation().toBlockLocation();
+          removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, e.getInventory().getContents());
+        }
       }
+
+      openedDeathChests.remove(p);
     }
+
+    deathChestInventories.remove(e.getInventory());
   }
 
   @EventHandler
@@ -155,10 +180,14 @@ public class DeathChest implements Listener {
       DeathPointReference ref = _deathPointsManager.getDeathPointAtLocation(breakLoc);
 
       if (ref != null) {
-        Location playerLoc = p.getLocation().toBlockLocation();
-        ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
-
-        removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, items);
+        if (p.getUniqueId().toString().equals(ref.ownerUUID)) {
+          Location playerLoc = p.getLocation().toBlockLocation();
+          ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
+          removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, items);
+        } else {
+          e.setCancelled(true);
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to break this death chest.");
+        }
       }
     }
   }
