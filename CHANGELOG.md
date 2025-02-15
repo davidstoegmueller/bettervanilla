@@ -10,6 +10,9 @@
   - Integrated DeathPointsManager and DeathPointsCommand to streamline deathpoint navigation.
   - Made the deathchest more private to be only edited and claimbed by the owner.
   - Added holograms above the deathchest.
+- **Waypoints GUI:**
+  - Fixed options title for "reaname" which was "remove" previously
+  - Re-Open GUI after setting a custom icon
 - **Documentation Update:** Updated README to reflect the change from “Last Death” to “Death Points” with clear usage instructions.
 - **Dependency Injection Enhancements:** Refactored commands (e.g., PermissionsCommand, PlayTimeCommand, SettingsCommand) to use constructor injection for better modularity.
 - **General Refactor:** Improved overall code consistency and dependency management across the repository.
