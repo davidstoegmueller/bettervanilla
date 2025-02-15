@@ -119,19 +119,8 @@ public class DeathChest implements Listener {
 
     _deathPointsManager.removeDeathPoint(ownerUUID, pointUUID);
 
-    String playerUUID = p.getUniqueId().toString();
-    if (playerUUID.equals(ownerUUID)) {
-      p.sendMessage(Main.getPrefix() + "You've claimed your deathchest.");
-    } else {
-      Player ownerPlayer = (Player) Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
-      p.sendMessage(Main.getPrefix() + "You've claimed the deathchest of " + ChatColor.YELLOW
-          + ownerPlayer.getName());
+    p.sendMessage(Main.getPrefix() + "You've claimed your deathchest and the deathpoint has been removed.");
 
-      if (ownerPlayer.isOnline()) {
-        ownerPlayer.sendMessage(Main.getPrefix() + "Your deathchest has been claimed by " + ChatColor.YELLOW
-            + p.getName());
-      }
-    }
   }
 
   @EventHandler
@@ -183,6 +172,7 @@ public class DeathChest implements Listener {
         if (p.getUniqueId().toString().equals(ref.ownerUUID)) {
           Location playerLoc = p.getLocation().toBlockLocation();
           ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
+
           removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, items);
         } else {
           e.setCancelled(true);

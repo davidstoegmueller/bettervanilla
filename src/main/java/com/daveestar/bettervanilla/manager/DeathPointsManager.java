@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -78,7 +79,20 @@ public class DeathPointsManager {
     String deathPointsPath = playerUUID + ".deathpoints";
     ConfigurationSection deathPointsSection = _fileConfig.getConfigurationSection(deathPointsPath);
 
-    return deathPointsSection != null ? deathPointsSection.getKeys(false).toArray(new String[0]) : new String[0];
+    if (deathPointsSection == null) {
+      return new String[0];
+    }
+
+    List<String> uuids = new ArrayList<>(deathPointsSection.getKeys(false));
+    String prefix = deathPointsPath + ".";
+
+    uuids.sort((a, b) -> {
+      long t1 = _fileConfig.getLong(prefix + a + ".timestamp", 0);
+      long t2 = _fileConfig.getLong(prefix + b + ".timestamp", 0);
+      return Long.compare(t2, t1);
+    });
+
+    return uuids.toArray(new String[0]);
   }
 
   public Location getDeathPointLocation(String ownerUUID, String pointUUID) {
