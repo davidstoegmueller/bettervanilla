@@ -132,7 +132,7 @@ public class WaypointsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Remove"));
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Rename"));
       meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Reaname waypoint: " + ChatColor.YELLOW
@@ -295,7 +295,7 @@ public class WaypointsGUI implements Listener {
 
           p.sendMessage(Main.getPrefix() + "Custom icon set for waypoint " + ChatColor.YELLOW + waypointName
               + ChatColor.GRAY + ".");
-          p.closeInventory();
+          displayGUI(p);
         }
       });
     }
