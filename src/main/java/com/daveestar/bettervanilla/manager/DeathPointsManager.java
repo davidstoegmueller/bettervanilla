@@ -10,12 +10,17 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.ItemStackUtils;
+
+import net.kyori.adventure.text.Component;
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.block.Block;
 
 public class DeathPointsManager {
@@ -28,6 +33,7 @@ public class DeathPointsManager {
   }
 
   public void addDeathPoint(Player p, Location loc) {
+    String playerName = p.getName();
     String playerUUID = p.getUniqueId().toString();
     String pointUUID = UUID.randomUUID().toString();
 
@@ -52,16 +58,17 @@ public class DeathPointsManager {
     _config.save();
 
     _createDeathChest(loc);
+    _createDeathHologram(playerName, loc);
   }
 
   public void removeDeathPoint(String ownerUUID, String pointUUID) {
     Location loc = getDeathPointLocation(ownerUUID, pointUUID);
-    if (loc != null && loc.getBlock() != null) {
-      loc.getBlock().setType(Material.AIR, false);
+    if (loc != null) {
+      _removeDeathChest(loc);
+      _removeDeathHologram(loc);
     }
 
     String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
-
     _fileConfig.set(deathPointPath, null);
     _config.save();
   }
@@ -123,13 +130,44 @@ public class DeathPointsManager {
     return getDeathPointAtLocation(block.getLocation().toBlockLocation()) != null;
   }
 
-  // --------------
-  // HELPER METHODS
-  // --------------
+  // ------------------
+  // HELPER ADD METHODS
+  // ------------------
 
   private void _createDeathChest(Location loc) {
     loc.getBlock().setType(Material.CHEST, false);
   }
+
+  private void _createDeathHologram(String playerName, Location loc) {
+    ArmorStand hologram = loc.getWorld().spawn(loc.clone().add(0.5, 0.5, 0.5), ArmorStand.class);
+    hologram.setInvisible(true);
+    hologram.setGravity(false);
+    hologram.setMarker(true);
+    hologram.customName(Component.text(ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Chest: " + playerName));
+    hologram.setCustomNameVisible(true);
+  }
+
+  // -----------------------
+  // HELPER REMOVAL METHODS
+  // -----------------------
+
+  private void _removeDeathChest(Location loc) {
+    if (loc.getBlock() != null) {
+      loc.getBlock().setType(Material.AIR, false);
+    }
+  }
+
+  private void _removeDeathHologram(Location loc) {
+    loc.getWorld().getEntitiesByClass(ArmorStand.class).forEach(stand -> {
+      if (stand.isMarker() && stand.getLocation().distance(loc.clone().add(0.5, 0.5, 0.5)) < 1.0) {
+        stand.remove();
+      }
+    });
+  }
+
+  // ----------------------
+  // GENERAL HELPER METHODS
+  // ----------------------
 
   private Location _readLocation(String path) {
     String world = _fileConfig.getString(path + ".world", "-");
