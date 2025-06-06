@@ -5,8 +5,8 @@ import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Bisected.Half;
 import org.bukkit.block.data.type.Stairs;
-import org.bukkit.block.data.type.Stairs.Half;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -58,7 +58,7 @@ public class SittableStairs implements Listener {
           _unmountFromStair(p);
 
           // create armor stand slightly higher so the player sits on top of the stair
-          Location location = clickedBlock.getLocation().toBlockLocation().add(0.5, 0.3, 0.5);
+          Location location = clickedBlock.getLocation().toBlockLocation().add(0.5, 0.5, 0.5);
 
           // adjust direction based on the lower side of the stairs
           if (clickedBlock.getBlockData() instanceof Stairs) {
