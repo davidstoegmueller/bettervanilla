@@ -29,7 +29,9 @@ public class CustomGUI implements Listener {
 
   private final Inventory _gui;
   private final Map<String, ItemStack> _pageEntries;
+  private final List<Map.Entry<String, ItemStack>> _entryList;
   private final Map<String, Integer> _customSlots;
+  private final Map<Integer, String> _slotKeyMap;
   private final CustomGUI _parentMenu;
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
@@ -39,9 +41,11 @@ public class CustomGUI implements Listener {
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
     _currentPage = 1;
     _pageEntries = pageEntries;
+    _entryList = new ArrayList<>(pageEntries.entrySet());
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
+    _slotKeyMap = new HashMap<>();
     _pageSize = inventorySize - _INVENTORY_ROW_SIZE;
-    _maxPage = (int) Math.ceil((double) pageEntries.size() / _pageSize);
+    _maxPage = (int) Math.ceil((double) _entryList.size() / _pageSize);
     _parentMenu = parentMenu;
     _options = options != null ? options : EnumSet.noneOf(Option.class);
 
@@ -114,19 +118,27 @@ public class CustomGUI implements Listener {
 
   private List<Map.Entry<String, ItemStack>> _getPageEntries() {
     int startIdx = (_currentPage - 1) * _pageSize;
-    int endIdx = Math.min(startIdx + _pageSize, _pageEntries.size());
-    return new ArrayList<>(_pageEntries.entrySet()).subList(startIdx, endIdx);
+    int endIdx = Math.min(startIdx + _pageSize, _entryList.size());
+    return _entryList.subList(startIdx, endIdx);
   }
 
   private void _updatePage() {
     _clear();
     _createActionButtons();
 
+    _slotKeyMap.clear();
+
     List<Map.Entry<String, ItemStack>> currentEntries = _getPageEntries();
-    for (int i = 0; i < currentEntries.size(); i++) {
-      String key = currentEntries.get(i).getKey();
-      int slot = _customSlots.containsKey(key) ? _customSlots.get(key) : i;
-      _gui.setItem(slot, currentEntries.get(i).getValue());
+    int defaultSlotIndex = 0;
+    for (Map.Entry<String, ItemStack> entry : currentEntries) {
+      String key = entry.getKey();
+      int slot = _customSlots.getOrDefault(key, defaultSlotIndex);
+      _gui.setItem(slot, entry.getValue());
+      _slotKeyMap.put(slot, key);
+
+      if (!_customSlots.containsKey(key)) {
+        defaultSlotIndex++;
+      }
     }
   }
 
@@ -143,17 +155,8 @@ public class CustomGUI implements Listener {
       _handlePageSwitch(p, e.isRightClick());
     } else if (slot == _POS_BACK_BUTTON && _parentMenu != null) {
       _parentMenu.open(p);
-    } else if (_customSlots.containsValue(slot)) {
-      String key = _customSlots.entrySet().stream()
-          .filter(entry -> entry.getValue().equals(slot))
-          .map(Map.Entry::getKey)
-          .findFirst()
-          .orElse(null);
-      if (key != null) {
-        _handleItemClick(p, key, e.isShiftClick(), e.isRightClick());
-      }
-    } else if (slot >= 0 && slot < _pageSize) {
-      _handleItemClick(p, slot, e.isShiftClick(), e.isRightClick());
+    } else if (_slotKeyMap.containsKey(slot)) {
+      _handleItemClick(p, _slotKeyMap.get(slot), e.isShiftClick(), e.isRightClick());
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
     }
@@ -172,31 +175,20 @@ public class CustomGUI implements Listener {
     p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
 
-  private void _handleItemClick(Player p, Object keyOrSlot, boolean isShiftClick, boolean isRightClick) {
-    String key = null;
-    if (keyOrSlot instanceof Integer) {
-      int slot = (int) keyOrSlot;
-      int entryIndex = (_currentPage - 1) * _pageSize + slot;
-      List<Map.Entry<String, ItemStack>> entries = new ArrayList<>(_pageEntries.entrySet());
-      if (entryIndex < entries.size()) {
-        key = entries.get(entryIndex).getKey();
-      }
-    } else if (keyOrSlot instanceof String) {
-      key = (String) keyOrSlot;
-    }
+  private void _handleItemClick(Player p, String key, boolean isShiftClick, boolean isRightClick) {
+    if (key == null)
+      return;
 
-    if (key != null) {
-      ClickAction action = _clickActions.get(key);
-      if (action != null) {
-        if (isShiftClick && isRightClick) {
-          action.onShiftRightClick(p);
-        } else if (isShiftClick) {
-          action.onShiftLeftClick(p);
-        } else if (isRightClick) {
-          action.onRightClick(p);
-        } else {
-          action.onLeftClick(p);
-        }
+    ClickAction action = _clickActions.get(key);
+    if (action != null) {
+      if (isShiftClick && isRightClick) {
+        action.onShiftRightClick(p);
+      } else if (isShiftClick) {
+        action.onShiftLeftClick(p);
+      } else if (isRightClick) {
+        action.onRightClick(p);
+      } else {
+        action.onLeftClick(p);
       }
     }
   }
