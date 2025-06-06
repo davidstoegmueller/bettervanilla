@@ -45,11 +45,17 @@ public class WaypointsManager {
   public HashMap<String, Integer> getWaypointByName(String worldName, String waypointName) {
     ConfigurationSection waypoint = _fileCfgn.getConfigurationSection(worldName + "." + waypointName);
 
-    HashMap<String, Integer> coordinates = new HashMap<String, Integer>();
+    HashMap<String, Integer> coordinates = new HashMap<>();
 
-    coordinates.put("x", waypoint.getInt("x", 0));
-    coordinates.put("y", waypoint.getInt("y", 0));
-    coordinates.put("z", waypoint.getInt("z", 0));
+    if (waypoint != null) {
+      coordinates.put("x", waypoint.getInt("x", 0));
+      coordinates.put("y", waypoint.getInt("y", 0));
+      coordinates.put("z", waypoint.getInt("z", 0));
+    } else {
+      coordinates.put("x", 0);
+      coordinates.put("y", 0);
+      coordinates.put("z", 0);
+    }
 
     return coordinates;
   }

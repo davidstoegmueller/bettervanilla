@@ -29,7 +29,8 @@ public class CompassManager {
       new DirectionInfo("W"), // W
       new DirectionInfo("NW") // NW
   }; // directions with text only
-  private static final int _UPDATE_INTERVAL = 1; // tick interval for compass updates
+  // update interval in milliseconds (approx one server tick)
+  private static final int _UPDATE_INTERVAL = 50;
   private static final char _FILL_CHARACTER = '·'; // enhanced visual fill character
   private static final String _ARROW_CHARACTER = "▲"; // enhanced arrow character without color
   private static final int _FILL_CHAR_AMOUNT = 20; // number of fill characters between directions
@@ -41,6 +42,9 @@ public class CompassManager {
 
   public CompassManager() {
     _plugin = Main.getInstance();
+
+    // fetch settings manager before accessing player preferences
+    _settingsManager = _plugin.getSettingsManager();
 
     _plugin.getServer().getOnlinePlayers().forEach(p -> {
       if (_settingsManager.getToggleCompass(p)) {
