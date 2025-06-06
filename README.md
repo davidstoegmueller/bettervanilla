@@ -1,167 +1,215 @@
-# BetterVanilla AIO
+# BetterVanilla – SMP All‑in‑One 🍦✨
 
-bettervanilla is a simple yet powerful Minecraft plugin designed to enhance the vanilla gameplay experience on SMP servers while maintaining the classic feel of Minecraft.
+_A lightweight, drop‑in plugin that upgrades vanilla Minecraft servers with modern quality‑of‑life features—without sacrificing the classic vibe._
 
-## Key Enhancements
+[![GitHub release](https://img.shields.io/github/v/release/davidstoegmueller/bettervanilla?style=flat-round)](https://github.com/davidstoegmueller/bettervanilla/releases)
+[![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-round)](LICENSE)
 
-- **Intuitive Navigation:**  
-  Interactive waypoints and the bossbar compass guide you effortlessly through your world.
+---
 
-- **Enhanced Quality of Life:**
+## ✨ Why BetterVanilla?
 
-  - A range of intuitive features that streamline navigation and interaction
-  - Integrated tools offering natural orientation and ease of use
-  - Comprehensive enhancements designed to improve the overall gameplay experience for everyone
+Your SMP world deserves more than plain vanilla. **BetterVanilla** sprinkles your server with just‑right upgrades—no mods, no bloat, just 🍦 + 🚀.
 
-- **Admin Features:**  
-  Robust command functionalities and configuration settings streamline server management and gameplay control.
+Whether you’re spinning up a fresh community project or running a seasoned network, BetterVanilla delivers the _wow‑factor_ that keeps players logged in and admins chilled out.
 
-## Designed for Vanilla SMP Servers
+### Key Highlights
 
-bettervanilla enriches your server by:
+- 🧭 **Smart Navigation** – Waypoints with an intuitive GUI, a subtle bossbar compass, and live action‑bar coordinates keep everyone headed in the right direction—no external maps required.
+- 🛋️ **Seamless QoL Tweaks** – Sit on any stair, track playtime & ping, auto‑skip rainy days, and bounce back from death with instant chests. Zero learning curve—just play.
+- ⚙️ **Admin Superpowers** – One‑command maintenance mode, creeper‑damage toggles, AFK timers, and a live‑reload permission system let you craft the perfect experience in seconds.
+- 🔄 **Instant Recovery** – Death points & automatic death chests mean lost gear is just a quick stroll away.
+- 🌦️ **Weather? What Weather?** – Skip rain and storms by simply hopping into bed—no one likes soggy boots.
+- 🪑 **Immersive Extras** – Sittable stairs, action‑bar coordinates, and subtle HUD touches make your world feel alive.
 
-- Preserving the authentic charm of vanilla Minecraft
-- Providing customizable, quality-of-life enhancements
-- Enabling precise permission management for improved security and control
+_(Scroll down for the complete feature & command list.)_
 
-## Why Choose bettervanilla?
+---
 
-By integrating both player-friendly features and administrative tools, bettervanilla offers:
+## Table of Contents
 
-- A balance between modern enhancements and a classic gaming experience
-- An easy-to-use solution that adds depth and interactivity to your server
-- Improved enjoyment and efficient server management for both players and admins
+- [Features](#features)
+- [Installation](#installation)
+- [Commands](#commands)
+- [Permissions](#permissions)
+- [Contributing](#contributing)
+- [License](#license)
 
-Upgrade your SMP server with bettervanilla for a richer, more immersive gameplay experience.
+---
 
 ## Features
 
-- **Waypoints**: Add, remove, and navigate to waypoints withh GUI. Custom icons for waypoints can be set in the GUI.
-- **Playtime**: Track and display playtime for players.
-- **Ping**: Check the ping of yourself or other players.
-- **Inventory Viewer**: View the inventory of other players.
-- **Timer**: Manage a global timer with resume, pause, and reset functionalities.
-- **Admin Help**: Get help for admin commands.
-- **Settings**: Toggle various global settings.
-- **Action Bar Location**: Display your current location in the action bar.
-- **Bossbar Compass**: Display directions as a compass in the bossbar.
-- **Death Points**: Manage your deathpoints using a GUI.
-- **Sittable Stairs**: Sit on stairs using an empty hand.
-- **Sleeping Rain**: Skip rainy days by sleeping in a bed.
-- **Death Chest**: Create a chest with your items at your death location.
-- **Permissions**: Manage and assign plugin permissions to users and groups.
+### Player‑Centric
 
-## Commands
+- 🧭 **Waypoints** – Add, remove and navigate using a GUI (custom icons supported)
+- ⏱️ **Playtime** – Track and display personal or global playtime
+- 📡 **Ping** – Check your own or any player’s latency
+- 🔍 **Inventory Viewer** – Peek inside another player’s inventory
+- ⏲️ **Timer** – Global stopwatch with resume, pause, reset & set
+- 📍 **Action‑Bar Location** – Live X / Y / Z in your HUD
+- 🧭 **Bossbar Compass** – Minimalistic direction overlay
+- ⚰️ **Death Points & Death Chests** – Never lose your stuff again
+- 🪑 **Sittable Stairs** – Right‑click stairs with an empty hand to sit
+- 🌧️ **Sleeping Rain Skip** – Sleep through bad weather
+- 📚 **Help** – Get an overview of all available features and commands
 
-### Waypoints
+### Admin & Server
 
-- `/waypoints` or `/wp`: Open the waypoints GUI.
-- `/waypoints add <name>`: Add a waypoint at your current location.
-- `/waypoints remove <name>`: Remove an existing waypoint.
-- `/waypoints list`: List all waypoints in the current world.
-- `/waypoints nav <name>`: Start navigation to a specified waypoint.
-- `/waypoints player <player>`: Navigate to another player's location.
-- `/waypoints coords <x> <y> <z>`: Navigate to specific coordinates.
-- `/waypoints cancel`: Cancel the current navigation.
+- 🛠️ **Settings Command** – Toggle maintenance mode, creeper damage, _The End_ access, sleeping‑rain, AFK time, and more
+- 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
+- 📚 **Admin Help** – Quick reference for every admin command
 
-### Playtime
-
-- `/playtime` or `/pt`: Display your playtime.
-- `/playtime <player>`: Display the playtime of another player.
-
-### Ping
-
-- `/ping`: Display your ping.
-- `/ping <player>`: Display the ping of another player.
-
-### Inventory Viewer
-
-- `/invsee <player>`: View the inventory of another player.
-
-### Timer
-
-- `/timer resume`: Resume the timer.
-- `/timer pause`: Pause the timer.
-- `/timer reset`: Reset the timer.
-- `/timer set <time>`: Set the timer to a specific time.
-
-### Admin Help
-
-- `/adminhelp`: Get help for admin commands.
-
-### Settings
-
-- `/settings` or `/set`: List all current settings with their values/states.
-- `/settings maintenance [message]`: Toggle maintenance mode and set a message.
-- `/settings creeperdamage`: Toggle creeper entity damage.
-- `/settings toggleend`: Toggle 'the end' entry.
-- `/settings sleepingrain`: Toggle sleep during rain.
-- `/settings afktime <minutes>`: Set the time in minutes until a player is marked as AFK.
-
-### Action Bar Location
-
-- `/togglelocation` or `/tl`: Turn on/off action bar location.
-
-### Bossbar Compass
-
-- `/togglecompass` or `/tc`: Turn on/off bossbar compass.
-
-### Death Points
-
-- `/deathpoints` or `/dp`: Open deathpoints GUI.
-- `/deathpoints cancel`: Cancel the deathpoint navigation.
-
-### Help
-
-- `/help`: Get help for better vanilla.
-
-### Permissions
-
-- `/permissions` or `/perms`: Access a permissions usage message.
-- `/permissions group addperm <group> <permission>`: Add a permission to a group.
-- `/permissions group removeperm <group> <permission>`: Remove a permission from a group.
-- `/permissions user addperm <username> <permission>`: Add a permission to a user.
-- `/permissions user removeperm <username> <permission>`: Remove a permission from a user.
-- `/permissions user setgroup <username> <group>`: Set the user's group.
-- `/permissions assignments`: List all assignments made to groups and users.
-- `/permissions list`: List all group and user permission assignments.
-- `/permissions reload`: Reload the permissions config and reapply all the defined permissions to all players.
+---
 
 ## Installation
 
-1. Download the plugin jar file from the [releases](https://github.com/davidstoegmueller/bettervanilla/releases) page.
-2. Place the jar file in your Minecraft server's `plugins` directory.
-3. Restart your server.
+```text
+1. Download the latest release jar 📥
+2. Drop it into your server’s `plugins/` folder 📂
+3. Restart or reload the server – done ✅
+```
 
-## Configuration
+---
 
-The plugin generates configuration files in the `plugins/bettervanilla` directory. You can edit these files to customize the plugin's behavior.
+## Commands
+
+<details><summary><strong>Waypoints 🧭</strong></summary>
+
+| Command                            | Description                             |
+| ---------------------------------- | --------------------------------------- |
+| 🧭 `/waypoints` or `/wp`           | Open the waypoint GUI                   |
+| ➕ `/waypoints add <name>`         | Add a waypoint at your current location |
+| ➖ `/waypoints remove <name>`      | Remove an existing waypoint             |
+| 📜 `/waypoints list`               | List all waypoints in the current world |
+| 🚩 `/waypoints nav <name>`         | Start navigation to a waypoint          |
+| 👥 `/waypoints player <player>`    | Navigate to another player's location   |
+| 🎯 `/waypoints coords <x> <y> <z>` | Navigate to specific coordinates        |
+| ❌ `/waypoints cancel`             | Cancel the current navigation           |
+
+</details>
+
+<details><summary><strong>Deathpoints ⚰️</strong></summary>
+
+| Command                    | Description                   |
+| -------------------------- | ----------------------------- |
+| ⚰️ `/deathpoints` or `/dp` | Open death‑points GUI         |
+| ❌ `/deathpoints cancel`   | Cancel death‑point navigation |
+
+</details>
+
+<details><summary><strong>Playtime ⏱️</strong></summary>
+
+| Command                 | Description                       |
+| ----------------------- | --------------------------------- |
+| ⏱️ `/playtime` or `/pt` | Display your playtime             |
+| ⏱️ `/playtime <player>` | Display another player's playtime |
+
+</details>
+
+<details><summary><strong>Ping 📡</strong></summary>
+
+| Command             | Description                   |
+| ------------------- | ----------------------------- |
+| 📡 `/ping`          | Display your ping             |
+| 📡 `/ping <player>` | Display another player's ping |
+
+</details>
+
+<details><summary><strong>Inventory Management 🔍</strong></summary>
+
+| Command               | Description                          |
+| --------------------- | ------------------------------------ |
+| 🧳 `/invsee <player>` | View the inventory of another player |
+
+</details>
+
+<details><summary><strong>Timer ⏲️</strong></summary>
+
+| Command                | Description                      |
+| ---------------------- | -------------------------------- |
+| ▶️ `/timer resume`     | Resume the timer                 |
+| ⏸️ `/timer pause`      | Pause the timer                  |
+| 🔄 `/timer reset`      | Reset the timer                  |
+| ⏲️ `/timer set <time>` | Set the timer to a specific time |
+
+</details>
+
+<details><summary><strong>Settings & Maintenance 🛠️</strong></summary>
+
+| Command                              | Description                                          |
+| ------------------------------------ | ---------------------------------------------------- |
+| 🔧 `/settings` or `/set`             | List all settings with their current values          |
+| 🚧 `/settings maintenance [message]` | Toggle maintenance mode (plus optional kick message) |
+| 💥 `/settings creeperdamage`         | Toggle creeper block/entity damage                   |
+| 🏁 `/settings toggleend`             | Enable/disable entry to _The End_                    |
+| 🌧️ `/settings sleepingrain`          | Enable/disable sleeping to skip rain                 |
+| 💤 `/settings afktime <minutes>`     | Minutes until a player is marked AFK                 |
+
+</details>
+
+<details><summary><strong>Quality‑of‑Life Toggles 🎛️</strong></summary>
+
+| Command                       | Description                        |
+| ----------------------------- | ---------------------------------- |
+| 🗺️ `/togglelocation` or `/tl` | Enable/disable action‑bar location |
+| 🧭 `/togglecompass` or `/tc`  | Enable/disable bossbar compass     |
+
+</details>
+
+<details><summary><strong>Permissions 🔑</strong></summary>
+
+| Command                                                 | Description                             |
+| ------------------------------------------------------- | --------------------------------------- |
+| 🔑 `/permissions` or `/perms`                           | Permissions usage message               |
+| ➕ `/permissions group addperm <group> <permission>`    | Add permission to a group               |
+| ➖ `/permissions group removeperm <group> <permission>` | Remove permission from a group          |
+| ➕ `/permissions user addperm <user> <permission>`      | Add permission to a user                |
+| ➖ `/permissions user removeperm <user> <permission>`   | Remove permission from a user           |
+| 🔄 `/permissions user setgroup <user> <group>`          | Set a user's group                      |
+| 📋 `/permissions assignments`                           | List all group & user assignments       |
+| 📋 `/permissions list`                                  | List every permission assignment        |
+| 🔄 `/permissions reload`                                | Reload the permissions config & reapply |
+
+</details>
+
+<details><summary><strong>Help 📚</strong></summary>
+
+| Command         | Description                    |
+| --------------- | ------------------------------ |
+| 📖 `/adminhelp` | List all admin commands        |
+| 📖 `/help`      | In‑game help for BetterVanilla |
+
+</details>
+
+---
 
 ## Permissions
 
-- `bettervanilla.waypoints`
-- `bettervanilla.waypoints.overwrite`
-- `bettervanilla.waypoints.remove`
-- `bettervanilla.maintenance.bypass`
-- `bettervanilla.playtime`
-- `bettervanilla.ping`
-- `bettervanilla.invsee`
-- `bettervanilla.timer`
-- `bettervanilla.adminhelp`
-- `bettervanilla.settings`
-- `bettervanilla.togglelocation`
-- `bettervanilla.togglecompass`
-- `bettervanilla.deathpoints`
-- `bettervanilla.permissions`
+```text
+bettervanilla.waypoints
+bettervanilla.waypoints.overwrite
+bettervanilla.waypoints.remove
+bettervanilla.maintenance.bypass
+bettervanilla.playtime
+bettervanilla.ping
+bettervanilla.invsee
+bettervanilla.timer
+bettervanilla.adminhelp
+bettervanilla.settings
+bettervanilla.togglelocation
+bettervanilla.togglecompass
+bettervanilla.deathpoints
+bettervanilla.permissions
+```
 
-## Contributing
+---
 
-Feel free to contribute to the project by opening issues or submitting pull requests on the [GitHub repository](https://github.com/davidstoegmueller/bettervanilla).
+## Contributing 🤝
 
-## GitHub Issues
+Pull requests are welcome! If you stumble upon a bug or have a feature idea, open an issue on the [GitHub Issues page](https://github.com/davidstoegmueller/bettervanilla/issues) with reproduction steps, logs, or screenshots.
 
-For tracking and managing issues, please visit the repository's [Issues](https://github.com/davidstoegmueller/bettervanilla/issues) page. When creating a new issue, include a clear description of the problem, steps to reproduce, and any related logs or screenshots. Your detailed feedback helps us improve the project!
+---
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Distributed under the [MIT License](LICENSE).
