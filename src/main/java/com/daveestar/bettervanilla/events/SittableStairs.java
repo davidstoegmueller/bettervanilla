@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.block.data.type.Stairs.Half;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,11 +19,17 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import com.daveestar.bettervanilla.Main;
 
 public class SittableStairs implements Listener {
-  private static final double MAX_DISTANCE_SQUARED = 9.0; // 3 block range
+  // Maximum distance squared a player can be from a stair to sit (1 block range)
+  private static final double MAX_DISTANCE_SQUARED = 1.0;
   private final HashMap<Player, ArmorStand> _sittingPlayers = new HashMap<>();
 
   @EventHandler
   public void onPlayerRightClick(PlayerInteractEvent e) {
+    // ignore off-hand interactions to prevent duplicate handling
+    if (e.getHand() != EquipmentSlot.HAND) {
+      return;
+    }
+
     // get the clicked block
     Block clickedBlock = e.getClickedBlock();
 
@@ -50,24 +57,24 @@ public class SittableStairs implements Listener {
           // unmount before mounting again to a chair (stair)
           _unmountFromStair(p);
 
-          // create armor stand at the block location for the player to sit on
-          Location location = clickedBlock.getLocation().toBlockLocation().add(0.5, 0.1, 0.5);
+          // create armor stand slightly higher so the player sits on top of the stair
+          Location location = clickedBlock.getLocation().toBlockLocation().add(0.5, 0.3, 0.5);
 
           // adjust direction based on the lower side of the stairs
           if (clickedBlock.getBlockData() instanceof Stairs) {
             Stairs stairs = (Stairs) clickedBlock.getBlockData();
             switch (stairs.getFacing()) {
               case NORTH:
-                location.setYaw(180f); // face south
+                location.setYaw(0f); // face south
                 break;
               case SOUTH:
-                location.setYaw(0f); // face north
+                location.setYaw(180f); // face north
                 break;
               case EAST:
-                location.setYaw(270f); // face west
+                location.setYaw(90f); // face west
                 break;
               case WEST:
-                location.setYaw(90f); // face east
+                location.setYaw(270f); // face east
                 break;
               default:
                 break;
