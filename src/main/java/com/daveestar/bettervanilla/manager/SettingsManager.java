@@ -61,12 +61,12 @@ public class SettingsManager {
     _config.save();
   }
 
-  public boolean getToggleEnd() {
-    return _fileConfig.getBoolean("global.toggleend", false);
+  public boolean getEnableEnd() {
+    return _fileConfig.getBoolean("global.enableend", false);
   }
 
-  public void setToggleEnd(boolean value) {
-    _fileConfig.set("global.toggleend", value);
+  public void setEnableEnd(boolean value) {
+    _fileConfig.set("global.enableend", value);
     _config.save();
   }
 

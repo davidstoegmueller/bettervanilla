@@ -23,7 +23,7 @@ public class PreventEnd implements Listener {
 
   @EventHandler
   public void onPlayerPortal(PlayerPortalEvent event) {
-    if (_settingsManager.getToggleEnd()) {
+    if (_settingsManager.getEnableEnd()) {
       return;
     }
 

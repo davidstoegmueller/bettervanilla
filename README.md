@@ -55,7 +55,7 @@ _(Scroll down for the complete feature & command list.)_
 
 ### Admin & Server
 
-- 🛠️ **Settings Command** – Toggle maintenance mode, creeper damage, _The End_ access, sleeping‑rain, AFK time, and more
+- 🛠️ **Settings Command & GUI** – `/settings` now opens a GUI to toggle maintenance, creeper damage, enabling _The End_, sleeping‑rain, AFK time, and more
 - 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
 - 📚 **Admin Help** – Quick reference for every admin command
 
@@ -141,7 +141,7 @@ _(Scroll down for the complete feature & command list.)_
 | 🔧 `/settings` or `/set`             | List all settings with their current values          |
 | 🚧 `/settings maintenance [message]` | Toggle maintenance mode (plus optional kick message) |
 | 💥 `/settings creeperdamage`         | Toggle creeper block/entity damage                   |
-| 🏁 `/settings toggleend`             | Enable/disable entry to _The End_                    |
+| 🏁 `/settings enableend`             | Enable/disable entry to _The End_                    |
 | 🌧️ `/settings sleepingrain`          | Enable/disable sleeping to skip rain                 |
 | 💤 `/settings afktime <minutes>`     | Minutes until a player is marked AFK                 |
 
