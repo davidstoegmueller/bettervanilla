@@ -130,7 +130,7 @@ public class SettingsGUI implements Listener {
 
       var lore = new ArrayList<String>();
       lore.add("");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ON" : ChatColor.RED + "OFF"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
       if (message != null && !message.isEmpty()) {
         lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: " + ChatColor.YELLOW + message);
       }
@@ -151,7 +151,7 @@ public class SettingsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Damage"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ON" : ChatColor.RED + "OFF"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -183,7 +183,7 @@ public class SettingsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Rain"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ON" : ChatColor.RED + "OFF"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -244,7 +244,7 @@ public class SettingsGUI implements Listener {
   private void _toggleMaintenance(Player p, String message) {
     boolean newState = !_maintenanceManager.getState();
     _maintenanceManager.setState(newState, newState ? message : null);
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "The maintenance mode is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
     if (newState && message != null) {
       p.sendMessage(Main.getPrefix() + "Message was set to: " + ChatColor.YELLOW + message);
@@ -255,7 +255,7 @@ public class SettingsGUI implements Listener {
   private void _toggleCreeperDamage(Player p) {
     boolean newState = !_settingsManager.getToggleCreeperDamage();
     _settingsManager.setToggleCreeperDamage(newState);
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Creeper damage is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
@@ -269,7 +269,7 @@ public class SettingsGUI implements Listener {
   private void _toggleSleepingRain(Player p) {
     boolean newState = !_settingsManager.getSleepingRain();
     _settingsManager.setSleepingRain(newState);
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

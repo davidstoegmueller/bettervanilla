@@ -55,7 +55,7 @@ _(Scroll down for the complete feature & command list.)_
 
 ### Admin & Server
 
-- 🛠️ **Settings Command** – Toggle maintenance mode, creeper damage, _The End_ access, sleeping‑rain, AFK time, and more
+- 🛠️ **Settings Command & GUI** – `/settings` now opens a GUI to toggle maintenance, creeper damage, enabling _The End_, sleeping‑rain, AFK time, and more
 - 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
 - 📚 **Admin Help** – Quick reference for every admin command
 

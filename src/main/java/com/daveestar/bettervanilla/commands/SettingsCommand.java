@@ -130,7 +130,7 @@ public class SettingsCommand implements TabExecutor {
 
     _maintenanceManager.setState(newState, message);
 
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
     p.sendMessage(
         Main.getPrefix() + "The maintenance mode is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
@@ -144,7 +144,7 @@ public class SettingsCommand implements TabExecutor {
 
   private void _toggleCreeperDamage(Player p) {
     Boolean newState = !_settingsManager.getToggleCreeperDamage();
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
     _settingsManager.setToggleCreeperDamage(newState);
 
@@ -162,7 +162,7 @@ public class SettingsCommand implements TabExecutor {
 
   private void _toggleSleepingRain(Player p) {
     Boolean newState = !_settingsManager.getSleepingRain();
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
     _settingsManager.setSleepingRain(newState);
 

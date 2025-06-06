@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
@@ -66,6 +67,15 @@ public class ChatMessages implements Listener {
 
     e.quitMessage(Component
         .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
+
+    _permissionsManager.onPlayerLeft(p);
+    _afkManager.onPlayerLeft(p);
+    _timerManager.onPlayerLeft(p);
+  }
+
+  @EventHandler
+  public void onPlayerKick(PlayerKickEvent e) {
+    Player p = (Player) e.getPlayer();
 
     _permissionsManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
