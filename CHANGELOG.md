@@ -2,10 +2,9 @@
 
 # 📜 Changelog
 
-## [1.3.0] - ??.06.2025
+## [1.3.0] - 06.06.2025
 
 - **🚀 Minecraft 1.21.5 Support** – Fully ported BetterVanilla to the latest game version.
-
 - **📝 README Glow‑Up** – Complete overhaul with richer feature highlights & emoji flair.
 
 ## [1.2.0] - 15.02.2025
