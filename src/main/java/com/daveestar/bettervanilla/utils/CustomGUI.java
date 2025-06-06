@@ -57,7 +57,7 @@ public class CustomGUI implements Listener {
   }
 
   public void open(Player p) {
-    p.playSound(p, Sound.ENTITY_ITEM_PICKUP, 0.5F, 1);
+    p.playSound(p, Sound.UI_TOAST_IN, 0.7F, 1);
     p.openInventory(_gui);
   }
 
@@ -151,7 +151,9 @@ public class CustomGUI implements Listener {
 
     if (slot == _POS_SWITCH_PAGE_BUTTON) {
       _handlePageSwitch(p, e.isRightClick());
+      p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
     } else if (slot == _POS_BACK_BUTTON && _parentMenu != null) {
+      p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
       _parentMenu.open(p);
     } else if (_slotKeyMap.containsKey(slot)) {
       _handleItemClick(p, _slotKeyMap.get(slot), e.isShiftClick(), e.isRightClick());
@@ -188,6 +190,7 @@ public class CustomGUI implements Listener {
       } else {
         action.onLeftClick(p);
       }
+      p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
     }
   }
 
