@@ -19,7 +19,7 @@ public class HelpCommand implements CommandExecutor {
             p.sendMessage("");
 
             Main plugin = Main.getInstance();
-            plugin.getDescription().getCommands().forEach((name, data) -> {
+            plugin.getPluginMeta().getCommands().forEach((name, data) -> {
                 Object descObj = data.get("description");
                 String desc = descObj != null ? descObj.toString() : "";
                 p.sendMessage(Main.getShortPrefix() + "/" + name + " - " + desc);
