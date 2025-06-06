@@ -57,10 +57,10 @@ public class SettingsCommand implements TabExecutor {
         return true;
       }
 
-      if (args[0].equalsIgnoreCase("toggleend")) {
+      if (args[0].equalsIgnoreCase("enableend")) {
         if (args.length > 1) {
           p.sendMessage(
-              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings toggleend");
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings enableend");
           return true;
         }
 
@@ -99,7 +99,7 @@ public class SettingsCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
-      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "toggleend", "sleepingrain",
+      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "enableend", "sleepingrain",
           "afktime");
       return availableSettings;
     }
@@ -152,12 +152,12 @@ public class SettingsCommand implements TabExecutor {
   }
 
   private void _toggleEnd(Player p) {
-    Boolean newState = !_settingsManager.getToggleEnd();
-    String stateText = newState ? "ON" : "OFF";
+    Boolean newState = !_settingsManager.getEnableEnd();
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
-    _settingsManager.setToggleEnd(newState);
+    _settingsManager.setEnableEnd(newState);
 
-    p.sendMessage(Main.getPrefix() + "The End is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "The End is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleSleepingRain(Player p) {

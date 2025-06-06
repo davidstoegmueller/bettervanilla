@@ -141,7 +141,7 @@ _(Scroll down for the complete feature & command list.)_
 | 🔧 `/settings` or `/set`             | List all settings with their current values          |
 | 🚧 `/settings maintenance [message]` | Toggle maintenance mode (plus optional kick message) |
 | 💥 `/settings creeperdamage`         | Toggle creeper block/entity damage                   |
-| 🏁 `/settings toggleend`             | Enable/disable entry to _The End_                    |
+| 🏁 `/settings enableend`             | Enable/disable entry to _The End_                    |
 | 🌧️ `/settings sleepingrain`          | Enable/disable sleeping to skip rain                 |
 | 💤 `/settings afktime <minutes>`     | Minutes until a player is marked AFK                 |
 

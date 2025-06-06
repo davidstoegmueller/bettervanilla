@@ -46,14 +46,14 @@ public class SettingsGUI implements Listener {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("creeperdamage", _createCreeperDamageItem());
-    entries.put("toggleend", _createToggleEndItem());
+    entries.put("enableend", _createEnableEndItem());
     entries.put("sleepingrain", _createSleepingRainItem());
     entries.put("afktime", _createAFKTimeItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("maintenance", 1);
     customSlots.put("creeperdamage", 3);
-    customSlots.put("toggleend", 5);
+    customSlots.put("enableend", 5);
     customSlots.put("sleepingrain", 7);
     customSlots.put("afktime", 13);
 
@@ -91,7 +91,7 @@ public class SettingsGUI implements Listener {
       }
     });
 
-    actions.put("toggleend", new CustomGUI.ClickAction() {
+    actions.put("enableend", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player player) {
         _toggleEnd(player);
@@ -159,15 +159,15 @@ public class SettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createToggleEndItem() {
-    boolean state = _settingsManager.getToggleEnd();
+  private ItemStack _createEnableEndItem() {
+    boolean state = _settingsManager.getEnableEnd();
     ItemStack item = new ItemStack(Material.ENDER_EYE);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Toggle End"));
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable End"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ON" : ChatColor.RED + "OFF"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -216,11 +216,13 @@ public class SettingsGUI implements Listener {
       String content = ((TextComponent) e.message()).content();
       try {
         int minutes = Integer.parseInt(content);
-        _settingsManager.setAFKTime(minutes);
-        p.sendMessage(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
-        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        _afkTimePending.remove(id);
-        displayGUI(p);
+        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+          _settingsManager.setAFKTime(minutes);
+          p.sendMessage(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+          _afkTimePending.remove(id);
+          displayGUI(p);
+        });
       } catch (NumberFormatException ex) {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
       }
@@ -230,10 +232,12 @@ public class SettingsGUI implements Listener {
     if (_maintenanceMessagePending.containsKey(id)) {
       e.setCancelled(true);
       String message = ((TextComponent) e.message()).content();
-      _maintenanceMessagePending.remove(id);
-      _toggleMaintenance(p, message);
-      p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-      displayGUI(p);
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        _maintenanceMessagePending.remove(id);
+        _toggleMaintenance(p, message);
+        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        displayGUI(p);
+      });
     }
   }
 
@@ -256,10 +260,10 @@ public class SettingsGUI implements Listener {
   }
 
   private void _toggleEnd(Player p) {
-    boolean newState = !_settingsManager.getToggleEnd();
-    _settingsManager.setToggleEnd(newState);
-    String stateText = newState ? "ON" : "OFF";
-    p.sendMessage(Main.getPrefix() + "The End is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    boolean newState = !_settingsManager.getEnableEnd();
+    _settingsManager.setEnableEnd(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "The End is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleSleepingRain(Player p) {
