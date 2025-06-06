@@ -1,8 +1,13 @@
 package com.daveestar.bettervanilla.commands;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
@@ -18,12 +23,20 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "COMMANDS:");
       p.sendMessage("");
 
-      // Main plugin = Main.getInstance();
-      // plugin.getDescription().forEach((name, data) -> {
-      // Object descObj = data.get("description");
-      // String desc = descObj != null ? descObj.toString() : "";
-      // p.sendMessage(Main.getShortPrefix() + "/" + name + " - " + desc);
-      // });
+      Main plugin = Main.getInstance();
+      InputStream stream = plugin.getResource("plugin.yml");
+      if (stream != null) {
+        YamlConfiguration yaml =
+            YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
+        ConfigurationSection commands = yaml.getConfigurationSection("commands");
+        if (commands != null) {
+          for (String name : commands.getKeys(false)) {
+            ConfigurationSection data = commands.getConfigurationSection(name);
+            String desc = data != null ? data.getString("description", "") : "";
+            p.sendMessage(Main.getShortPrefix() + "/" + name + " - " + desc);
+          }
+        }
+      }
 
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
