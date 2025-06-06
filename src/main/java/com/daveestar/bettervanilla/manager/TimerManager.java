@@ -97,6 +97,22 @@ public class TimerManager {
     return _playerTimers.getOrDefault(p.getUniqueId(), new PlayerTimer(0, 0)).getAFKTime();
   }
 
+  public int getPlayTime(UUID playerId) {
+    if (_playerTimers.containsKey(playerId)) {
+      return _playerTimers.get(playerId).getPlayTime();
+    }
+
+    return _loadPlayerTimer(playerId).getPlayTime();
+  }
+
+  public int getAFKTime(UUID playerId) {
+    if (_playerTimers.containsKey(playerId)) {
+      return _playerTimers.get(playerId).getAFKTime();
+    }
+
+    return _loadPlayerTimer(playerId).getAFKTime();
+  }
+
   private PlayerTimer _loadPlayerTimer(UUID playerId) {
     int playTime = _fileConfig.getInt("playerTimers." + playerId + ".playTime", 0);
     int afkTime = _fileConfig.getInt("playerTimers." + playerId + ".afkTime", 0);
