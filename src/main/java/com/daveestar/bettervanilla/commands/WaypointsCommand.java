@@ -219,18 +219,6 @@ public class WaypointsCommand implements TabExecutor {
       int z = Integer.parseInt(args[3]);
 
       Location destination = new Location(p.getWorld(), x, y, z);
-      Location playerLocation = p.getLocation().toBlockLocation();
-
-      if (playerLocation.distance(destination.toBlockLocation()) <= 25) {
-        _navigationManager.stopNavigation(p);
-        _actionBarManager.sendActionBarOnce(p,
-            ChatColor.YELLOW + "" + ChatColor.BOLD + "Custom Coordinates: " + ChatColor.RESET
-                + ChatColor.YELLOW + "X: " + ChatColor.GRAY + x + ChatColor.YELLOW + " Y: "
-                + ChatColor.GRAY + y + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + z
-                + ChatColor.GRAY + " is within 25 blocks!");
-        return;
-      }
-
       _settingsManager.setToggleLocation(p, false);
       NavigationData navigationData = new NavigationData("Custom Coordinates", destination, NavigationType.WAYPOINT,
           Color.YELLOW);
