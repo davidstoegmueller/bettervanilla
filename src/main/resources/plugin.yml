@@ -6,55 +6,55 @@ authors: ["daveestar"]
 commands:
   waypoints:
     aliases: [wp]
-    description: Set, Remove, or list waypoints via subcommands or open GUI.
+    description: Open the waypoint GUI or manage waypoints with subcommands.
     usage: /waypoints
     permission: bettervanilla.waypoints
   playtime:
     aliases: [pt]
-    description: Get the playtime of either yourself or of another user.
+    description: Display your playtime or another player's playtime.
     usage: /playtime
     permission: bettervanilla.playtime
   ping:
-    description: Get the ping of either yourself or of another user.
+    description: Display your ping or that of another player.
     usage: /ping
     permission: bettervanilla.ping
   invsee:
-    description: See the inventory of another player.
+    description: View another player's inventory.
     usage: /invsee
     permission: bettervanilla.invsee
   timer:
-    description: Resume, Pause, Reset the Timer.
+    description: Control the timer (resume, pause, reset).
     usage: /timer
     permission: bettervanilla.timer
   adminhelp:
-    description: Get help for admin commands of better vanilla.
+    description: Show all admin commands for BetterVanilla.
     usage: /adminhelp
     permission: bettervanilla.adminhelp
   settings:
     aliases: [set]
-    description: A command to toggle different global settings.
+    description: List and toggle global server settings.
     usage: /settings
     permission: bettervanilla.settings
   help:
-    description: Get help for better vanilla.
+    description: Show in-game help for BetterVanilla.
     usage: /help
   togglelocation:
     aliases: [tl]
-    description: Turn on/off action bar location.
+    description: Enable or disable action-bar location.
     usage: /togglelocation
     permission: bettervanilla.togglelocation
   togglecompass:
     aliases: [tc]
-    description: Turn on/off bossbar compass.
+    description: Enable or disable boss-bar compass.
     usage: /togglecompass
     permission: bettervanilla.togglecompass
   deathpoints:
     aliases: [dp]
-    description: Open deathpoints GUI.
+    description: Open the death-points GUI.
     usage: /deathpoints
     permission: bettervanilla.deathpoints
   permissions:
     aliases: [perms]
-    description: Add/Remove permissions to/from players and groups.
+    description: Manage player and group permissions.
     usage: /permissions
     permission: bettervanilla.permissions
