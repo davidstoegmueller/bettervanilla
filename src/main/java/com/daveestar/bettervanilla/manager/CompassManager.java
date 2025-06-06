@@ -58,6 +58,9 @@ public class CompassManager {
   public CompassManager() {
     _plugin = Main.getInstance();
 
+    // fetch settings manager before accessing player preferences
+    _settingsManager = _plugin.getSettingsManager();
+
     _plugin.getServer().getOnlinePlayers().forEach(p -> {
       if (_settingsManager.getToggleCompass(p)) {
         addPlayerToCompass(p);
