@@ -17,21 +17,14 @@ public class HelpCommand implements CommandExecutor {
 
             p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "COMMANDS:");
             p.sendMessage("");
-            p.sendMessage(Main.getShortPrefix() + "/waypoints - Open the waypoints GUI");
-            p.sendMessage(Main.getShortPrefix() + "/waypoints help - Display the waypoints help");
-            p.sendMessage("");
-            p.sendMessage(Main.getShortPrefix() + "/lastdeath - Navigate to your latest death point");
-            p.sendMessage(Main.getShortPrefix() + "/lastdeath cancel - Cancel the death point navigation");
-            p.sendMessage("");
-            p.sendMessage(Main.getShortPrefix() + "/ping - Display your ping");
-            p.sendMessage(Main.getShortPrefix() + "/ping <name> - Display the ping of a player");
-            p.sendMessage("");
-            p.sendMessage(Main.getShortPrefix() + "/togglelocation - Display your current location in action bar");
-            p.sendMessage(
-                    Main.getShortPrefix() + "/togglecompass - Display you directions as a compass in the bossbar");
-            p.sendMessage("");
-            p.sendMessage(
-                    Main.getShortPrefix() + "/playtime <player> - Display the playtime of yourself or another player");
+
+            Main plugin = Main.getInstance();
+            plugin.getDescription().getCommands().forEach((name, data) -> {
+                Object descObj = data.get("description");
+                String desc = descObj != null ? descObj.toString() : "";
+                p.sendMessage(Main.getShortPrefix() + "/" + name + " - " + desc);
+            });
+
             p.sendMessage("");
             p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
                     + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-clicl any kind of stairs.");
