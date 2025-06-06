@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.gui.SettingsGUI;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -20,11 +21,13 @@ public class SettingsCommand implements TabExecutor {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final MaintenanceManager _maintenanceManager;
+  private final SettingsGUI _settingsGUI;
 
   public SettingsCommand() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _settingsGUI = new SettingsGUI();
   }
 
   @Override
@@ -34,37 +37,7 @@ public class SettingsCommand implements TabExecutor {
       Player p = (Player) cs;
 
       if (args.length == 0) {
-        // list all current settings whith their values/states
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "SETTINGS:");
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings maintenance [message] - Toggle maintenance mode and set a message");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getMaintenance() ? "ON" : "OFF"));
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "MESSAGE: " + ChatColor.GRAY
-            + _settingsManager.getMaintenanceMessage());
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings creeperdamage - Toggle creeper entity damage");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getToggleCreeperDamage() ? "ON" : "OFF"));
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings toggleend - Toggle 'the end' entry");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getToggleEnd() ? "ON" : "OFF"));
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings sleepingrain - Toggle sleep during rain");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getSleepingRain() ? "ON" : "OFF"));
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix()
-                + "/settings afktime <minutes> - Set the time in minutes until a player is marked as AFK");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + _settingsManager.getAFKTime() + " minutes");
-
+        _settingsGUI.displayGUI(p);
         return true;
       }
 
