@@ -44,13 +44,16 @@ public class ChatMessages implements Listener {
   public void onPlayerJoin(PlayerJoinEvent e) {
     Player p = (Player) e.getPlayer();
 
+    if (_maintenanceManager.getState() && !p.hasPermission("bettervanilla.maintenance.bypass")) {
+      _maintenanceManager.sendMaintenance(p);
+      return;
+    }
+
     p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
 
     e.joinMessage(
         Component.text(
             ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName()));
-
-    _maintenanceManager.sendMaintenance(p);
 
     _permissionsManager.onPlayerJoined(p);
     _afkManager.onPlayerJoined(p);
