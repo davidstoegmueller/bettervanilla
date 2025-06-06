@@ -14,10 +14,10 @@
   - Renamed and replaced the legacy “Last Death” system with a new “Death Points” feature.
   - Introduced a dedicated GUI for managing deathpoints.
   - Integrated DeathPointsManager and DeathPointsCommand to streamline deathpoint navigation.
-  - Made the deathchest more private to be only edited and claimbed by the owner.
+   - Made the deathchest more private to be only edited and claimed by the owner.
   - Added holograms above the deathchest.
 - **Waypoints GUI:**
-  - Fixed options title for "reaname" which was "remove" previously
+  - Fixed options title for "rename" which was "remove" previously
   - Re-Open GUI after setting a custom icon
 - **AFK-Time Setting:**
   - validate input to make sure it is an integer

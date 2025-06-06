@@ -15,7 +15,7 @@ public class PermissionsManager {
   private final String _DEFAULT_GROUP_NAME = "default";
 
   private final Config _config;
-  private final FileConfiguration _fileCfgn;
+  private final FileConfiguration _fileConfig;
   private final JavaPlugin plugin;
 
   private final Map<UUID, PermissionAttachment> activeAttachments = new HashMap<>();
@@ -23,23 +23,23 @@ public class PermissionsManager {
   public PermissionsManager(Config config) {
     plugin = Main.getInstance();
     _config = config;
-    _fileCfgn = config.getFileCfgrn();
+    _fileConfig = config.getFileConfig();
 
     _loadConfig();
   }
 
   private void _loadConfig() {
     // create sections for groups and users if not present
-    if (!_fileCfgn.contains("groups")) {
-      _fileCfgn.createSection("groups");
+    if (!_fileConfig.contains("groups")) {
+      _fileConfig.createSection("groups");
     }
 
-    if (!_fileCfgn.contains("users")) {
-      _fileCfgn.createSection("users");
+    if (!_fileConfig.contains("users")) {
+      _fileConfig.createSection("users");
     }
 
     // ensure the default group exists
-    if (!_fileCfgn.contains("groups." + _DEFAULT_GROUP_NAME)) {
+    if (!_fileConfig.contains("groups." + _DEFAULT_GROUP_NAME)) {
       addGroup(_DEFAULT_GROUP_NAME);
     }
 
@@ -55,57 +55,57 @@ public class PermissionsManager {
   // ------------------------
 
   public void addGroup(String groupName) {
-    if (!_fileCfgn.contains("groups." + groupName)) {
-      _fileCfgn.createSection("groups." + groupName);
-      _fileCfgn.set("groups." + groupName + ".permissions", new ArrayList<String>());
+    if (!_fileConfig.contains("groups." + groupName)) {
+      _fileConfig.createSection("groups." + groupName);
+      _fileConfig.set("groups." + groupName + ".permissions", new ArrayList<String>());
       _save();
     }
   }
 
   public void removeGroup(String groupName) {
-    _fileCfgn.set("groups." + groupName, null);
+    _fileConfig.set("groups." + groupName, null);
     _save();
   }
 
   public void addPermissionToGroup(String groupName, String permission) {
     addGroup(groupName);
 
-    List<String> perms = _fileCfgn.getStringList("groups." + groupName + ".permissions");
+    List<String> perms = _fileConfig.getStringList("groups." + groupName + ".permissions");
 
     if (!perms.contains(permission)) {
       perms.add(permission);
-      _fileCfgn.set("groups." + groupName + ".permissions", perms);
+      _fileConfig.set("groups." + groupName + ".permissions", perms);
       _save();
     }
   }
 
   public void removePermissionFromGroup(String groupName, String permission) {
-    if (_fileCfgn.contains("groups." + groupName + ".permissions")) {
-      List<String> perms = _fileCfgn.getStringList("groups." + groupName + ".permissions");
+    if (_fileConfig.contains("groups." + groupName + ".permissions")) {
+      List<String> perms = _fileConfig.getStringList("groups." + groupName + ".permissions");
 
       if (perms.contains(permission)) {
         perms.remove(permission);
-        _fileCfgn.set("groups." + groupName + ".permissions", perms);
+        _fileConfig.set("groups." + groupName + ".permissions", perms);
         _save();
       }
     }
   }
 
   public boolean hasGroupPermission(String groupName, String permission) {
-    List<String> perms = _fileCfgn.getStringList("groups." + groupName + ".permissions");
+    List<String> perms = _fileConfig.getStringList("groups." + groupName + ".permissions");
     return perms.contains(permission);
   }
 
   public Set<String> getAllGroupNames() {
-    if (_fileCfgn.contains("groups")) {
-      return _fileCfgn.getConfigurationSection("groups").getKeys(false);
+    if (_fileConfig.contains("groups")) {
+      return _fileConfig.getConfigurationSection("groups").getKeys(false);
     }
 
     return new HashSet<>();
   }
 
   public List<String> getGroupPermissions(String groupName) {
-    return _fileCfgn.getStringList("groups." + groupName + ".permissions");
+    return _fileConfig.getStringList("groups." + groupName + ".permissions");
   }
 
   // -----------------------
@@ -117,18 +117,18 @@ public class PermissionsManager {
 
     String uuid = p.getUniqueId().toString();
 
-    _fileCfgn.set("users." + uuid + ".group", groupName);
+    _fileConfig.set("users." + uuid + ".group", groupName);
     _save();
   }
 
   public void addPermissionToUser(OfflinePlayer p, String permission) {
     String uuid = p.getUniqueId().toString();
 
-    List<String> perms = _fileCfgn.getStringList("users." + uuid + ".permissions");
+    List<String> perms = _fileConfig.getStringList("users." + uuid + ".permissions");
 
     if (!perms.contains(permission)) {
       perms.add(permission);
-      _fileCfgn.set("users." + uuid + ".permissions", perms);
+      _fileConfig.set("users." + uuid + ".permissions", perms);
       _save();
     }
   }
@@ -136,11 +136,11 @@ public class PermissionsManager {
   public void removePermissionFromUser(OfflinePlayer p, String permission) {
     String uuid = p.getUniqueId().toString();
 
-    List<String> perms = _fileCfgn.getStringList("users." + uuid + ".permissions");
+    List<String> perms = _fileConfig.getStringList("users." + uuid + ".permissions");
 
     if (perms.contains(permission)) {
       perms.remove(permission);
-      _fileCfgn.set("users." + uuid + ".permissions", perms);
+      _fileConfig.set("users." + uuid + ".permissions", perms);
       _save();
     }
   }
@@ -148,13 +148,13 @@ public class PermissionsManager {
   public boolean hasUserPermission(OfflinePlayer p, String permission) {
     String uuid = p.getUniqueId().toString();
 
-    List<String> perms = _fileCfgn.getStringList("users." + uuid + ".permissions");
+    List<String> perms = _fileConfig.getStringList("users." + uuid + ".permissions");
     return perms.contains(permission);
   }
 
   public Set<String> getAllUserIds() {
-    if (_fileCfgn.contains("users")) {
-      return _fileCfgn.getConfigurationSection("users").getKeys(false);
+    if (_fileConfig.contains("users")) {
+      return _fileConfig.getConfigurationSection("users").getKeys(false);
     }
 
     return new HashSet<>();
@@ -163,13 +163,13 @@ public class PermissionsManager {
   public List<String> getUserPermissions(OfflinePlayer p) {
     String uuid = p.getUniqueId().toString();
 
-    return _fileCfgn.getStringList("users." + uuid + ".permissions");
+    return _fileConfig.getStringList("users." + uuid + ".permissions");
   }
 
   public String getUserGroup(OfflinePlayer p) {
     String uuid = p.getUniqueId().toString();
 
-    return _fileCfgn.getString("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
+    return _fileConfig.getString("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
   }
 
   public List<String> getEffectivePermissions(OfflinePlayer p) {
@@ -178,12 +178,12 @@ public class PermissionsManager {
     Set<String> effectivePermissions = new HashSet<>();
 
     // get group permissions (default if no group is set).
-    String group = _fileCfgn.getString("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
-    List<String> groupPerms = _fileCfgn.getStringList("groups." + group + ".permissions");
+    String group = _fileConfig.getString("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
+    List<String> groupPerms = _fileConfig.getStringList("groups." + group + ".permissions");
     effectivePermissions.addAll(groupPerms);
 
     // overlay user-specific permissions.
-    List<String> userPerms = _fileCfgn.getStringList("users." + uuid + ".permissions");
+    List<String> userPerms = _fileConfig.getStringList("users." + uuid + ".permissions");
     effectivePermissions.addAll(userPerms);
 
     return new ArrayList<>(effectivePermissions);
@@ -195,9 +195,9 @@ public class PermissionsManager {
   public void onPlayerJoined(Player p) {
     String uuid = p.getUniqueId().toString();
 
-    if (!_fileCfgn.contains("users." + uuid)) {
-      _fileCfgn.createSection("users." + uuid);
-      _fileCfgn.set("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
+    if (!_fileConfig.contains("users." + uuid)) {
+      _fileConfig.createSection("users." + uuid);
+      _fileConfig.set("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
       _save();
     }
 
