@@ -1,6 +1,7 @@
 package com.daveestar.bettervanilla.gui;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,16 +122,22 @@ public class SettingsGUI implements Listener {
 
   private ItemStack _createMaintenanceItem() {
     boolean state = _maintenanceManager.getState();
+    String message = _settingsManager.getMaintenanceMessage();
     ItemStack item = new ItemStack(Material.IRON_BARS);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Maintenance"));
-      meta.lore(Arrays.asList(
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ON" : ChatColor.RED + "OFF"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle with message")
-          .stream().map(Component::text).collect(Collectors.toList()));
+
+      var lore = new ArrayList<String>();
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ON" : ChatColor.RED + "OFF"));
+      if (message != null && !message.isEmpty()) {
+        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: " + ChatColor.YELLOW + message);
+      }
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle with message");
+
+      meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
     return item;
