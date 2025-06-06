@@ -26,8 +26,7 @@ public class HelpCommand implements CommandExecutor {
       Main plugin = Main.getInstance();
       InputStream stream = plugin.getResource("plugin.yml");
       if (stream != null) {
-        YamlConfiguration yaml =
-            YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
         ConfigurationSection commands = yaml.getConfigurationSection("commands");
         if (commands != null) {
           for (String name : commands.getKeys(false)) {
