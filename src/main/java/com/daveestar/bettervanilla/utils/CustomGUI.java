@@ -28,7 +28,6 @@ public class CustomGUI implements Listener {
   private final int _maxPage;
 
   private final Inventory _gui;
-  private final Map<String, ItemStack> _pageEntries;
   private final List<Map.Entry<String, ItemStack>> _entryList;
   private final Map<String, Integer> _customSlots;
   private final Map<Integer, String> _slotKeyMap;
@@ -40,7 +39,6 @@ public class CustomGUI implements Listener {
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
     _currentPage = 1;
-    _pageEntries = pageEntries;
     _entryList = new ArrayList<>(pageEntries.entrySet());
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
     _slotKeyMap = new HashMap<>();
