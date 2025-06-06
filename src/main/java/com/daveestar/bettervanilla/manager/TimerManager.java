@@ -36,7 +36,7 @@ public class TimerManager {
     _plugin = Main.getInstance();
 
     _config = config;
-    _fileConfig = config.getFileCfgrn();
+    _fileConfig = config.getFileConfig();
 
     _loadConfiguration();
     _initializePlayerTimers();

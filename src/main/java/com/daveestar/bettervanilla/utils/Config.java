@@ -37,7 +37,7 @@ public class Config {
     return _file;
   }
 
-  public FileConfiguration getFileCfgrn() {
+  public FileConfiguration getFileConfig() {
     return _fileConfiguration;
   }
 
