@@ -29,10 +29,26 @@ public class CompassManager {
       new DirectionInfo("W"), // W
       new DirectionInfo("NW") // NW
   }; // directions with text only
-  private static final int _UPDATE_INTERVAL = 1; // tick interval for compass updates
+  // update interval in milliseconds (approx one server tick)
+  private static final int _UPDATE_INTERVAL = 50;
   private static final char _FILL_CHARACTER = '·'; // enhanced visual fill character
   private static final String _ARROW_CHARACTER = "▲"; // enhanced arrow character without color
   private static final int _FILL_CHAR_AMOUNT = 20; // number of fill characters between directions
+
+  private static final String _FULL_SCALE_TEMPLATE;
+  private static final int _FULL_SCALE_LENGTH;
+
+  static {
+    StringBuilder builder = new StringBuilder();
+    for (DirectionInfo direction : _DIRECTIONS) {
+      builder.append(direction._name);
+      for (int i = 0; i < _FILL_CHAR_AMOUNT; i++) {
+        builder.append(_FILL_CHARACTER);
+      }
+    }
+    _FULL_SCALE_TEMPLATE = builder.toString();
+    _FULL_SCALE_LENGTH = _FULL_SCALE_TEMPLATE.length();
+  }
 
   private final Map<Player, BossBar> _activeCompass = new HashMap<>();
 
@@ -102,21 +118,12 @@ public class CompassManager {
   }
 
   private String _getDynamicCompassScale(double yaw) {
-    StringBuilder fullScale = new StringBuilder();
-    for (DirectionInfo direction : _DIRECTIONS) {
-      fullScale.append(direction._name);
-      for (int i = 0; i < _FILL_CHAR_AMOUNT; i++) {
-        fullScale.append(_FILL_CHARACTER);
-      }
-    }
-
-    // create a full rotation of the compass and wrap around if needed
-    String completeCompass = fullScale.toString() + fullScale.toString();
+    String completeCompass = _FULL_SCALE_TEMPLATE + _FULL_SCALE_TEMPLATE;
 
     // calculate the starting point based on the yaw, centering the arrow position
-    int startIndex = (int) Math.round((yaw / 360) * fullScale.length()) - _ARROW_POSITION;
+    int startIndex = (int) Math.round((yaw / 360) * _FULL_SCALE_LENGTH) - _ARROW_POSITION;
     if (startIndex < 0) {
-      startIndex += fullScale.length();
+      startIndex += _FULL_SCALE_LENGTH;
     }
 
     // extract the visible portion of the compass
