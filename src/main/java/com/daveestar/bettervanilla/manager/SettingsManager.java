@@ -88,6 +88,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getAFKProtection() {
+    return _fileConfig.getBoolean("global.afkprotection", true);
+  }
+
+  public void setAFKProtection(boolean value) {
+    _fileConfig.set("global.afkprotection", value);
+    _config.save();
+  }
+
   public int getAFKTime() {
     return _fileConfig.getInt("global.afktime", 10);
   }

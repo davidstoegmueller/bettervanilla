@@ -49,6 +49,7 @@ public class SettingsGUI implements Listener {
     entries.put("enableend", _createEnableEndItem());
     entries.put("enablenether", _createEnableNetherItem());
     entries.put("sleepingrain", _createSleepingRainItem());
+    entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
@@ -57,6 +58,7 @@ public class SettingsGUI implements Listener {
     customSlots.put("enableend", 4);
     customSlots.put("enablenether", 6);
     customSlots.put("sleepingrain", 8);
+    customSlots.put("afkprotection", 11);
     customSlots.put("afktime", 13);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
@@ -113,6 +115,14 @@ public class SettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleSleepingRain(player);
+        displayGUI(player);
+      }
+    });
+
+    actions.put("afkprotection", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player player) {
+        _toggleAFKProtection(player);
         displayGUI(player);
       }
     });
@@ -223,6 +233,23 @@ public class SettingsGUI implements Listener {
     return item;
   }
 
+  private ItemStack _createAFKProtectionItem() {
+    boolean state = _settingsManager.getAFKProtection();
+    ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Protection"));
+      meta.lore(Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+    return item;
+  }
+
   private ItemStack _createAFKTimeItem() {
     int minutes = _settingsManager.getAFKTime();
     ItemStack item = new ItemStack(Material.CLOCK);
@@ -313,5 +340,12 @@ public class SettingsGUI implements Listener {
     _settingsManager.setSleepingRain(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleAFKProtection(Player p) {
+    boolean newState = !_settingsManager.getAFKProtection();
+    _settingsManager.setAFKProtection(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

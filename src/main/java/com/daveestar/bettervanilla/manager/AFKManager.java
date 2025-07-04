@@ -130,10 +130,12 @@ public class AFKManager {
           _afkStates.put(p, false);
 
           // restore normal state
-          p.setInvulnerable(false);
-          p.setCollidable(true);
-          if (_afkTeam != null) {
-            _afkTeam.removeEntry(p.getName());
+          if (_settingsManager.getAFKProtection()) {
+            p.setInvulnerable(false);
+            p.setCollidable(true);
+            if (_afkTeam != null) {
+              _afkTeam.removeEntry(p.getName());
+            }
           }
 
           announceAFKToOthers(p, false);
@@ -144,10 +146,12 @@ public class AFKManager {
           _afkStates.put(p, true);
 
           // make player invincible and immovable by entities
-          p.setInvulnerable(true);
-          p.setCollidable(false);
-          if (_afkTeam != null) {
-            _afkTeam.addEntry(p.getName());
+          if (_settingsManager.getAFKProtection()) {
+            p.setInvulnerable(true);
+            p.setCollidable(false);
+            if (_afkTeam != null) {
+              _afkTeam.addEntry(p.getName());
+            }
           }
 
           announceAFKToOthers(p, true);
