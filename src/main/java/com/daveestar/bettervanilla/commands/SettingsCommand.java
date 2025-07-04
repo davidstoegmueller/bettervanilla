@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.gui.SettingsGUI;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -20,11 +21,13 @@ public class SettingsCommand implements TabExecutor {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final MaintenanceManager _maintenanceManager;
+  private final SettingsGUI _settingsGUI;
 
   public SettingsCommand() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _settingsGUI = new SettingsGUI();
   }
 
   @Override
@@ -34,37 +37,7 @@ public class SettingsCommand implements TabExecutor {
       Player p = (Player) cs;
 
       if (args.length == 0) {
-        // list all current settings whith their values/states
-        p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "SETTINGS:");
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings maintenance [message] - Toggle maintenance mode and set a message");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getMaintenance() ? "ON" : "OFF"));
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "MESSAGE: " + ChatColor.GRAY
-            + _settingsManager.getMaintenanceMessage());
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings creeperdamage - Toggle creeper entity damage");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getToggleCreeperDamage() ? "ON" : "OFF"));
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings toggleend - Toggle 'the end' entry");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getToggleEnd() ? "ON" : "OFF"));
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix() + "/settings sleepingrain - Toggle sleep during rain");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + (_settingsManager.getSleepingRain() ? "ON" : "OFF"));
-        p.sendMessage("");
-        p.sendMessage(
-            Main.getShortPrefix()
-                + "/settings afktime <minutes> - Set the time in minutes until a player is marked as AFK");
-        p.sendMessage(ChatColor.YELLOW + "     » " + ChatColor.YELLOW + ChatColor.BOLD + "VALUE: " + ChatColor.GRAY
-            + _settingsManager.getAFKTime() + " minutes");
-
+        _settingsGUI.displayGUI(p);
         return true;
       }
 
@@ -84,14 +57,25 @@ public class SettingsCommand implements TabExecutor {
         return true;
       }
 
-      if (args[0].equalsIgnoreCase("toggleend")) {
+      if (args[0].equalsIgnoreCase("enableend")) {
         if (args.length > 1) {
           p.sendMessage(
-              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings toggleend");
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings enableend");
           return true;
         }
 
         _toggleEnd(p);
+        return true;
+      }
+
+      if (args[0].equalsIgnoreCase("enablenether")) {
+        if (args.length > 1) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings enablenether");
+          return true;
+        }
+
+        _toggleNether(p);
         return true;
       }
 
@@ -103,6 +87,17 @@ public class SettingsCommand implements TabExecutor {
         }
 
         _toggleSleepingRain(p);
+        return true;
+      }
+
+      if (args[0].equalsIgnoreCase("afkprotection")) {
+        if (args.length > 1) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings afkprotection");
+          return true;
+        }
+
+        _toggleAFKProtection(p);
         return true;
       }
 
@@ -126,8 +121,8 @@ public class SettingsCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
-      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "toggleend", "sleepingrain",
-          "afktime");
+      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "enableend", "enablenether",
+          "sleepingrain", "afkprotection", "afktime");
       return availableSettings;
     }
 
@@ -157,7 +152,7 @@ public class SettingsCommand implements TabExecutor {
 
     _maintenanceManager.setState(newState, message);
 
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
     p.sendMessage(
         Main.getPrefix() + "The maintenance mode is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
@@ -171,7 +166,7 @@ public class SettingsCommand implements TabExecutor {
 
   private void _toggleCreeperDamage(Player p) {
     Boolean newState = !_settingsManager.getToggleCreeperDamage();
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
     _settingsManager.setToggleCreeperDamage(newState);
 
@@ -179,21 +174,40 @@ public class SettingsCommand implements TabExecutor {
   }
 
   private void _toggleEnd(Player p) {
-    Boolean newState = !_settingsManager.getToggleEnd();
-    String stateText = newState ? "ON" : "OFF";
+    Boolean newState = !_settingsManager.getEnableEnd();
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
-    _settingsManager.setToggleEnd(newState);
+    _settingsManager.setEnableEnd(newState);
 
-    p.sendMessage(Main.getPrefix() + "The End is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "The End is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNether(Player p) {
+    Boolean newState = !_settingsManager.getEnableNether();
+    String stateText = newState ? "ENABLED" : "DISABLED";
+
+    _settingsManager.setEnableNether(newState);
+
+    p.sendMessage(Main.getPrefix() + "The Nether is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleSleepingRain(Player p) {
     Boolean newState = !_settingsManager.getSleepingRain();
-    String stateText = newState ? "ON" : "OFF";
+    String stateText = newState ? "ENABLED" : "DISABLED";
 
     _settingsManager.setSleepingRain(newState);
 
     p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleAFKProtection(Player p) {
+    Boolean newState = !_settingsManager.getAFKProtection();
+    String stateText = newState ? "ENABLED" : "DISABLED";
+
+    _settingsManager.setAFKProtection(newState);
+    _plugin.getAFKManager().applyProtectionToAFKPlayers(newState);
+
+    p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _setAFKTime(Player p, String[] args) {

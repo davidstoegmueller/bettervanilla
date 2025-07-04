@@ -7,84 +7,102 @@ import com.daveestar.bettervanilla.utils.Config;
 
 public class SettingsManager {
   private Config _config;
-  private FileConfiguration _fileCfgn;
+  private FileConfiguration _fileConfig;
 
   public SettingsManager(Config config) {
     _config = config;
-    _fileCfgn = config.getFileCfgrn();
+    _fileConfig = config.getFileConfig();
   }
 
   // USER SETTINGS
   public boolean getToggleLocation(Player p) {
-    return _fileCfgn.getBoolean(p.getUniqueId() + ".togglelocation");
+    return _fileConfig.getBoolean(p.getUniqueId() + ".togglelocation");
   }
 
   public void setToggleLocation(Player p, boolean value) {
-    _fileCfgn.set(p.getUniqueId() + ".togglelocation", value);
+    _fileConfig.set(p.getUniqueId() + ".togglelocation", value);
     _config.save();
   }
 
   public boolean getToggleCompass(Player p) {
-    return _fileCfgn.getBoolean(p.getUniqueId() + ".togglecompass");
+    return _fileConfig.getBoolean(p.getUniqueId() + ".togglecompass");
   }
 
   public void setToggleCompass(Player p, boolean value) {
-    _fileCfgn.set(p.getUniqueId() + ".togglecompass", value);
+    _fileConfig.set(p.getUniqueId() + ".togglecompass", value);
     _config.save();
   }
 
   // GLOBAL SETTINGS
   public boolean getMaintenance() {
-    return _fileCfgn.getBoolean("global.maintenance.value", false);
+    return _fileConfig.getBoolean("global.maintenance.value", false);
   }
 
   public String getMaintenanceMessage() {
-    return _fileCfgn.getString("global.maintenance.message", "");
+    return _fileConfig.getString("global.maintenance.message", "");
   }
 
   public void setMaintenance(boolean value, String message) {
-    _fileCfgn.set("global.maintenance.value", value);
+    _fileConfig.set("global.maintenance.value", value);
 
     if (message != null) {
-      _fileCfgn.set("global.maintenance.message", message);
+      _fileConfig.set("global.maintenance.message", message);
     }
 
     _config.save();
   }
 
   public boolean getToggleCreeperDamage() {
-    return _fileCfgn.getBoolean("global.creeperdamage", true);
+    return _fileConfig.getBoolean("global.creeperdamage", true);
   }
 
   public void setToggleCreeperDamage(boolean value) {
-    _fileCfgn.set("global.creeperdamage", value);
+    _fileConfig.set("global.creeperdamage", value);
     _config.save();
   }
 
-  public boolean getToggleEnd() {
-    return _fileCfgn.getBoolean("global.toggleend", false);
+  public boolean getEnableEnd() {
+    return _fileConfig.getBoolean("global.enableend", false);
   }
 
-  public void setToggleEnd(boolean value) {
-    _fileCfgn.set("global.toggleend", value);
+  public void setEnableEnd(boolean value) {
+    _fileConfig.set("global.enableend", value);
+    _config.save();
+  }
+
+  public boolean getEnableNether() {
+    return _fileConfig.getBoolean("global.enablenether", false);
+  }
+
+  public void setEnableNether(boolean value) {
+    _fileConfig.set("global.enablenether", value);
     _config.save();
   }
 
   public boolean getSleepingRain() {
-    return _fileCfgn.getBoolean("global.sleepingrain", false);
+    return _fileConfig.getBoolean("global.sleepingrain", false);
   }
 
   public void setSleepingRain(boolean value) {
-    _fileCfgn.set("global.sleepingrain", value);
+    _fileConfig.set("global.sleepingrain", value);
+    _config.save();
+  }
+
+  public boolean getAFKProtection() {
+    return _fileConfig.getBoolean("global.afkprotection", false);
+  }
+
+  public void setAFKProtection(boolean value) {
+    _fileConfig.set("global.afkprotection", value);
     _config.save();
   }
 
   public int getAFKTime() {
-    return _fileCfgn.getInt("global.afktime", 10);
+    return _fileConfig.getInt("global.afktime", 10);
   }
 
   public void setAFKTime(int value) {
-    _fileCfgn.set("global.afktime", value);
+    _fileConfig.set("global.afktime", value);
     _config.save();
   }
 }

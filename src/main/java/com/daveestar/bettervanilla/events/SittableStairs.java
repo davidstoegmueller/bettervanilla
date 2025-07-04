@@ -5,7 +5,9 @@ import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Bisected.Half;
 import org.bukkit.block.data.type.Stairs;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,15 +15,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.util.Vector;
 
 import com.daveestar.bettervanilla.Main;
 
 public class SittableStairs implements Listener {
+  // Maximum distance squared a player can be from a stair to sit (1 block range)
+  private static final double MAX_DISTANCE_SQUARED = 1.0;
   private final HashMap<Player, ArmorStand> _sittingPlayers = new HashMap<>();
 
   @EventHandler
   public void onPlayerRightClick(PlayerInteractEvent e) {
+    // ignore off-hand interactions to prevent duplicate handling
+    if (e.getHand() != EquipmentSlot.HAND) {
+      return;
+    }
+
     // get the clicked block
     Block clickedBlock = e.getClickedBlock();
 
@@ -31,10 +39,25 @@ public class SittableStairs implements Listener {
 
         // only allow to sit on a chair with an empty hand
         if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
+          // range check
+          if (p.getLocation().distanceSquared(clickedBlock.getLocation()) > MAX_DISTANCE_SQUARED) {
+            p.sendMessage(Main.getPrefix() + "You're too far away from that stair.");
+            return;
+          }
+
+          // validate stair orientation
+          if (clickedBlock.getBlockData() instanceof Stairs) {
+            Stairs stairs = (Stairs) clickedBlock.getBlockData();
+            if (stairs.getHalf() != Half.BOTTOM) {
+              p.sendMessage(Main.getPrefix() + "You can only sit on bottom stairs.");
+              return;
+            }
+          }
+
           // unmount before mounting again to a chair (stair)
           _unmountFromStair(p);
 
-          // create armor stand at the block location for the player to sit on
+          // create armor stand slightly higher so the player sits on top of the stair
           Location location = clickedBlock.getLocation().toBlockLocation().add(0.5, 0.5, 0.5);
 
           // adjust direction based on the lower side of the stairs
@@ -42,16 +65,16 @@ public class SittableStairs implements Listener {
             Stairs stairs = (Stairs) clickedBlock.getBlockData();
             switch (stairs.getFacing()) {
               case NORTH:
-                location.setDirection(new Vector(0, 0, 1)); // face south
+                location.setYaw(0f); // face south
                 break;
               case SOUTH:
-                location.setDirection(new Vector(0, 0, -1)); // face north
+                location.setYaw(180f); // face north
                 break;
               case EAST:
-                location.setDirection(new Vector(-1, 0, 0)); // face west
+                location.setYaw(90f); // face west
                 break;
               case WEST:
-                location.setDirection(new Vector(1, 0, 0)); // face east
+                location.setYaw(270f); // face east
                 break;
               default:
                 break;

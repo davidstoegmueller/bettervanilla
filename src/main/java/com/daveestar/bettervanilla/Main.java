@@ -19,7 +19,7 @@ import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
-import com.daveestar.bettervanilla.events.PreventEnd;
+import com.daveestar.bettervanilla.events.PreventDimension;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
 import com.daveestar.bettervanilla.manager.AFKManager;
@@ -63,15 +63,14 @@ public class Main extends JavaPlugin {
     Config timerConfig = new Config("timer.yml", getDataFolder());
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
-    Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
 
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
-    _maintenanceManager = new MaintenanceManager(maintenanceConfig);
 
+    _maintenanceManager = new MaintenanceManager();
     _actionBar = new ActionBar();
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
@@ -106,7 +105,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new ChatMessages(), this);
     manager.registerEvents(new PlayerMove(), this);
     manager.registerEvents(new SittableStairs(), this);
-    manager.registerEvents(new PreventEnd(), this);
+    manager.registerEvents(new PreventDimension(), this);
     manager.registerEvents(new SleepingRain(), this);
   }
 

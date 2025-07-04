@@ -11,32 +11,34 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class PreventEnd implements Listener {
+public class PreventDimension implements Listener {
 
   private final Main _plugin;
   private final SettingsManager _settingsManager;
 
-  public PreventEnd() {
+  public PreventDimension() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
   }
 
   @EventHandler
   public void onPlayerPortal(PlayerPortalEvent event) {
-    if (_settingsManager.getToggleEnd()) {
-      return;
-    }
-
-    // check if the portal leads to the end
+    // get the destination location of the portal
     Location destination = event.getTo();
 
     if (destination != null && destination.getWorld() != null) {
-      World.Environment environment = destination.getWorld().getEnvironment();
+      World.Environment destinationEnvironment = destination.getWorld().getEnvironment();
 
-      if (environment == World.Environment.THE_END) {
+      if (destinationEnvironment == World.Environment.THE_END && !_settingsManager.getEnableEnd()) {
         // cancel the portal event
         event.setCancelled(true);
-        event.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The End'");
+        event.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The End'!");
+      }
+
+      if (destinationEnvironment == World.Environment.NETHER && !_settingsManager.getEnableNether()) {
+        // cancel the portal event
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The Nether'!");
       }
     }
   }

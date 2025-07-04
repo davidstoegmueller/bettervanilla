@@ -2,7 +2,6 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Tim
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SittableStairs.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventEnd.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PlayerTimer.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PermissionsCommand.java
@@ -14,6 +13,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\Wayp
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\NavigationManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PermissionsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\AFKManager.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventDimension.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\WaypointsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleBeam.java
@@ -23,6 +23,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\Death
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\MaintenanceManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\CompassManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ActionBar.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\SettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PlayerMove.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\TimerManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\Permissions.java

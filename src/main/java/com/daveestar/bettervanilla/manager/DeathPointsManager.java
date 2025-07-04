@@ -30,7 +30,7 @@ public class DeathPointsManager {
 
   public DeathPointsManager(Config config) {
     _config = config;
-    _fileConfig = config.getFileCfgrn();
+    _fileConfig = config.getFileConfig();
   }
 
   public void addDeathPoint(Player p, Location loc) {

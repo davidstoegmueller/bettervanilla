@@ -36,7 +36,7 @@ public class TimerManager {
     _plugin = Main.getInstance();
 
     _config = config;
-    _fileConfig = config.getFileCfgrn();
+    _fileConfig = config.getFileConfig();
 
     _loadConfiguration();
     _initializePlayerTimers();
@@ -95,6 +95,22 @@ public class TimerManager {
 
   public int getAFKTime(Player p) {
     return _playerTimers.getOrDefault(p.getUniqueId(), new PlayerTimer(0, 0)).getAFKTime();
+  }
+
+  public int getPlayTime(UUID playerId) {
+    if (_playerTimers.containsKey(playerId)) {
+      return _playerTimers.get(playerId).getPlayTime();
+    }
+
+    return _loadPlayerTimer(playerId).getPlayTime();
+  }
+
+  public int getAFKTime(UUID playerId) {
+    if (_playerTimers.containsKey(playerId)) {
+      return _playerTimers.get(playerId).getAFKTime();
+    }
+
+    return _loadPlayerTimer(playerId).getAFKTime();
   }
 
   private PlayerTimer _loadPlayerTimer(UUID playerId) {

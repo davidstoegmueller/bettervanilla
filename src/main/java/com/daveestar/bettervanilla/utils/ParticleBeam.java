@@ -42,9 +42,10 @@ public class ParticleBeam {
   public void displayBeam() {
 
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
+    World world = _location.getWorld();
+    double maxHeight = world.getMaxHeight();
+
     _task = scheduler.runAtFixedRate(_plugin, task -> {
-      World world = _location.getWorld();
-      double maxHeight = world.getMaxHeight();
 
       // generate the beam effect upwards from the given location
       for (double y = 0; y <= maxHeight; y += 0.5) { // adjust y to control beam height

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -32,26 +33,28 @@ public class PlayTimeCommand implements TabExecutor {
       Player p = (Player) cs;
 
       if (args.length >= 0 && args.length <= 1) {
-        Player targetPlayer;
+        OfflinePlayer targetPlayer;
 
         if (args.length == 1) {
-          targetPlayer = Bukkit.getPlayer(args[0]);
+          targetPlayer = Bukkit.getOfflinePlayer(args[0]);
+
+          if (!targetPlayer.hasPlayedBefore() && !targetPlayer.isOnline()) {
+            p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
+                + ChatColor.RED + " has never joined the server!");
+            return true;
+          }
         } else {
           targetPlayer = p;
         }
 
-        if (targetPlayer == null) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " +
-              ChatColor.YELLOW + args[0] + ChatColor.RED + " is currently not online!");
-          return true;
-        }
+        int playTime = _timerManager.getPlayTime(targetPlayer.getUniqueId());
+        int afkTime = _timerManager.getAFKTime(targetPlayer.getUniqueId());
 
-        int playTime = _timerManager.getPlayTime(targetPlayer);
-        int afkTime = _timerManager.getAFKTime(targetPlayer);
+        String playerName = targetPlayer.getName() != null ? targetPlayer.getName() : args.length == 1 ? args[0] : p.getName();
 
         p.sendMessage(
             Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
-                + " » " + ChatColor.GRAY + targetPlayer.getName());
+                + " » " + ChatColor.GRAY + playerName);
         p.sendMessage(Main.getShortPrefix() +
             "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
         p.sendMessage(Main.getShortPrefix() +
@@ -76,6 +79,11 @@ public class PlayTimeCommand implements TabExecutor {
     if (args.length == 1) {
       Collection<? extends Player> onlinePlayers = _plugin.getServer().getOnlinePlayers();
       suggestions.addAll(onlinePlayers.stream().map(Player::getName).collect(Collectors.toList()));
+      for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+        if (op.getName() != null && !suggestions.contains(op.getName())) {
+          suggestions.add(op.getName());
+        }
+      }
     }
 
     return suggestions;

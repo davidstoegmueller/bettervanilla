@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
@@ -43,13 +44,16 @@ public class ChatMessages implements Listener {
   public void onPlayerJoin(PlayerJoinEvent e) {
     Player p = (Player) e.getPlayer();
 
+    if (_maintenanceManager.getState() && !p.hasPermission("bettervanilla.maintenance.bypass")) {
+      _maintenanceManager.sendMaintenance(p);
+      return;
+    }
+
     p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
 
     e.joinMessage(
         Component.text(
             ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName()));
-
-    _maintenanceManager.sendMaintenance(p);
 
     _permissionsManager.onPlayerJoined(p);
     _afkManager.onPlayerJoined(p);
@@ -66,6 +70,15 @@ public class ChatMessages implements Listener {
 
     e.quitMessage(Component
         .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
+
+    _permissionsManager.onPlayerLeft(p);
+    _afkManager.onPlayerLeft(p);
+    _timerManager.onPlayerLeft(p);
+  }
+
+  @EventHandler
+  public void onPlayerKick(PlayerKickEvent e) {
+    Player p = (Player) e.getPlayer();
 
     _permissionsManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
