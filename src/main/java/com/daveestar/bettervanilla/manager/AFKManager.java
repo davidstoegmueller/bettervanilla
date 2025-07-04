@@ -6,6 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 import com.daveestar.bettervanilla.Main;
 
@@ -22,6 +25,7 @@ public class AFKManager {
 
   private TimerManager _timerManager;
   private SettingsManager _settingsManager;
+  private Team _afkTeam;
 
   public AFKManager() {
     _plugin = Main.getInstance();
@@ -34,6 +38,18 @@ public class AFKManager {
     _timerManager = _plugin.getTimerManager();
     _settingsManager = _plugin.getSettingsManager();
 
+    // prepare scoreboard team used to disable collisions while AFK
+    ScoreboardManager manager = Bukkit.getScoreboardManager();
+    if (manager != null) {
+      Scoreboard board = manager.getMainScoreboard();
+      Team team = board.getTeam("bv_afk");
+      if (team == null) {
+        team = board.registerNewTeam("bv_afk");
+        team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+      }
+      _afkTeam = team;
+    }
+
     _startAFKTask();
   }
 
@@ -44,6 +60,9 @@ public class AFKManager {
     // ensure normal state on join
     p.setInvulnerable(false);
     p.setCollidable(true);
+    if (_afkTeam != null) {
+      _afkTeam.removeEntry(p.getName());
+    }
   }
 
   public void onPlayerLeft(Player p) {
@@ -53,6 +72,9 @@ public class AFKManager {
     // reset any invulnerability or collision changes
     p.setInvulnerable(false);
     p.setCollidable(true);
+    if (_afkTeam != null) {
+      _afkTeam.removeEntry(p.getName());
+    }
   }
 
   public void onPlayerMoved(Player p) {
@@ -110,6 +132,9 @@ public class AFKManager {
           // restore normal state
           p.setInvulnerable(false);
           p.setCollidable(true);
+          if (_afkTeam != null) {
+            _afkTeam.removeEntry(p.getName());
+          }
 
           announceAFKToOthers(p, false);
         } else if (!wasAFK && nowAFK) {
@@ -121,6 +146,9 @@ public class AFKManager {
           // make player invincible and immovable by entities
           p.setInvulnerable(true);
           p.setCollidable(false);
+          if (_afkTeam != null) {
+            _afkTeam.addEntry(p.getName());
+          }
 
           announceAFKToOthers(p, true);
         }
