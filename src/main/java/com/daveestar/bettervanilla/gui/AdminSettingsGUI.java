@@ -81,70 +81,70 @@ public class AdminSettingsGUI implements Listener {
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _toggleMaintenance(player, null);
-        displayGUI(player, par);
+      public void onLeftClick(Player p) {
+        _toggleMaintenance(p, null);
+        displayGUI(p, par);
       }
 
       @Override
-      public void onRightClick(Player player) {
+      public void onRightClick(Player p) {
         if (!_maintenanceManager.getState()) {
-          player.sendMessage(Main.getPrefix() + "Enter maintenance message:");
-          _maintenanceMessagePending.put(player.getUniqueId(), par);
-          player.closeInventory();
+          p.sendMessage(Main.getPrefix() + "Enter maintenance message:");
+          _maintenanceMessagePending.put(p.getUniqueId(), par);
+          p.closeInventory();
         } else {
-          _toggleMaintenance(player, null);
-          displayGUI(player, par);
+          _toggleMaintenance(p, null);
+          displayGUI(p, par);
         }
       }
     });
 
     actions.put("creeperdamage", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _toggleCreeperDamage(player);
-        displayGUI(player, par);
+      public void onLeftClick(Player p) {
+        _toggleCreeperDamage(p);
+        displayGUI(p, par);
       }
     });
 
     actions.put("enableend", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _toggleEnd(player);
-        displayGUI(player, par);
+      public void onLeftClick(Player p) {
+        _toggleEnd(p);
+        displayGUI(p, par);
       }
     });
 
     actions.put("enablenether", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _toggleNether(player);
-        displayGUI(player, par);
+      public void onLeftClick(Player p) {
+        _toggleNether(p);
+        displayGUI(p, par);
       }
     });
 
     actions.put("sleepingrain", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _toggleSleepingRain(player);
-        displayGUI(player, par);
+      public void onLeftClick(Player p) {
+        _toggleSleepingRain(p);
+        displayGUI(p, par);
       }
     });
 
     actions.put("afkprotection", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _toggleAFKProtection(player);
-        displayGUI(player, par);
+      public void onLeftClick(Player p) {
+        _toggleAFKProtection(p);
+        displayGUI(p, par);
       }
     });
 
     actions.put("afktime", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        player.sendMessage(Main.getPrefix() + "Enter AFK time in minutes:");
-        _afkTimePending.put(player.getUniqueId(), par);
-        player.closeInventory();
+      public void onLeftClick(Player p) {
+        p.sendMessage(Main.getPrefix() + "Enter AFK time in minutes:");
+        _afkTimePending.put(p.getUniqueId(), par);
+        p.closeInventory();
       }
     });
 

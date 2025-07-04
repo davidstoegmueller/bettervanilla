@@ -61,45 +61,45 @@ public class SettingsGUI {
         entries, rows, customSlots, null,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
-    Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
-    actions.put("togglelocation", new CustomGUI.ClickAction() {
+    Map<String, CustomGUI.ClickAction> clickActions = new HashMap<>();
+    clickActions.put("togglelocation", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        if (!player.hasPermission("bettervanilla.togglelocation")) {
-          player.sendMessage(
+      public void onLeftClick(Player p) {
+        if (!p.hasPermission("bettervanilla.togglelocation")) {
+          p.sendMessage(
               Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle the Action-Bar location.");
-          player.playSound(player, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
-        _toggleLocation(player);
-        displayGUI(player);
+        _toggleLocation(p);
+        displayGUI(p);
       }
     });
 
-    actions.put("togglecompass", new CustomGUI.ClickAction() {
+    clickActions.put("togglecompass", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        if (!player.hasPermission("bettervanilla.togglecompass")) {
-          player.sendMessage(Main.getPrefix() + ChatColor.RED
+      public void onLeftClick(Player p) {
+        if (!p.hasPermission("bettervanilla.togglecompass")) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED
               + "You do not have permission to toggle the Bossbar-Compass.");
-          player.playSound(player, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
-        _toggleCompass(player);
-        displayGUI(player);
+        _toggleCompass(p);
+        displayGUI(p);
       }
     });
 
     if (isAdmin) {
-      actions.put("adminsettings", new CustomGUI.ClickAction() {
+      clickActions.put("adminsettings", new CustomGUI.ClickAction() {
         @Override
-        public void onLeftClick(Player player) {
-          _adminSettingsGUI.displayGUI(player, gui);
+        public void onLeftClick(Player p) {
+          _adminSettingsGUI.displayGUI(p, gui);
         }
       });
     }
 
-    gui.setClickActions(actions);
+    gui.setClickActions(clickActions);
     gui.open(p);
   }
 
@@ -163,11 +163,13 @@ public class SettingsGUI {
     } else {
       _navigationManager.stopNavigation(p);
       _settingsManager.setToggleLocation(p, true);
-      Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
-      String locationText = ChatColor.YELLOW + "X: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockX()
-          + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockY()
-          + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockZ() + ChatColor.RED
-          + ChatColor.BOLD + " » " + ChatColor.GRAY + playerBiome.getKey();
+
+      var blockLoc = p.getLocation().toBlockLocation();
+      Biome biome = p.getWorld().getBiome(blockLoc);
+      String locationText = ChatColor.YELLOW + "X: " + ChatColor.GRAY + blockLoc.getBlockX()
+          + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + blockLoc.getBlockY()
+          + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + blockLoc.getBlockZ() + ChatColor.RED
+          + ChatColor.BOLD + " » " + ChatColor.GRAY + biome.getKey();
       _actionBar.sendActionBar(p, locationText);
       newState = true;
     }
@@ -176,16 +178,16 @@ public class SettingsGUI {
   }
 
   private void _toggleCompass(Player p) {
-    boolean newState;
-    if (_compassManager.checkPlayerActiveCompass(p)) {
+    boolean currentlyActive = _compassManager.checkPlayerActiveCompass(p);
+    boolean newState = !currentlyActive;
+
+    if (currentlyActive) {
       _compassManager.removePlayerFromCompass(p);
-      _settingsManager.setToggleCompass(p, false);
-      newState = false;
     } else {
       _compassManager.addPlayerToCompass(p);
-      _settingsManager.setToggleCompass(p, true);
-      newState = true;
     }
+    _settingsManager.setToggleCompass(p, newState);
+
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
