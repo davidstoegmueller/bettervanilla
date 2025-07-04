@@ -53,13 +53,16 @@ public class SettingsGUI implements Listener {
     entries.put("afktime", _createAFKTimeItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
+    // first row
     customSlots.put("maintenance", 0);
     customSlots.put("creeperdamage", 2);
     customSlots.put("enableend", 4);
     customSlots.put("enablenether", 6);
     customSlots.put("sleepingrain", 8);
-    customSlots.put("afkprotection", 11);
-    customSlots.put("afktime", 13);
+
+    // second row
+    customSlots.put("afkprotection", 12);
+    customSlots.put("afktime", 14);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Settings",
@@ -238,7 +241,8 @@ public class SettingsGUI implements Listener {
     ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Protection"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Protection"));
       meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
