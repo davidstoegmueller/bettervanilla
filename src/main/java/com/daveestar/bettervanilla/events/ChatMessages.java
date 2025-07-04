@@ -60,7 +60,7 @@ public class ChatMessages implements Listener {
     _timerManager.onPlayerJoined(p);
 
     if (_settingsManager.getToggleCompass(p)) {
-      _compassManager.addPlayerToCompass(p);
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> _compassManager.addPlayerToCompass(p));
     }
   }
 

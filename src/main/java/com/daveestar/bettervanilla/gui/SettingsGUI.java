@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,7 +39,7 @@ public class SettingsGUI {
 
   public void displayGUI(Player p) {
     boolean isAdmin = p.hasPermission("bettervanilla.adminsettings");
-    int rows = isAdmin ? 3 : 2;
+    int rows = isAdmin ? 4 : 3;
 
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("togglelocation", _createToggleLocationItem(p));
@@ -53,7 +52,7 @@ public class SettingsGUI {
     customSlots.put("togglelocation", 2);
     customSlots.put("togglecompass", 6);
     if (isAdmin) {
-      customSlots.put("adminsettings", rows * 9 - 1);
+      customSlots.put("adminsettings", rows * 9 - 10);
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
@@ -127,7 +126,7 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.REDSTONE_TORCH);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server Settings"));
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
       meta.lore(java.util.Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open global settings")
@@ -138,9 +137,11 @@ public class SettingsGUI {
   }
 
   private void _toggleLocation(Player p) {
+    boolean newState;
     if (_settingsManager.getToggleLocation(p)) {
       _settingsManager.setToggleLocation(p, false);
       _actionBar.removeActionBar(p);
+      newState = false;
     } else {
       _navigationManager.stopNavigation(p);
       _settingsManager.setToggleLocation(p, true);
@@ -150,18 +151,24 @@ public class SettingsGUI {
           + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockZ() + ChatColor.RED
           + ChatColor.BOLD + " » " + ChatColor.GRAY + playerBiome.getKey();
       _actionBar.sendActionBar(p, locationText);
+      newState = true;
     }
-    p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Action-Bar location is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleCompass(Player p) {
+    boolean newState;
     if (_compassManager.checkPlayerActiveCompass(p)) {
       _compassManager.removePlayerFromCompass(p);
       _settingsManager.setToggleCompass(p, false);
+      newState = false;
     } else {
       _compassManager.addPlayerToCompass(p);
       _settingsManager.setToggleCompass(p, true);
+      newState = true;
     }
-    p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Bossbar compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }
