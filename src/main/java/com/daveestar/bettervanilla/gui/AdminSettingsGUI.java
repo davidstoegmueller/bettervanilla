@@ -27,25 +27,31 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
 
-public class SettingsGUI implements Listener {
+public class AdminSettingsGUI implements Listener {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
   private final Map<UUID, Boolean> _afkTimePending;
   private final Map<UUID, Boolean> _maintenanceMessagePending;
+  private final Map<UUID, CustomGUI> _parentMenus;
 
-  public SettingsGUI() {
+  public AdminSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
+    _parentMenus = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
   public void displayGUI(Player p) {
+    displayGUI(p, null);
+  }
+
+  public void displayGUI(Player p, CustomGUI parentMenu) {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("creeperdamage", _createCreeperDamageItem());
@@ -68,16 +74,18 @@ public class SettingsGUI implements Listener {
     customSlots.put("afktime", 14);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Settings",
-        entries, 3, customSlots, null,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
+        entries, 3, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
+
+    _parentMenus.put(p.getUniqueId(), parentMenu);
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player player) {
         _toggleMaintenance(player, null);
-        displayGUI(player);
+        displayGUI(player, _parentMenus.get(player.getUniqueId()));
       }
 
       @Override
@@ -88,7 +96,7 @@ public class SettingsGUI implements Listener {
           player.closeInventory();
         } else {
           _toggleMaintenance(player, null);
-          displayGUI(player);
+          displayGUI(player, _parentMenus.get(player.getUniqueId()));
         }
       }
     });
@@ -97,7 +105,7 @@ public class SettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleCreeperDamage(player);
-        displayGUI(player);
+        displayGUI(player, _parentMenus.get(player.getUniqueId()));
       }
     });
 
@@ -105,7 +113,7 @@ public class SettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleEnd(player);
-        displayGUI(player);
+        displayGUI(player, _parentMenus.get(player.getUniqueId()));
       }
     });
 
@@ -113,7 +121,7 @@ public class SettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleNether(player);
-        displayGUI(player);
+        displayGUI(player, _parentMenus.get(player.getUniqueId()));
       }
     });
 
@@ -121,7 +129,7 @@ public class SettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleSleepingRain(player);
-        displayGUI(player);
+        displayGUI(player, _parentMenus.get(player.getUniqueId()));
       }
     });
 
@@ -129,7 +137,7 @@ public class SettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleAFKProtection(player);
-        displayGUI(player);
+        displayGUI(player, _parentMenus.get(player.getUniqueId()));
       }
     });
 
@@ -289,7 +297,7 @@ public class SettingsGUI implements Listener {
               Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
           _afkTimePending.remove(id);
-          displayGUI(p);
+          displayGUI(p, _parentMenus.get(p.getUniqueId()));
         });
       } catch (NumberFormatException ex) {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
@@ -304,7 +312,7 @@ public class SettingsGUI implements Listener {
         _maintenanceMessagePending.remove(id);
         _toggleMaintenance(p, message);
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        displayGUI(p);
+        displayGUI(p, _parentMenus.get(p.getUniqueId()));
       });
     }
   }

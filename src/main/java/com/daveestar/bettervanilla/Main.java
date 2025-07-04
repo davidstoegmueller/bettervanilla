@@ -11,7 +11,7 @@ import com.daveestar.bettervanilla.commands.DeathPointsCommand;
 import com.daveestar.bettervanilla.commands.PermissionsCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
 import com.daveestar.bettervanilla.commands.PlayTimeCommand;
-import com.daveestar.bettervanilla.commands.SettingsCommand;
+import com.daveestar.bettervanilla.commands.PlayerSettingsCommand;
 import com.daveestar.bettervanilla.commands.TimerCommand;
 import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
@@ -96,7 +96,7 @@ public class Main extends JavaPlugin {
     getCommand("deathpoints").setExecutor(new DeathPointsCommand());
     getCommand("timer").setExecutor(new TimerCommand());
     getCommand("playtime").setExecutor(new PlayTimeCommand());
-    getCommand("settings").setExecutor(new SettingsCommand());
+    getCommand("settings").setExecutor(new PlayerSettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
 
     // register events
