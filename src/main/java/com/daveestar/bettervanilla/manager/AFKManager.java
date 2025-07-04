@@ -40,11 +40,19 @@ public class AFKManager {
   public void onPlayerJoined(Player p) {
     _lastMovement.put(p, System.currentTimeMillis());
     _afkStates.put(p, false);
+
+    // ensure normal state on join
+    p.setInvulnerable(false);
+    p.setCollidable(true);
   }
 
   public void onPlayerLeft(Player p) {
     _lastMovement.remove(p);
     _afkStates.remove(p);
+
+    // reset any invulnerability or collision changes
+    p.setInvulnerable(false);
+    p.setCollidable(true);
   }
 
   public void onPlayerMoved(Player p) {
@@ -99,12 +107,20 @@ public class AFKManager {
           p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
           _afkStates.put(p, false);
 
+          // restore normal state
+          p.setInvulnerable(false);
+          p.setCollidable(true);
+
           announceAFKToOthers(p, false);
         } else if (!wasAFK && nowAFK) {
           p.sendMessage(Main.getPrefix() + "You are now AFK!");
           p.playerListName(Component.text(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
               + ChatColor.YELLOW + p.getName()));
           _afkStates.put(p, true);
+
+          // make player invincible and immovable by entities
+          p.setInvulnerable(true);
+          p.setCollidable(false);
 
           announceAFKToOthers(p, true);
         }
