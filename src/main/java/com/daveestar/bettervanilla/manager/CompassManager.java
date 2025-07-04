@@ -81,7 +81,10 @@ public class CompassManager {
   }
 
   public void onPlayerLeft(Player p) {
-    removePlayerFromCompass(p);
+    BossBar bar = _activeCompass.remove(p);
+    if (bar != null) {
+      bar.removePlayer(p);
+    }
   }
 
   public void destroy() {

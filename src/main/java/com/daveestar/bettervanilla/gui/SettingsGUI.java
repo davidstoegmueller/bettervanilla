@@ -39,7 +39,8 @@ public class SettingsGUI {
 
   public void displayGUI(Player p) {
     boolean isAdmin = p.hasPermission("bettervanilla.adminsettings");
-    int rows = isAdmin ? 4 : 3;
+    // two entry rows for admins, one for normal players (plus navigation row)
+    int rows = isAdmin ? 3 : 2;
 
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("togglelocation", _createToggleLocationItem(p));
