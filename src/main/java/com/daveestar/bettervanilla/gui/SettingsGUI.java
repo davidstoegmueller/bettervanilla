@@ -345,6 +345,7 @@ public class SettingsGUI implements Listener {
   private void _toggleAFKProtection(Player p) {
     boolean newState = !_settingsManager.getAFKProtection();
     _settingsManager.setAFKProtection(newState);
+    _plugin.getAFKManager().applyProtectionToAFKPlayers(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }

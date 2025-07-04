@@ -205,6 +205,7 @@ public class SettingsCommand implements TabExecutor {
     String stateText = newState ? "ENABLED" : "DISABLED";
 
     _settingsManager.setAFKProtection(newState);
+    _plugin.getAFKManager().applyProtectionToAFKPlayers(newState);
 
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }

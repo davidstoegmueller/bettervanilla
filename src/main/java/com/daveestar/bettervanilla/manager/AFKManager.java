@@ -177,6 +177,31 @@ public class AFKManager {
         });
   }
 
+  /**
+   * Apply the AFK protection setting to all players currently marked as AFK.
+   * This is used when the protection option is toggled while players are
+   * already AFK.
+   */
+  public void applyProtectionToAFKPlayers(boolean enabled) {
+    _afkStates.forEach((player, isAFK) -> {
+      if (isAFK) {
+        if (enabled) {
+          player.setInvulnerable(true);
+          player.setCollidable(false);
+          if (_afkTeam != null) {
+            _afkTeam.addEntry(player.getName());
+          }
+        } else {
+          player.setInvulnerable(false);
+          player.setCollidable(true);
+          if (_afkTeam != null) {
+            _afkTeam.removeEntry(player.getName());
+          }
+        }
+      }
+    });
+  }
+
   private int _getAFKTime() {
     int afkTimeInMinutes = _settingsManager.getAFKTime();
     return 1000 * 60 * afkTimeInMinutes;
