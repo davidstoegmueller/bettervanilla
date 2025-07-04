@@ -17,7 +17,7 @@ Whether you’re spinning up a fresh community project or running a seasoned net
 
 - 🧭 **Smart Navigation** – Waypoints with an intuitive GUI, a subtle bossbar compass, and live action‑bar coordinates keep everyone headed in the right direction—no external maps required.
 - 🛋️ **Seamless QoL Tweaks** – Sit on any stair, track playtime & ping, auto‑skip rainy days, and bounce back from death with instant chests. Zero learning curve—just play.
-- ⚙️ **Admin Superpowers** – One‑command maintenance mode, creeper‑damage toggles, AFK timers, and a live‑reload permission system let you craft the perfect experience in seconds.
+- ⚙️ **Admin Superpowers** – Maintenance mode, creeper‑damage toggles, AFK timers with optional protection, Nether & End access switches, and a live‑reload permission system.
 - 🔄 **Instant Recovery** – Death points & automatic death chests mean lost gear is just a quick stroll away.
 - 🌦️ **Weather? What Weather?** – Skip rain and storms by simply hopping into bed—no one likes soggy boots.
 - 🪑 **Immersive Extras** – Sittable stairs, action‑bar coordinates, and subtle HUD touches make your world feel alive.
@@ -55,7 +55,7 @@ _(Scroll down for the complete feature & command list.)_
 
 ### Admin & Server
 
-- 🛠️ **Settings Command & GUI** – `/settings` toggles maintenance, creeper damage, enabling _The End_, sleeping‑rain, AFK protection, AFK time, and more
+- 🛠️ **Settings Command & GUI** – `/settings` toggles maintenance, creeper damage, enabling _The End_ and _The Nether_, sleeping‑rain, AFK protection, AFK time, and more
 - 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
 - 📚 **Admin Help** – Quick reference for every admin command
 
@@ -142,6 +142,7 @@ _(Scroll down for the complete feature & command list.)_
 | 🚧 `/settings maintenance [message]` | Toggle maintenance mode (plus optional kick message) |
 | 💥 `/settings creeperdamage`         | Toggle creeper block/entity damage                   |
 | 🏁 `/settings enableend`             | Enable/disable entry to _The End_                    |
+| 🌋 `/settings enablenether`          | Enable/disable entry to _The Nether_                 |
 | 🌧️ `/settings sleepingrain`          | Enable/disable sleeping to skip rain                 |
 | 🛡️ `/settings afkprotection`        | Toggle AFK invulnerability & collisions              |
 | 💤 `/settings afktime <minutes>`     | Minutes until a player is marked AFK                 |

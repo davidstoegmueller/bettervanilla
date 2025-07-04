@@ -2,6 +2,14 @@
 
 # 📜 Changelog
 
+## [1.4.0] - 04.07.2025
+
+- **🆕 AFK Protection** – AFK players are now invulnerable, immovable and collision-free. Toggle with `/settings afkprotection` (disabled by default).
+- **🌋 Nether Toggle** – Control access to _The Nether_ via `/settings enablenether` or the settings GUI.
+- **🚀 Minecraft 1.21.7 Support** – Updated to the latest Paper build.
+- **🗑️ Cleanup** – Removed the unused maintenance config and minor formatting fixes.
+- **📚 Documentation** – README updated with new commands and features.
+
 ## [1.3.0] - 06.06.2025
 
 - **🚀 Minecraft 1.21.5 Support** – Fully ported BetterVanilla to the latest game version.
