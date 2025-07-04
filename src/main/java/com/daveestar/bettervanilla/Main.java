@@ -63,15 +63,14 @@ public class Main extends JavaPlugin {
     Config timerConfig = new Config("timer.yml", getDataFolder());
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
-    Config maintenanceConfig = new Config("maintenance.yml", getDataFolder());
 
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
-    _maintenanceManager = new MaintenanceManager(maintenanceConfig);
 
+    _maintenanceManager = new MaintenanceManager();
     _actionBar = new ActionBar();
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();

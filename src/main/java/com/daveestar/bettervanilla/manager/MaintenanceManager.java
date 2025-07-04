@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.utils.Config;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -16,7 +15,7 @@ public class MaintenanceManager {
   private final Main _plugin;
   private SettingsManager _settingsManager;
 
-  public MaintenanceManager(Config config) {
+  public MaintenanceManager() {
     _plugin = Main.getInstance();
   }
 
