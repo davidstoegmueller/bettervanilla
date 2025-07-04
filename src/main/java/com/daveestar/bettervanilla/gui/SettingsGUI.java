@@ -66,6 +66,8 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player player) {
         if (!player.hasPermission("bettervanilla.togglelocation")) {
+          player.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle the Action-Bar location.");
           player.playSound(player, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -78,6 +80,8 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player player) {
         if (!player.hasPermission("bettervanilla.togglecompass")) {
+          player.sendMessage(Main.getPrefix() + ChatColor.RED
+              + "You do not have permission to toggle the Bossbar-Compass.");
           player.playSound(player, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -104,10 +108,12 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.FILLED_MAP);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
       meta.lore(java.util.Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
@@ -120,10 +126,12 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.COMPASS);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
       meta.lore(java.util.Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
@@ -135,7 +143,8 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.REDSTONE_TORCH);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
       meta.lore(java.util.Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open global settings")
@@ -178,6 +187,6 @@ public class SettingsGUI {
       newState = true;
     }
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Bossbar compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }
