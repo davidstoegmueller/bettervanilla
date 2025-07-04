@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
@@ -29,6 +30,7 @@ import net.md_5.bungee.api.ChatColor;
 public class SettingsGUI implements Listener {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
+  private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
   private final Map<UUID, Boolean> _afkTimePending;
   private final Map<UUID, Boolean> _maintenanceMessagePending;
@@ -36,6 +38,7 @@ public class SettingsGUI implements Listener {
   public SettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
+    _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
@@ -349,7 +352,7 @@ public class SettingsGUI implements Listener {
   private void _toggleAFKProtection(Player p) {
     boolean newState = !_settingsManager.getAFKProtection();
     _settingsManager.setAFKProtection(newState);
-    _plugin.getAFKManager().applyProtectionToAFKPlayers(newState);
+    _afkManager.applyProtectionToAFKPlayers(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }

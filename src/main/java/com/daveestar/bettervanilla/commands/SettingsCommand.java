@@ -10,6 +10,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.gui.SettingsGUI;
@@ -20,12 +21,14 @@ public class SettingsCommand implements TabExecutor {
 
   private final Main _plugin;
   private final SettingsManager _settingsManager;
+  private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
   private final SettingsGUI _settingsGUI;
 
   public SettingsCommand() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
+    _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
     _settingsGUI = new SettingsGUI();
   }
@@ -205,7 +208,7 @@ public class SettingsCommand implements TabExecutor {
     String stateText = newState ? "ENABLED" : "DISABLED";
 
     _settingsManager.setAFKProtection(newState);
-    _plugin.getAFKManager().applyProtectionToAFKPlayers(newState);
+    _afkManager.applyProtectionToAFKPlayers(newState);
 
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
