@@ -42,7 +42,7 @@ _(Scroll down for the complete feature & command list.)_
 ### Player‑Centric
 
 - 🧭 **Waypoints** – Add, remove and navigate using a GUI (custom icons supported)
-- ⏱️ **Playtime** – Track and display personal or global playtime
+- ⏱️ **Playtime** – Track and display personal or global playtime, even for offline players
 - 📡 **Ping** – Check your own or any player’s latency
 - 🔍 **Inventory Viewer** – Peek inside another player’s inventory
 - ⏲️ **Timer** – Global stopwatch with resume, pause, reset & set
@@ -56,6 +56,7 @@ _(Scroll down for the complete feature & command list.)_
 ### Admin & Server
 
 - 🛠️ **Settings Command & GUI** – `/settings` toggles maintenance, creeper damage, enabling _The End_ and _The Nether_, sleeping‑rain, AFK protection, AFK time, and more
+- 🛡️ **AFK Protection** – AFK players become invulnerable, immovable and collision-free (toggle via `/settings afkprotection`)
 - 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
 - 📚 **Admin Help** – Quick reference for every admin command
 

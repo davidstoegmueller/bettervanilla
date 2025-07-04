@@ -5,7 +5,13 @@
 ## [1.4.0] - 04.07.2025
 
 - **🆕 AFK Protection** – AFK players are now invulnerable, immovable and collision-free. Toggle with `/settings afkprotection` (disabled by default).
-- **🌋 Nether Toggle** – Control access to _The Nether_ via `/settings enablenether` or the settings GUI.
+- **🛠 Settings GUI** – Manage toggles like maintenance or Nether access with an in-game interface.
+- **🌋 Nether Toggle** – Control access to _The Nether_ via `/settings enablenether`.
+- **⏱ Offline Playtime Checks** – `/playtime` now works for offline players.
+- **❓ Smarter Help Command** – Automatically lists commands from `plugin.yml`.
+- **💺 Sittable Stairs Tweaks** – Smoother seating orientation.
+- **🧭 Waypoint Navigation Cancel** – Cancel coordinate navigation with clearer messages.
+- **🔊 GUI Sound Effects** – Added subtle audio cues and async improvements.
 - **🚀 Minecraft 1.21.7 Support** – Updated to the latest Paper build.
 - **🗑️ Cleanup** – Removed the unused maintenance config and minor formatting fixes.
 - **📚 Documentation** – README updated with new commands and features.
