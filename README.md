@@ -145,7 +145,7 @@ _(Scroll down for the complete feature & command list.)_
 | 🏁 `/settings enableend`             | Enable/disable entry to _The End_                    |
 | 🌋 `/settings enablenether`          | Enable/disable entry to _The Nether_                 |
 | 🌧️ `/settings sleepingrain`          | Enable/disable sleeping to skip rain                 |
-| 🛡️ `/settings afkprotection`        | Toggle AFK invulnerability & collisions              |
+| 🛡️ `/settings afkprotection`         | Toggle AFK invulnerability & collisions              |
 | 💤 `/settings afktime <minutes>`     | Minutes until a player is marked AFK                 |
 
 </details>
