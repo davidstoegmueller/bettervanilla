@@ -89,7 +89,7 @@ public class SettingsManager {
   }
 
   public boolean getAFKProtection() {
-    return _fileConfig.getBoolean("global.afkprotection", true);
+    return _fileConfig.getBoolean("global.afkprotection", false);
   }
 
   public void setAFKProtection(boolean value) {
