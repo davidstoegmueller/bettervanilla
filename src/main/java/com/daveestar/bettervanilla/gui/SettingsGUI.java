@@ -147,7 +147,7 @@ public class SettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
       meta.lore(java.util.Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open global settings")
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open admin settings")
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
