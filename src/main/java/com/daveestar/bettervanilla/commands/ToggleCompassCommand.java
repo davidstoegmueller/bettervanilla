@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.CompassManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -14,10 +15,12 @@ public class ToggleCompassCommand implements CommandExecutor {
 
   private final Main _plugin;
   private final CompassManager _compassManager;
+  private final SettingsManager _settingsManager;
 
   public ToggleCompassCommand() {
     _plugin = Main.getInstance();
     _compassManager = _plugin.getCompassManager();
+    _settingsManager = _plugin.getSettingsManager();
   }
 
   @Override
@@ -28,8 +31,10 @@ public class ToggleCompassCommand implements CommandExecutor {
       if (args.length == 0) {
         if (_compassManager.checkPlayerActiveCompass(p)) {
           _compassManager.removePlayerFromCompass(p);
+          _settingsManager.setToggleCompass(p, false);
         } else {
           _compassManager.addPlayerToCompass(p);
+          _settingsManager.setToggleCompass(p, true);
         }
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/togglecompass");

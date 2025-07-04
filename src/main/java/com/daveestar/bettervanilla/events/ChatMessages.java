@@ -58,10 +58,7 @@ public class ChatMessages implements Listener {
     _permissionsManager.onPlayerJoined(p);
     _afkManager.onPlayerJoined(p);
     _timerManager.onPlayerJoined(p);
-
-    if (_settingsManager.getToggleCompass(p)) {
-      _compassManager.addPlayerToCompass(p);
-    }
+    _compassManager.onPlayerJoined(p);
   }
 
   @EventHandler
@@ -74,6 +71,7 @@ public class ChatMessages implements Listener {
     _permissionsManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
+    _compassManager.onPlayerLeft(p);
   }
 
   @EventHandler
@@ -83,6 +81,7 @@ public class ChatMessages implements Listener {
     _permissionsManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
+    _compassManager.onPlayerLeft(p);
   }
 
   @EventHandler
