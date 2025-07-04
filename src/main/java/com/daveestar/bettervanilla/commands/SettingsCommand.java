@@ -90,6 +90,17 @@ public class SettingsCommand implements TabExecutor {
         return true;
       }
 
+      if (args[0].equalsIgnoreCase("afkprotection")) {
+        if (args.length > 1) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings afkprotection");
+          return true;
+        }
+
+        _toggleAFKProtection(p);
+        return true;
+      }
+
       if (args[0].equalsIgnoreCase("afktime")) {
         if (args.length != 2) {
           p.sendMessage(
@@ -111,7 +122,7 @@ public class SettingsCommand implements TabExecutor {
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
       List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "enableend", "enablenether",
-          "sleepingrain", "afktime");
+          "sleepingrain", "afkprotection", "afktime");
       return availableSettings;
     }
 
@@ -187,6 +198,16 @@ public class SettingsCommand implements TabExecutor {
     _settingsManager.setSleepingRain(newState);
 
     p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleAFKProtection(Player p) {
+    Boolean newState = !_settingsManager.getAFKProtection();
+    String stateText = newState ? "ENABLED" : "DISABLED";
+
+    _settingsManager.setAFKProtection(newState);
+    _plugin.getAFKManager().applyProtectionToAFKPlayers(newState);
+
+    p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _setAFKTime(Player p, String[] args) {
