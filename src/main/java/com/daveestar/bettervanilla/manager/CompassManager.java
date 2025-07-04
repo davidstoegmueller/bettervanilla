@@ -74,6 +74,19 @@ public class CompassManager {
     _settingsManager = _plugin.getSettingsManager();
   }
 
+  public void onPlayerJoined(Player p) {
+    if (_settingsManager.getToggleCompass(p)) {
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> addPlayerToCompass(p));
+    }
+  }
+
+  public void onPlayerLeft(Player p) {
+    BossBar bar = _activeCompass.remove(p);
+    if (bar != null) {
+      bar.removePlayer(p);
+    }
+  }
+
   public void destroy() {
     _activeCompass.values().forEach(BossBar::removeAll);
     _activeCompass.clear();

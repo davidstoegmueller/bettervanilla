@@ -32,7 +32,7 @@ commands:
     permission: bettervanilla.adminhelp
   settings:
     aliases: [set]
-    description: List and toggle global server settings.
+    description: Open the settings menu.
     usage: /settings
     permission: bettervanilla.settings
   help:

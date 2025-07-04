@@ -65,8 +65,6 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + "/settings <settingname> - Set and list global settings");
       p.sendMessage("");
-      p.sendMessage(Main.getShortPrefix() + ChatColor.RED + "Info: " + ChatColor.GRAY
-          + "Users need to rejoin to apply changes to their permissions");
       p.sendMessage(Main.getShortPrefix()
           + "/permissions group <addperm | removeperm> <username> <permission> - Add or remove a permission from a group");
       p.sendMessage(Main.getShortPrefix()
@@ -77,7 +75,7 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(
           Main.getShortPrefix()
               + "/permissions assignments - List all user and group permission assignments");
-      p.sendMessage(Main.getShortPrefix() + "/permissions list - List all permissions of bettervanilla");
+      p.sendMessage(Main.getShortPrefix() + "/permissions list - List all available permissions");
       p.sendMessage(Main.getShortPrefix()
           + "/permissions reload - Reload the permissions and reapply them to all players");
 

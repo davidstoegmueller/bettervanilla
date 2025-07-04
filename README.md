@@ -1,3 +1,6 @@
+| Command       | Description              |
+| ------------- | ------------------------ |
+| 🔧 `/settings` | Open your settings menu |
 # BetterVanilla – SMP All‑in‑One 🍦✨
 
 _A lightweight, drop‑in plugin that upgrades vanilla Minecraft servers with modern quality‑of‑life features—without sacrificing the classic vibe._
@@ -55,8 +58,8 @@ _(Scroll down for the complete feature & command list.)_
 
 ### Admin & Server
 
-- 🛠️ **Settings Command & GUI** – `/settings` toggles maintenance, creeper damage, enabling _The End_ and _The Nether_, sleeping‑rain, AFK protection, AFK time, and more
-- 🛡️ **AFK Protection** – AFK players become invulnerable, immovable and collision-free (toggle via `/settings afkprotection`)
+- 🛠️ **Settings Menu** – `/settings` opens personal toggles; admins can access global server settings from there
+- 🛡️ **AFK Protection** – AFK players become invulnerable, immovable and collision-free (configurable in the settings menu)
 - 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
 - 📚 **Admin Help** – Quick reference for every admin command
 
@@ -136,17 +139,10 @@ _(Scroll down for the complete feature & command list.)_
 </details>
 
 <details><summary><strong>Settings & Maintenance 🛠️</strong></summary>
+| Command       | Description              |
+| ------------- | ------------------------ |
+| 🔧 `/settings` | Open your settings menu |
 
-| Command                              | Description                                          |
-| ------------------------------------ | ---------------------------------------------------- |
-| 🔧 `/settings` or `/set`             | List all settings with their current values          |
-| 🚧 `/settings maintenance [message]` | Toggle maintenance mode (plus optional kick message) |
-| 💥 `/settings creeperdamage`         | Toggle creeper block/entity damage                   |
-| 🏁 `/settings enableend`             | Enable/disable entry to _The End_                    |
-| 🌋 `/settings enablenether`          | Enable/disable entry to _The Nether_                 |
-| 🌧️ `/settings sleepingrain`          | Enable/disable sleeping to skip rain                 |
-| 🛡️ `/settings afkprotection`         | Toggle AFK invulnerability & collisions              |
-| 💤 `/settings afktime <minutes>`     | Minutes until a player is marked AFK                 |
 
 </details>
 
@@ -170,10 +166,12 @@ _(Scroll down for the complete feature & command list.)_
 | ➖ `/permissions user removeperm <user> <permission>`   | Remove permission from a user           |
 | 🔄 `/permissions user setgroup <user> <group>`          | Set a user's group                      |
 | 📋 `/permissions assignments`                           | List all group & user assignments       |
-| 📋 `/permissions list`                                  | List every permission assignment        |
+| 📋 `/permissions list`                                  | List all available permissions          |
 | 🔄 `/permissions reload`                                | Reload the permissions config & reapply |
 
 </details>
+
+*Use `/permissions reload` to apply permission changes without requiring players to rejoin.*
 
 <details><summary><strong>Help 📚</strong></summary>
 
@@ -199,6 +197,7 @@ bettervanilla.invsee
 bettervanilla.timer
 bettervanilla.adminhelp
 bettervanilla.settings
+bettervanilla.adminsettings
 bettervanilla.togglelocation
 bettervanilla.togglecompass
 bettervanilla.deathpoints

@@ -12,7 +12,6 @@ import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
-import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -23,7 +22,6 @@ import net.md_5.bungee.api.ChatColor;
 public class ChatMessages implements Listener {
 
   private final Main _plugin;
-  private final SettingsManager _settingsManager;
   private final PermissionsManager _permissionsManager;
   private final AFKManager _afkManager;
   private final TimerManager _timerManager;
@@ -32,7 +30,6 @@ public class ChatMessages implements Listener {
 
   public ChatMessages() {
     _plugin = Main.getInstance();
-    _settingsManager = _plugin.getSettingsManager();
     _permissionsManager = _plugin.getPermissionsManager();
     _afkManager = _plugin.getAFKManager();
     _timerManager = _plugin.getTimerManager();
@@ -58,10 +55,7 @@ public class ChatMessages implements Listener {
     _permissionsManager.onPlayerJoined(p);
     _afkManager.onPlayerJoined(p);
     _timerManager.onPlayerJoined(p);
-
-    if (_settingsManager.getToggleCompass(p)) {
-      _compassManager.addPlayerToCompass(p);
-    }
+    _compassManager.onPlayerJoined(p);
   }
 
   @EventHandler
@@ -74,6 +68,7 @@ public class ChatMessages implements Listener {
     _permissionsManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
+    _compassManager.onPlayerLeft(p);
   }
 
   @EventHandler
@@ -83,6 +78,7 @@ public class ChatMessages implements Listener {
     _permissionsManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
+    _compassManager.onPlayerLeft(p);
   }
 
   @EventHandler
