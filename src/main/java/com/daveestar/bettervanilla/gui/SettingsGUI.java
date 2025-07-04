@@ -39,7 +39,7 @@ public class SettingsGUI {
 
   public void displayGUI(Player p) {
     boolean isAdmin = p.hasPermission("bettervanilla.adminsettings");
-    int rows = isAdmin ? 4 : 3;
+    int rows = isAdmin ? 3 : 2;
 
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("togglelocation", _createToggleLocationItem(p));
@@ -95,10 +95,12 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.FILLED_MAP);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
       meta.lore(java.util.Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
@@ -111,10 +113,12 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.COMPASS);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
       meta.lore(java.util.Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
@@ -126,10 +130,11 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.REDSTONE_TORCH);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
       meta.lore(java.util.Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open global settings")
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open admin settings")
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
