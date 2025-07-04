@@ -34,6 +34,7 @@ public class AdminSettingsGUI implements Listener {
   private final MaintenanceManager _maintenanceManager;
   private final Map<UUID, CustomGUI> _afkTimePending;
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
+  private final Map<UUID, CustomGUI> _motdPending;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -42,6 +43,7 @@ public class AdminSettingsGUI implements Listener {
     _maintenanceManager = _plugin.getMaintenanceManager();
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
+    _motdPending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -59,6 +61,7 @@ public class AdminSettingsGUI implements Listener {
     entries.put("sleepingrain", _createSleepingRainItem());
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
+    entries.put("motd", _createMOTDItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -71,6 +74,7 @@ public class AdminSettingsGUI implements Listener {
     // second row
     customSlots.put("afkprotection", 12);
     customSlots.put("afktime", 14);
+    customSlots.put("motd", 10);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -144,6 +148,15 @@ public class AdminSettingsGUI implements Listener {
       public void onLeftClick(Player p) {
         p.sendMessage(Main.getPrefix() + "Enter AFK time in minutes:");
         _afkTimePending.put(p.getUniqueId(), par);
+        p.closeInventory();
+      }
+    });
+
+    actions.put("motd", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        p.sendMessage(Main.getPrefix() + "Enter server MOTD:");
+        _motdPending.put(p.getUniqueId(), par);
         p.closeInventory();
       }
     });
@@ -280,6 +293,24 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
+  private ItemStack _createMOTDItem() {
+    String motd = _settingsManager.getServerMOTD();
+    ItemStack item = new ItemStack(Material.OAK_SIGN);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
+      var lore = new ArrayList<String>();
+      lore.add("");
+      if (motd != null && !motd.isEmpty()) {
+        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.translateAlternateColorCodes('&', motd));
+      }
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
+      meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+    return item;
+  }
+
   @EventHandler
   public void onPlayerChat(AsyncChatEvent e) {
     Player p = e.getPlayer();
@@ -309,6 +340,19 @@ public class AdminSettingsGUI implements Listener {
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
         CustomGUI parMenu = _maintenanceMessagePending.remove(id);
         _toggleMaintenance(p, message);
+        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        displayGUI(p, parMenu);
+      });
+      return;
+    }
+
+    if (_motdPending.containsKey(id)) {
+      e.setCancelled(true);
+      String message = ((TextComponent) e.message()).content();
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        CustomGUI parMenu = _motdPending.remove(id);
+        _settingsManager.setMOTD(message);
+        p.sendMessage(Main.getPrefix() + "MOTD set to: " + ChatColor.translateAlternateColorCodes('&', message));
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parMenu);
       });

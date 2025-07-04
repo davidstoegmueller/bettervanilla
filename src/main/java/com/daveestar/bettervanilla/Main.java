@@ -83,6 +83,8 @@ public class Main extends JavaPlugin {
     _navigationManager.initManagers();
     _timerManager.initManagers();
 
+    _settingsManager.setMOTD();
+
     _LOGGER.info("BetterVanilla - ENABLED");
 
     // register commands
