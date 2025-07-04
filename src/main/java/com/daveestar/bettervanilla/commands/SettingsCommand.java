@@ -5,7 +5,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.gui.SettingsGUI;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class SettingsCommand implements CommandExecutor {
   private final SettingsGUI _settingsGUI;
@@ -20,7 +23,13 @@ public class SettingsCommand implements CommandExecutor {
       return false;
 
     Player p = (Player) cs;
-    _settingsGUI.displayGUI(p);
+
+    if (args.length == 0) {
+      _settingsGUI.displayGUI(p);
+    } else {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings");
+    }
+
     return true;
   }
 }
