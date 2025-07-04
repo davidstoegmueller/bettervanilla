@@ -19,17 +19,19 @@ public class SettingsCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender cs, Command command, String label, String[] args) {
-    if (!(cs instanceof Player))
-      return false;
+    if ((cs instanceof Player)) {
 
-    Player p = (Player) cs;
+      Player p = (Player) cs;
 
-    if (args.length == 0) {
-      _settingsGUI.displayGUI(p);
-    } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings");
+      if (args.length == 0) {
+        _settingsGUI.displayGUI(p);
+      } else {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings");
+      }
+
+      return true;
     }
 
-    return true;
+    return false;
   }
 }
