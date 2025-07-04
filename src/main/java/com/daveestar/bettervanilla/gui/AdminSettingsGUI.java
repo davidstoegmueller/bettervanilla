@@ -32,9 +32,8 @@ public class AdminSettingsGUI implements Listener {
   private final SettingsManager _settingsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
-  private final Map<UUID, Boolean> _afkTimePending;
-  private final Map<UUID, Boolean> _maintenanceMessagePending;
-  private final Map<UUID, CustomGUI> _parentMenus;
+  private final Map<UUID, CustomGUI> _afkTimePending;
+  private final Map<UUID, CustomGUI> _maintenanceMessagePending;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -43,7 +42,6 @@ public class AdminSettingsGUI implements Listener {
     _maintenanceManager = _plugin.getMaintenanceManager();
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
-    _parentMenus = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -52,6 +50,7 @@ public class AdminSettingsGUI implements Listener {
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu) {
+    final CustomGUI par = parentMenu;
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("creeperdamage", _createCreeperDamageItem());
@@ -75,28 +74,27 @@ public class AdminSettingsGUI implements Listener {
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 3, customSlots, parentMenu,
+        entries, 3, customSlots, par,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
-    _parentMenus.put(p.getUniqueId(), parentMenu);
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player player) {
         _toggleMaintenance(player, null);
-        displayGUI(player, _parentMenus.get(player.getUniqueId()));
+        displayGUI(player, par);
       }
 
       @Override
       public void onRightClick(Player player) {
         if (!_maintenanceManager.getState()) {
           player.sendMessage(Main.getPrefix() + "Enter maintenance message:");
-          _maintenanceMessagePending.put(player.getUniqueId(), true);
+          _maintenanceMessagePending.put(player.getUniqueId(), par);
           player.closeInventory();
         } else {
           _toggleMaintenance(player, null);
-          displayGUI(player, _parentMenus.get(player.getUniqueId()));
+          displayGUI(player, par);
         }
       }
     });
@@ -105,7 +103,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleCreeperDamage(player);
-        displayGUI(player, _parentMenus.get(player.getUniqueId()));
+        displayGUI(player, par);
       }
     });
 
@@ -113,7 +111,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleEnd(player);
-        displayGUI(player, _parentMenus.get(player.getUniqueId()));
+        displayGUI(player, par);
       }
     });
 
@@ -121,7 +119,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleNether(player);
-        displayGUI(player, _parentMenus.get(player.getUniqueId()));
+        displayGUI(player, par);
       }
     });
 
@@ -129,7 +127,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleSleepingRain(player);
-        displayGUI(player, _parentMenus.get(player.getUniqueId()));
+        displayGUI(player, par);
       }
     });
 
@@ -137,7 +135,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         _toggleAFKProtection(player);
-        displayGUI(player, _parentMenus.get(player.getUniqueId()));
+        displayGUI(player, par);
       }
     });
 
@@ -145,7 +143,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player player) {
         player.sendMessage(Main.getPrefix() + "Enter AFK time in minutes:");
-        _afkTimePending.put(player.getUniqueId(), true);
+        _afkTimePending.put(player.getUniqueId(), par);
         player.closeInventory();
       }
     });
@@ -296,8 +294,8 @@ public class AdminSettingsGUI implements Listener {
           p.sendMessage(
               Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-          _afkTimePending.remove(id);
-          displayGUI(p, _parentMenus.get(p.getUniqueId()));
+          CustomGUI parMenu = _afkTimePending.remove(id);
+          displayGUI(p, parMenu);
         });
       } catch (NumberFormatException ex) {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
@@ -309,10 +307,10 @@ public class AdminSettingsGUI implements Listener {
       e.setCancelled(true);
       String message = ((TextComponent) e.message()).content();
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-        _maintenanceMessagePending.remove(id);
+        CustomGUI parMenu = _maintenanceMessagePending.remove(id);
         _toggleMaintenance(p, message);
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        displayGUI(p, _parentMenus.get(p.getUniqueId()));
+        displayGUI(p, parMenu);
       });
     }
   }

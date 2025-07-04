@@ -5,13 +5,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.daveestar.bettervanilla.gui.PlayerSettingsGUI;
+import com.daveestar.bettervanilla.gui.SettingsGUI;
 
-public class PlayerSettingsCommand implements CommandExecutor {
-  private final PlayerSettingsGUI _playerSettingsGUI;
+public class SettingsCommand implements CommandExecutor {
+  private final SettingsGUI _settingsGUI;
 
-  public PlayerSettingsCommand() {
-    _playerSettingsGUI = new PlayerSettingsGUI();
+  public SettingsCommand() {
+    _settingsGUI = new SettingsGUI();
   }
 
   @Override
@@ -20,7 +20,7 @@ public class PlayerSettingsCommand implements CommandExecutor {
       return false;
 
     Player p = (Player) cs;
-    _playerSettingsGUI.displayGUI(p);
+    _settingsGUI.displayGUI(p);
     return true;
   }
 }

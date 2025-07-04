@@ -21,7 +21,7 @@ import com.daveestar.bettervanilla.utils.CustomGUI;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
-public class PlayerSettingsGUI {
+public class SettingsGUI {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final NavigationManager _navigationManager;
@@ -29,7 +29,7 @@ public class PlayerSettingsGUI {
   private final ActionBar _actionBar;
   private final AdminSettingsGUI _adminSettingsGUI;
 
-  public PlayerSettingsGUI() {
+  public SettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _navigationManager = _plugin.getNavigationManager();
@@ -157,8 +157,10 @@ public class PlayerSettingsGUI {
   private void _toggleCompass(Player p) {
     if (_compassManager.checkPlayerActiveCompass(p)) {
       _compassManager.removePlayerFromCompass(p);
+      _settingsManager.setToggleCompass(p, false);
     } else {
       _compassManager.addPlayerToCompass(p);
+      _settingsManager.setToggleCompass(p, true);
     }
     p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
   }
