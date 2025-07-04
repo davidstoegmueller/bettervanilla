@@ -70,6 +70,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getEnableNether() {
+    return _fileConfig.getBoolean("global.enablenether", false);
+  }
+
+  public void setEnableNether(boolean value) {
+    _fileConfig.set("global.enablenether", value);
+    _config.save();
+  }
+
   public boolean getSleepingRain() {
     return _fileConfig.getBoolean("global.sleepingrain", false);
   }

@@ -1,7 +1,7 @@
 name: bettervanilla
 main: com.daveestar.bettervanilla.Main
-version: 1.2.0
-api-version: 1.20
+version: 1.4.0
+api-version: 1.21
 authors: ["daveestar"]
 commands:
   waypoints:

@@ -2,7 +2,6 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Tim
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SittableStairs.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventEnd.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PlayerTimer.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PermissionsCommand.java
@@ -14,6 +13,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\Wayp
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\NavigationManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PermissionsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\AFKManager.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventDimension.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\WaypointsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleBeam.java

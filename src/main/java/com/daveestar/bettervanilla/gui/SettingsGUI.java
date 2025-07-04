@@ -47,14 +47,16 @@ public class SettingsGUI implements Listener {
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("creeperdamage", _createCreeperDamageItem());
     entries.put("enableend", _createEnableEndItem());
+    entries.put("enablenether", _createEnableNetherItem());
     entries.put("sleepingrain", _createSleepingRainItem());
     entries.put("afktime", _createAFKTimeItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
-    customSlots.put("maintenance", 1);
-    customSlots.put("creeperdamage", 3);
-    customSlots.put("enableend", 5);
-    customSlots.put("sleepingrain", 7);
+    customSlots.put("maintenance", 0);
+    customSlots.put("creeperdamage", 2);
+    customSlots.put("enableend", 4);
+    customSlots.put("enablenether", 6);
+    customSlots.put("sleepingrain", 8);
     customSlots.put("afktime", 13);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
@@ -99,6 +101,14 @@ public class SettingsGUI implements Listener {
       }
     });
 
+    actions.put("enablenether", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player player) {
+        _toggleNether(player);
+        displayGUI(player);
+      }
+    });
+
     actions.put("sleepingrain", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player player) {
@@ -130,7 +140,8 @@ public class SettingsGUI implements Listener {
 
       var lore = new ArrayList<String>();
       lore.add("");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+          + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
       if (message != null && !message.isEmpty()) {
         lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: " + ChatColor.YELLOW + message);
       }
@@ -148,10 +159,12 @@ public class SettingsGUI implements Listener {
     ItemStack item = new ItemStack(Material.CREEPER_HEAD);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Damage"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Damage"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -167,7 +180,25 @@ public class SettingsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable End"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+    return item;
+  }
+
+  private ItemStack _createEnableNetherItem() {
+    boolean state = _settingsManager.getEnableNether();
+    ItemStack item = new ItemStack(Material.BLAZE_ROD);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable Nether"));
+      meta.lore(Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -183,7 +214,8 @@ public class SettingsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Rain"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -199,7 +231,8 @@ public class SettingsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Time"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + minutes + ChatColor.GRAY
+              + " minutes",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -218,7 +251,8 @@ public class SettingsGUI implements Listener {
         int minutes = Integer.parseInt(content);
         _plugin.getServer().getScheduler().runTask(_plugin, () -> {
           _settingsManager.setAFKTime(minutes);
-          p.sendMessage(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
+          p.sendMessage(
+              Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
           _afkTimePending.remove(id);
           displayGUI(p);
@@ -245,7 +279,8 @@ public class SettingsGUI implements Listener {
     boolean newState = !_maintenanceManager.getState();
     _maintenanceManager.setState(newState, newState ? message : null);
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "The maintenance mode is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(
+        Main.getPrefix() + "The maintenance mode is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
     if (newState && message != null) {
       p.sendMessage(Main.getPrefix() + "Message was set to: " + ChatColor.YELLOW + message);
     }
@@ -264,6 +299,13 @@ public class SettingsGUI implements Listener {
     _settingsManager.setEnableEnd(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "The End is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNether(Player p) {
+    boolean newState = !_settingsManager.getEnableNether();
+    _settingsManager.setEnableNether(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "The Nether is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleSleepingRain(Player p) {

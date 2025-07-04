@@ -19,7 +19,7 @@ import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
-import com.daveestar.bettervanilla.events.PreventEnd;
+import com.daveestar.bettervanilla.events.PreventDimension;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
 import com.daveestar.bettervanilla.manager.AFKManager;
@@ -106,7 +106,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new ChatMessages(), this);
     manager.registerEvents(new PlayerMove(), this);
     manager.registerEvents(new SittableStairs(), this);
-    manager.registerEvents(new PreventEnd(), this);
+    manager.registerEvents(new PreventDimension(), this);
     manager.registerEvents(new SleepingRain(), this);
   }
 

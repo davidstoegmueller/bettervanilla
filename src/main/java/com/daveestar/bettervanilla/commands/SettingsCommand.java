@@ -68,6 +68,17 @@ public class SettingsCommand implements TabExecutor {
         return true;
       }
 
+      if (args[0].equalsIgnoreCase("enablenether")) {
+        if (args.length > 1) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings enablenether");
+          return true;
+        }
+
+        _toggleNether(p);
+        return true;
+      }
+
       if (args[0].equalsIgnoreCase("sleepingrain")) {
         if (args.length > 1) {
           p.sendMessage(
@@ -99,8 +110,8 @@ public class SettingsCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     if (args.length == 1) {
-      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "enableend", "sleepingrain",
-          "afktime");
+      List<String> availableSettings = Arrays.asList("maintenance", "creeperdamage", "enableend", "enablenether",
+          "sleepingrain", "afktime");
       return availableSettings;
     }
 
@@ -158,6 +169,15 @@ public class SettingsCommand implements TabExecutor {
     _settingsManager.setEnableEnd(newState);
 
     p.sendMessage(Main.getPrefix() + "The End is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNether(Player p) {
+    Boolean newState = !_settingsManager.getEnableNether();
+    String stateText = newState ? "ENABLED" : "DISABLED";
+
+    _settingsManager.setEnableNether(newState);
+
+    p.sendMessage(Main.getPrefix() + "The Nether is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleSleepingRain(Player p) {
