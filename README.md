@@ -55,6 +55,9 @@ _(Scroll down for the complete feature & command list.)_
 - 🪑 **Sittable Stairs** – Right‑click stairs with an empty hand to sit
 - 🌧️ **Sleeping Rain Skip** – Sleep through bad weather
 - 📚 **Help** – Get an overview of all available features and commands
+- ✨ **Navigation Particles** – Follow a beam and optional trail while navigating
+- 📦 **Chest Sorting** – Right‑click outside a chest inventory to instantly sort it
+- 🎨 **Colored Chat & Mentions** – Use `&` color codes and ping players with `@name`
 
 ### Admin & Server
 
@@ -62,6 +65,9 @@ _(Scroll down for the complete feature & command list.)_
 - 🛡️ **AFK Protection** – AFK players become invulnerable, immovable and collision-free (configurable in the settings menu)
 - 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
 - 📚 **Admin Help** – Quick reference for every admin command
+- 🌾 **Crop Protection** – Prevent crops from being trampled by players or mobs
+- 🌱 **Right‑Click Harvest** – Harvest and replant crops with a simple right‑click
+- 💬 **Server MOTD** – Change the server's MOTD from the admin settings menu
 
 ---
 
@@ -200,6 +206,7 @@ bettervanilla.settings
 bettervanilla.adminsettings
 bettervanilla.togglelocation
 bettervanilla.togglecompass
+bettervanilla.chestsort
 bettervanilla.deathpoints
 bettervanilla.permissions
 ```
