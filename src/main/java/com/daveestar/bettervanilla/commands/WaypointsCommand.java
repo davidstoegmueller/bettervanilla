@@ -220,7 +220,7 @@ public class WaypointsCommand implements TabExecutor {
 
       Location destination = new Location(p.getWorld(), x, y, z);
       _settingsManager.setToggleLocation(p, false);
-      NavigationData navigationData = new NavigationData("Custom Coordinates", destination, NavigationType.WAYPOINT,
+      NavigationData navigationData = new NavigationData("Coordinates", destination, NavigationType.WAYPOINT,
           Color.YELLOW);
       _navigationManager.startNavigation(p, navigationData);
 

@@ -3,8 +3,7 @@ package com.daveestar.bettervanilla.manager;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
-import com.daveestar.bettervanilla.utils.ParticleBeam;
-import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.ParticleNavigation;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -19,8 +18,8 @@ public class NavigationManager {
   // stores active navigations for players
   private final Map<Player, NavigationData> _activeNavigations = new HashMap<>();
 
-  // stores active particle beams for players
-  private final Map<Player, ParticleBeam> _activeBeams = new HashMap<>();
+  // stores active particle navigations for players
+  private final Map<Player, ParticleNavigation> _activeParticleNavigations = new HashMap<>();
 
   private final Main _plugin;
   private ActionBar _actionBar;
@@ -48,15 +47,18 @@ public class NavigationManager {
     _activeNavigations.put(p, navigationData);
 
     Location targetLocation = navigationData.getLocation().toBlockLocation();
-    Color beamColor = navigationData.getColor();
+    Color particleColor = navigationData.getColor();
 
-    // create and display the particle beam
-    ParticleBeam beam = new ParticleBeam(p, targetLocation, beamColor);
-    beam.displayBeam();
+    // create and display the particle navigation
+    ParticleNavigation particleNavigation = new ParticleNavigation(p, targetLocation, particleColor);
+    particleNavigation.displayBeam();
+
+    // if the player has the trail setting enabled, display the trail
     if (_settingsManager.getNavigationTrail(p)) {
-      beam.startTrail();
+      particleNavigation.displayTrail();
     }
-    _activeBeams.put(p, beam);
+
+    _activeParticleNavigations.put(p, particleNavigation);
 
     // update the action bar with navigation details
     updateNavigation(p, navigationData);
@@ -77,15 +79,8 @@ public class NavigationManager {
       String navigationText = _getNavigationText(targetName, targetLocation, playerLocation);
       _actionBar.sendActionBar(p, navigationText);
 
-      ParticleBeam beam = _activeBeams.get(p);
-      beam.updateLocation(targetLocation);
-
-      if (_settingsManager.getNavigationTrail(p)) {
-        beam.startTrail();
-        beam.displayTrail();
-      } else {
-        beam.stopTrail();
-      }
+      ParticleNavigation particleNavigation = _activeParticleNavigations.get(p);
+      particleNavigation.update(targetLocation, true, _settingsManager.getNavigationTrail(p));
     }
   }
 
@@ -95,10 +90,11 @@ public class NavigationManager {
       _activeNavigations.remove(p);
     }
 
-    // remove the particle beam if it exists
-    if (_activeBeams.containsKey(p)) {
-      _activeBeams.get(p).removeBeam();
-      _activeBeams.remove(p);
+    // remove the particle navigation if it exists
+    if (_activeParticleNavigations.containsKey(p)) {
+      _activeParticleNavigations.get(p).removeBeam();
+      _activeParticleNavigations.get(p).removeTrail();
+      _activeParticleNavigations.remove(p);
     }
 
     // clear the action bar for the player
@@ -169,7 +165,4 @@ public class NavigationManager {
       return "⬋"; // South-West
     }
   }
-
-
-
 }

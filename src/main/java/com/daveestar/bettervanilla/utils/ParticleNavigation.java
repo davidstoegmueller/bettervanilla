@@ -8,13 +8,14 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.daveestar.bettervanilla.Main;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
-public class ParticleBeam {
+public class ParticleNavigation {
 
   private final Main _plugin;
 
@@ -22,10 +23,13 @@ public class ParticleBeam {
   private Location _location;
   private Color _color;
 
-  private ScheduledTask _task;
+  private ScheduledTask _beamTask;
   private ScheduledTask _trailTask;
 
-  public ParticleBeam(Player p, Location location, Color color) {
+  private boolean _showBeam = false;
+  private boolean _showTrail = false;
+
+  public ParticleNavigation(Player p, Location location, Color color) {
     _plugin = Main.getInstance();
 
     _player = p;
@@ -33,20 +37,23 @@ public class ParticleBeam {
     _color = color;
   }
 
-  public void updateLocation(Location newLocation) {
+  public void update(Location newLocation, boolean showBeam, boolean showTrail) {
     _location = newLocation;
+    _showBeam = showBeam;
+    _showTrail = showTrail;
   }
 
-  /**
-   * Starts the particle beam effect indefinitely.
-   */
   public void displayBeam() {
+    _showBeam = true;
 
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
     World world = _location.getWorld();
     double maxHeight = world.getMaxHeight();
 
-    _task = scheduler.runAtFixedRate(_plugin, task -> {
+    _beamTask = scheduler.runAtFixedRate(_plugin, task -> {
+
+      if (!_showBeam)
+        return;
 
       // generate the beam effect upwards from the given location
       for (double y = 0; y <= maxHeight; y += 0.5) { // adjust y to control beam height
@@ -58,53 +65,44 @@ public class ParticleBeam {
     }, 0, 1, TimeUnit.SECONDS);
   }
 
-  /**
-   * Cancels the particle beam effect.
-   */
   public void removeBeam() {
-    if (_task != null && !_task.isCancelled()) {
-      _task.cancel();
-      _task = null;
-    }
+    if (_beamTask != null && !_beamTask.isCancelled()) {
+      _beamTask.cancel();
+      _beamTask = null;
 
-    stopTrail();
+      _showBeam = false;
+    }
   }
 
-  /**
-   * Displays a short particle trail from the player's current location
-   * toward the beam's target location.
-   */
   public void displayTrail() {
-    Location start = _player.getLocation().clone().add(0, 1, 0);
-    double distance = start.distance(_location);
-    if (distance == 0)
-      return;
-
-    double maxDistance = Math.min(distance, 10);
-    org.bukkit.util.Vector direction = _location.toVector().subtract(start.toVector()).normalize();
-    DustOptions options = new DustOptions(_color, 1);
-
-    for (double d = 0; d <= maxDistance; d += 1) {
-      Location point = start.clone().add(direction.clone().multiply(d));
-      _player.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
-    }
-  }
-
-  /** Starts repeatedly displaying the trail until stopped. */
-  public void startTrail() {
-    if (_trailTask != null && !_trailTask.isCancelled())
-      return;
+    _showTrail = true;
 
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
-    _trailTask = scheduler.runAtFixedRate(_plugin, t -> displayTrail(), 0, 1,
-        TimeUnit.SECONDS);
+
+    _trailTask = scheduler.runAtFixedRate(_plugin, t -> {
+      if (!_showTrail)
+        return;
+
+      Location start = _player.getLocation().clone().add(0, 0.5, 0);
+      double distance = start.distance(_location);
+      double maxDistance = Math.min(distance, 10);
+      Vector direction = _location.toVector().subtract(start.toVector()).normalize();
+
+      for (double d = 0; d <= maxDistance; d += 1) {
+        Location point = start.clone().add(direction.clone().multiply(d));
+        DustOptions options = new DustOptions(_color, 1);
+
+        _player.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
+      }
+    }, 0, 1, TimeUnit.SECONDS);
   }
 
-  /** Stops the repeating trail effect. */
-  public void stopTrail() {
+  public void removeTrail() {
     if (_trailTask != null && !_trailTask.isCancelled()) {
       _trailTask.cancel();
       _trailTask = null;
+
+      _showTrail = false;
     }
   }
 }
