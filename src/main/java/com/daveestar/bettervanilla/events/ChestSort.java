@@ -18,17 +18,16 @@ import net.md_5.bungee.api.ChatColor;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
-import com.daveestar.bettervanilla.utils.ActionBar;
 
 public class ChestSort implements Listener {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
-  private final ActionBar _actionBar;
+  private final java.util.Set<java.util.UUID> _hintShown;
 
   public ChestSort() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
-    _actionBar = _plugin.getActionBar();
+    _hintShown = new java.util.HashSet<>();
   }
 
   @EventHandler
@@ -42,7 +41,7 @@ public class ChestSort implements Listener {
     }
 
     Inventory topInv = e.getView().getTopInventory();
-    if (topInv == null || !_isSortable(topInv.getType())) {
+    if (topInv == null || !_isSortable(topInv)) {
       return;
     }
 
@@ -56,18 +55,23 @@ public class ChestSort implements Listener {
 
   @EventHandler
   public void onInventoryOpen(InventoryOpenEvent e) {
-    if (!_settingsManager.getChestSort((org.bukkit.entity.Player) e.getPlayer())) {
+    var player = (org.bukkit.entity.Player) e.getPlayer();
+    if (!_settingsManager.getChestSort(player)) {
       return;
     }
 
     Inventory inv = e.getInventory();
-    if (inv != null && _isSortable(inv.getType())) {
-      _actionBar.sendActionBarOnce((org.bukkit.entity.Player) e.getPlayer(),
-          ChatColor.YELLOW + "Right-click outside to sort");
+    if (inv != null && _isSortable(inv) && !_hintShown.contains(player.getUniqueId())) {
+      player.sendTitle("", ChatColor.YELLOW + "Shift-Right-Click outside to sort", 5, 40, 5);
+      _hintShown.add(player.getUniqueId());
     }
   }
 
-  private boolean _isSortable(InventoryType type) {
+  private boolean _isSortable(Inventory inv) {
+    InventoryType type = inv.getType();
+    if (inv.getHolder() == null) {
+      return false;
+    }
     return type == InventoryType.CHEST || type == InventoryType.BARREL
         || type == InventoryType.SHULKER_BOX || type == InventoryType.ENDER_CHEST;
   }
