@@ -66,4 +66,24 @@ public class ParticleBeam {
       _task = null;
     }
   }
+
+  /**
+   * Displays a short particle trail from the player's current location
+   * toward the beam's target location.
+   */
+  public void displayTrail() {
+    Location start = _player.getLocation().clone().add(0, 1, 0);
+    double distance = start.distance(_location);
+    if (distance == 0)
+      return;
+
+    double maxDistance = Math.min(distance, 10);
+    org.bukkit.util.Vector direction = _location.toVector().subtract(start.toVector()).normalize();
+    DustOptions options = new DustOptions(_color, 1);
+
+    for (double d = 0; d <= maxDistance; d += 1) {
+      Location point = start.clone().add(direction.clone().multiply(d));
+      _player.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
+    }
+  }
 }

@@ -10,8 +10,6 @@ import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
 import org.bukkit.entity.Player;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
@@ -87,7 +85,9 @@ public class NavigationManager {
       ParticleBeam beam = _activeBeams.get(p);
       beam.updateLocation(targetLocation);
 
-      _displayNavigationTrail(p, targetLocation, navigationData.getColor());
+      if (_settingsManager.getNavigationTrail(p)) {
+        beam.displayTrail();
+      }
     }
   }
 
@@ -172,31 +172,18 @@ public class NavigationManager {
     }
   }
 
-  private void _displayNavigationTrail(Player p, Location targetLocation, Color color) {
-    if (!_settingsManager.getNavigationTrail(p))
-      return;
-
-    Location start = p.getLocation().clone().add(0, 1, 0);
-    double distance = start.distance(targetLocation);
-    if (distance == 0)
-      return;
-
-    double maxDistance = Math.min(distance, 10);
-    org.bukkit.util.Vector direction = targetLocation.toVector().subtract(start.toVector()).normalize();
-
-    for (double d = 0; d <= maxDistance; d += 1) {
-      Location point = start.clone().add(direction.clone().multiply(d));
-      DustOptions options = new DustOptions(color, 1);
-      p.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
-    }
-  }
 
   private void _startTrailTask() {
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
     _trailTask = scheduler.runAtFixedRate(_plugin, task -> {
       _activeNavigations.forEach((pl, data) -> {
-        _displayNavigationTrail(pl, data.getLocation().toBlockLocation(), data.getColor());
+        if (_settingsManager.getNavigationTrail(pl)) {
+          ParticleBeam beam = _activeBeams.get(pl);
+          if (beam != null) {
+            beam.displayTrail();
+          }
+        }
       });
     }, 0, 1, TimeUnit.SECONDS);
   }
