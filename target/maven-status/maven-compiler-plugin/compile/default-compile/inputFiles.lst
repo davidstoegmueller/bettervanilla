@@ -18,7 +18,6 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\AFKM
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventDimension.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\WaypointsCommand.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleBeam.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\AdminSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SettingsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleCompassCommand.java
@@ -31,6 +30,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\Playe
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\TimerManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\Permissions.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\CustomGUI.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleNavigation.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleLocationCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChatMessages.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\DeathPointsCommand.java

@@ -411,8 +411,8 @@ public class AdminSettingsGUI implements Listener {
               Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-          CustomGUI parMenu = _afkTimePending.remove(id);
-          displayGUI(p, parMenu);
+          CustomGUI parentMenu = _afkTimePending.remove(id);
+          displayGUI(p, parentMenu);
         });
       } catch (NumberFormatException ex) {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
@@ -427,11 +427,11 @@ public class AdminSettingsGUI implements Listener {
       String message = ((TextComponent) e.message()).content();
 
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-        CustomGUI parMenu = _maintenanceMessagePending.remove(id);
+        CustomGUI parentMenu = _maintenanceMessagePending.remove(id);
         _toggleMaintenance(p, message);
 
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        displayGUI(p, parMenu);
+        displayGUI(p, parentMenu);
       });
 
       return;
@@ -443,12 +443,12 @@ public class AdminSettingsGUI implements Listener {
       String message = ((TextComponent) e.message()).content();
 
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-        CustomGUI parMenu = _motdPending.remove(id);
+        CustomGUI parentMenu = _motdPending.remove(id);
         _settingsManager.setServerMOTD(message);
 
         p.sendMessage(Main.getPrefix() + "MOTD set to: " + ChatColor.translateAlternateColorCodes('&', message));
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        displayGUI(p, parMenu);
+        displayGUI(p, parentMenu);
       });
     }
   }

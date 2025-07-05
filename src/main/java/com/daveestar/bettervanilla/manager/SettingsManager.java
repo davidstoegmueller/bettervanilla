@@ -16,7 +16,7 @@ public class SettingsManager {
 
   // USER SETTINGS
   public boolean getToggleLocation(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".togglelocation");
+    return _fileConfig.getBoolean(p.getUniqueId() + ".togglelocation", false);
   }
 
   public void setToggleLocation(Player p, boolean value) {
@@ -25,7 +25,7 @@ public class SettingsManager {
   }
 
   public boolean getToggleCompass(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".togglecompass");
+    return _fileConfig.getBoolean(p.getUniqueId() + ".togglecompass", false);
   }
 
   public void setToggleCompass(Player p, boolean value) {
@@ -39,6 +39,14 @@ public class SettingsManager {
 
   public void setChestSort(Player p, boolean value) {
     _fileConfig.set(p.getUniqueId() + ".chestsort", value);
+  }
+
+  public boolean getNavigationTrail(Player p) {
+    return _fileConfig.getBoolean(p.getUniqueId() + ".navigationtrail", false);
+  }
+
+  public void setNavigationTrail(Player p, boolean value) {
+    _fileConfig.set(p.getUniqueId() + ".navigationtrail", value);
     _config.save();
   }
 

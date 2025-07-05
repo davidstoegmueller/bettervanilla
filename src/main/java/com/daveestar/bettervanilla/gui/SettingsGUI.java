@@ -1,5 +1,6 @@
 package com.daveestar.bettervanilla.gui;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class SettingsGUI {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("togglelocation", _createToggleLocationItem(p));
     entries.put("togglecompass", _createToggleCompassItem(p));
+    entries.put("navigationtrail", _createNavigationTrailItem(p));
     entries.put("chestsort", _createChestSortItem(p));
 
     if (isAdmin) {
@@ -52,9 +54,10 @@ public class SettingsGUI {
     }
 
     Map<String, Integer> customSlots = new HashMap<>();
-    customSlots.put("togglelocation", 2);
-    customSlots.put("chestsort", 4);
-    customSlots.put("togglecompass", 6);
+    customSlots.put("togglelocation", 1);
+    customSlots.put("togglecompass", 3);
+    customSlots.put("navigationtrail", 5);
+    customSlots.put("chestsort", 7);
 
     if (isAdmin) {
       customSlots.put("adminsettings", rows * 9 - 10);
@@ -111,6 +114,13 @@ public class SettingsGUI {
         displayGUI(p);
       }
     });
+    clickActions.put("navigationtrail", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleNavigationTrail(p);
+        displayGUI(p);
+      }
+    });
 
     if (isAdmin) {
       clickActions.put("adminsettings", new CustomGUI.ClickAction() {
@@ -133,7 +143,7 @@ public class SettingsGUI {
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
-      meta.lore(java.util.Arrays.asList(
+      meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -153,7 +163,7 @@ public class SettingsGUI {
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
-      meta.lore(java.util.Arrays.asList(
+      meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -170,11 +180,29 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.CHEST);
     ItemMeta meta = item.getItemMeta();
 
+    meta.displayName(
+        Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
+    meta.lore(Arrays.asList(
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!",
+        "",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+            + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+        .stream().map(Component::text).toList());
+    item.setItemMeta(meta);
+
+    return item;
+  }
+
+  private ItemStack _createNavigationTrailItem(Player p) {
+    boolean state = _settingsManager.getNavigationTrail(p);
+    ItemStack item = new ItemStack(Material.BLAZE_POWDER);
+    ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
-      meta.lore(java.util.Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!",
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Navigation Particles"));
+      meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -193,7 +221,7 @@ public class SettingsGUI {
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
-      meta.lore(java.util.Arrays.asList(
+      meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open admin settings")
           .stream().map(Component::text).toList());
@@ -251,5 +279,13 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Chest sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNavigationTrail(Player p) {
+    boolean newState = !_settingsManager.getNavigationTrail(p);
+    _settingsManager.setNavigationTrail(p, newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Navigation particles are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }
