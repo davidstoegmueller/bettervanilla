@@ -4,11 +4,14 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
 import com.daveestar.bettervanilla.utils.ParticleBeam;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -23,6 +26,7 @@ public class NavigationManager {
 
   private final Main _plugin;
   private ActionBar _actionBar;
+  private SettingsManager _settingsManager;
 
   public NavigationManager() {
     _plugin = Main.getInstance();
@@ -30,6 +34,7 @@ public class NavigationManager {
 
   public void initManagers() {
     _actionBar = _plugin.getActionBar();
+    _settingsManager = _plugin.getSettingsManager();
   }
 
   public boolean checkActiveNavigation(Player p) {
@@ -73,6 +78,8 @@ public class NavigationManager {
 
       ParticleBeam beam = _activeBeams.get(p);
       beam.updateLocation(targetLocation);
+
+      _displayNavigationTrail(p, targetLocation, navigationData.getColor());
     }
   }
 
@@ -154,6 +161,25 @@ public class NavigationManager {
       return "⬇"; // South
     } else {
       return "⬋"; // South-West
+    }
+  }
+
+  private void _displayNavigationTrail(Player p, Location targetLocation, Color color) {
+    if (!_settingsManager.getNavigationTrail(p))
+      return;
+
+    Location start = p.getLocation().clone().add(0, 1, 0);
+    double distance = start.distance(targetLocation);
+    if (distance == 0)
+      return;
+
+    double maxDistance = Math.min(distance, 10);
+    org.bukkit.util.Vector direction = targetLocation.toVector().subtract(start.toVector()).normalize();
+
+    for (double d = 0; d <= maxDistance; d += 0.5) {
+      Location point = start.clone().add(direction.clone().multiply(d));
+      DustOptions options = new DustOptions(color, 1);
+      p.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
     }
   }
 }

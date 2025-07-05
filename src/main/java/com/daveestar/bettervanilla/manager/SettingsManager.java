@@ -33,6 +33,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getNavigationTrail(Player p) {
+    return _fileConfig.getBoolean(p.getUniqueId() + ".navigationtrail");
+  }
+
+  public void setNavigationTrail(Player p, boolean value) {
+    _fileConfig.set(p.getUniqueId() + ".navigationtrail", value);
+    _config.save();
+  }
+
   // GLOBAL SETTINGS
   public boolean getMaintenance() {
     return _fileConfig.getBoolean("global.maintenance.value", false);
