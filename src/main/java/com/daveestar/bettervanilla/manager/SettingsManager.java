@@ -34,7 +34,7 @@ public class SettingsManager {
   }
 
   public boolean getChestSort(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".chestsort", true);
+    return _fileConfig.getBoolean(p.getUniqueId() + ".chestsort", false);
   }
 
   public void setChestSort(Player p, boolean value) {

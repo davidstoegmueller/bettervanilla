@@ -99,6 +99,14 @@ public class SettingsGUI {
     clickActions.put("chestsort", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
+
+        if (!p.hasPermission("bettervanilla.chestsort")) {
+          p.sendMessage(
+              Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle chest sorting.");
+          p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
         _toggleChestSort(p);
         displayGUI(p);
       }
@@ -166,6 +174,7 @@ public class SettingsGUI {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
       meta.lore(java.util.Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
