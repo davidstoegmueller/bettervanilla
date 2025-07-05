@@ -109,10 +109,10 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new ChatMessages(), this);
     manager.registerEvents(new PlayerMove(), this);
     manager.registerEvents(new SittableStairs(), this);
-    manager.registerEvents(new RightClickHarvest(), this);
     manager.registerEvents(new PreventDimension(), this);
     manager.registerEvents(new SleepingRain(), this);
     manager.registerEvents(new CropProtection(), this);
+    manager.registerEvents(new RightClickHarvest(), this);
   }
 
   @Override

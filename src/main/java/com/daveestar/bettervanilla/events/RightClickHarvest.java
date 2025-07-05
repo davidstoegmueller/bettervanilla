@@ -66,6 +66,7 @@ public class RightClickHarvest implements Listener {
         } else {
           continue;
         }
+
         seedConsumed = true;
       }
 
@@ -74,6 +75,7 @@ public class RightClickHarvest implements Listener {
 
     if (!seedConsumed) {
       ItemStack seedItem = new ItemStack(seed, 1);
+
       if (p.getInventory().containsAtLeast(seedItem, 1)) {
         p.getInventory().removeItem(seedItem);
         seedConsumed = true;
