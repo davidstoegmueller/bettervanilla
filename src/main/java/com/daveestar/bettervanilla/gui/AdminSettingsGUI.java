@@ -176,15 +176,18 @@ public class AdminSettingsGUI implements Listener {
       lore.add("");
       lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
           + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+
       if (message != null && !message.isEmpty()) {
         lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: " + ChatColor.YELLOW + message);
       }
+
       lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
       lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle with message");
 
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -192,6 +195,7 @@ public class AdminSettingsGUI implements Listener {
     boolean state = _settingsManager.getToggleCreeperDamage();
     ItemStack item = new ItemStack(Material.CREEPER_HEAD);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Damage"));
@@ -203,6 +207,7 @@ public class AdminSettingsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -210,6 +215,7 @@ public class AdminSettingsGUI implements Listener {
     boolean state = _settingsManager.getEnableEnd();
     ItemStack item = new ItemStack(Material.ENDER_EYE);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable End"));
       meta.lore(Arrays.asList(
@@ -220,6 +226,7 @@ public class AdminSettingsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -227,6 +234,7 @@ public class AdminSettingsGUI implements Listener {
     boolean state = _settingsManager.getEnableNether();
     ItemStack item = new ItemStack(Material.BLAZE_ROD);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable Nether"));
       meta.lore(Arrays.asList(
@@ -237,6 +245,7 @@ public class AdminSettingsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -244,6 +253,7 @@ public class AdminSettingsGUI implements Listener {
     boolean state = _settingsManager.getSleepingRain();
     ItemStack item = new ItemStack(Material.BLUE_BED);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Rain"));
       meta.lore(Arrays.asList(
@@ -254,6 +264,7 @@ public class AdminSettingsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -261,6 +272,7 @@ public class AdminSettingsGUI implements Listener {
     boolean state = _settingsManager.getAFKProtection();
     ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Protection"));
@@ -272,6 +284,7 @@ public class AdminSettingsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -279,6 +292,7 @@ public class AdminSettingsGUI implements Listener {
     int minutes = _settingsManager.getAFKTime();
     ItemStack item = new ItemStack(Material.CLOCK);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Time"));
       meta.lore(Arrays.asList(
@@ -289,6 +303,7 @@ public class AdminSettingsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -296,6 +311,7 @@ public class AdminSettingsGUI implements Listener {
     String motd = _settingsManager.getServerMOTD();
     ItemStack item = new ItemStack(Material.OAK_SIGN);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
       var lore = new ArrayList<String>();
@@ -308,6 +324,7 @@ public class AdminSettingsGUI implements Listener {
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -315,43 +332,56 @@ public class AdminSettingsGUI implements Listener {
   public void onPlayerChat(AsyncChatEvent e) {
     Player p = e.getPlayer();
     UUID id = p.getUniqueId();
+
     if (_afkTimePending.containsKey(id)) {
       e.setCancelled(true);
       String content = ((TextComponent) e.message()).content();
+
       try {
         int minutes = Integer.parseInt(content);
+
         _plugin.getServer().getScheduler().runTask(_plugin, () -> {
           _settingsManager.setAFKTime(minutes);
+
           p.sendMessage(
               Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
           CustomGUI parMenu = _afkTimePending.remove(id);
           displayGUI(p, parMenu);
         });
       } catch (NumberFormatException ex) {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
       }
+
       return;
     }
 
     if (_maintenanceMessagePending.containsKey(id)) {
       e.setCancelled(true);
+
       String message = ((TextComponent) e.message()).content();
+
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
         CustomGUI parMenu = _maintenanceMessagePending.remove(id);
         _toggleMaintenance(p, message);
+
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parMenu);
       });
+
       return;
     }
 
     if (_motdPending.containsKey(id)) {
       e.setCancelled(true);
+
       String message = ((TextComponent) e.message()).content();
+
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
         CustomGUI parMenu = _motdPending.remove(id);
         _settingsManager.setServerMOTD(message);
+
         p.sendMessage(Main.getPrefix() + "MOTD set to: " + ChatColor.translateAlternateColorCodes('&', message));
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parMenu);
@@ -363,11 +393,14 @@ public class AdminSettingsGUI implements Listener {
     boolean newState = !_maintenanceManager.getState();
     _maintenanceManager.setState(newState, newState ? message : null);
     String stateText = newState ? "ENABLED" : "DISABLED";
+
     p.sendMessage(
         Main.getPrefix() + "The maintenance mode is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+
     if (newState && message != null) {
       p.sendMessage(Main.getPrefix() + "Message was set to: " + ChatColor.YELLOW + message);
     }
+
     _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
   }
 

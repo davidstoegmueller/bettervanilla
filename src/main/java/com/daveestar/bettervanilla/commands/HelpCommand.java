@@ -25,13 +25,16 @@ public class HelpCommand implements CommandExecutor {
 
       Main plugin = Main.getInstance();
       InputStream stream = plugin.getResource("plugin.yml");
+
       if (stream != null) {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
         ConfigurationSection commands = yaml.getConfigurationSection("commands");
+
         if (commands != null) {
           for (String name : commands.getKeys(false)) {
             ConfigurationSection data = commands.getConfigurationSection(name);
             String desc = data != null ? data.getString("description", "") : "";
+
             p.sendMessage(Main.getShortPrefix() + "/" + name + " - " + desc);
           }
         }
@@ -81,6 +84,7 @@ public class HelpCommand implements CommandExecutor {
 
       return true;
     }
+
     return false;
   }
 }

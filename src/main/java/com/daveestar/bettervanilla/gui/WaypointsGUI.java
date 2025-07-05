@@ -140,6 +140,7 @@ public class WaypointsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -156,6 +157,7 @@ public class WaypointsGUI implements Listener {
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
+
     return item;
   }
 

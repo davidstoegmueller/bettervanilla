@@ -45,6 +45,7 @@ public class SettingsGUI {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("togglelocation", _createToggleLocationItem(p));
     entries.put("togglecompass", _createToggleCompassItem(p));
+
     if (isAdmin) {
       entries.put("adminsettings", _createAdminSettingsItem());
     }
@@ -52,6 +53,7 @@ public class SettingsGUI {
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("togglelocation", 2);
     customSlots.put("togglecompass", 6);
+
     if (isAdmin) {
       customSlots.put("adminsettings", rows * 9 - 10);
     }
@@ -71,6 +73,7 @@ public class SettingsGUI {
           p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
+
         _toggleLocation(p);
         displayGUI(p);
       }
@@ -85,6 +88,7 @@ public class SettingsGUI {
           p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
+
         _toggleCompass(p);
         displayGUI(p);
       }
@@ -107,6 +111,7 @@ public class SettingsGUI {
     boolean state = _settingsManager.getToggleLocation(p);
     ItemStack item = new ItemStack(Material.FILLED_MAP);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
@@ -118,6 +123,7 @@ public class SettingsGUI {
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
@@ -125,6 +131,7 @@ public class SettingsGUI {
     boolean state = _compassManager.checkPlayerActiveCompass(p);
     ItemStack item = new ItemStack(Material.COMPASS);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
@@ -136,12 +143,14 @@ public class SettingsGUI {
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
   private ItemStack _createAdminSettingsItem() {
     ItemStack item = new ItemStack(Material.REDSTONE_TORCH);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
@@ -151,11 +160,13 @@ public class SettingsGUI {
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
+
     return item;
   }
 
   private void _toggleLocation(Player p) {
     boolean newState;
+
     if (_settingsManager.getToggleLocation(p)) {
       _settingsManager.setToggleLocation(p, false);
       _actionBar.removeActionBar(p);
@@ -170,9 +181,11 @@ public class SettingsGUI {
           + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + blockLoc.getBlockY()
           + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + blockLoc.getBlockZ() + ChatColor.RED
           + ChatColor.BOLD + " » " + ChatColor.GRAY + biome.getKey();
+
       _actionBar.sendActionBar(p, locationText);
       newState = true;
     }
+
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Action-Bar location is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
@@ -186,6 +199,7 @@ public class SettingsGUI {
     } else {
       _compassManager.addPlayerToCompass(p);
     }
+
     _settingsManager.setToggleCompass(p, newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";

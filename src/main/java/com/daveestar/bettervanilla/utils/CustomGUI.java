@@ -105,12 +105,15 @@ public class CustomGUI implements Listener {
   private void _addItemToSlot(int slot, Material material, String displayName, List<String> lore) {
     ItemStack item = new ItemStack(material);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(displayName));
+
       if (lore != null)
         meta.lore(lore.stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
+
     _gui.setItem(slot, item);
   }
 
@@ -131,6 +134,7 @@ public class CustomGUI implements Listener {
     for (Map.Entry<String, ItemStack> entry : currentEntries) {
       String key = entry.getKey();
       int slot = _customSlots.getOrDefault(key, defaultSlotIndex);
+
       _gui.setItem(slot, entry.getValue());
       _slotKeyMap.put(slot, key);
 
@@ -171,6 +175,7 @@ public class CustomGUI implements Listener {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
       return;
     }
+
     _updatePage();
     p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
@@ -190,6 +195,7 @@ public class CustomGUI implements Listener {
       } else {
         action.onLeftClick(p);
       }
+
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
     }
   }

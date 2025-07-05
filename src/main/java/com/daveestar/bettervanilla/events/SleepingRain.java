@@ -32,6 +32,7 @@ public class SleepingRain implements Listener {
         world.setStorm(false);
         world.setTime(0);
         e.setUseBed(Result.ALLOW);
+
         p.sendMessage(Main.getPrefix() + "The weather has been cleared and you have slept through the night.");
       }
     }
