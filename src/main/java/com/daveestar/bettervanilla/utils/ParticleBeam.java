@@ -23,6 +23,7 @@ public class ParticleBeam {
   private Color _color;
 
   private ScheduledTask _task;
+  private ScheduledTask _trailTask;
 
   public ParticleBeam(Player p, Location location, Color color) {
     _plugin = Main.getInstance();
@@ -65,6 +66,8 @@ public class ParticleBeam {
       _task.cancel();
       _task = null;
     }
+
+    stopTrail();
   }
 
   /**
@@ -84,6 +87,24 @@ public class ParticleBeam {
     for (double d = 0; d <= maxDistance; d += 1) {
       Location point = start.clone().add(direction.clone().multiply(d));
       _player.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
+    }
+  }
+
+  /** Starts repeatedly displaying the trail until stopped. */
+  public void startTrail() {
+    if (_trailTask != null && !_trailTask.isCancelled())
+      return;
+
+    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
+    _trailTask = scheduler.runAtFixedRate(_plugin, t -> displayTrail(), 0, 1,
+        TimeUnit.SECONDS);
+  }
+
+  /** Stops the repeating trail effect. */
+  public void stopTrail() {
+    if (_trailTask != null && !_trailTask.isCancelled()) {
+      _trailTask.cancel();
+      _trailTask = null;
     }
   }
 }

@@ -12,12 +12,8 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class NavigationManager {
   // stores active navigations for players
@@ -25,8 +21,6 @@ public class NavigationManager {
 
   // stores active particle beams for players
   private final Map<Player, ParticleBeam> _activeBeams = new HashMap<>();
-
-  private ScheduledTask _trailTask;
 
   private final Main _plugin;
   private ActionBar _actionBar;
@@ -39,8 +33,6 @@ public class NavigationManager {
   public void initManagers() {
     _actionBar = _plugin.getActionBar();
     _settingsManager = _plugin.getSettingsManager();
-
-    _startTrailTask();
   }
 
   public boolean checkActiveNavigation(Player p) {
@@ -61,6 +53,9 @@ public class NavigationManager {
     // create and display the particle beam
     ParticleBeam beam = new ParticleBeam(p, targetLocation, beamColor);
     beam.displayBeam();
+    if (_settingsManager.getNavigationTrail(p)) {
+      beam.startTrail();
+    }
     _activeBeams.put(p, beam);
 
     // update the action bar with navigation details
@@ -86,7 +81,10 @@ public class NavigationManager {
       beam.updateLocation(targetLocation);
 
       if (_settingsManager.getNavigationTrail(p)) {
+        beam.startTrail();
         beam.displayTrail();
+      } else {
+        beam.stopTrail();
       }
     }
   }
@@ -173,18 +171,5 @@ public class NavigationManager {
   }
 
 
-  private void _startTrailTask() {
-    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
-    _trailTask = scheduler.runAtFixedRate(_plugin, task -> {
-      _activeNavigations.forEach((pl, data) -> {
-        if (_settingsManager.getNavigationTrail(pl)) {
-          ParticleBeam beam = _activeBeams.get(pl);
-          if (beam != null) {
-            beam.displayTrail();
-          }
-        }
-      });
-    }, 0, 1, TimeUnit.SECONDS);
-  }
 }
