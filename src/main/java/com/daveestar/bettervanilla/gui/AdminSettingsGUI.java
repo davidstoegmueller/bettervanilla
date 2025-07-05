@@ -1,7 +1,6 @@
 package com.daveestar.bettervanilla.gui;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -192,22 +191,20 @@ public class AdminSettingsGUI implements Listener {
     String message = _settingsManager.getMaintenanceMessage();
     ItemStack item = new ItemStack(Material.IRON_BARS);
     ItemMeta meta = item.getItemMeta();
+
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Maintenance"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Prevents players without permissions from joining the server.",
+          "",
 
-      var lore = new ArrayList<String>();
-      lore.add("");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-          + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-
-      if (message != null && !message.isEmpty()) {
-        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: " + ChatColor.YELLOW + message);
-      }
-
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle with message");
-
-      meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: "
+              + (message != null && !message.isEmpty() ? ChatColor.YELLOW + message : ChatColor.RED + ""),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle and set message")
+          .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -223,6 +220,7 @@ public class AdminSettingsGUI implements Listener {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Damage"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Prevents creepers from destroying blocks.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -242,6 +240,7 @@ public class AdminSettingsGUI implements Listener {
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable End"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Control the entry into 'The End' dimension.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -261,6 +260,7 @@ public class AdminSettingsGUI implements Listener {
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable Nether"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Control the entry into 'The Nether' dimension.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -280,6 +280,7 @@ public class AdminSettingsGUI implements Listener {
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Rain"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Allows players to skip rain by sleeping.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -300,6 +301,7 @@ public class AdminSettingsGUI implements Listener {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Crop Protection"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Prevents crops from being trampled.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -321,6 +323,7 @@ public class AdminSettingsGUI implements Listener {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Right-Click Crop Harvest"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Allows players to harvest crops by right-clicking them.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -341,6 +344,7 @@ public class AdminSettingsGUI implements Listener {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Protection"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Makes the player invulnerable while AFK.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -360,6 +364,7 @@ public class AdminSettingsGUI implements Listener {
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Time"));
       meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the AFK timeout in minutes.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + minutes + ChatColor.GRAY
               + " minutes",
@@ -378,14 +383,16 @@ public class AdminSettingsGUI implements Listener {
 
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
-      var lore = new ArrayList<String>();
-      lore.add("");
-      if (motd != null && !motd.isEmpty()) {
-        lore.add(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.translateAlternateColorCodes('&', motd));
-      }
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
-      meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
+
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY
+              + "Set the server message of the day (MOTD) visible in the server list.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: "
+              + (motd != null && !motd.isEmpty() ? ChatColor.translateAlternateColorCodes('&', motd)
+                  : ChatColor.RED + "Not set"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
+          .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
