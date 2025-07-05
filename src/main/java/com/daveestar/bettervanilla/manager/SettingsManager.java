@@ -39,6 +39,7 @@ public class SettingsManager {
 
   public void setChestSort(Player p, boolean value) {
     _fileConfig.set(p.getUniqueId() + ".chestsort", value);
+    _config.save();
   }
 
   public boolean getNavigationTrail(Player p) {

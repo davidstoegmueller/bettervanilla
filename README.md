@@ -1,6 +1,7 @@
-| Command       | Description              |
-| ------------- | ------------------------ |
+| Command        | Description             |
+| -------------- | ----------------------- |
 | 🔧 `/settings` | Open your settings menu |
+
 # BetterVanilla – SMP All‑in‑One 🍦✨
 
 _A lightweight, drop‑in plugin that upgrades vanilla Minecraft servers with modern quality‑of‑life features—without sacrificing the classic vibe._
@@ -149,7 +150,6 @@ _(Scroll down for the complete feature & command list.)_
 | ------------- | ------------------------ |
 | 🔧 `/settings` | Open your settings menu |
 
-
 </details>
 
 <details><summary><strong>Quality‑of‑Life Toggles 🎛️</strong></summary>
@@ -177,7 +177,7 @@ _(Scroll down for the complete feature & command list.)_
 
 </details>
 
-*Use `/permissions reload` to apply permission changes without requiring players to rejoin.*
+_Use `/permissions reload` to apply permission changes without requiring players to rejoin._
 
 <details><summary><strong>Help 📚</strong></summary>
 
