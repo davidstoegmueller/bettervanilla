@@ -13,10 +13,24 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-public class RightClickHarvest implements Listener {
+import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.SettingsManager;
+
+public class RightClickCropHarvest implements Listener {
+  private final Main _plugin;
+  private final SettingsManager _settingsManager;
+
+  public RightClickCropHarvest() {
+    _plugin = Main.getInstance();
+    _settingsManager = _plugin.getSettingsManager();
+  }
 
   @EventHandler
   public void onCropRightClick(PlayerInteractEvent e) {
+    if (!_settingsManager.getRightClickCropHarvest()) {
+      return;
+    }
+
     if (e.getHand() != EquipmentSlot.HAND) {
       return;
     }

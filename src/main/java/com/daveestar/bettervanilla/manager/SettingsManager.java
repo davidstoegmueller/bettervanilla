@@ -114,4 +114,22 @@ public class SettingsManager {
     _fileConfig.set("global.motd", value);
     _config.save();
   }
+
+  public boolean getCropProtection() {
+    return _fileConfig.getBoolean("global.cropprotection", true);
+  }
+
+  public void setCropProtection(boolean value) {
+    _fileConfig.set("global.cropprotection", value);
+    _config.save();
+  }
+
+  public boolean getRightClickCropHarvest() {
+    return _fileConfig.getBoolean("global.rightclickcropharvest", false);
+  }
+
+  public void setRightClickCropHarvest(boolean value) {
+    _fileConfig.set("global.rightclickcropharvest", value);
+    _config.save();
+  }
 }

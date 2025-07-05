@@ -13,6 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -61,7 +62,9 @@ public class AdminSettingsGUI implements Listener {
     entries.put("sleepingrain", _createSleepingRainItem());
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
+    entries.put("cropprotection", _createCropProtectionItem());
     entries.put("motd", _createMOTDItem());
+    entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -74,11 +77,15 @@ public class AdminSettingsGUI implements Listener {
     // second row
     customSlots.put("afkprotection", 12);
     customSlots.put("afktime", 14);
-    customSlots.put("motd", 10);
+
+    // third row
+    customSlots.put("cropprotection", 20);
+    customSlots.put("motd", 22);
+    customSlots.put("rightclickcropharvest", 24);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 3, customSlots, par,
+        entries, 4, customSlots, par,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
@@ -130,6 +137,22 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleSleepingRain(p);
+        displayGUI(p, par);
+      }
+    });
+
+    actions.put("cropprotection", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleCropProtection(p);
+        displayGUI(p, par);
+      }
+    });
+
+    actions.put("rightclickcropharvest", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleRightClickCropHarvest(p);
         displayGUI(p, par);
       }
     });
@@ -256,6 +279,47 @@ public class AdminSettingsGUI implements Listener {
 
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Rain"));
+      meta.lore(Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createCropProtectionItem() {
+    boolean state = _settingsManager.getCropProtection();
+    ItemStack item = new ItemStack(Material.WHEAT_SEEDS);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Crop Protection"));
+      meta.lore(Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createRightClickCropHarvestItem() {
+    boolean state = _settingsManager.getRightClickCropHarvest();
+    ItemStack item = new ItemStack(Material.IRON_HOE);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Right-Click Crop Harvest"));
       meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
@@ -430,6 +494,21 @@ public class AdminSettingsGUI implements Listener {
     _settingsManager.setSleepingRain(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleCropProtection(Player p) {
+    boolean newState = !_settingsManager.getCropProtection();
+    _settingsManager.setCropProtection(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Crop protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleRightClickCropHarvest(Player p) {
+    boolean newState = !_settingsManager.getRightClickCropHarvest();
+    _settingsManager.setRightClickCropHarvest(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(
+        Main.getPrefix() + "Right-Click crop harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleAFKProtection(Player p) {
