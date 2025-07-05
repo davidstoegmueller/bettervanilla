@@ -41,8 +41,11 @@ public class HelpCommand implements CommandExecutor {
       }
 
       p.sendMessage("");
+      p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Chest-Sort: " + ChatColor.GRAY
+          + "If you want to sort your chests inventories, you can right-click outside the chest inventory to sort it. You can toggle this feature in the settings.");
+      p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
-          + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-clicl any kind of stairs.");
+          + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-click any kind of stairs.");
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Sleeping Rain: " + ChatColor.GRAY
           + "You can skip rainy days by sleeping in a bed. If you sleep in a bed while it is raining the rain will stop and the day will be skipped.");

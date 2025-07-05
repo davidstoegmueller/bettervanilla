@@ -33,6 +33,14 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getChestSort(Player p) {
+    return _fileConfig.getBoolean(p.getUniqueId() + ".chestsort", false);
+  }
+
+  public void setChestSort(Player p, boolean value) {
+    _fileConfig.set(p.getUniqueId() + ".chestsort", value);
+  }
+
   public boolean getNavigationTrail(Player p) {
     return _fileConfig.getBoolean(p.getUniqueId() + ".navigationtrail", false);
   }
