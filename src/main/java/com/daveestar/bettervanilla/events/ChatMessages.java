@@ -107,6 +107,5 @@ public class ChatMessages implements Listener {
       return Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + source.getName() + ChatColor.GRAY + "]"
           + ChatColor.YELLOW + " » " + ChatColor.GRAY + formatted);
     });
-
   }
 }
