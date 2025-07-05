@@ -14,8 +14,12 @@ import org.bukkit.Particle;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.entity.Player;
 
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class NavigationManager {
   // stores active navigations for players
@@ -23,6 +27,8 @@ public class NavigationManager {
 
   // stores active particle beams for players
   private final Map<Player, ParticleBeam> _activeBeams = new HashMap<>();
+
+  private ScheduledTask _trailTask;
 
   private final Main _plugin;
   private ActionBar _actionBar;
@@ -35,6 +41,8 @@ public class NavigationManager {
   public void initManagers() {
     _actionBar = _plugin.getActionBar();
     _settingsManager = _plugin.getSettingsManager();
+
+    _startTrailTask();
   }
 
   public boolean checkActiveNavigation(Player p) {
@@ -176,10 +184,20 @@ public class NavigationManager {
     double maxDistance = Math.min(distance, 10);
     org.bukkit.util.Vector direction = targetLocation.toVector().subtract(start.toVector()).normalize();
 
-    for (double d = 0; d <= maxDistance; d += 0.5) {
+    for (double d = 0; d <= maxDistance; d += 1) {
       Location point = start.clone().add(direction.clone().multiply(d));
       DustOptions options = new DustOptions(color, 1);
       p.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
     }
+  }
+
+  private void _startTrailTask() {
+    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
+
+    _trailTask = scheduler.runAtFixedRate(_plugin, task -> {
+      _activeNavigations.forEach((pl, data) -> {
+        _displayNavigationTrail(pl, data.getLocation().toBlockLocation(), data.getColor());
+      });
+    }, 0, 1, TimeUnit.SECONDS);
   }
 }
