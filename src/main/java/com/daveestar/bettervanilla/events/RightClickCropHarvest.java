@@ -16,18 +16,18 @@ import org.bukkit.inventory.ItemStack;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 
-public class RightClickHarvest implements Listener {
+public class RightClickCropHarvest implements Listener {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
 
-  public RightClickHarvest() {
+  public RightClickCropHarvest() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
   }
 
   @EventHandler
   public void onCropRightClick(PlayerInteractEvent e) {
-    if (!_settingsManager.getRightClickHarvest()) {
+    if (!_settingsManager.getRightClickCropHarvest()) {
       return;
     }
 

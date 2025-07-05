@@ -124,12 +124,12 @@ public class SettingsManager {
     _config.save();
   }
 
-  public boolean getRightClickHarvest() {
-    return _fileConfig.getBoolean("global.rightclickharvest", false);
+  public boolean getRightClickCropHarvest() {
+    return _fileConfig.getBoolean("global.rightclickcropharvest", false);
   }
 
-  public void setRightClickHarvest(boolean value) {
-    _fileConfig.set("global.rightclickharvest", value);
+  public void setRightClickCropHarvest(boolean value) {
+    _fileConfig.set("global.rightclickcropharvest", value);
     _config.save();
   }
 }

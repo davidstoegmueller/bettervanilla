@@ -13,6 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -59,11 +60,11 @@ public class AdminSettingsGUI implements Listener {
     entries.put("enableend", _createEnableEndItem());
     entries.put("enablenether", _createEnableNetherItem());
     entries.put("sleepingrain", _createSleepingRainItem());
-    entries.put("cropprotection", _createCropProtectionItem());
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
+    entries.put("cropprotection", _createCropProtectionItem());
     entries.put("motd", _createMOTDItem());
-    entries.put("rightclickharvest", _createRightClickHarvestItem());
+    entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -74,15 +75,17 @@ public class AdminSettingsGUI implements Listener {
     customSlots.put("sleepingrain", 8);
 
     // second row
-    customSlots.put("motd", 10);
     customSlots.put("afkprotection", 12);
     customSlots.put("afktime", 14);
-    customSlots.put("cropprotection", 16);
-    customSlots.put("rightclickharvest", 9);
+
+    // third row
+    customSlots.put("cropprotection", 20);
+    customSlots.put("motd", 22);
+    customSlots.put("rightclickcropharvest", 24);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 3, customSlots, par,
+        entries, 4, customSlots, par,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
@@ -146,10 +149,10 @@ public class AdminSettingsGUI implements Listener {
       }
     });
 
-    actions.put("rightclickharvest", new CustomGUI.ClickAction() {
+    actions.put("rightclickcropharvest", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleRightClickHarvest(p);
+        _toggleRightClickCropHarvest(p);
         displayGUI(p, par);
       }
     });
@@ -294,7 +297,8 @@ public class AdminSettingsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Crop Protection"));
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Crop Protection"));
       meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
@@ -307,13 +311,15 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createRightClickHarvestItem() {
-    boolean state = _settingsManager.getRightClickHarvest();
+  private ItemStack _createRightClickCropHarvestItem() {
+    boolean state = _settingsManager.getRightClickCropHarvest();
     ItemStack item = new ItemStack(Material.IRON_HOE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Right-Click Harvest"));
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Right-Click Crop Harvest"));
       meta.lore(Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
@@ -497,11 +503,12 @@ public class AdminSettingsGUI implements Listener {
     p.sendMessage(Main.getPrefix() + "Crop protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
-  private void _toggleRightClickHarvest(Player p) {
-    boolean newState = !_settingsManager.getRightClickHarvest();
-    _settingsManager.setRightClickHarvest(newState);
+  private void _toggleRightClickCropHarvest(Player p) {
+    boolean newState = !_settingsManager.getRightClickCropHarvest();
+    _settingsManager.setRightClickCropHarvest(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Right-Click harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(
+        Main.getPrefix() + "Right-Click crop harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleAFKProtection(Player p) {

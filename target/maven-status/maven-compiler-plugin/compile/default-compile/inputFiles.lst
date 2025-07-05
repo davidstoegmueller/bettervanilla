@@ -4,6 +4,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\Sitta
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PlayerTimer.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\RightClickCropHarvest.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PermissionsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\DeathPointsGUI.java
@@ -35,6 +36,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChatM
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\DeathPointsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\InvseeCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\CropProtection.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\NavigationType.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\NavigationData.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SleepingRain.java
