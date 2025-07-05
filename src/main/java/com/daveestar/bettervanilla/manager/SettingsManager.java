@@ -105,4 +105,13 @@ public class SettingsManager {
     _fileConfig.set("global.afktime", value);
     _config.save();
   }
+
+  public String getServerMOTD() {
+    return _fileConfig.getString("global.motd", "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
+  }
+
+  public void setServerMOTD(String value) {
+    _fileConfig.set("global.motd", value);
+    _config.save();
+  }
 }
