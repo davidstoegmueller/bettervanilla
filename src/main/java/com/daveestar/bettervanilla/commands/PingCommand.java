@@ -39,6 +39,7 @@ public class PingCommand implements CommandExecutor {
 
       return true;
     }
+
     return false;
   }
 }

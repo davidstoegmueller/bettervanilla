@@ -1,8 +1,10 @@
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\TimerCommand.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ServerMOTD.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SittableStairs.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PlayerTimer.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\RightClickCropHarvest.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PermissionsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\DeathPointsGUI.java
@@ -16,7 +18,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\AFKM
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventDimension.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\WaypointsCommand.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleBeam.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\AdminSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SettingsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleCompassCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\DeathChest.java
@@ -28,12 +30,15 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\Playe
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\TimerManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\Permissions.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\CustomGUI.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleNavigation.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleLocationCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChatMessages.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\DeathPointsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\InvseeCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\CropProtection.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\NavigationType.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChestSort.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\NavigationData.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SleepingRain.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\SettingsManager.java

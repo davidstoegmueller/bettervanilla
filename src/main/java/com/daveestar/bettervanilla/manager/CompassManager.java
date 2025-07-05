@@ -74,6 +74,19 @@ public class CompassManager {
     _settingsManager = _plugin.getSettingsManager();
   }
 
+  public void onPlayerJoined(Player p) {
+    if (_settingsManager.getToggleCompass(p)) {
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> addPlayerToCompass(p));
+    }
+  }
+
+  public void onPlayerLeft(Player p) {
+    BossBar bar = _activeCompass.remove(p);
+    if (bar != null) {
+      bar.removePlayer(p);
+    }
+  }
+
   public void destroy() {
     _activeCompass.values().forEach(BossBar::removeAll);
     _activeCompass.clear();
@@ -83,12 +96,12 @@ public class CompassManager {
     return _activeCompass.containsKey(p);
   }
 
-  public void addPlayerToCompass(Player player) {
-    _activeCompass.computeIfAbsent(player, p -> {
+  public void addPlayerToCompass(Player p) {
+    _activeCompass.computeIfAbsent(p, pl -> {
       BossBar compassBossBar = Bukkit.createBossBar("", BarColor.YELLOW, BarStyle.SOLID);
-      compassBossBar.addPlayer(player);
+      compassBossBar.addPlayer(p);
 
-      _settingsManager.setToggleCompass(player, true);
+      _settingsManager.setToggleCompass(p, true);
 
       return compassBossBar;
     });
@@ -108,7 +121,7 @@ public class CompassManager {
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
     scheduler.runAtFixedRate(_plugin, task -> {
-      _activeCompass.forEach((player, compassBossBar) -> _updateCompassDirection(player, compassBossBar));
+      _activeCompass.forEach((pl, compassBossBar) -> _updateCompassDirection(pl, compassBossBar));
     }, 0, _UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
   }
 

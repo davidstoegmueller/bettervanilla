@@ -60,6 +60,7 @@ public class PermissionsCommand implements TabExecutor {
             + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");
         break;
     }
+
     return true;
   }
 
@@ -230,6 +231,7 @@ public class PermissionsCommand implements TabExecutor {
 
       p.sendMessage(ChatColor.YELLOW + "     » Users: " + ChatColor.GRAY + usersInGroup);
     }
+
     p.sendMessage("");
 
     p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PERMISSIONS: User Assignments");

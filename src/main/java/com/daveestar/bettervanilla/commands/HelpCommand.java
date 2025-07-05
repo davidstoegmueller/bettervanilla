@@ -25,21 +25,27 @@ public class HelpCommand implements CommandExecutor {
 
       Main plugin = Main.getInstance();
       InputStream stream = plugin.getResource("plugin.yml");
+
       if (stream != null) {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
         ConfigurationSection commands = yaml.getConfigurationSection("commands");
+
         if (commands != null) {
           for (String name : commands.getKeys(false)) {
             ConfigurationSection data = commands.getConfigurationSection(name);
             String desc = data != null ? data.getString("description", "") : "";
+
             p.sendMessage(Main.getShortPrefix() + "/" + name + " - " + desc);
           }
         }
       }
 
       p.sendMessage("");
+      p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Chest-Sort: " + ChatColor.GRAY
+          + "If you want to sort your chests inventories, you can right-click outside the chest inventory to sort it. You can toggle this feature in the settings.");
+      p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Sittable-Stairs: " + ChatColor.GRAY
-          + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-clicl any kind of stairs.");
+          + "If you want to sit down in a stair (chair) use YOUR EMPTY HAND and right-click any kind of stairs.");
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Sleeping Rain: " + ChatColor.GRAY
           + "You can skip rainy days by sleeping in a bed. If you sleep in a bed while it is raining the rain will stop and the day will be skipped.");
@@ -65,8 +71,6 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + "/settings <settingname> - Set and list global settings");
       p.sendMessage("");
-      p.sendMessage(Main.getShortPrefix() + ChatColor.RED + "Info: " + ChatColor.GRAY
-          + "Users need to rejoin to apply changes to their permissions");
       p.sendMessage(Main.getShortPrefix()
           + "/permissions group <addperm | removeperm> <username> <permission> - Add or remove a permission from a group");
       p.sendMessage(Main.getShortPrefix()
@@ -77,12 +81,13 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(
           Main.getShortPrefix()
               + "/permissions assignments - List all user and group permission assignments");
-      p.sendMessage(Main.getShortPrefix() + "/permissions list - List all permissions of bettervanilla");
+      p.sendMessage(Main.getShortPrefix() + "/permissions list - List all available permissions");
       p.sendMessage(Main.getShortPrefix()
           + "/permissions reload - Reload the permissions and reapply them to all players");
 
       return true;
     }
+
     return false;
   }
 }

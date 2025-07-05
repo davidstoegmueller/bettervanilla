@@ -16,7 +16,7 @@ public class SettingsManager {
 
   // USER SETTINGS
   public boolean getToggleLocation(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".togglelocation");
+    return _fileConfig.getBoolean(p.getUniqueId() + ".togglelocation", false);
   }
 
   public void setToggleLocation(Player p, boolean value) {
@@ -25,11 +25,28 @@ public class SettingsManager {
   }
 
   public boolean getToggleCompass(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".togglecompass");
+    return _fileConfig.getBoolean(p.getUniqueId() + ".togglecompass", false);
   }
 
   public void setToggleCompass(Player p, boolean value) {
     _fileConfig.set(p.getUniqueId() + ".togglecompass", value);
+    _config.save();
+  }
+
+  public boolean getChestSort(Player p) {
+    return _fileConfig.getBoolean(p.getUniqueId() + ".chestsort", false);
+  }
+
+  public void setChestSort(Player p, boolean value) {
+    _fileConfig.set(p.getUniqueId() + ".chestsort", value);
+  }
+
+  public boolean getNavigationTrail(Player p) {
+    return _fileConfig.getBoolean(p.getUniqueId() + ".navigationtrail", false);
+  }
+
+  public void setNavigationTrail(Player p, boolean value) {
+    _fileConfig.set(p.getUniqueId() + ".navigationtrail", value);
     _config.save();
   }
 
@@ -103,6 +120,33 @@ public class SettingsManager {
 
   public void setAFKTime(int value) {
     _fileConfig.set("global.afktime", value);
+    _config.save();
+  }
+
+  public String getServerMOTD() {
+    return _fileConfig.getString("global.motd", "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
+  }
+
+  public void setServerMOTD(String value) {
+    _fileConfig.set("global.motd", value);
+    _config.save();
+  }
+
+  public boolean getCropProtection() {
+    return _fileConfig.getBoolean("global.cropprotection", true);
+  }
+
+  public void setCropProtection(boolean value) {
+    _fileConfig.set("global.cropprotection", value);
+    _config.save();
+  }
+
+  public boolean getRightClickCropHarvest() {
+    return _fileConfig.getBoolean("global.rightclickcropharvest", false);
+  }
+
+  public void setRightClickCropHarvest(boolean value) {
+    _fileConfig.set("global.rightclickcropharvest", value);
     _config.save();
   }
 }

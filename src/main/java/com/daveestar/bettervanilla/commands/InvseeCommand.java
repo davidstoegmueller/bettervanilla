@@ -31,6 +31,7 @@ public class InvseeCommand implements CommandExecutor {
 
       return true;
     }
+
     return false;
   }
 }

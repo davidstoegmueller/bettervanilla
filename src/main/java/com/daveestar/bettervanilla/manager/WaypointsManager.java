@@ -103,6 +103,7 @@ public class WaypointsManager {
 
   public ItemStack getWaypointIcon(String worldName, String waypointName) {
     String path = worldName + "." + waypointName + ".icon";
+
     if (_fileConfig.contains(path)) {
       Object raw = _fileConfig.get(path);
       Map<String, Object> map = null;
@@ -119,6 +120,7 @@ public class WaypointsManager {
         return ItemStack.deserialize(map);
       }
     }
+
     return new ItemStack(Material.PAPER);
   }
 }

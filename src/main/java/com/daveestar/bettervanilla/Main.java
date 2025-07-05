@@ -20,8 +20,12 @@ import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
 import com.daveestar.bettervanilla.events.PreventDimension;
+import com.daveestar.bettervanilla.events.ServerMOTD;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
+import com.daveestar.bettervanilla.events.RightClickCropHarvest;
+import com.daveestar.bettervanilla.events.ChestSort;
+import com.daveestar.bettervanilla.events.CropProtection;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
@@ -101,12 +105,16 @@ public class Main extends JavaPlugin {
 
     // register events
     PluginManager manager = getServer().getPluginManager();
+    manager.registerEvents(new ServerMOTD(), this);
     manager.registerEvents(new DeathChest(), this);
     manager.registerEvents(new ChatMessages(), this);
     manager.registerEvents(new PlayerMove(), this);
     manager.registerEvents(new SittableStairs(), this);
     manager.registerEvents(new PreventDimension(), this);
     manager.registerEvents(new SleepingRain(), this);
+    manager.registerEvents(new CropProtection(), this);
+    manager.registerEvents(new RightClickCropHarvest(), this);
+    manager.registerEvents(new ChestSort(), this);
   }
 
   @Override

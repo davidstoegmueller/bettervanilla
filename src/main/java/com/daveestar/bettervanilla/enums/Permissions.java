@@ -11,8 +11,10 @@ public enum Permissions {
   TIMER("bettervanilla.timer"),
   ADMINHELP("bettervanilla.adminhelp"),
   SETTINGS("bettervanilla.settings"),
+  ADMINSETTINGS("bettervanilla.adminsettings"),
   TOGGLELOCATION("bettervanilla.togglelocation"),
   TOGGLECOMPASS("bettervanilla.togglecompass"),
+  CHESTSORT("bettervanilla.chestsort"),
   LASTDEATH("bettervanilla.deathpoints"),
   PERMISSION("bettervanilla.permissions");
 

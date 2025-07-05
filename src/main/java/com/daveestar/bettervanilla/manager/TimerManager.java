@@ -136,6 +136,7 @@ public class TimerManager {
   private void _handlePlayerTimers() {
     for (Player p : _plugin.getServer().getOnlinePlayers()) {
       PlayerTimer timer = _playerTimers.get(p.getUniqueId());
+
       if (timer != null) {
         if (_afkManager.isAFK(p)) {
           timer.incrementAFKTime();
