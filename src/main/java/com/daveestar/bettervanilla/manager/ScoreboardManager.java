@@ -82,11 +82,31 @@ public class ScoreboardManager {
         for (String entry : new ArrayList<>(board.getEntries())) {
           board.resetScores(entry);
         }
-        for (String statName : statNames) {
+
+        int score = statNames.size();
+        for (int i = 0; i < statNames.size(); i++) {
+          String statName = statNames.get(i);
+          String entry = ChatColor.values()[i].toString();
+          var team = board.getTeam("l" + i);
+          if (team == null) {
+            team = board.registerNewTeam("l" + i);
+            team.addEntry(entry);
+          }
+
           String line = _formatStat(p, statName);
           if (line != null) {
-            obj.getScore(line).setScore(0);
+            team.setPrefix(line);
+            obj.getScore(entry).setScore(score--);
           }
+        }
+
+        // remove leftover teams
+        for (int i = statNames.size(); board.getTeam("l" + i) != null; i++) {
+          var t = board.getTeam("l" + i);
+          for (String eName : t.getEntries()) {
+            board.resetScores(eName);
+          }
+          t.unregister();
         }
       }
     }, 0L, 20L);
@@ -102,38 +122,49 @@ public class ScoreboardManager {
 
     switch (stat) {
       case PLAYTIME:
-        return ChatColor.YELLOW + "Playtime: " + ChatColor.GRAY
-            + _timerManager.formatTime(_timerManager.getPlayTime(p));
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("PLAYTIME") + ": "
+            + ChatColor.GRAY + _timerManager.formatTime(_timerManager.getPlayTime(p));
       case AFKTIME:
-        return ChatColor.YELLOW + "AFK: " + ChatColor.GRAY
-            + _timerManager.formatTime(_timerManager.getAFKTime(p));
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("AFKTIME") + ": "
+            + ChatColor.GRAY + _timerManager.formatTime(_timerManager.getAFKTime(p));
       case INGAMETIME:
         long ticks = p.getWorld().getTime() % 24000;
-        return ChatColor.YELLOW + "Day: " + ChatColor.GRAY + _formatDayTime(ticks);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("INGAMETIME") + ": "
+            + ChatColor.GRAY + _formatDayTime(ticks);
       case PLAYERKILLS:
-        return ChatColor.YELLOW + "Kills: " + ChatColor.GRAY + p.getStatistic(Statistic.PLAYER_KILLS);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("PLAYERKILLS") + ": "
+            + ChatColor.GRAY + p.getStatistic(Statistic.PLAYER_KILLS);
       case MOBKILLS:
-        return ChatColor.YELLOW + "Mob Kills: " + ChatColor.GRAY + p.getStatistic(Statistic.MOB_KILLS);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("MOBKILLS") + ": "
+            + ChatColor.GRAY + p.getStatistic(Statistic.MOB_KILLS);
       case DEATHS:
-        return ChatColor.YELLOW + "Deaths: " + ChatColor.GRAY + p.getStatistic(Statistic.DEATHS);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("DEATHS") + ": "
+            + ChatColor.GRAY + p.getStatistic(Statistic.DEATHS);
       case ONLINE:
-        return ChatColor.YELLOW + "Online: " + ChatColor.GRAY + Bukkit.getOnlinePlayers().size();
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("ONLINE") + ": "
+            + ChatColor.GRAY + Bukkit.getOnlinePlayers().size();
       case TOTALDISTANCE:
         int dist = p.getStatistic(Statistic.SWIM_ONE_CM) + p.getStatistic(Statistic.WALK_ONE_CM)
             + p.getStatistic(Statistic.FLY_ONE_CM) + p.getStatistic(Statistic.HORSE_ONE_CM)
             + p.getStatistic(Statistic.MINECART_ONE_CM) + p.getStatistic(Statistic.BOAT_ONE_CM)
             + p.getStatistic(Statistic.STRIDER_ONE_CM);
-        return ChatColor.YELLOW + "Distance: " + ChatColor.GRAY + _formatDistance(dist);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("TOTALDISTANCE") + ": "
+            + ChatColor.GRAY + _formatDistance(dist);
       case JUMPS:
-        return ChatColor.YELLOW + "Jumps: " + ChatColor.GRAY + p.getStatistic(Statistic.JUMP);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("JUMPS") + ": "
+            + ChatColor.GRAY + p.getStatistic(Statistic.JUMP);
       case ITEMSENCHANTED:
-        return ChatColor.YELLOW + "Enchants: " + ChatColor.GRAY + p.getStatistic(Statistic.ITEM_ENCHANTED);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("ITEMSENCHANTED") + ": "
+            + ChatColor.GRAY + p.getStatistic(Statistic.ITEM_ENCHANTED);
       case FISHCAUGHT:
-        return ChatColor.YELLOW + "Fish: " + ChatColor.GRAY + p.getStatistic(Statistic.FISH_CAUGHT);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("FISHCAUGHT") + ": "
+            + ChatColor.GRAY + p.getStatistic(Statistic.FISH_CAUGHT);
       case DAMAGETAKEN:
-        return ChatColor.YELLOW + "Damage: " + ChatColor.GRAY + p.getStatistic(Statistic.DAMAGE_TAKEN);
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("DAMAGETAKEN") + ": "
+            + ChatColor.GRAY + p.getStatistic(Statistic.DAMAGE_TAKEN);
       case XPLEVEL:
-        return ChatColor.YELLOW + "Level: " + ChatColor.GRAY + p.getLevel();
+        return ChatColor.YELLOW + _settingsManager.getScoreboardDisplayName("XPLEVEL") + ": "
+            + ChatColor.GRAY + p.getLevel();
       default:
         return null;
     }

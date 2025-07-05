@@ -163,4 +163,15 @@ public class SettingsManager {
     _fileConfig.set("global.scoreboard.stats", stats);
     _config.save();
   }
+
+  public String getScoreboardDisplayName(String stat) {
+    String path = "global.scoreboard.displaynames." + stat;
+    String def = com.daveestar.bettervanilla.enums.ScoreboardStat.valueOf(stat).getDisplayName();
+    return _fileConfig.getString(path, def);
+  }
+
+  public void setScoreboardDisplayName(String stat, String name) {
+    _fileConfig.set("global.scoreboard.displaynames." + stat, name);
+    _config.save();
+  }
 }
