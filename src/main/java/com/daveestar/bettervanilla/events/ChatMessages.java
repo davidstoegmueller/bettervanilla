@@ -1,5 +1,6 @@
 package com.daveestar.bettervanilla.events;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -84,13 +85,28 @@ public class ChatMessages implements Listener {
   @EventHandler
   public void onPlayerChat(AsyncChatEvent e) {
     // convert & color codes to actual ChatColor codes
-    String message = ((TextComponent) e.message()).content();
-    message = ChatColor.translateAlternateColorCodes('&', message);
+    String raw = ((TextComponent) e.message()).content();
+    String translated = ChatColor.translateAlternateColorCodes('&', raw);
 
-    // set the formatted chat message
-    e.renderer((source, sourceDisplayName, messageComponent, viewer) -> Component
-        .text(ChatColor.GRAY + "[" + ChatColor.YELLOW + source.getName() + ChatColor.GRAY + "]"
-            + ChatColor.YELLOW + " » " + ChatColor.GRAY + ((TextComponent) messageComponent).content()));
+    // set the formatted chat message with ping support
+    e.renderer((source, sourceDisplayName, messageComponent, viewer) -> {
+      String formatted = translated;
+
+      if (viewer instanceof Player) {
+        Player chatViewer = (Player) viewer;
+        String name = chatViewer.getName();
+
+        if (formatted.toLowerCase().contains("@" + name.toLowerCase())) {
+          formatted = formatted.replaceAll("(?i)@" + java.util.regex.Pattern.quote(name),
+              ChatColor.YELLOW + "" + ChatColor.BOLD + name + ChatColor.GRAY);
+
+          chatViewer.playSound(chatViewer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1);
+        }
+      }
+
+      return Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + source.getName() + ChatColor.GRAY + "]"
+          + ChatColor.YELLOW + " » " + ChatColor.GRAY + formatted);
+    });
 
   }
 }
