@@ -132,4 +132,26 @@ public class SettingsManager {
     _fileConfig.set("global.rightclickcropharvest", value);
     _config.save();
   }
+
+  public boolean getScoreboardEnabled() {
+    return _fileConfig.getBoolean("global.scoreboard.enabled", false);
+  }
+
+  public void setScoreboardEnabled(boolean value) {
+    _fileConfig.set("global.scoreboard.enabled", value);
+    _config.save();
+  }
+
+  public java.util.List<String> getScoreboardStats() {
+    java.util.List<String> stats = _fileConfig.getStringList("global.scoreboard.stats");
+    if (stats.isEmpty()) {
+      stats = java.util.Arrays.asList("PLAYTIME", "AFKTIME", "ONLINE");
+    }
+    return stats;
+  }
+
+  public void setScoreboardStats(java.util.List<String> stats) {
+    _fileConfig.set("global.scoreboard.stats", stats);
+    _config.save();
+  }
 }
