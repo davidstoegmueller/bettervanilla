@@ -32,13 +32,14 @@ public class PreventDimension implements Listener {
       if (destinationEnvironment == World.Environment.THE_END && !_settingsManager.getEnableEnd()) {
         // cancel the portal event
         event.setCancelled(true);
-        event.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The End'!");
+        event.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The End' yet!");
       }
 
       if (destinationEnvironment == World.Environment.NETHER && !_settingsManager.getEnableNether()) {
         // cancel the portal event
         event.setCancelled(true);
-        event.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The Nether'!");
+        event.getPlayer()
+            .sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The Nether' yet!");
       }
     }
   }
