@@ -20,6 +20,7 @@ import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
 import com.daveestar.bettervanilla.events.PreventDimension;
+import com.daveestar.bettervanilla.events.ServerMOTD;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
 import com.daveestar.bettervanilla.manager.AFKManager;
@@ -83,8 +84,6 @@ public class Main extends JavaPlugin {
     _navigationManager.initManagers();
     _timerManager.initManagers();
 
-    _settingsManager.setMOTD();
-
     _LOGGER.info("BetterVanilla - ENABLED");
 
     // register commands
@@ -103,6 +102,7 @@ public class Main extends JavaPlugin {
 
     // register events
     PluginManager manager = getServer().getPluginManager();
+    manager.registerEvents(new ServerMOTD(), this);
     manager.registerEvents(new DeathChest(), this);
     manager.registerEvents(new ChatMessages(), this);
     manager.registerEvents(new PlayerMove(), this);

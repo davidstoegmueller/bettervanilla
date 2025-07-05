@@ -81,7 +81,6 @@ public class AdminSettingsGUI implements Listener {
         entries, 3, customSlots, par,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
-
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
@@ -302,7 +301,8 @@ public class AdminSettingsGUI implements Listener {
       var lore = new ArrayList<String>();
       lore.add("");
       if (motd != null && !motd.isEmpty()) {
-        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.translateAlternateColorCodes('&', motd));
+        lore.add(
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.translateAlternateColorCodes('&', motd));
       }
       lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
@@ -351,7 +351,7 @@ public class AdminSettingsGUI implements Listener {
       String message = ((TextComponent) e.message()).content();
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
         CustomGUI parMenu = _motdPending.remove(id);
-        _settingsManager.setMOTD(message);
+        _settingsManager.setServerMOTD(message);
         p.sendMessage(Main.getPrefix() + "MOTD set to: " + ChatColor.translateAlternateColorCodes('&', message));
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parMenu);

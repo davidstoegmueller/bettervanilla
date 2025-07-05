@@ -3,18 +3,13 @@ package com.daveestar.bettervanilla.manager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.daveestar.bettervanilla.Main;
-
 import com.daveestar.bettervanilla.utils.Config;
-import net.md_5.bungee.api.ChatColor;
 
 public class SettingsManager {
-  private final Main _plugin;
   private Config _config;
   private FileConfiguration _fileConfig;
 
   public SettingsManager(Config config) {
-    _plugin = Main.getInstance();
     _config = config;
     _fileConfig = config.getFileConfig();
   }
@@ -112,30 +107,11 @@ public class SettingsManager {
   }
 
   public String getServerMOTD() {
-    return _fileConfig.getString("global.motd", "");
+    return _fileConfig.getString("global.motd", "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
   }
 
   public void setServerMOTD(String value) {
     _fileConfig.set("global.motd", value);
     _config.save();
-  }
-
-  /**
-   * Set the MOTD on the server based on the stored value.
-   */
-  public void setMOTD() {
-    setMOTD(getServerMOTD());
-  }
-
-  /**
-   * Persist and apply a new MOTD value.
-   */
-  public void setMOTD(String value) {
-    setServerMOTD(value);
-    if (value != null && !value.isEmpty()) {
-      _plugin.getServer().setMotd(ChatColor.translateAlternateColorCodes('&', value));
-    } else {
-      _plugin.getServer().setMotd("");
-    }
   }
 }
