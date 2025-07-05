@@ -142,10 +142,19 @@ public class SettingsManager {
     _config.save();
   }
 
+  public String getScoreboardTitle() {
+    return _fileConfig.getString("global.scoreboard.title", "BetterVanilla SMP");
+  }
+
+  public void setScoreboardTitle(String title) {
+    _fileConfig.set("global.scoreboard.title", title);
+    _config.save();
+  }
+
   public java.util.List<String> getScoreboardStats() {
     java.util.List<String> stats = _fileConfig.getStringList("global.scoreboard.stats");
     if (stats.isEmpty()) {
-      stats = java.util.Arrays.asList("PLAYTIME", "AFKTIME", "ONLINE");
+      stats = java.util.Arrays.asList("PLAYTIME", "AFKTIME", "ONLINE", "TOTALDISTANCE");
     }
     return stats;
   }

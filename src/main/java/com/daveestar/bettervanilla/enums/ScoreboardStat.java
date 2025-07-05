@@ -3,14 +3,17 @@ package com.daveestar.bettervanilla.enums;
 public enum ScoreboardStat {
   PLAYTIME("Playtime"),
   AFKTIME("AFK Time"),
-  INGAMETIME("In-Game Time"),
+  INGAMETIME("Day Time"),
   PLAYERKILLS("Player Kills"),
   MOBKILLS("Mob Kills"),
   DEATHS("Deaths"),
   ONLINE("Online Players"),
-  SWIMDISTANCE("Swim Distance"),
-  WALKDISTANCE("Walk Distance"),
-  TOTALDISTANCE("Total Distance");
+  TOTALDISTANCE("Travelled"),
+  JUMPS("Jumps"),
+  ITEMSENCHANTED("Items Enchanted"),
+  FISHCAUGHT("Fish Caught"),
+  DAMAGETAKEN("Damage Taken"),
+  XPLEVEL("XP Level");
 
   private final String _displayName;
 

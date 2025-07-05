@@ -40,6 +40,7 @@ public class AdminSettingsGUI implements Listener {
   private final Map<UUID, CustomGUI> _afkTimePending;
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
   private final Map<UUID, CustomGUI> _motdPending;
+  private final Map<UUID, CustomGUI> _scoreboardTitlePending;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -51,6 +52,7 @@ public class AdminSettingsGUI implements Listener {
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
     _motdPending = new HashMap<>();
+    _scoreboardTitlePending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -70,6 +72,7 @@ public class AdminSettingsGUI implements Listener {
     entries.put("afktime", _createAFKTimeItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("motd", _createMOTDItem());
+    entries.put("scoreboardtitle", _createScoreboardTitleItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
     entries.put("scoreboard", _createScoreboardItem());
 
@@ -88,6 +91,7 @@ public class AdminSettingsGUI implements Listener {
     // third row
     customSlots.put("cropprotection", 20);
     customSlots.put("motd", 22);
+    customSlots.put("scoreboardtitle", 23);
     customSlots.put("rightclickcropharvest", 24);
     customSlots.put("scoreboard", 26);
 
@@ -200,6 +204,15 @@ public class AdminSettingsGUI implements Listener {
       public void onLeftClick(Player p) {
         p.sendMessage(Main.getPrefix() + "Enter server MOTD:");
         _motdPending.put(p.getUniqueId(), par);
+        p.closeInventory();
+      }
+    });
+
+    actions.put("scoreboardtitle", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        p.sendMessage(Main.getPrefix() + "Enter scoreboard title:");
+        _scoreboardTitlePending.put(p.getUniqueId(), par);
         p.closeInventory();
       }
     });
@@ -413,6 +426,24 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
+  private ItemStack _createScoreboardTitleItem() {
+    String title = _settingsManager.getScoreboardTitle();
+    ItemStack item = new ItemStack(Material.NAME_TAG);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Scoreboard Title"));
+      var lore = new ArrayList<String>();
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + title);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
+      meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createScoreboardItem() {
     boolean state = _settingsManager.getScoreboardEnabled();
     ItemStack item = new ItemStack(Material.BOOK);
@@ -492,6 +523,26 @@ public class AdminSettingsGUI implements Listener {
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parMenu);
       });
+
+      return;
+    }
+
+    if (_scoreboardTitlePending.containsKey(id)) {
+      e.setCancelled(true);
+
+      String message = ((TextComponent) e.message()).content();
+
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        CustomGUI parMenu = _scoreboardTitlePending.remove(id);
+        _settingsManager.setScoreboardTitle(message);
+        _scoreboardManager.showScoreboardForAll();
+
+        p.sendMessage(Main.getPrefix() + "Scoreboard title set to: " + ChatColor.YELLOW + message);
+        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        displayGUI(p, parMenu);
+      });
+
+      return;
     }
   }
 

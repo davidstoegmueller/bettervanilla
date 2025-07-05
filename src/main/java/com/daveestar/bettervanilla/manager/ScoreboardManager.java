@@ -54,7 +54,7 @@ public class ScoreboardManager {
   private void _applyBoard(Player p) {
     Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
     Objective obj = board.registerNewObjective("bv_stats", Criteria.DUMMY,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "STATS");
+        ChatColor.AQUA + "" + ChatColor.BOLD + _settingsManager.getScoreboardTitle());
     obj.setDisplaySlot(DisplaySlot.SIDEBAR);
     p.setScoreboard(board);
     _boards.put(p, board);
@@ -74,17 +74,18 @@ public class ScoreboardManager {
         Objective obj = board.getObjective("bv_stats");
         if (obj == null) {
           obj = board.registerNewObjective("bv_stats", Criteria.DUMMY,
-              ChatColor.YELLOW + "" + ChatColor.BOLD + "STATS");
+              ChatColor.AQUA + "" + ChatColor.BOLD + _settingsManager.getScoreboardTitle());
           obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        } else {
+          obj.setDisplayName(ChatColor.AQUA + "" + ChatColor.BOLD + _settingsManager.getScoreboardTitle());
         }
         for (String entry : new ArrayList<>(board.getEntries())) {
           board.resetScores(entry);
         }
-        int score = statNames.size();
         for (String statName : statNames) {
           String line = _formatStat(p, statName);
           if (line != null) {
-            obj.getScore(line).setScore(score--);
+            obj.getScore(line).setScore(0);
           }
         }
       }
@@ -107,8 +108,8 @@ public class ScoreboardManager {
         return ChatColor.YELLOW + "AFK: " + ChatColor.GRAY
             + _timerManager.formatTime(_timerManager.getAFKTime(p));
       case INGAMETIME:
-        int total = _timerManager.getPlayTime(p) + _timerManager.getAFKTime(p);
-        return ChatColor.YELLOW + "Total: " + ChatColor.GRAY + _timerManager.formatTime(total);
+        long ticks = p.getWorld().getTime() % 24000;
+        return ChatColor.YELLOW + "Day: " + ChatColor.GRAY + _formatDayTime(ticks);
       case PLAYERKILLS:
         return ChatColor.YELLOW + "Kills: " + ChatColor.GRAY + p.getStatistic(Statistic.PLAYER_KILLS);
       case MOBKILLS:
@@ -117,13 +118,22 @@ public class ScoreboardManager {
         return ChatColor.YELLOW + "Deaths: " + ChatColor.GRAY + p.getStatistic(Statistic.DEATHS);
       case ONLINE:
         return ChatColor.YELLOW + "Online: " + ChatColor.GRAY + Bukkit.getOnlinePlayers().size();
-      case SWIMDISTANCE:
-        return ChatColor.YELLOW + "Swim: " + ChatColor.GRAY + _formatDistance(p.getStatistic(Statistic.SWIM_ONE_CM));
-      case WALKDISTANCE:
-        return ChatColor.YELLOW + "Walk: " + ChatColor.GRAY + _formatDistance(p.getStatistic(Statistic.WALK_ONE_CM));
       case TOTALDISTANCE:
-        int dist = p.getStatistic(Statistic.SWIM_ONE_CM) + p.getStatistic(Statistic.WALK_ONE_CM);
+        int dist = p.getStatistic(Statistic.SWIM_ONE_CM) + p.getStatistic(Statistic.WALK_ONE_CM)
+            + p.getStatistic(Statistic.FLY_ONE_CM) + p.getStatistic(Statistic.HORSE_ONE_CM)
+            + p.getStatistic(Statistic.MINECART_ONE_CM) + p.getStatistic(Statistic.BOAT_ONE_CM)
+            + p.getStatistic(Statistic.STRIDER_ONE_CM);
         return ChatColor.YELLOW + "Distance: " + ChatColor.GRAY + _formatDistance(dist);
+      case JUMPS:
+        return ChatColor.YELLOW + "Jumps: " + ChatColor.GRAY + p.getStatistic(Statistic.JUMP);
+      case ITEMSENCHANTED:
+        return ChatColor.YELLOW + "Enchants: " + ChatColor.GRAY + p.getStatistic(Statistic.ITEM_ENCHANTED);
+      case FISHCAUGHT:
+        return ChatColor.YELLOW + "Fish: " + ChatColor.GRAY + p.getStatistic(Statistic.FISH_CAUGHT);
+      case DAMAGETAKEN:
+        return ChatColor.YELLOW + "Damage: " + ChatColor.GRAY + p.getStatistic(Statistic.DAMAGE_TAKEN);
+      case XPLEVEL:
+        return ChatColor.YELLOW + "Level: " + ChatColor.GRAY + p.getLevel();
       default:
         return null;
     }
@@ -132,5 +142,11 @@ public class ScoreboardManager {
   private String _formatDistance(int cm) {
     int meters = cm / 100;
     return meters + "m";
+  }
+
+  private String _formatDayTime(long ticks) {
+    int hours = (int) ((ticks / 1000 + 6) % 24);
+    int minutes = (int) (ticks % 1000 * 60 / 1000);
+    return String.format("%02d:%02d", hours, minutes);
   }
 }
