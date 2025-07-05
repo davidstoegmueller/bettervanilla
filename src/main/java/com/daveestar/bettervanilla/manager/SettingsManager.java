@@ -33,6 +33,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getChestSort(Player p) {
+    return _fileConfig.getBoolean(p.getUniqueId() + ".chestsort", true);
+  }
+
+  public void setChestSort(Player p, boolean value) {
+    _fileConfig.set(p.getUniqueId() + ".chestsort", value);
+    _config.save();
+  }
+
   // GLOBAL SETTINGS
   public boolean getMaintenance() {
     return _fileConfig.getBoolean("global.maintenance.value", false);

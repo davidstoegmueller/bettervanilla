@@ -45,6 +45,7 @@ public class SettingsGUI {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("togglelocation", _createToggleLocationItem(p));
     entries.put("togglecompass", _createToggleCompassItem(p));
+    entries.put("chestsort", _createChestSortItem(p));
 
     if (isAdmin) {
       entries.put("adminsettings", _createAdminSettingsItem());
@@ -52,6 +53,7 @@ public class SettingsGUI {
 
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("togglelocation", 2);
+    customSlots.put("chestsort", 4);
     customSlots.put("togglecompass", 6);
 
     if (isAdmin) {
@@ -90,6 +92,14 @@ public class SettingsGUI {
         }
 
         _toggleCompass(p);
+        displayGUI(p);
+      }
+    });
+
+    clickActions.put("chestsort", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleChestSort(p);
         displayGUI(p);
       }
     });
@@ -135,6 +145,26 @@ public class SettingsGUI {
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
+      meta.lore(java.util.Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().map(Component::text).toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createChestSortItem(Player p) {
+    boolean state = _settingsManager.getChestSort(p);
+    ItemStack item = new ItemStack(Material.CHEST);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
       meta.lore(java.util.Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
@@ -204,5 +234,13 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleChestSort(Player p) {
+    boolean newState = !_settingsManager.getChestSort(p);
+    _settingsManager.setChestSort(p, newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Chest sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }
