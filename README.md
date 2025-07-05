@@ -1,7 +1,3 @@
-| Command        | Description             |
-| -------------- | ----------------------- |
-| 🔧 `/settings` | Open your settings menu |
-
 # BetterVanilla – SMP All‑in‑One 🍦✨
 
 _A lightweight, drop‑in plugin that upgrades vanilla Minecraft servers with modern quality‑of‑life features—without sacrificing the classic vibe._
@@ -146,8 +142,8 @@ _(Scroll down for the complete feature & command list.)_
 </details>
 
 <details><summary><strong>Settings & Maintenance 🛠️</strong></summary>
-| Command       | Description              |
-| ------------- | ------------------------ |
+| Command        | Description             |
+| -------------- | ----------------------- |
 | 🔧 `/settings` | Open your settings menu |
 
 </details>
@@ -175,9 +171,9 @@ _(Scroll down for the complete feature & command list.)_
 | 📋 `/permissions list`                                  | List all available permissions          |
 | 🔄 `/permissions reload`                                | Reload the permissions config & reapply |
 
-</details>
-
 _Use `/permissions reload` to apply permission changes without requiring players to rejoin._
+
+</details>
 
 <details><summary><strong>Help 📚</strong></summary>
 
