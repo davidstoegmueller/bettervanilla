@@ -45,6 +45,7 @@ public class SettingsGUI {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("togglelocation", _createToggleLocationItem(p));
     entries.put("togglecompass", _createToggleCompassItem(p));
+    entries.put("navigationtrail", _createNavigationTrailItem(p));
 
     if (isAdmin) {
       entries.put("adminsettings", _createAdminSettingsItem());
@@ -53,6 +54,7 @@ public class SettingsGUI {
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("togglelocation", 2);
     customSlots.put("togglecompass", 6);
+    customSlots.put("navigationtrail", 4);
 
     if (isAdmin) {
       customSlots.put("adminsettings", rows * 9 - 10);
@@ -90,6 +92,14 @@ public class SettingsGUI {
         }
 
         _toggleCompass(p);
+        displayGUI(p);
+      }
+    });
+
+    clickActions.put("navigationtrail", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleNavigationTrail(p);
         displayGUI(p);
       }
     });
@@ -135,6 +145,26 @@ public class SettingsGUI {
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
+      meta.lore(java.util.Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().map(Component::text).toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createNavigationTrailItem(Player p) {
+    boolean state = _settingsManager.getNavigationTrail(p);
+    ItemStack item = new ItemStack(Material.BLAZE_POWDER);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Navigation Particles"));
       meta.lore(java.util.Arrays.asList(
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
@@ -204,5 +234,13 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNavigationTrail(Player p) {
+    boolean newState = !_settingsManager.getNavigationTrail(p);
+    _settingsManager.setNavigationTrail(p, newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Navigation particles are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }
