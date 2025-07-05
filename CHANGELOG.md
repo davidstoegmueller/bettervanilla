@@ -2,6 +2,16 @@
 
 # 📜 Changelog
 
+## [1.5.0] - 05.07.2025
+
+- **✨ Navigation Particles** – Follow a beam and optional trail while navigating.
+- **📦 Chest Sorting** – Right-click outside a chest inventory to sort items.
+- **🌾 Crop Protection** – Prevent farmland from being trampled by players or mobs.
+- **🌱 Right-Click Harvest** – Harvest and replant crops with a single right-click.
+- **💬 Server MOTD Setting** – Change the server MOTD directly from the admin menu.
+- **🎨 Colored Chat & Mentions** – Use `&` color codes and ping players with `@name`.
+- **🛠 Improved Settings GUI** – New admin submenu and clearer help messages.
+
 ## [1.4.0] - 04.07.2025
 
 - **🆕 AFK Protection** – AFK players are now invulnerable, immovable and collision-free. Toggle with `/settings afkprotection` (disabled by default).
