@@ -198,7 +198,8 @@ public class CustomGUI implements Listener {
 
     e.setCancelled(true);
 
-    if (!allowMove && isItemSlot && e.getCursor().getType() == Material.AIR) {
+    if (allowMove && isItemSlot && e.getCursor().getType() == Material.AIR
+        && !isNavSlot && !isActionSlot) {
       ItemStack item = _gui.getItem(rawSlot);
       if (item != null) {
         if (e.isShiftClick()) {
