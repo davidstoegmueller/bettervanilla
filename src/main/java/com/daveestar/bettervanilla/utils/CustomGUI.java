@@ -78,6 +78,15 @@ public class CustomGUI implements Listener {
     return _currentPage;
   }
 
+  public void setEntryItem(String key, ItemStack item) {
+    for (Map.Entry<String, ItemStack> entry : _entryList) {
+      if (entry.getKey().equals(key)) {
+        entry.setValue(item);
+        break;
+      }
+    }
+  }
+
   public void setPageSwitchListener(PageSwitchListener listener) {
     _pageSwitchListener = listener;
   }
@@ -170,13 +179,44 @@ public class CustomGUI implements Listener {
 
     int slot = e.getRawSlot();
     boolean isActionSlot = slot == _POS_SWITCH_PAGE_BUTTON
-        || (slot == _POS_BACK_BUTTON && _parentMenu != null) || _slotKeyMap.containsKey(slot);
-
-    if (!allowMove || isActionSlot) {
-      e.setCancelled(true);
-    }
+        || (slot == _POS_BACK_BUTTON && _parentMenu != null);
+    boolean isItemSlot = _slotKeyMap.containsKey(slot);
 
     Player p = (Player) e.getWhoClicked();
+
+    if (!allowMove) {
+      e.setCancelled(true);
+
+      if (isItemSlot && e.getCursor().getType() == Material.AIR) {
+        ItemStack item = _gui.getItem(slot);
+        if (item != null) {
+          if (e.isShiftClick()) {
+            Map<Integer, ItemStack> left = p.getInventory().addItem(item.clone());
+            if (left.isEmpty()) {
+              _gui.setItem(slot, null);
+              setEntryItem(_slotKeyMap.get(slot), null);
+            } else {
+              p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+            }
+          } else {
+            p.setItemOnCursor(item.clone());
+            _gui.setItem(slot, null);
+            setEntryItem(_slotKeyMap.get(slot), null);
+          }
+          return;
+        }
+      }
+
+      if (isActionSlot) {
+        // still allow actions below
+      } else {
+        return;
+      }
+    } else {
+      if (isActionSlot || isItemSlot) {
+        e.setCancelled(true);
+      }
+    }
 
     if (slot == _POS_SWITCH_PAGE_BUTTON) {
       _handlePageSwitch(p, e.isRightClick());
