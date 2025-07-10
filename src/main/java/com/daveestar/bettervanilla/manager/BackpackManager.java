@@ -79,7 +79,7 @@ public class BackpackManager implements Listener {
   }
 
   private ItemStack[] _loadPage(UUID playerId, int page) {
-    List<Map<?, ?>> list = _fileConfig.getMapList("players." + playerId + ".page" + page);
+    List<?> list = _fileConfig.getList("players." + playerId + ".page" + page);
     ItemStack[] arr = ItemStackUtils.deserializeArray(list);
     int size = _getPageSize();
     if (arr.length < size) {
