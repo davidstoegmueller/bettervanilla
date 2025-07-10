@@ -1,6 +1,10 @@
 package com.daveestar.bettervanilla.manager;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +20,6 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.CustomGUI;
-import com.daveestar.bettervanilla.utils.ItemStackUtils;
 
 public class BackpackManager implements Listener {
   private final Main _plugin;
@@ -28,7 +31,8 @@ public class BackpackManager implements Listener {
   private int _rows;
   private int _pages;
 
-  private final Map<UUID, CustomGUI> _openBackpacks = new HashMap<>();
+  private final Map<UUID, Backpack> _backpacks = new HashMap<>();
+  private final Map<UUID, CustomGUI> _openGUIs = new HashMap<>();
 
   public BackpackManager(Config config) {
     _plugin = Main.getInstance();
@@ -67,6 +71,7 @@ public class BackpackManager implements Listener {
   public void setRows(int rows) {
     _rows = rows;
     _settingsManager.setBackpackRows(rows);
+    _backpacks.clear();
   }
 
   public int getPages() {
@@ -76,25 +81,9 @@ public class BackpackManager implements Listener {
   public void setPages(int pages) {
     _pages = pages;
     _settingsManager.setBackpackPages(pages);
+    _backpacks.clear();
   }
 
-  private ItemStack[] _loadPage(UUID playerId, int page) {
-    List<?> list = _fileConfig.getList("players." + playerId + ".page" + page);
-    ItemStack[] arr = ItemStackUtils.deserializeArray(list);
-    int size = _getPageSize();
-    if (arr.length < size) {
-      ItemStack[] tmp = new ItemStack[size];
-      System.arraycopy(arr, 0, tmp, 0, arr.length);
-      return tmp;
-    }
-    return Arrays.copyOf(arr, size);
-  }
-
-  private void _savePage(UUID playerId, int page, ItemStack[] items) {
-    List<Map<String, Object>> data = ItemStackUtils.serializeArray(items);
-    _fileConfig.set("players." + playerId + ".page" + page, data);
-    _config.save();
-  }
 
   public void openBackpack(Player p) {
     if (!_enabled) {
@@ -103,12 +92,14 @@ public class BackpackManager implements Listener {
     }
 
     int pageSize = _getPageSize();
+    Backpack backpack = _backpacks.computeIfAbsent(p.getUniqueId(),
+        id -> new Backpack(id, _pages, pageSize, _fileConfig));
 
     Map<String, ItemStack> entries = new LinkedHashMap<>();
     Map<String, Integer> customSlots = new HashMap<>();
 
-    for (int page = 1; page <= _pages; page++) {
-      ItemStack[] items = _loadPage(p.getUniqueId(), page);
+    for (int page = 1; page <= backpack.getTotalPages(); page++) {
+      ItemStack[] items = backpack.getPage(page);
       for (int i = 0; i < pageSize; i++) {
         String key = page + "_" + i;
         ItemStack item = items[i];
@@ -124,14 +115,14 @@ public class BackpackManager implements Listener {
 
     gui.setClickActions(new HashMap<>());
     gui.setPageSwitchListener((pl, newPage, oldPage) -> {
-      _saveCurrentPage(pl, gui, oldPage);
+      _saveCurrentPage(pl, gui, backpack, oldPage);
     });
 
     gui.open(p);
-    _openBackpacks.put(p.getUniqueId(), gui);
+    _openGUIs.put(p.getUniqueId(), gui);
   }
 
-  private void _saveCurrentPage(Player p, CustomGUI gui, int page) {
+  private void _saveCurrentPage(Player p, CustomGUI gui, Backpack backpack, int page) {
     int pageSize = _getPageSize();
     ItemStack[] items = new ItemStack[pageSize];
     Inventory inv = gui.getInventory();
@@ -141,26 +132,30 @@ public class BackpackManager implements Listener {
       String key = page + "_" + i;
       gui.setEntryItem(key, it);
     }
-    _savePage(p.getUniqueId(), page, items);
+    backpack.setPage(page, items);
+    backpack.savePage(_fileConfig, page);
+    _config.save();
   }
 
   @EventHandler
   public void onInventoryClose(InventoryCloseEvent e) {
     Player p = (Player) e.getPlayer();
-    CustomGUI gui = _openBackpacks.remove(p.getUniqueId());
-    if (gui != null && e.getInventory().equals(gui.getInventory())) {
-      _saveCurrentPage(p, gui, gui.getCurrentPage());
+    CustomGUI gui = _openGUIs.remove(p.getUniqueId());
+    Backpack backpack = _backpacks.get(p.getUniqueId());
+    if (gui != null && e.getInventory().equals(gui.getInventory()) && backpack != null) {
+      _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
     }
   }
 
   public void saveAllOpenBackpacks() {
-    for (Map.Entry<UUID, CustomGUI> entry : new HashMap<>(_openBackpacks).entrySet()) {
+    for (Map.Entry<UUID, CustomGUI> entry : new HashMap<>(_openGUIs).entrySet()) {
       Player p = _plugin.getServer().getPlayer(entry.getKey());
-      if (p != null) {
+      Backpack backpack = _backpacks.get(entry.getKey());
+      if (p != null && backpack != null) {
         CustomGUI gui = entry.getValue();
-        _saveCurrentPage(p, gui, gui.getCurrentPage());
+        _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
       }
     }
-    _openBackpacks.clear();
+    _openGUIs.clear();
   }
 }
