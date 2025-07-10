@@ -180,8 +180,11 @@ public class CustomGUI implements Listener {
     int rawSlot = e.getRawSlot();
     int topSize = _gui.getSize();
 
-    if (rawSlot >= topSize)
+    if (rawSlot >= topSize) {
+      if (!allowMove)
+        e.setCancelled(true);
       return; // player inventory interaction
+    }
 
     boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
     boolean isActionSlot = rawSlot == _POS_SWITCH_PAGE_BUTTON
