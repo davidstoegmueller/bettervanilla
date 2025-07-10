@@ -59,7 +59,6 @@ public class TimerManager {
     _globalTimer = _fileConfig.getInt("globalTimer");
   }
 
-
   public void onPlayerJoined(Player p) {
     UUID playerId = p.getUniqueId();
     PlayerTimer timer = _loadPlayerTimer(playerId);
@@ -148,7 +147,6 @@ public class TimerManager {
     }
   }
 
-
   public void updateRunningState(int playerCount) {
     if (isRunningOverride()) {
       boolean shouldRun = playerCount > 0;
@@ -197,7 +195,6 @@ public class TimerManager {
     setGlobalTimer(_globalTimer + 1);
   }
 
-
   private void _displayTimerActionBar() {
     String message = _generateTimerMessage();
 
@@ -215,7 +212,6 @@ public class TimerManager {
         : ChatColor.YELLOW + "" + ChatColor.BOLD + "Paused " + ChatColor.GRAY + "("
             + ChatColor.RED + formattedTime + ChatColor.GRAY + ")";
   }
-
 
   public String formatTime(int totalSeconds) {
     int days = totalSeconds / (24 * 3600);
