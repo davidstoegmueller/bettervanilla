@@ -58,3 +58,8 @@ commands:
     description: Manage player and group permissions.
     usage: /permissions
     permission: bettervanilla.permissions
+  backpack:
+    aliases: [bp]
+    description: Open your backpack.
+    usage: /backpack
+    permission: bettervanilla.backpack

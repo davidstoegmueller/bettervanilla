@@ -21,6 +21,7 @@ import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.gui.BackpackSettingsGUI;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -35,6 +36,7 @@ public class AdminSettingsGUI implements Listener {
   private final Map<UUID, CustomGUI> _afkTimePending;
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
   private final Map<UUID, CustomGUI> _motdPending;
+  private final BackpackSettingsGUI _backpackSettingsGUI;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -44,6 +46,7 @@ public class AdminSettingsGUI implements Listener {
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
     _motdPending = new HashMap<>();
+    _backpackSettingsGUI = new BackpackSettingsGUI();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -64,6 +67,7 @@ public class AdminSettingsGUI implements Listener {
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("motd", _createMOTDItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+    entries.put("backpacksettings", _createBackpackSettingsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -76,6 +80,7 @@ public class AdminSettingsGUI implements Listener {
     // second row
     customSlots.put("afkprotection", 12);
     customSlots.put("afktime", 14);
+    customSlots.put("backpacksettings", 16);
 
     // third row
     customSlots.put("cropprotection", 20);
@@ -179,6 +184,13 @@ public class AdminSettingsGUI implements Listener {
         p.sendMessage(Main.getPrefix() + "Enter server MOTD:");
         _motdPending.put(p.getUniqueId(), par);
         p.closeInventory();
+      }
+    });
+
+    actions.put("backpacksettings", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _backpackSettingsGUI.displayGUI(p, gui);
       }
     });
 
@@ -399,6 +411,23 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
+  private ItemStack _createBackpackSettingsItem() {
+    ItemStack item = new ItemStack(Material.ENDER_CHEST);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Settings"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
+          .stream().map(Component::text).collect(Collectors.toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   @EventHandler
   public void onPlayerChat(AsyncChatEvent e) {
     Player p = e.getPlayer();
@@ -457,7 +486,9 @@ public class AdminSettingsGUI implements Listener {
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parentMenu);
       });
+      return;
     }
+
   }
 
   private void _toggleMaintenance(Player p, String message) {
@@ -517,6 +548,7 @@ public class AdminSettingsGUI implements Listener {
     p.sendMessage(
         Main.getPrefix() + "Right-Click crop harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
+
 
   private void _toggleAFKProtection(Player p) {
     boolean newState = !_settingsManager.getAFKProtection();

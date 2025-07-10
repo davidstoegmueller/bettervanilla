@@ -150,4 +150,31 @@ public class SettingsManager {
     _fileConfig.set("global.rightclickcropharvest", value);
     _config.save();
   }
+
+  public boolean getBackpackEnabled() {
+    return _fileConfig.getBoolean("global.backpack.enabled", true);
+  }
+
+  public void setBackpackEnabled(boolean value) {
+    _fileConfig.set("global.backpack.enabled", value);
+    _config.save();
+  }
+
+  public int getBackpackRows() {
+    return _fileConfig.getInt("global.backpack.rows", 3);
+  }
+
+  public void setBackpackRows(int value) {
+    _fileConfig.set("global.backpack.rows", value);
+    _config.save();
+  }
+
+  public int getBackpackPages() {
+    return _fileConfig.getInt("global.backpack.pages", 1);
+  }
+
+  public void setBackpackPages(int value) {
+    _fileConfig.set("global.backpack.pages", value);
+    _config.save();
+  }
 }

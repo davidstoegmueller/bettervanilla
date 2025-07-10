@@ -34,6 +34,7 @@ public class CustomGUI implements Listener {
   private final CustomGUI _parentMenu;
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
+  private PageSwitchListener _pageSwitchListener;
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
@@ -63,6 +64,22 @@ public class CustomGUI implements Listener {
 
   public void setClickActions(Map<String, ClickAction> clickActions) {
     _clickActions = clickActions;
+  }
+
+  public Inventory getInventory() {
+    return _gui;
+  }
+
+  public Map<Integer, String> getSlotKeyMap() {
+    return Collections.unmodifiableMap(_slotKeyMap);
+  }
+
+  public int getCurrentPage() {
+    return _currentPage;
+  }
+
+  public void setPageSwitchListener(PageSwitchListener listener) {
+    _pageSwitchListener = listener;
   }
 
   private void _clear() {
@@ -146,12 +163,20 @@ public class CustomGUI implements Listener {
 
   @EventHandler
   private void _onInventoryClick(InventoryClickEvent e) {
-    if (!e.getInventory().equals(_gui))
+    if (!e.getView().getTopInventory().equals(_gui))
       return;
 
-    e.setCancelled(true);
-    Player p = (Player) e.getWhoClicked();
+    boolean allowMove = _options.contains(Option.ALLOW_ITEM_MOVEMENT);
+
     int slot = e.getRawSlot();
+    boolean isActionSlot = slot == _POS_SWITCH_PAGE_BUTTON
+        || (slot == _POS_BACK_BUTTON && _parentMenu != null) || _slotKeyMap.containsKey(slot);
+
+    if (!allowMove || isActionSlot) {
+      e.setCancelled(true);
+    }
+
+    Player p = (Player) e.getWhoClicked();
 
     if (slot == _POS_SWITCH_PAGE_BUTTON) {
       _handlePageSwitch(p, e.isRightClick());
@@ -167,15 +192,23 @@ public class CustomGUI implements Listener {
   }
 
   private void _handlePageSwitch(Player p, boolean isNextPage) {
+    int oldPage = _currentPage;
+    int newPage = _currentPage;
+
     if (isNextPage && _currentPage < _maxPage) {
-      _currentPage++;
+      newPage = _currentPage + 1;
     } else if (!isNextPage && _currentPage > 1) {
-      _currentPage--;
+      newPage = _currentPage - 1;
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
       return;
     }
 
+    if (_pageSwitchListener != null) {
+      _pageSwitchListener.onPageSwitch(p, newPage, oldPage);
+    }
+
+    _currentPage = newPage;
     _updatePage();
     p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
@@ -218,7 +251,12 @@ public class CustomGUI implements Listener {
     }
   }
 
+  public interface PageSwitchListener {
+    void onPageSwitch(Player p, int newPage, int oldPage);
+  }
+
   public enum Option {
     DISABLE_PAGE_BUTTON,
+    ALLOW_ITEM_MOVEMENT,
   }
 }
