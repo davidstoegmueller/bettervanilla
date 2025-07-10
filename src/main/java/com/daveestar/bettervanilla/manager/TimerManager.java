@@ -48,7 +48,6 @@ public class TimerManager {
     _actionBarManager = _plugin.getActionBar();
     _afkManager = _plugin.getAFKManager();
 
-    // ensure running state matches the current online player count
     updateRunningState(_plugin.getServer().getOnlinePlayers().size());
 
     _startTimerTask();
@@ -60,15 +59,12 @@ public class TimerManager {
     _globalTimer = _fileConfig.getInt("globalTimer");
   }
 
-  // Player timer handling
 
   public void onPlayerJoined(Player p) {
     UUID playerId = p.getUniqueId();
     PlayerTimer timer = _loadPlayerTimer(playerId);
     _playerTimers.put(playerId, timer);
 
-    // update running state using the actual number of players online
-    // to ensure the timer stops when the last player leaves
     updateRunningState(_plugin.getServer().getOnlinePlayers().size());
   }
 
@@ -80,8 +76,6 @@ public class TimerManager {
       _savePlayerTimer(playerId, timer);
     }
 
-    // update running state after removing the player using the
-    // remaining number of players online
     updateRunningState(_plugin.getServer().getOnlinePlayers().size() - 1);
   }
 
@@ -154,11 +148,9 @@ public class TimerManager {
     }
   }
 
-  // Timer state management
 
   public void updateRunningState(int playerCount) {
     if (isRunningOverride()) {
-      // Automatically set running state based on player count
       boolean shouldRun = playerCount > 0;
 
       if (isRunning() != shouldRun) {
@@ -205,7 +197,6 @@ public class TimerManager {
     setGlobalTimer(_globalTimer + 1);
   }
 
-  // Action bar and timer display
 
   private void _displayTimerActionBar() {
     String message = _generateTimerMessage();
@@ -225,7 +216,6 @@ public class TimerManager {
             + ChatColor.RED + formattedTime + ChatColor.GRAY + ")";
   }
 
-  // Timer task and formatting
 
   public String formatTime(int totalSeconds) {
     int days = totalSeconds / (24 * 3600);
@@ -249,12 +239,9 @@ public class TimerManager {
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
     scheduler.runAtFixedRate(_plugin, task -> {
-      // sync AFK checks with the main timer cycle to avoid off-by-one issues
       _afkManager.checkAllPlayersAFKStatus();
 
       if (_running) {
-        // increment global and player timers first so the action bar
-        // and commands always show the latest values
         _incrementGlobalTimer();
         _handlePlayerTimers();
       }
