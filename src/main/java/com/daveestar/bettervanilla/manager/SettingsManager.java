@@ -150,4 +150,46 @@ public class SettingsManager {
     _fileConfig.set("global.rightclickcropharvest", value);
     _config.save();
   }
+
+  public boolean getScoreboardEnabled() {
+    return _fileConfig.getBoolean("global.scoreboard.enabled", false);
+  }
+
+  public void setScoreboardEnabled(boolean value) {
+    _fileConfig.set("global.scoreboard.enabled", value);
+    _config.save();
+  }
+
+  public String getScoreboardTitle() {
+    return _fileConfig.getString("global.scoreboard.title", "BetterVanilla SMP");
+  }
+
+  public void setScoreboardTitle(String title) {
+    _fileConfig.set("global.scoreboard.title", title);
+    _config.save();
+  }
+
+  public java.util.List<String> getScoreboardStats() {
+    java.util.List<String> stats = _fileConfig.getStringList("global.scoreboard.stats");
+    if (stats.isEmpty()) {
+      stats = java.util.Arrays.asList("PLAYTIME", "AFKTIME", "ONLINE", "TOTALDISTANCE");
+    }
+    return stats;
+  }
+
+  public void setScoreboardStats(java.util.List<String> stats) {
+    _fileConfig.set("global.scoreboard.stats", stats);
+    _config.save();
+  }
+
+  public String getScoreboardDisplayName(String stat) {
+    String path = "global.scoreboard.displaynames." + stat;
+    String def = com.daveestar.bettervanilla.enums.ScoreboardStat.valueOf(stat).getDisplayName();
+    return _fileConfig.getString(path, def);
+  }
+
+  public void setScoreboardDisplayName(String stat, String name) {
+    _fileConfig.set("global.scoreboard.displaynames." + stat, name);
+    _config.save();
+  }
 }

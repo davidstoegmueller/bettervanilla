@@ -34,6 +34,7 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.ScoreboardManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
@@ -51,6 +52,7 @@ public class Main extends JavaPlugin {
   private NavigationManager _navigationManager;
   private AFKManager _afkManager;
   private CompassManager _compassManager;
+  private ScoreboardManager _scoreboardManager;
 
   private SettingsManager _settingsManager;
   private PermissionsManager _permissionsManager;
@@ -79,10 +81,12 @@ public class Main extends JavaPlugin {
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
+    _scoreboardManager = new ScoreboardManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
     _compassManager.initManagers();
+    _scoreboardManager.initManagers();
     _maintenanceManager.initManagers();
     _navigationManager.initManagers();
     _timerManager.initManagers();
@@ -125,6 +129,7 @@ public class Main extends JavaPlugin {
     _timerManager.setRunning(false);
     getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();
+    _scoreboardManager.hideScoreboardForAll();
 
     _LOGGER.info("BetterVanilla - DISABLED");
   }
@@ -157,6 +162,10 @@ public class Main extends JavaPlugin {
 
   public CompassManager getCompassManager() {
     return _compassManager;
+  }
+
+  public ScoreboardManager getScoreboardManager() {
+    return _scoreboardManager;
   }
 
   public SettingsManager getSettingsManager() {

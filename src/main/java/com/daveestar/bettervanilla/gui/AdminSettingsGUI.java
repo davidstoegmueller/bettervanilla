@@ -20,7 +20,9 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.ScoreboardManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.gui.ScoreboardSettingsGUI;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -32,18 +34,24 @@ public class AdminSettingsGUI implements Listener {
   private final SettingsManager _settingsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
+  private final ScoreboardManager _scoreboardManager;
+  private final ScoreboardSettingsGUI _scoreboardSettingsGUI;
   private final Map<UUID, CustomGUI> _afkTimePending;
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
   private final Map<UUID, CustomGUI> _motdPending;
+  private final Map<UUID, CustomGUI> _scoreboardTitlePending;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _scoreboardManager = _plugin.getScoreboardManager();
+    _scoreboardSettingsGUI = new ScoreboardSettingsGUI();
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
     _motdPending = new HashMap<>();
+    _scoreboardTitlePending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -63,7 +71,9 @@ public class AdminSettingsGUI implements Listener {
     entries.put("afktime", _createAFKTimeItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("motd", _createMOTDItem());
+    entries.put("scoreboardtitle", _createScoreboardTitleItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+    entries.put("scoreboard", _createScoreboardItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -80,7 +90,9 @@ public class AdminSettingsGUI implements Listener {
     // third row
     customSlots.put("cropprotection", 20);
     customSlots.put("motd", 22);
+    customSlots.put("scoreboardtitle", 23);
     customSlots.put("rightclickcropharvest", 24);
+    customSlots.put("scoreboard", 26);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -156,6 +168,19 @@ public class AdminSettingsGUI implements Listener {
       }
     });
 
+    actions.put("scoreboard", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleScoreboard(p);
+        displayGUI(p, par);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        _scoreboardSettingsGUI.displayGUI(p, gui);
+      }
+    });
+
     actions.put("afkprotection", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
@@ -178,6 +203,15 @@ public class AdminSettingsGUI implements Listener {
       public void onLeftClick(Player p) {
         p.sendMessage(Main.getPrefix() + "Enter server MOTD:");
         _motdPending.put(p.getUniqueId(), par);
+        p.closeInventory();
+      }
+    });
+
+    actions.put("scoreboardtitle", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        p.sendMessage(Main.getPrefix() + "Enter scoreboard title:");
+        _scoreboardTitlePending.put(p.getUniqueId(), par);
         p.closeInventory();
       }
     });
@@ -399,6 +433,45 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
+  private ItemStack _createScoreboardTitleItem() {
+    String title = _settingsManager.getScoreboardTitle();
+    ItemStack item = new ItemStack(Material.NAME_TAG);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Scoreboard Title"));
+      var lore = new ArrayList<String>();
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + title);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
+      meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createScoreboardItem() {
+    boolean state = _settingsManager.getScoreboardEnabled();
+    ItemStack item = new ItemStack(Material.BOOK);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» "
+          + ChatColor.YELLOW + "Scoreboard"));
+      meta.lore(Arrays.asList(
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Settings")
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   @EventHandler
   public void onPlayerChat(AsyncChatEvent e) {
     Player p = e.getPlayer();
@@ -457,6 +530,26 @@ public class AdminSettingsGUI implements Listener {
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parentMenu);
       });
+
+      return;
+    }
+
+    if (_scoreboardTitlePending.containsKey(id)) {
+      e.setCancelled(true);
+
+      String message = ((TextComponent) e.message()).content();
+
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        CustomGUI parMenu = _scoreboardTitlePending.remove(id);
+        _settingsManager.setScoreboardTitle(message);
+        _scoreboardManager.showScoreboardForAll();
+
+        p.sendMessage(Main.getPrefix() + "Scoreboard title set to: " + ChatColor.YELLOW + message);
+        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        displayGUI(p, parMenu);
+      });
+
+      return;
     }
   }
 
@@ -516,6 +609,20 @@ public class AdminSettingsGUI implements Listener {
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(
         Main.getPrefix() + "Right-Click crop harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleScoreboard(Player p) {
+    boolean newState = !_settingsManager.getScoreboardEnabled();
+    _settingsManager.setScoreboardEnabled(newState);
+
+    if (newState) {
+      _scoreboardManager.showScoreboardForAll();
+    } else {
+      _scoreboardManager.hideScoreboardForAll();
+    }
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Scoreboard is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleAFKProtection(Player p) {
