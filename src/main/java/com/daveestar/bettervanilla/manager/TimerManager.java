@@ -48,6 +48,9 @@ public class TimerManager {
     _actionBarManager = _plugin.getActionBar();
     _afkManager = _plugin.getAFKManager();
 
+    // ensure running state matches the current online player count
+    updateRunningState(_plugin.getServer().getOnlinePlayers().size());
+
     _startTimerTask();
   }
 
@@ -64,9 +67,9 @@ public class TimerManager {
     PlayerTimer timer = _loadPlayerTimer(playerId);
     _playerTimers.put(playerId, timer);
 
-    // update running state based on the number of tracked players
-    // using the internal map ensures correct results during shutdown
-    updateRunningState(_playerTimers.size());
+    // update running state using the actual number of players online
+    // to ensure the timer stops when the last player leaves
+    updateRunningState(_plugin.getServer().getOnlinePlayers().size());
   }
 
   public void onPlayerLeft(Player p) {
@@ -77,9 +80,9 @@ public class TimerManager {
       _savePlayerTimer(playerId, timer);
     }
 
-    // use the player timer map size after removal to get the
-    // actual player count when players leave, e.g. during shutdown
-    updateRunningState(_playerTimers.size());
+    // update running state after removing the player using the
+    // remaining number of players online
+    updateRunningState(_plugin.getServer().getOnlinePlayers().size() - 1);
   }
 
   public void resetPlayerTimers() {
