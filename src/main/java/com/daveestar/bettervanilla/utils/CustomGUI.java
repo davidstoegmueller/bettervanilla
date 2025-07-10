@@ -184,7 +184,13 @@ public class CustomGUI implements Listener {
 
     Player p = (Player) e.getWhoClicked();
 
-    if (!allowMove) {
+    if (allowMove) {
+      if (slot >= _gui.getSize() - _INVENTORY_ROW_SIZE) {
+        e.setCancelled(true);
+      } else {
+        return;
+      }
+    } else {
       e.setCancelled(true);
 
       if (isItemSlot && e.getCursor().getType() == Material.AIR) {
@@ -207,14 +213,8 @@ public class CustomGUI implements Listener {
         }
       }
 
-      if (isActionSlot) {
-        // still allow actions below
-      } else {
+      if (!isActionSlot) {
         return;
-      }
-    } else {
-      if (isActionSlot || isItemSlot) {
-        e.setCancelled(true);
       }
     }
 

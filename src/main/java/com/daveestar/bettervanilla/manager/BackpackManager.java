@@ -120,7 +120,7 @@ public class BackpackManager implements Listener {
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Backpack",
         entries, _rows, customSlots, null,
-        EnumSet.noneOf(CustomGUI.Option.class));
+        EnumSet.of(CustomGUI.Option.ALLOW_ITEM_MOVEMENT));
 
     gui.setClickActions(new HashMap<>());
     gui.setPageSwitchListener((pl, newPage, oldPage) -> {
@@ -135,14 +135,10 @@ public class BackpackManager implements Listener {
     int pageSize = _getPageSize();
     ItemStack[] items = new ItemStack[pageSize];
     Inventory inv = gui.getInventory();
-    for (Map.Entry<Integer, String> entry : gui.getSlotKeyMap().entrySet()) {
-      String key = entry.getValue();
-      String[] parts = key.split("_");
-      if (parts.length != 2)
-        continue;
-      int slotIndex = Integer.parseInt(parts[1]);
-      ItemStack it = inv.getItem(entry.getKey());
-      items[slotIndex] = it;
+    for (int i = 0; i < pageSize; i++) {
+      ItemStack it = inv.getItem(i);
+      items[i] = it;
+      String key = page + "_" + i;
       gui.setEntryItem(key, it);
     }
     _savePage(p.getUniqueId(), page, items);
