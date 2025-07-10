@@ -48,6 +48,8 @@ public class TimerManager {
     _actionBarManager = _plugin.getActionBar();
     _afkManager = _plugin.getAFKManager();
 
+    updateRunningState(_plugin.getServer().getOnlinePlayers().size());
+
     _startTimerTask();
   }
 
@@ -57,7 +59,6 @@ public class TimerManager {
     _globalTimer = _fileConfig.getInt("globalTimer");
   }
 
-  // Player timer handling
 
   public void onPlayerJoined(Player p) {
     UUID playerId = p.getUniqueId();
@@ -147,11 +148,9 @@ public class TimerManager {
     }
   }
 
-  // Timer state management
 
   public void updateRunningState(int playerCount) {
     if (isRunningOverride()) {
-      // Automatically set running state based on player count
       boolean shouldRun = playerCount > 0;
 
       if (isRunning() != shouldRun) {
@@ -198,7 +197,6 @@ public class TimerManager {
     setGlobalTimer(_globalTimer + 1);
   }
 
-  // Action bar and timer display
 
   private void _displayTimerActionBar() {
     String message = _generateTimerMessage();
@@ -218,7 +216,6 @@ public class TimerManager {
             + ChatColor.RED + formattedTime + ChatColor.GRAY + ")";
   }
 
-  // Timer task and formatting
 
   public String formatTime(int totalSeconds) {
     int days = totalSeconds / (24 * 3600);
@@ -242,12 +239,14 @@ public class TimerManager {
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
     scheduler.runAtFixedRate(_plugin, task -> {
-      _displayTimerActionBar();
+      _afkManager.checkAllPlayersAFKStatus();
 
       if (_running) {
         _incrementGlobalTimer();
         _handlePlayerTimers();
       }
+
+      _displayTimerActionBar();
     }, 0, 1, TimeUnit.SECONDS);
   }
 }
