@@ -4,13 +4,10 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,22 +16,16 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
 
 public class BackpackSettingsGUI implements Listener {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
-  private final Map<UUID, CustomGUI> _rowsPending;
-  private final Map<UUID, CustomGUI> _pagesPending;
 
   public BackpackSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
-    _rowsPending = new HashMap<>();
-    _pagesPending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -66,17 +57,36 @@ public class BackpackSettingsGUI implements Listener {
     actions.put("rows", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player pl) {
-        pl.sendMessage(Main.getPrefix() + "Enter backpack rows:");
-        _rowsPending.put(pl.getUniqueId(), par);
-        pl.closeInventory();
+        int newRows = Math.min(6, _settingsManager.getBackpackRows() + 1);
+        _settingsManager.setBackpackRows(newRows);
+        _plugin.getBackpackManager().setRows(newRows);
+        displayGUI(pl, par);
+      }
+
+      @Override
+      public void onRightClick(Player pl) {
+        int newRows = Math.max(1, _settingsManager.getBackpackRows() - 1);
+        _settingsManager.setBackpackRows(newRows);
+        _plugin.getBackpackManager().setRows(newRows);
+        displayGUI(pl, par);
       }
     });
+
     actions.put("pages", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player pl) {
-        pl.sendMessage(Main.getPrefix() + "Enter backpack pages:");
-        _pagesPending.put(pl.getUniqueId(), par);
-        pl.closeInventory();
+        int newPages = _settingsManager.getBackpackPages() + 1;
+        _settingsManager.setBackpackPages(newPages);
+        _plugin.getBackpackManager().setPages(newPages);
+        displayGUI(pl, par);
+      }
+
+      @Override
+      public void onRightClick(Player pl) {
+        int newPages = Math.max(1, _settingsManager.getBackpackPages() - 1);
+        _settingsManager.setBackpackPages(newPages);
+        _plugin.getBackpackManager().setPages(newPages);
+        displayGUI(pl, par);
       }
     });
 
@@ -115,8 +125,9 @@ public class BackpackSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of rows per page.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + rows,
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
-          .stream().map(Component::text).collect(Collectors.toList());
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1")
+          .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -134,60 +145,15 @@ public class BackpackSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of pages.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + pages,
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
-          .stream().map(Component::text).collect(Collectors.toList());
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1")
+          .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
     return item;
   }
 
-  @EventHandler
-  public void onPlayerChat(AsyncChatEvent e) {
-    Player p = e.getPlayer();
-    UUID id = p.getUniqueId();
-
-    if (_rowsPending.containsKey(id)) {
-      e.setCancelled(true);
-      String content = ((TextComponent) e.message()).content();
-
-      try {
-        int rows = Integer.parseInt(content);
-
-        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-          _settingsManager.setBackpackRows(rows);
-          _plugin.getBackpackManager().setRows(rows);
-          p.sendMessage(Main.getPrefix() + "Backpack rows set to: " + ChatColor.YELLOW + rows);
-          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-          CustomGUI parentMenu = _rowsPending.remove(id);
-          displayGUI(p, parentMenu);
-        });
-      } catch (NumberFormatException ex) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
-      }
-      return;
-    }
-
-    if (_pagesPending.containsKey(id)) {
-      e.setCancelled(true);
-      String content = ((TextComponent) e.message()).content();
-
-      try {
-        int pages = Integer.parseInt(content);
-
-        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-          _settingsManager.setBackpackPages(pages);
-          _plugin.getBackpackManager().setPages(pages);
-          p.sendMessage(Main.getPrefix() + "Backpack pages set to: " + ChatColor.YELLOW + pages);
-          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-          CustomGUI parentMenu = _pagesPending.remove(id);
-          displayGUI(p, parentMenu);
-        });
-      } catch (NumberFormatException ex) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
-      }
-    }
-  }
 
   private void _toggleEnabled(Player p) {
     boolean newState = !_settingsManager.getBackpackEnabled();

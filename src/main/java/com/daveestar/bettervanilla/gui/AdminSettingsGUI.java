@@ -421,7 +421,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().map(Component::text).collect(Collectors.toList());
+          .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 

@@ -131,6 +131,7 @@ public class Main extends JavaPlugin {
     _timerManager.setRunning(false);
     getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();
+    _backpackManager.saveAllOpenBackpacks();
 
     _LOGGER.info("BetterVanilla - DISABLED");
   }

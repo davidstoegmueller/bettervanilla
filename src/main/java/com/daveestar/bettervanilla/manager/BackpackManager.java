@@ -13,12 +13,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.ItemStackUtils;
 
 public class BackpackManager implements Listener {
   private final Main _plugin;
+  private final SettingsManager _settingsManager;
   private final Config _config;
   private final FileConfiguration _fileConfig;
 
@@ -30,6 +32,7 @@ public class BackpackManager implements Listener {
 
   public BackpackManager(Config config) {
     _plugin = Main.getInstance();
+    _settingsManager = _plugin.getSettingsManager();
     _config = config;
     _fileConfig = config.getFileConfig();
 
@@ -39,9 +42,9 @@ public class BackpackManager implements Listener {
   }
 
   private void _loadSettings() {
-    _enabled = _fileConfig.getBoolean("global.enabled", true);
-    _rows = _fileConfig.getInt("global.rows", 3);
-    _pages = _fileConfig.getInt("global.pages", 1);
+    _enabled = _settingsManager.getBackpackEnabled();
+    _rows = _settingsManager.getBackpackRows();
+    _pages = _settingsManager.getBackpackPages();
   }
 
   private int _getPageSize() {
@@ -54,8 +57,7 @@ public class BackpackManager implements Listener {
 
   public void setEnabled(boolean value) {
     _enabled = value;
-    _fileConfig.set("global.enabled", value);
-    _config.save();
+    _settingsManager.setBackpackEnabled(value);
   }
 
   public int getRows() {
@@ -64,8 +66,7 @@ public class BackpackManager implements Listener {
 
   public void setRows(int rows) {
     _rows = rows;
-    _fileConfig.set("global.rows", rows);
-    _config.save();
+    _settingsManager.setBackpackRows(rows);
   }
 
   public int getPages() {
@@ -74,8 +75,7 @@ public class BackpackManager implements Listener {
 
   public void setPages(int pages) {
     _pages = pages;
-    _fileConfig.set("global.pages", pages);
-    _config.save();
+    _settingsManager.setBackpackPages(pages);
   }
 
   private ItemStack[] _loadPage(UUID playerId, int page) {
@@ -153,5 +153,16 @@ public class BackpackManager implements Listener {
     if (gui != null && e.getInventory().equals(gui.getInventory())) {
       _saveCurrentPage(p, gui, gui.getCurrentPage());
     }
+  }
+
+  public void saveAllOpenBackpacks() {
+    for (Map.Entry<UUID, CustomGUI> entry : new HashMap<>(_openBackpacks).entrySet()) {
+      Player p = _plugin.getServer().getPlayer(entry.getKey());
+      if (p != null) {
+        CustomGUI gui = entry.getValue();
+        _saveCurrentPage(p, gui, gui.getCurrentPage());
+      }
+    }
+    _openBackpacks.clear();
   }
 }
