@@ -172,60 +172,60 @@ public class CustomGUI implements Listener {
 
   @EventHandler
   private void _onInventoryClick(InventoryClickEvent e) {
-    if (!e.getView().getTopInventory().equals(_gui))
+    if (!e.getInventory().equals(_gui))
       return;
 
     boolean allowMove = _options.contains(Option.ALLOW_ITEM_MOVEMENT);
-
-    int slot = e.getRawSlot();
-    boolean isActionSlot = slot == _POS_SWITCH_PAGE_BUTTON
-        || (slot == _POS_BACK_BUTTON && _parentMenu != null);
-    boolean isItemSlot = _slotKeyMap.containsKey(slot);
-
     Player p = (Player) e.getWhoClicked();
+    int rawSlot = e.getRawSlot();
+    int topSize = _gui.getSize();
 
-    if (allowMove) {
-      if (slot >= _gui.getSize() - _INVENTORY_ROW_SIZE) {
-        e.setCancelled(true);
-      } else {
-        return;
-      }
-    } else {
-      e.setCancelled(true);
+    if (rawSlot >= topSize)
+      return; // player inventory interaction
 
-      if (isItemSlot && e.getCursor().getType() == Material.AIR) {
-        ItemStack item = _gui.getItem(slot);
-        if (item != null) {
-          if (e.isShiftClick()) {
-            Map<Integer, ItemStack> left = p.getInventory().addItem(item.clone());
-            if (left.isEmpty()) {
-              _gui.setItem(slot, null);
-              setEntryItem(_slotKeyMap.get(slot), null);
-            } else {
-              p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
-            }
+    boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
+    boolean isActionSlot = rawSlot == _POS_SWITCH_PAGE_BUTTON
+        || (rawSlot == _POS_BACK_BUTTON && _parentMenu != null);
+    boolean isItemSlot = _slotKeyMap.containsKey(rawSlot);
+
+    if (allowMove && !isNavSlot && !isActionSlot) {
+      // allow default item movement in the editable area
+      return;
+    }
+
+    e.setCancelled(true);
+
+    if (!allowMove && isItemSlot && e.getCursor().getType() == Material.AIR) {
+      ItemStack item = _gui.getItem(rawSlot);
+      if (item != null) {
+        if (e.isShiftClick()) {
+          Map<Integer, ItemStack> left = p.getInventory().addItem(item.clone());
+          if (left.isEmpty()) {
+            _gui.setItem(rawSlot, null);
+            setEntryItem(_slotKeyMap.get(rawSlot), null);
           } else {
-            p.setItemOnCursor(item.clone());
-            _gui.setItem(slot, null);
-            setEntryItem(_slotKeyMap.get(slot), null);
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           }
-          return;
+        } else {
+          p.setItemOnCursor(item.clone());
+          _gui.setItem(rawSlot, null);
+          setEntryItem(_slotKeyMap.get(rawSlot), null);
         }
-      }
-
-      if (!isActionSlot) {
         return;
       }
     }
 
-    if (slot == _POS_SWITCH_PAGE_BUTTON) {
+    if (!isActionSlot && !isItemSlot)
+      return;
+
+    if (rawSlot == _POS_SWITCH_PAGE_BUTTON) {
       _handlePageSwitch(p, e.isRightClick());
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
-    } else if (slot == _POS_BACK_BUTTON && _parentMenu != null) {
+    } else if (rawSlot == _POS_BACK_BUTTON && _parentMenu != null) {
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
       _parentMenu.open(p);
-    } else if (_slotKeyMap.containsKey(slot)) {
-      _handleItemClick(p, _slotKeyMap.get(slot), e.isShiftClick(), e.isRightClick());
+    } else if (_slotKeyMap.containsKey(rawSlot)) {
+      _handleItemClick(p, _slotKeyMap.get(rawSlot), e.isShiftClick(), e.isRightClick());
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
     }
