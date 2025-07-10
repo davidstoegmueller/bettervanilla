@@ -64,7 +64,9 @@ public class TimerManager {
     PlayerTimer timer = _loadPlayerTimer(playerId);
     _playerTimers.put(playerId, timer);
 
-    updateRunningState(_plugin.getServer().getOnlinePlayers().size());
+    // update running state based on the number of tracked players
+    // using the internal map ensures correct results during shutdown
+    updateRunningState(_playerTimers.size());
   }
 
   public void onPlayerLeft(Player p) {
@@ -75,7 +77,9 @@ public class TimerManager {
       _savePlayerTimer(playerId, timer);
     }
 
-    updateRunningState(_plugin.getServer().getOnlinePlayers().size() - 1);
+    // use the player timer map size after removal to get the
+    // actual player count when players leave, e.g. during shutdown
+    updateRunningState(_playerTimers.size());
   }
 
   public void resetPlayerTimers() {
@@ -242,12 +246,17 @@ public class TimerManager {
     AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
 
     scheduler.runAtFixedRate(_plugin, task -> {
-      _displayTimerActionBar();
+      // sync AFK checks with the main timer cycle to avoid off-by-one issues
+      _afkManager.checkAllPlayersAFKStatus();
 
       if (_running) {
+        // increment global and player timers first so the action bar
+        // and commands always show the latest values
         _incrementGlobalTimer();
         _handlePlayerTimers();
       }
+
+      _displayTimerActionBar();
     }, 0, 1, TimeUnit.SECONDS);
   }
 }
