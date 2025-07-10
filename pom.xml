@@ -12,6 +12,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>24</maven.compiler.source>
     <maven.compiler.target>24</maven.compiler.target>
+    <!-- Directory where the built JAR should be copied after packaging -->
+    <server.plugin.dir>/path/to/server/plugins</server.plugin.dir>
   </properties>
 
   <repositories>
@@ -71,6 +73,27 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <!-- Copy the built JAR to the server's plugin directory after packaging -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>mirror-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                      todir="${server.plugin.dir}" overwrite="true" />
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
