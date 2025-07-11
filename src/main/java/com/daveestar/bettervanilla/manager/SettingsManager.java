@@ -152,7 +152,7 @@ public class SettingsManager {
   }
 
   public boolean getBackpackEnabled() {
-    return _fileConfig.getBoolean("global.backpack.enabled", true);
+    return _fileConfig.getBoolean("global.backpack.enabled", false);
   }
 
   public void setBackpackEnabled(boolean value) {

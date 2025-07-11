@@ -121,7 +121,7 @@ public class BackpackSettingsGUI implements Listener {
 
   private ItemStack _createEnabledItem() {
     boolean state = _settingsManager.getBackpackEnabled();
-    ItemStack item = new ItemStack(Material.ENDER_CHEST);
+    ItemStack item = new ItemStack(Material.BARREL);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {

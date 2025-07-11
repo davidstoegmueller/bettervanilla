@@ -105,8 +105,8 @@ public class CustomGUI implements Listener {
     _addItemToSlot(_POS_SWITCH_PAGE_BUTTON, Material.BOOK,
         ChatColor.YELLOW + "Page " + ChatColor.GRAY + _currentPage + "/" + _maxPage,
         Arrays.asList(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next Page",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Previous Page"));
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next Page",
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous Page"));
   }
 
   private void _createBackButton() {
@@ -225,7 +225,7 @@ public class CustomGUI implements Listener {
       return;
 
     if (rawSlot == _POS_SWITCH_PAGE_BUTTON) {
-      _handlePageSwitch(p, e.isRightClick());
+      _handlePageSwitch(p, e.isLeftClick());
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
     } else if (rawSlot == _POS_BACK_BUTTON && _parentMenu != null) {
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);

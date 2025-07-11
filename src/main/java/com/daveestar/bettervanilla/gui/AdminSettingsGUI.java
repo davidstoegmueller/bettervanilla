@@ -406,7 +406,7 @@ public class AdminSettingsGUI implements Listener {
   }
 
   private ItemStack _createBackpackSettingsItem() {
-    ItemStack item = new ItemStack(Material.ENDER_CHEST);
+    ItemStack item = new ItemStack(Material.BARREL);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
