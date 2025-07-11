@@ -35,6 +35,7 @@ public class AdminSettingsGUI implements Listener {
   private final Map<UUID, CustomGUI> _afkTimePending;
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
   private final Map<UUID, CustomGUI> _motdPending;
+  private final BackpackSettingsGUI _backpackSettingsGUI;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -44,15 +45,11 @@ public class AdminSettingsGUI implements Listener {
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
     _motdPending = new HashMap<>();
+    _backpackSettingsGUI = new BackpackSettingsGUI();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
-  public void displayGUI(Player p) {
-    displayGUI(p, null);
-  }
-
   public void displayGUI(Player p, CustomGUI parentMenu) {
-    final CustomGUI par = parentMenu;
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("creeperdamage", _createCreeperDamageItem());
@@ -64,6 +61,7 @@ public class AdminSettingsGUI implements Listener {
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("motd", _createMOTDItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+    entries.put("backpacksettings", _createBackpackSettingsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -76,6 +74,7 @@ public class AdminSettingsGUI implements Listener {
     // second row
     customSlots.put("afkprotection", 12);
     customSlots.put("afktime", 14);
+    customSlots.put("backpacksettings", 16);
 
     // third row
     customSlots.put("cropprotection", 20);
@@ -84,7 +83,7 @@ public class AdminSettingsGUI implements Listener {
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 4, customSlots, par,
+        entries, 4, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
@@ -92,18 +91,18 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleMaintenance(p, null);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
 
       @Override
       public void onRightClick(Player p) {
         if (!_maintenanceManager.getState()) {
           p.sendMessage(Main.getPrefix() + "Enter maintenance message:");
-          _maintenanceMessagePending.put(p.getUniqueId(), par);
+          _maintenanceMessagePending.put(p.getUniqueId(), parentMenu);
           p.closeInventory();
         } else {
           _toggleMaintenance(p, null);
-          displayGUI(p, par);
+          displayGUI(p, parentMenu);
         }
       }
     });
@@ -112,7 +111,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleCreeperDamage(p);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
     });
 
@@ -120,7 +119,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleEnd(p);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
     });
 
@@ -128,7 +127,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleNether(p);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
     });
 
@@ -136,7 +135,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleSleepingRain(p);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
     });
 
@@ -144,7 +143,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleCropProtection(p);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
     });
 
@@ -152,7 +151,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleRightClickCropHarvest(p);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
     });
 
@@ -160,7 +159,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleAFKProtection(p);
-        displayGUI(p, par);
+        displayGUI(p, parentMenu);
       }
     });
 
@@ -168,7 +167,7 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         p.sendMessage(Main.getPrefix() + "Enter AFK time in minutes:");
-        _afkTimePending.put(p.getUniqueId(), par);
+        _afkTimePending.put(p.getUniqueId(), parentMenu);
         p.closeInventory();
       }
     });
@@ -177,8 +176,15 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         p.sendMessage(Main.getPrefix() + "Enter server MOTD:");
-        _motdPending.put(p.getUniqueId(), par);
+        _motdPending.put(p.getUniqueId(), parentMenu);
         p.closeInventory();
+      }
+    });
+
+    actions.put("backpacksettings", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _backpackSettingsGUI.displayGUI(p, gui);
       }
     });
 
@@ -399,6 +405,24 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
+  private ItemStack _createBackpackSettingsItem() {
+    ItemStack item = new ItemStack(Material.ENDER_CHEST);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Settings"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   @EventHandler
   public void onPlayerChat(AsyncChatEvent e) {
     Player p = e.getPlayer();
@@ -457,7 +481,9 @@ public class AdminSettingsGUI implements Listener {
         p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         displayGUI(p, parentMenu);
       });
+      return;
     }
+
   }
 
   private void _toggleMaintenance(Player p, String message) {

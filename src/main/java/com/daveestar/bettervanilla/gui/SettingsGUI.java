@@ -225,9 +225,9 @@ public class SettingsGUI {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open the admin settings menu.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage admin and server settings.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open admin settings")
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
           .stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
