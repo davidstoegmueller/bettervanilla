@@ -70,10 +70,6 @@ public class CustomGUI implements Listener {
     return _gui;
   }
 
-  public Map<Integer, String> getSlotKeyMap() {
-    return Collections.unmodifiableMap(_slotKeyMap);
-  }
-
   public int getCurrentPage() {
     return _currentPage;
   }
@@ -181,9 +177,12 @@ public class CustomGUI implements Listener {
     int topSize = _gui.getSize();
 
     if (rawSlot >= topSize) {
-      if (!allowMove)
+      if (!allowMove) {
         e.setCancelled(true);
-      return; // player inventory interaction
+      }
+
+      // player inventory interaction
+      return;
     }
 
     boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
@@ -201,9 +200,11 @@ public class CustomGUI implements Listener {
     if (allowMove && isItemSlot && e.getCursor().getType() == Material.AIR
         && !isNavSlot && !isActionSlot) {
       ItemStack item = _gui.getItem(rawSlot);
+
       if (item != null) {
         if (e.isShiftClick()) {
           Map<Integer, ItemStack> left = p.getInventory().addItem(item.clone());
+
           if (left.isEmpty()) {
             _gui.setItem(rawSlot, null);
             setEntryItem(_slotKeyMap.get(rawSlot), null);
@@ -215,6 +216,7 @@ public class CustomGUI implements Listener {
           _gui.setItem(rawSlot, null);
           setEntryItem(_slotKeyMap.get(rawSlot), null);
         }
+
         return;
       }
     }

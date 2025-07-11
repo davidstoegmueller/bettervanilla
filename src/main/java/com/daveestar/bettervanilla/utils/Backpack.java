@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.manager;
+package com.daveestar.bettervanilla.utils;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,8 +8,6 @@ import java.util.UUID;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-
-import com.daveestar.bettervanilla.utils.ItemStackUtils;
 
 public class Backpack {
   private final UUID _playerId;

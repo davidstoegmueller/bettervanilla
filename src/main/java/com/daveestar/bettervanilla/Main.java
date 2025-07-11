@@ -53,7 +53,6 @@ public class Main extends JavaPlugin {
   private NavigationManager _navigationManager;
   private AFKManager _afkManager;
   private CompassManager _compassManager;
-
   private SettingsManager _settingsManager;
   private PermissionsManager _permissionsManager;
   private DeathPointsManager _deathPointManager;
