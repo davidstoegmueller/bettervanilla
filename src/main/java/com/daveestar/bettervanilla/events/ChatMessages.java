@@ -14,6 +14,7 @@ import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.BackpackManager;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -28,6 +29,7 @@ public class ChatMessages implements Listener {
   private final TimerManager _timerManager;
   private final CompassManager _compassManager;
   private final MaintenanceManager _maintenanceManager;
+  private final BackpackManager _backpackManager;
 
   public ChatMessages() {
     _plugin = Main.getInstance();
@@ -36,6 +38,7 @@ public class ChatMessages implements Listener {
     _timerManager = _plugin.getTimerManager();
     _compassManager = _plugin.getCompassManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _backpackManager = _plugin.getBackpackManager();
   }
 
   @EventHandler
@@ -70,6 +73,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);
+    _backpackManager.onPlayerLeft(p);
   }
 
   @EventHandler
@@ -80,6 +84,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);
+    _backpackManager.onPlayerLeft(p);
   }
 
   @EventHandler
