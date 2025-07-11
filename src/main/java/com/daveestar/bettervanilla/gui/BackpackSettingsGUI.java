@@ -106,7 +106,7 @@ public class BackpackSettingsGUI implements Listener {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Pages"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of pages.",
-          ChatColor.YELLOW + "» " + ChatColor.RED + "ATTENTION: " + ChatColor.GRAY
+          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + ChatColor.GRAY
               + "Changing this can cause items in backpacks to be lost!",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + pages + ChatColor.GRAY + " pages",
@@ -148,7 +148,7 @@ public class BackpackSettingsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Rows"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of rows per page.",
-          ChatColor.YELLOW + "» " + ChatColor.RED + "ATTENTION: " + ChatColor.GRAY
+          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + ChatColor.GRAY
               + "Changing this can cause items in backpacks to be lost!",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + rows + ChatColor.GRAY + " rows",
