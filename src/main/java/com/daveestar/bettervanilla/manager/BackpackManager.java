@@ -43,6 +43,45 @@ public class BackpackManager implements Listener {
     Bukkit.getPluginManager().registerEvents(this, _plugin);
   }
 
+  public void openBackpack(Player p) {
+    if (!_settingsManager.getBackpackEnabled()) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Backpacks are disabled.");
+      return;
+    }
+
+    int pages = _settingsManager.getBackpackPages();
+    int rows = _settingsManager.getBackpackRows() + 1;
+    int pageSize = _getPageSize();
+    Map<Integer, ItemStack[]> backpack = _backpacks.computeIfAbsent(p.getUniqueId(),
+        id -> _loadPlayerBackpack(id));
+
+    Map<String, ItemStack> entries = new LinkedHashMap<>();
+
+    for (int page = 1; page <= pages; page++) {
+      ItemStack[] items = backpack.get(page);
+
+      for (int i = 0; i < pageSize; i++) {
+        String key = page + "_" + i;
+        ItemStack item = items[i];
+
+        entries.put(key, item);
+      }
+    }
+
+    CustomGUI gui = new CustomGUI(_plugin, p,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Backpack",
+        entries, rows, null, null,
+        EnumSet.of(CustomGUI.Option.ALLOW_ITEM_MOVEMENT));
+
+    gui.setClickActions(new HashMap<>());
+    gui.setPageSwitchListener((player, newPage, oldPage) -> {
+      _saveCurrentPage(p, gui, backpack, oldPage);
+    });
+
+    gui.open(p);
+    _openGUIs.put(p.getUniqueId(), gui);
+  }
+
   public void setEnabled(boolean value) {
     _settingsManager.setBackpackEnabled(value);
   }
@@ -65,47 +104,6 @@ public class BackpackManager implements Listener {
     }
 
     _config.save();
-  }
-
-  public void openBackpack(Player p) {
-    if (!_settingsManager.getBackpackEnabled()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Backpacks are disabled.");
-      return;
-    }
-
-    int pages = _settingsManager.getBackpackPages();
-    int rows = _settingsManager.getBackpackRows() + 1;
-    int pageSize = _getPageSize();
-    Map<Integer, ItemStack[]> backpack = _backpacks.computeIfAbsent(p.getUniqueId(),
-        id -> _loadPlayerBackpack(id));
-
-    Map<String, ItemStack> entries = new LinkedHashMap<>();
-    Map<String, Integer> customSlots = new HashMap<>();
-
-    for (int page = 1; page <= pages; page++) {
-      ItemStack[] items = backpack.get(page);
-
-      for (int i = 0; i < pageSize; i++) {
-        String key = page + "_" + i;
-        ItemStack item = items[i];
-
-        entries.put(key, item);
-        customSlots.put(key, i);
-      }
-    }
-
-    CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Backpack",
-        entries, rows, customSlots, null,
-        EnumSet.of(CustomGUI.Option.ALLOW_ITEM_MOVEMENT));
-
-    gui.setClickActions(new HashMap<>());
-    gui.setPageSwitchListener((pl, newPage, oldPage) -> {
-      _saveCurrentPage(pl, gui, backpack, oldPage);
-    });
-
-    gui.open(p);
-    _openGUIs.put(p.getUniqueId(), gui);
   }
 
   public void saveAllOpenBackpacks() {
@@ -142,7 +140,6 @@ public class BackpackManager implements Listener {
 
     backpack.put(page, items);
     _savePage(p.getUniqueId(), page, items);
-    _config.save();
   }
 
   private Map<Integer, ItemStack[]> _loadPlayerBackpack(UUID playerId) {
@@ -160,17 +157,20 @@ public class BackpackManager implements Listener {
   private ItemStack[] _loadPage(UUID playerId, int page, int pageSize) {
     List<?> list = _fileConfig.getList("players." + playerId + ".page" + page);
     ItemStack[] arr = ItemStackUtils.deserializeArray(list);
+
     if (arr.length < pageSize) {
       ItemStack[] tmp = new ItemStack[pageSize];
       System.arraycopy(arr, 0, tmp, 0, arr.length);
       return tmp;
     }
+
     return Arrays.copyOf(arr, pageSize);
   }
 
   private void _savePage(UUID playerId, int page, ItemStack[] items) {
     List<Map<String, Object>> data = ItemStackUtils.serializeArray(items);
     _fileConfig.set("players." + playerId + ".page" + page, data);
+    _config.save();
   }
 
   private int _getPageSize() {
@@ -188,5 +188,4 @@ public class BackpackManager implements Listener {
       _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
     }
   }
-
 }
