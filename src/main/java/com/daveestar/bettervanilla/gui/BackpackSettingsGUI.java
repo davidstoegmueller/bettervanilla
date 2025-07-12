@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -112,7 +113,7 @@ public class BackpackSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + pages + ChatColor.GRAY + " pages",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Page",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Page")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -132,7 +133,7 @@ public class BackpackSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -154,7 +155,7 @@ public class BackpackSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + rows + ChatColor.GRAY + " rows",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Row",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Row")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 

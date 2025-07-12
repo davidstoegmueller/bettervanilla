@@ -4,10 +4,14 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -41,23 +45,33 @@ public class SettingsGUI {
   public void displayGUI(Player p) {
     boolean isAdmin = p.hasPermission("bettervanilla.adminsettings");
     // two entry rows for admins, one for normal players (plus navigation row)
-    int rows = isAdmin ? 3 : 2;
+    int rows = isAdmin ? 4 : 3;
 
     Map<String, ItemStack> entries = new HashMap<>();
+    // first row
     entries.put("togglelocation", _createToggleLocationItem(p));
     entries.put("togglecompass", _createToggleCompassItem(p));
     entries.put("navigationtrail", _createNavigationTrailItem(p));
     entries.put("chestsort", _createChestSortItem(p));
 
+    // second row
+    entries.put("vineminer", _createVineMinerItem(p));
+    entries.put("vinechopper", _createVineChopperItem(p));
+
+    // thrid row
     if (isAdmin) {
       entries.put("adminsettings", _createAdminSettingsItem());
     }
 
     Map<String, Integer> customSlots = new HashMap<>();
+    // first row
     customSlots.put("togglelocation", 1);
     customSlots.put("togglecompass", 3);
     customSlots.put("navigationtrail", 5);
     customSlots.put("chestsort", 7);
+
+    customSlots.put("vineminer", 11);
+    customSlots.put("vinechopper", 15);
 
     if (isAdmin) {
       customSlots.put("adminsettings", rows * 9 - 10);
@@ -75,7 +89,7 @@ public class SettingsGUI {
         if (!p.hasPermission("bettervanilla.togglelocation")) {
           p.sendMessage(
               Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle the Action-Bar location.");
-          p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
@@ -90,7 +104,7 @@ public class SettingsGUI {
         if (!p.hasPermission("bettervanilla.togglecompass")) {
           p.sendMessage(Main.getPrefix() + ChatColor.RED
               + "You do not have permission to toggle the Bossbar-Compass.");
-          p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
@@ -106,7 +120,7 @@ public class SettingsGUI {
         if (!p.hasPermission("bettervanilla.chestsort")) {
           p.sendMessage(
               Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle chest sorting.");
-          p.playSound(p, org.bukkit.Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
@@ -118,6 +132,48 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleNavigationTrail(p);
+        displayGUI(p);
+      }
+    });
+
+    clickActions.put("vineminer", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!p.hasPermission("bettervanilla.vineminer")) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vine Miner.");
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        boolean globalState = _settingsManager.getVineMiner();
+        if (!globalState) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vine Miner is globally disabled on the server.");
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleVineMiner(p);
+        displayGUI(p);
+      }
+    });
+
+    clickActions.put("vinechopper", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!p.hasPermission("bettervanilla.vinechopper")) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vine Chopper.");
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        boolean globalState = _settingsManager.getVineChopper();
+        if (!globalState) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vine Chopper is globally disabled on the server.");
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleVineChopper(p);
         displayGUI(p);
       }
     });
@@ -136,7 +192,7 @@ public class SettingsGUI {
   }
 
   private ItemStack _createToggleLocationItem(Player p) {
-    boolean state = _settingsManager.getToggleLocation(p);
+    boolean state = _settingsManager.getToggleLocation(p.getUniqueId());
     ItemStack item = new ItemStack(Material.FILLED_MAP);
     ItemMeta meta = item.getItemMeta();
 
@@ -149,7 +205,7 @@ public class SettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).toList());
+          .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
 
@@ -170,7 +226,7 @@ public class SettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).toList());
+          .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
 
@@ -178,7 +234,7 @@ public class SettingsGUI {
   }
 
   private ItemStack _createChestSortItem(Player p) {
-    boolean state = _settingsManager.getChestSort(p);
+    boolean state = _settingsManager.getChestSort(p.getUniqueId());
     ItemStack item = new ItemStack(Material.CHEST);
     ItemMeta meta = item.getItemMeta();
 
@@ -190,14 +246,14 @@ public class SettingsGUI {
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
             + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-        .stream().map(Component::text).toList());
+        .stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
 
     return item;
   }
 
   private ItemStack _createNavigationTrailItem(Player p) {
-    boolean state = _settingsManager.getNavigationTrail(p);
+    boolean state = _settingsManager.getNavigationTrail(p.getUniqueId());
     ItemStack item = new ItemStack(Material.BLAZE_POWDER);
     ItemMeta meta = item.getItemMeta();
 
@@ -210,7 +266,57 @@ public class SettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).toList());
+          .stream().filter(Objects::nonNull).map(Component::text).toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createVineMinerItem(Player p) {
+    boolean state = _settingsManager.getPlayerVineMiner(p.getUniqueId());
+    ItemStack item = new ItemStack(Material.IRON_PICKAXE);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean globalState = _settingsManager.getVineMiner();
+
+    if (meta != null) {
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Miner"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage your vine miner settings.",
+          (!globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createVineChopperItem(Player p) {
+    boolean state = _settingsManager.getPlayerVineChopper(p.getUniqueId());
+    ItemStack item = new ItemStack(Material.IRON_AXE);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean globalState = _settingsManager.getVineChopper();
+
+    if (meta != null) {
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Chopper"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage your vine chopper settings.",
+          (!globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -228,7 +334,7 @@ public class SettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage admin and server settings.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().map(Component::text).toList());
+          .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
 
@@ -238,13 +344,13 @@ public class SettingsGUI {
   private void _toggleLocation(Player p) {
     boolean newState;
 
-    if (_settingsManager.getToggleLocation(p)) {
-      _settingsManager.setToggleLocation(p, false);
+    if (_settingsManager.getToggleLocation(p.getUniqueId())) {
+      _settingsManager.setToggleLocation(p.getUniqueId(), false);
       _actionBar.removeActionBar(p);
       newState = false;
     } else {
       _navigationManager.stopNavigation(p);
-      _settingsManager.setToggleLocation(p, true);
+      _settingsManager.setToggleLocation(p.getUniqueId(), true);
 
       var blockLoc = p.getLocation().toBlockLocation();
       Biome biome = p.getWorld().getBiome(blockLoc);
@@ -271,25 +377,41 @@ public class SettingsGUI {
       _compassManager.addPlayerToCompass(p);
     }
 
-    _settingsManager.setToggleCompass(p, newState);
+    _settingsManager.setToggleCompass(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleChestSort(Player p) {
-    boolean newState = !_settingsManager.getChestSort(p);
-    _settingsManager.setChestSort(p, newState);
+    boolean newState = !_settingsManager.getChestSort(p.getUniqueId());
+    _settingsManager.setChestSort(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Chest sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleNavigationTrail(Player p) {
-    boolean newState = !_settingsManager.getNavigationTrail(p);
-    _settingsManager.setNavigationTrail(p, newState);
+    boolean newState = !_settingsManager.getNavigationTrail(p.getUniqueId());
+    _settingsManager.setNavigationTrail(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Navigation particles are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleVineMiner(Player p) {
+    boolean newState = !_settingsManager.getPlayerVineMiner(p.getUniqueId());
+    _settingsManager.setPlayerVineMiner(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Vine Miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleVineChopper(Player p) {
+    boolean newState = !_settingsManager.getPlayerVineChopper(p.getUniqueId());
+    _settingsManager.setPlayerVineChopper(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Vine Chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

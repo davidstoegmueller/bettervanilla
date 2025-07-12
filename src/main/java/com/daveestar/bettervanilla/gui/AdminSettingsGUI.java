@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,17 +52,24 @@ public class AdminSettingsGUI implements Listener {
 
   public void displayGUI(Player p, CustomGUI parentMenu) {
     Map<String, ItemStack> entries = new HashMap<>();
+    // first row
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("creeperdamage", _createCreeperDamageItem());
     entries.put("enableend", _createEnableEndItem());
     entries.put("enablenether", _createEnableNetherItem());
     entries.put("sleepingrain", _createSleepingRainItem());
+
+    // second row
+    entries.put("motd", _createMOTDItem());
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
-    entries.put("cropprotection", _createCropProtectionItem());
-    entries.put("motd", _createMOTDItem());
-    entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
     entries.put("backpacksettings", _createBackpackSettingsItem());
+
+    // third row
+    entries.put("cropprotection", _createCropProtectionItem());
+    entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+    entries.put("vineminer", _createVineMinerItem());
+    entries.put("vinechopper", _createVineChopperItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -72,14 +80,16 @@ public class AdminSettingsGUI implements Listener {
     customSlots.put("sleepingrain", 8);
 
     // second row
+    customSlots.put("motd", 10);
     customSlots.put("afkprotection", 12);
     customSlots.put("afktime", 14);
     customSlots.put("backpacksettings", 16);
 
     // third row
-    customSlots.put("cropprotection", 20);
-    customSlots.put("motd", 22);
-    customSlots.put("rightclickcropharvest", 24);
+    customSlots.put("cropprotection", 18);
+    customSlots.put("rightclickcropharvest", 20);
+    customSlots.put("vineminer", 24);
+    customSlots.put("vinechopper", 26);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -188,6 +198,22 @@ public class AdminSettingsGUI implements Listener {
       }
     });
 
+    actions.put("vineminer", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleVineMiner(p);
+        displayGUI(p, parentMenu);
+      }
+    });
+
+    actions.put("vinechopper", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleVineChopper(p);
+        displayGUI(p, parentMenu);
+      }
+    });
+
     gui.setClickActions(actions);
     gui.open(p);
   }
@@ -210,7 +236,7 @@ public class AdminSettingsGUI implements Listener {
               + (message != null && !message.isEmpty() ? ChatColor.YELLOW + message : ChatColor.RED + ""),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle and set message")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -231,7 +257,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -251,7 +277,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -271,7 +297,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -291,7 +317,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -312,7 +338,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -334,7 +360,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -355,7 +381,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -375,7 +401,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + minutes + ChatColor.GRAY
               + " minutes",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -398,7 +424,7 @@ public class AdminSettingsGUI implements Listener {
               + (motd != null && !motd.isEmpty() ? ChatColor.translateAlternateColorCodes('&', motd)
                   : ChatColor.RED + "Not set"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -416,7 +442,51 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().map(Component::text).collect(Collectors.toList()));
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createVineMinerItem() {
+    boolean state = _settingsManager.getVineMiner();
+    ItemStack item = new ItemStack(Material.IRON_PICKAXE);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Miner"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vine miner settings.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createVineChopperItem() {
+    boolean state = _settingsManager.getVineChopper();
+    ItemStack item = new ItemStack(Material.IRON_AXE);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Chopper"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vine chopper settings.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -550,5 +620,33 @@ public class AdminSettingsGUI implements Listener {
     _afkManager.applyProtectionToAFKPlayers(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleVineMiner(Player p) {
+    boolean newState = !_settingsManager.getVineMiner();
+    _settingsManager.setVineMiner(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Vine miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+
+    if (!newState) {
+      String[] playerUUIDS = _settingsManager.getAllPlayersUUIDS();
+      for (String uuid : playerUUIDS) {
+        _settingsManager.setPlayerVineMiner(UUID.fromString(uuid), newState);
+      }
+    }
+  }
+
+  private void _toggleVineChopper(Player p) {
+    boolean newState = !_settingsManager.getVineChopper();
+    _settingsManager.setVineChopper(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Vine chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+
+    if (!newState) {
+      String[] playerUUIDS = _settingsManager.getAllPlayersUUIDS();
+      for (String uuid : playerUUIDS) {
+        _settingsManager.setPlayerVineChopper(UUID.fromString(uuid), newState);
+      }
+    }
   }
 }

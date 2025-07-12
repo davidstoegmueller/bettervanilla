@@ -222,7 +222,7 @@ public class WaypointsGUI implements Listener {
     Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypointName);
     Location destination = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
 
-    _settingsManager.setToggleLocation(p, false);
+    _settingsManager.setToggleLocation(p.getUniqueId(), false);
     NavigationData navigationData = new NavigationData(waypointName, destination, NavigationType.WAYPOINT,
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);

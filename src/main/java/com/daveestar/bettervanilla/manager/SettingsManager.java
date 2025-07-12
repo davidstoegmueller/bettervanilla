@@ -1,7 +1,8 @@
 package com.daveestar.bettervanilla.manager;
 
+import java.util.UUID;
+
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -14,40 +15,62 @@ public class SettingsManager {
     _fileConfig = config.getFileConfig();
   }
 
+  public String[] getAllPlayersUUIDS() {
+    return _fileConfig.getConfigurationSection("players").getKeys(false).toArray(new String[0]);
+  }
+
   // USER SETTINGS
-  public boolean getToggleLocation(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".togglelocation", false);
+  public boolean getToggleLocation(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".togglelocation", false);
   }
 
-  public void setToggleLocation(Player p, boolean value) {
-    _fileConfig.set(p.getUniqueId() + ".togglelocation", value);
+  public void setToggleLocation(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".togglelocation", value);
     _config.save();
   }
 
-  public boolean getToggleCompass(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".togglecompass", false);
+  public boolean getToggleCompass(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".togglecompass", false);
   }
 
-  public void setToggleCompass(Player p, boolean value) {
-    _fileConfig.set(p.getUniqueId() + ".togglecompass", value);
+  public void setToggleCompass(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".togglecompass", value);
     _config.save();
   }
 
-  public boolean getChestSort(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".chestsort", false);
+  public boolean getChestSort(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".chestsort", false);
   }
 
-  public void setChestSort(Player p, boolean value) {
-    _fileConfig.set(p.getUniqueId() + ".chestsort", value);
+  public void setChestSort(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".chestsort", value);
     _config.save();
   }
 
-  public boolean getNavigationTrail(Player p) {
-    return _fileConfig.getBoolean(p.getUniqueId() + ".navigationtrail", false);
+  public boolean getNavigationTrail(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".navigationtrail", false);
   }
 
-  public void setNavigationTrail(Player p, boolean value) {
-    _fileConfig.set(p.getUniqueId() + ".navigationtrail", value);
+  public void setNavigationTrail(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".navigationtrail", value);
+    _config.save();
+  }
+
+  public boolean getPlayerVineMiner(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".vineminer", false);
+  }
+
+  public void setPlayerVineMiner(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".vineminer", value);
+    _config.save();
+  }
+
+  public boolean getPlayerVineChopper(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".vinechopper", false);
+  }
+
+  public void setPlayerVineChopper(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".vinechopper", value);
     _config.save();
   }
 
@@ -175,6 +198,24 @@ public class SettingsManager {
 
   public void setBackpackPages(int value) {
     _fileConfig.set("global.backpack.pages", value);
+    _config.save();
+  }
+
+  public boolean getVineMiner() {
+    return _fileConfig.getBoolean("global.vineminer", false);
+  }
+
+  public void setVineMiner(boolean value) {
+    _fileConfig.set("global.vineminer", value);
+    _config.save();
+  }
+
+  public boolean getVineChopper() {
+    return _fileConfig.getBoolean("global.vinechopper", false);
+  }
+
+  public void setVineChopper(boolean value) {
+    _fileConfig.set("global.vinechopper", value);
     _config.save();
   }
 }

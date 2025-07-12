@@ -31,10 +31,10 @@ public class ToggleCompassCommand implements CommandExecutor {
       if (args.length == 0) {
         if (_compassManager.checkPlayerActiveCompass(p)) {
           _compassManager.removePlayerFromCompass(p);
-          _settingsManager.setToggleCompass(p, false);
+          _settingsManager.setToggleCompass(p.getUniqueId(), false);
         } else {
           _compassManager.addPlayerToCompass(p);
-          _settingsManager.setToggleCompass(p, true);
+          _settingsManager.setToggleCompass(p.getUniqueId(), true);
         }
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/togglecompass");

@@ -33,12 +33,12 @@ public class ToggleLocationCommand implements CommandExecutor {
       Player p = (Player) cs;
 
       if (args.length == 0) {
-        if (_settingsManager.getToggleLocation(p)) {
-          _settingsManager.setToggleLocation(p, false);
+        if (_settingsManager.getToggleLocation(p.getUniqueId())) {
+          _settingsManager.setToggleLocation(p.getUniqueId(), false);
           _actionBar.removeActionBar(p);
         } else {
           _navigationManager.stopNavigation(p);
-          _settingsManager.setToggleLocation(p, true);
+          _settingsManager.setToggleLocation(p.getUniqueId(), true);
 
           Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 

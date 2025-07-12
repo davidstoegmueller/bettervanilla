@@ -44,7 +44,7 @@ public class ChestSort implements Listener {
 
     Player p = (Player) e.getWhoClicked();
 
-    if (!_settingsManager.getChestSort(p)) {
+    if (!_settingsManager.getChestSort(p.getUniqueId())) {
       return;
     }
 
