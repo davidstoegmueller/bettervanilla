@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
@@ -43,9 +44,9 @@ public class SettingsGUI {
   }
 
   public void displayGUI(Player p) {
-    boolean isAdmin = p.hasPermission("bettervanilla.adminsettings");
+    boolean showAdminSettings = p.hasPermission(Permissions.ADMINSETTINGS.getName());
     // two entry rows for admins, one for normal players (plus navigation row)
-    int rows = isAdmin ? 4 : 3;
+    int rows = showAdminSettings ? 4 : 3;
 
     Map<String, ItemStack> entries = new HashMap<>();
     // first row
@@ -59,7 +60,7 @@ public class SettingsGUI {
     entries.put("vinechopper", _createVineChopperItem(p));
 
     // thrid row
-    if (isAdmin) {
+    if (showAdminSettings) {
       entries.put("adminsettings", _createAdminSettingsItem());
     }
 
@@ -73,7 +74,7 @@ public class SettingsGUI {
     customSlots.put("vineminer", 11);
     customSlots.put("vinechopper", 15);
 
-    if (isAdmin) {
+    if (showAdminSettings) {
       customSlots.put("adminsettings", rows * 9 - 10);
     }
 
@@ -86,7 +87,7 @@ public class SettingsGUI {
     clickActions.put("togglelocation", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission("bettervanilla.togglelocation")) {
+        if (!p.hasPermission(Permissions.TOGGLELOCATION.getName())) {
           p.sendMessage(
               Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle the Action-Bar location.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -101,7 +102,7 @@ public class SettingsGUI {
     clickActions.put("togglecompass", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission("bettervanilla.togglecompass")) {
+        if (!p.hasPermission(Permissions.TOGGLECOMPASS.getName())) {
           p.sendMessage(Main.getPrefix() + ChatColor.RED
               + "You do not have permission to toggle the Bossbar-Compass.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -117,7 +118,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
 
-        if (!p.hasPermission("bettervanilla.chestsort")) {
+        if (!p.hasPermission(Permissions.CHESTSORT.getName())) {
           p.sendMessage(
               Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle chest sorting.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -139,7 +140,7 @@ public class SettingsGUI {
     clickActions.put("vineminer", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission("bettervanilla.vineminer")) {
+        if (!p.hasPermission(Permissions.VINEMINER.getName())) {
           p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vine Miner.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
@@ -160,7 +161,7 @@ public class SettingsGUI {
     clickActions.put("vinechopper", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission("bettervanilla.vinechopper")) {
+        if (!p.hasPermission(Permissions.VINECHOPPER.getName())) {
           p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vine Chopper.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
@@ -178,7 +179,7 @@ public class SettingsGUI {
       }
     });
 
-    if (isAdmin) {
+    if (showAdminSettings) {
       clickActions.put("adminsettings", new CustomGUI.ClickAction() {
         @Override
         public void onLeftClick(Player p) {
@@ -196,11 +197,14 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.FILLED_MAP);
     ItemMeta meta = item.getItemMeta();
 
+    boolean hasPermission = p.hasPermission(Permissions.TOGGLELOCATION.getName());
+
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Show your current location in the actionbar.",
+          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -217,11 +221,14 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.COMPASS);
     ItemMeta meta = item.getItemMeta();
 
+    boolean hasPermission = p.hasPermission(Permissions.TOGGLECOMPASS.getName());
+
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shows a compass in the bossbar",
+          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -238,10 +245,13 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.CHEST);
     ItemMeta meta = item.getItemMeta();
 
+    boolean hasPermission = p.hasPermission(Permissions.CHESTSORT.getName());
+
     meta.displayName(
         Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
     meta.lore(Arrays.asList(
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!",
+        (!hasPermission ? ChatColor.RED + "You do not have permission for this setting." : null),
         "",
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
             + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -275,10 +285,11 @@ public class SettingsGUI {
 
   private ItemStack _createVineMinerItem(Player p) {
     boolean state = _settingsManager.getPlayerVineMiner(p.getUniqueId());
-    ItemStack item = new ItemStack(Material.IRON_PICKAXE);
+    ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
     boolean globalState = _settingsManager.getVineMiner();
+    boolean hasPermission = p.hasPermission(Permissions.VINEMINER.getName());
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -286,7 +297,8 @@ public class SettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Miner"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage your vine miner settings.",
-          (!globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
+          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
+              : !globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -300,10 +312,11 @@ public class SettingsGUI {
 
   private ItemStack _createVineChopperItem(Player p) {
     boolean state = _settingsManager.getPlayerVineChopper(p.getUniqueId());
-    ItemStack item = new ItemStack(Material.IRON_AXE);
+    ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
     boolean globalState = _settingsManager.getVineChopper();
+    boolean hasPermission = p.hasPermission(Permissions.VINECHOPPER.getName());
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -311,7 +324,8 @@ public class SettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Chopper"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage your vine chopper settings.",
-          (!globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
+          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
+              : !globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),

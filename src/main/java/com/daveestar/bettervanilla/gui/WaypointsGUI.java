@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
@@ -233,7 +234,7 @@ public class WaypointsGUI implements Listener {
   }
 
   private void _handleRemove(Player p, String waypointName) {
-    if (!p.hasPermission("bettervanilla.waypoints.remove")) {
+    if (!p.hasPermission(Permissions.WAYPOINTS_REMOVE.getName())) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED
           + "Sorry! You don't have permissions to remove existing waypoints.");
       return;

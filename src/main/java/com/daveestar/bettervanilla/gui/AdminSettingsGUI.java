@@ -451,7 +451,7 @@ public class AdminSettingsGUI implements Listener {
 
   private ItemStack _createVineMinerItem() {
     boolean state = _settingsManager.getVineMiner();
-    ItemStack item = new ItemStack(Material.IRON_PICKAXE);
+    ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
@@ -473,7 +473,7 @@ public class AdminSettingsGUI implements Listener {
 
   private ItemStack _createVineChopperItem() {
     boolean state = _settingsManager.getVineChopper();
-    ItemStack item = new ItemStack(Material.IRON_AXE);
+    ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {

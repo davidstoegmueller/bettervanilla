@@ -72,7 +72,7 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getShortPrefix() + "/settings <settingname> - Set and list global settings");
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix()
-          + "/permissions group <addperm | removeperm> <username> <permission> - Add or remove a permission from a group");
+          + "/permissions group <addperm | removeperm | delete> <username> [<permission>] - Add or remove a permission from a group");
       p.sendMessage(Main.getShortPrefix()
           + "/permissions user <addperm | removeperm> <username> <permission> - Add or remove a permission from a user");
       p.sendMessage(

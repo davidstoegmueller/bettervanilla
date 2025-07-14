@@ -69,14 +69,14 @@ public class PermissionsCommand implements TabExecutor {
   // --------------
 
   private void handleGroupCommand(CommandSender sender, String[] args) {
-    if (args.length != 4) {
+    if (args.length < 3) {
       sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-          + " /permissions group <addperm | removeperm> <group> <permission>");
+          + "/permissions group <addperm | removeperm | delete> <group> [<permission>]");
       return;
     }
 
     String group = args[2];
-    String permission = args[3];
+    String permission = args.length == 4 ? args[3] : "";
 
     String action = args[1].toLowerCase();
     switch (action) {
@@ -115,9 +115,31 @@ public class PermissionsCommand implements TabExecutor {
               + ChatColor.RED + " is not assigned to group " + ChatColor.YELLOW + group);
         }
         break;
+      case "delete":
+        // syntax: /permissions group delete <group>
+        if (args.length != 3) {
+          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
+              + "/permissions group delete <group>");
+          return;
+        }
+
+        if (permissionsManager.getAllGroupNames().contains(group)) {
+          if (group.equalsIgnoreCase(permissionsManager.DEFAULT_GROUP_NAME)) {
+            sender.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot delete the default group.");
+            return;
+          }
+
+          permissionsManager.removeGroup(group);
+          sender.sendMessage(Main.getPrefix() + "Group " + ChatColor.YELLOW + group + ChatColor.GRAY
+              + " has been deleted.");
+        } else {
+          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Group " + ChatColor.YELLOW + group
+              + ChatColor.RED + " does not exist.");
+        }
+        break;
       default:
         sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-            + " /permissions group <addperm | removeperm> <group> <permission>");
+            + " /permissions group <addperm | removeperm | delete> <group> [<permission>]");
         break;
     }
   }
@@ -289,7 +311,7 @@ public class PermissionsCommand implements TabExecutor {
       completions.addAll(sections);
     } else if (args.length == 2) {
       if (args[0].equalsIgnoreCase("group")) {
-        List<String> groupActions = List.of("addperm", "removeperm");
+        List<String> groupActions = List.of("addperm", "removeperm", "delete");
         completions.addAll(groupActions);
       } else if (args[0].equalsIgnoreCase("user")) {
         List<String> userActions = List.of("addperm", "removeperm", "setgroup");
@@ -337,6 +359,10 @@ public class PermissionsCommand implements TabExecutor {
 
         if (action.equals("removeperm")) {
           completions.addAll(permissionsManager.getGroupPermissions(args[2]));
+        }
+
+        if (action.equals("delete")) {
+          completions.addAll(permissionsManager.getAllGroupNames());
         }
       }
     }
