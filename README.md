@@ -55,6 +55,7 @@ _(Scroll down for the complete feature & command list.)_
 - ✨ **Navigation Particles** – Follow a beam and optional trail while navigating
 - 📦 **Chest Sorting** – Right‑click outside a chest inventory to instantly sort it
 - 🎨 **Colored Chat & Mentions** – Use `&` color codes and ping players with `@name`
+- 🎵 **YouTube Audio** – Share YouTube links in chat and play them with musical note blocks
 
 ### Admin & Server
 
@@ -174,6 +175,18 @@ _(Scroll down for the complete feature & command list.)_
 _Use `/permissions reload` to apply permission changes without requiring players to rejoin._
 
 </details>
+<details><summary><strong>YouTube Audio 🎵</strong></summary>
+
+| Command                        | Description                       |
+| ------------------------------ | --------------------------------- |
+| 🎵 `/youtube play <video-id>`  | Play a YouTube song               |
+| ⏹️ `/youtube stop`              | Stop current playback             |
+| 📜 `/youtube list`              | List available songs              |
+| 🔊 `/youtube volume <0.1-1.0>`  | Set playback volume               |
+
+_Share YouTube links in chat to automatically detect and store them for playback._
+
+</details>
 
 <details><summary><strong>Help 📚</strong></summary>
 
@@ -205,6 +218,7 @@ bettervanilla.togglecompass
 bettervanilla.chestsort
 bettervanilla.deathpoints
 bettervanilla.permissions
+bettervanilla.youtube
 ```
 
 ---
