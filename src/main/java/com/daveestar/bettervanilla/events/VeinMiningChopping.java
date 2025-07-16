@@ -61,7 +61,7 @@ public class VeinMiningChopping implements Listener {
     boolean isVeinMinerBlock = _isVeinMinerBlock(originBlockType);
 
     if (isValidPickaxe && isVeinMinerBlock) {
-      List<Block> veinBlocks = _getVeinBlocks(originBlock);
+      List<Block> veinBlocks = _getVeinBlocks(originBlock, _settingsManager.getVeinMinerMaxVeinSize());
 
       for (Block veinBlock : veinBlocks) {
         veinBlock.breakNaturally(tool, true, true);
@@ -80,7 +80,7 @@ public class VeinMiningChopping implements Listener {
     boolean isVeinChopperBlock = _isVeinChopperBlock(originBlockType);
 
     if (isValidAxe && isVeinChopperBlock) {
-      List<Block> veinBlocks = _getVeinBlocks(originBlock);
+      List<Block> veinBlocks = _getVeinBlocks(originBlock, _settingsManager.getVeinChopperMaxVeinSize());
 
       for (Block veinBlock : veinBlocks) {
         veinBlock.breakNaturally(tool, true, true);
@@ -120,8 +120,7 @@ public class VeinMiningChopping implements Listener {
     return true;
   }
 
-  private List<Block> _getVeinBlocks(Block originBlock) {
-    int limit = 100; // safety valve; make this configurable ???
+  private List<Block> _getVeinBlocks(Block originBlock, int limit) {
     Set<Block> visited = new HashSet<>();
     Queue<Block> queue = new ArrayDeque<>();
 
@@ -166,28 +165,18 @@ public class VeinMiningChopping implements Listener {
   }
 
   private boolean _isVeinMinerBlock(Material blockType) {
-    return blockType == Material.COAL_ORE || blockType == Material.IRON_ORE || blockType == Material.GOLD_ORE ||
-        blockType == Material.REDSTONE_ORE || blockType == Material.LAPIS_ORE || blockType == Material.DIAMOND_ORE ||
-        blockType == Material.EMERALD_ORE || blockType == Material.COPPER_ORE || blockType == Material.NETHER_QUARTZ_ORE
-        || blockType == Material.NETHER_GOLD_ORE || blockType == Material.DEEPSLATE_COAL_ORE ||
-        blockType == Material.DEEPSLATE_IRON_ORE || blockType == Material.DEEPSLATE_GOLD_ORE ||
-        blockType == Material.DEEPSLATE_REDSTONE_ORE || blockType == Material.DEEPSLATE_LAPIS_ORE ||
-        blockType == Material.DEEPSLATE_DIAMOND_ORE || blockType == Material.DEEPSLATE_COPPER_ORE;
+    return _settingsManager.getVeinMinerAllowedBlocks().contains(blockType.name());
   }
 
   private boolean _isVeinChopperBlock(Material blockType) {
-    return blockType == Material.OAK_LOG || blockType == Material.SPRUCE_LOG || blockType == Material.BIRCH_LOG ||
-        blockType == Material.JUNGLE_LOG || blockType == Material.ACACIA_LOG || blockType == Material.DARK_OAK_LOG ||
-        blockType == Material.MANGROVE_LOG || blockType == Material.CHERRY_LOG;
+    return _settingsManager.getVeinChopperAllowedBlocks().contains(blockType.name());
   }
 
   private boolean _isValidAxe(Material tool) {
-    return tool == Material.WOODEN_AXE || tool == Material.STONE_AXE || tool == Material.IRON_AXE ||
-        tool == Material.GOLDEN_AXE || tool == Material.DIAMOND_AXE || tool == Material.NETHERITE_AXE;
+    return _settingsManager.getVeinChopperAllowedTools().contains(tool.name());
   }
 
   private boolean _isValidPickaxe(Material tool) {
-    return tool == Material.WOODEN_PICKAXE || tool == Material.STONE_PICKAXE || tool == Material.IRON_PICKAXE ||
-        tool == Material.GOLDEN_PICKAXE || tool == Material.DIAMOND_PICKAXE || tool == Material.NETHERITE_PICKAXE;
+    return _settingsManager.getVeinMinerAllowedTools().contains(tool.name());
   }
 }

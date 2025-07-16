@@ -22,6 +22,8 @@ import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.gui.VeinMinerSettingsGUI;
+import com.daveestar.bettervanilla.gui.VeinChopperSettingsGUI;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -37,6 +39,8 @@ public class AdminSettingsGUI implements Listener {
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
   private final Map<UUID, CustomGUI> _motdPending;
   private final BackpackSettingsGUI _backpackSettingsGUI;
+  private final VeinMinerSettingsGUI _veinMinerSettingsGUI;
+  private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -47,6 +51,8 @@ public class AdminSettingsGUI implements Listener {
     _maintenanceMessagePending = new HashMap<>();
     _motdPending = new HashMap<>();
     _backpackSettingsGUI = new BackpackSettingsGUI();
+    _veinMinerSettingsGUI = new VeinMinerSettingsGUI();
+    _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -201,16 +207,14 @@ public class AdminSettingsGUI implements Listener {
     actions.put("veinminer", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleVeinMiner(p);
-        displayGUI(p, parentMenu);
+        _veinMinerSettingsGUI.displayGUI(p, gui);
       }
     });
 
     actions.put("veinchopper", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleVeinChopper(p);
-        displayGUI(p, parentMenu);
+        _veinChopperSettingsGUI.displayGUI(p, gui);
       }
     });
 
@@ -463,7 +467,7 @@ public class AdminSettingsGUI implements Listener {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -485,7 +489,7 @@ public class AdminSettingsGUI implements Listener {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }

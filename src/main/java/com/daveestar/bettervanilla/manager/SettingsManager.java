@@ -1,5 +1,7 @@
 package com.daveestar.bettervanilla.manager;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,6 +11,25 @@ import com.daveestar.bettervanilla.utils.Config;
 public class SettingsManager {
   private Config _config;
   private FileConfiguration _fileConfig;
+
+  public static final List<String> DEFAULT_VEIN_MINER_TOOLS = Arrays.asList(
+      "WOODEN_PICKAXE", "STONE_PICKAXE", "IRON_PICKAXE", "GOLDEN_PICKAXE",
+      "DIAMOND_PICKAXE", "NETHERITE_PICKAXE");
+
+  public static final List<String> DEFAULT_VEIN_MINER_BLOCKS = Arrays.asList(
+      "COAL_ORE", "IRON_ORE", "GOLD_ORE", "REDSTONE_ORE", "LAPIS_ORE",
+      "DIAMOND_ORE", "EMERALD_ORE", "COPPER_ORE", "NETHER_QUARTZ_ORE",
+      "NETHER_GOLD_ORE", "DEEPSLATE_COAL_ORE", "DEEPSLATE_IRON_ORE",
+      "DEEPSLATE_GOLD_ORE", "DEEPSLATE_REDSTONE_ORE", "DEEPSLATE_LAPIS_ORE",
+      "DEEPSLATE_DIAMOND_ORE", "DEEPSLATE_COPPER_ORE");
+
+  public static final List<String> DEFAULT_VEIN_CHOPPER_TOOLS = Arrays.asList(
+      "WOODEN_AXE", "STONE_AXE", "IRON_AXE", "GOLDEN_AXE",
+      "DIAMOND_AXE", "NETHERITE_AXE");
+
+  public static final List<String> DEFAULT_VEIN_CHOPPER_BLOCKS = Arrays.asList(
+      "OAK_LOG", "SPRUCE_LOG", "BIRCH_LOG", "JUNGLE_LOG", "ACACIA_LOG",
+      "DARK_OAK_LOG", "MANGROVE_LOG", "CHERRY_LOG");
 
   public SettingsManager(Config config) {
     _config = config;
@@ -216,6 +237,64 @@ public class SettingsManager {
 
   public void setVeinChopper(boolean value) {
     _fileConfig.set("global.veinchopper", value);
+    _config.save();
+  }
+
+  public int getVeinMinerMaxVeinSize() {
+    return _fileConfig.getInt("global.veinminer.maxveinsize", 100);
+  }
+
+  public void setVeinMinerMaxVeinSize(int value) {
+    _fileConfig.set("global.veinminer.maxveinsize", value);
+    _config.save();
+  }
+
+  public int getVeinChopperMaxVeinSize() {
+    return _fileConfig.getInt("global.veinchopper.maxveinsize", 100);
+  }
+
+  public void setVeinChopperMaxVeinSize(int value) {
+    _fileConfig.set("global.veinchopper.maxveinsize", value);
+    _config.save();
+  }
+
+  public List<String> getVeinMinerAllowedTools() {
+    List<String> list = _fileConfig.getStringList("global.veinminer.allowedtools");
+    return list == null || list.isEmpty() ? DEFAULT_VEIN_MINER_TOOLS : list;
+  }
+
+  public void setVeinMinerAllowedTools(List<String> tools) {
+    _fileConfig.set("global.veinminer.allowedtools", tools);
+    _config.save();
+  }
+
+  public List<String> getVeinMinerAllowedBlocks() {
+    List<String> list = _fileConfig.getStringList("global.veinminer.allowedblocks");
+    return list == null || list.isEmpty() ? DEFAULT_VEIN_MINER_BLOCKS : list;
+  }
+
+  public void setVeinMinerAllowedBlocks(List<String> blocks) {
+    _fileConfig.set("global.veinminer.allowedblocks", blocks);
+    _config.save();
+  }
+
+  public List<String> getVeinChopperAllowedTools() {
+    List<String> list = _fileConfig.getStringList("global.veinchopper.allowedtools");
+    return list == null || list.isEmpty() ? DEFAULT_VEIN_CHOPPER_TOOLS : list;
+  }
+
+  public void setVeinChopperAllowedTools(List<String> tools) {
+    _fileConfig.set("global.veinchopper.allowedtools", tools);
+    _config.save();
+  }
+
+  public List<String> getVeinChopperAllowedBlocks() {
+    List<String> list = _fileConfig.getStringList("global.veinchopper.allowedblocks");
+    return list == null || list.isEmpty() ? DEFAULT_VEIN_CHOPPER_BLOCKS : list;
+  }
+
+  public void setVeinChopperAllowedBlocks(List<String> blocks) {
+    _fileConfig.set("global.veinchopper.allowedblocks", blocks);
     _config.save();
   }
 }
