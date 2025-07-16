@@ -1,5 +1,6 @@
 package com.daveestar.bettervanilla.manager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -222,20 +223,20 @@ public class SettingsManager {
     _config.save();
   }
 
-  public boolean getVeinMiner() {
+  public boolean getVeinMinerEnabled() {
     return _fileConfig.getBoolean("global.veinminer.enabled", false);
   }
 
-  public void setVeinMiner(boolean value) {
+  public void setVeinMinerEnabled(boolean value) {
     _fileConfig.set("global.veinminer.enabled", value);
     _config.save();
   }
 
-  public boolean getVeinChopper() {
+  public boolean getVeinChopperEnabled() {
     return _fileConfig.getBoolean("global.veinchopper.enabled", false);
   }
 
-  public void setVeinChopper(boolean value) {
+  public void setVeinChopperEnabled(boolean value) {
     _fileConfig.set("global.veinchopper.enabled", value);
     _config.save();
   }
@@ -279,11 +280,11 @@ public class SettingsManager {
   public List<String> getVeinMinerAllowedTools() {
     String path = "global.veinminer.allowedtools";
     if (!_fileConfig.contains(path)) {
-      return new java.util.ArrayList<>(DEFAULT_VEIN_MINER_TOOLS);
+      return new ArrayList<>(DEFAULT_VEIN_MINER_TOOLS);
     }
 
     List<String> list = _fileConfig.getStringList(path);
-    return list == null ? new java.util.ArrayList<>() : new java.util.ArrayList<>(list);
+    return list == null ? new ArrayList<>() : new ArrayList<>(list);
   }
 
   public void setVeinMinerAllowedTools(List<String> tools) {
@@ -294,11 +295,11 @@ public class SettingsManager {
   public List<String> getVeinMinerAllowedBlocks() {
     String path = "global.veinminer.allowedblocks";
     if (!_fileConfig.contains(path)) {
-      return new java.util.ArrayList<>(DEFAULT_VEIN_MINER_BLOCKS);
+      return new ArrayList<>(DEFAULT_VEIN_MINER_BLOCKS);
     }
 
     List<String> list = _fileConfig.getStringList(path);
-    return list == null ? new java.util.ArrayList<>() : new java.util.ArrayList<>(list);
+    return list == null ? new ArrayList<>() : new ArrayList<>(list);
   }
 
   public void setVeinMinerAllowedBlocks(List<String> blocks) {
@@ -309,11 +310,11 @@ public class SettingsManager {
   public List<String> getVeinChopperAllowedTools() {
     String path = "global.veinchopper.allowedtools";
     if (!_fileConfig.contains(path)) {
-      return new java.util.ArrayList<>(DEFAULT_VEIN_CHOPPER_TOOLS);
+      return new ArrayList<>(DEFAULT_VEIN_CHOPPER_TOOLS);
     }
 
     List<String> list = _fileConfig.getStringList(path);
-    return list == null ? new java.util.ArrayList<>() : new java.util.ArrayList<>(list);
+    return list == null ? new ArrayList<>() : new ArrayList<>(list);
   }
 
   public void setVeinChopperAllowedTools(List<String> tools) {
@@ -324,11 +325,11 @@ public class SettingsManager {
   public List<String> getVeinChopperAllowedBlocks() {
     String path = "global.veinchopper.allowedblocks";
     if (!_fileConfig.contains(path)) {
-      return new java.util.ArrayList<>(DEFAULT_VEIN_CHOPPER_BLOCKS);
+      return new ArrayList<>(DEFAULT_VEIN_CHOPPER_BLOCKS);
     }
 
     List<String> list = _fileConfig.getStringList(path);
-    return list == null ? new java.util.ArrayList<>() : new java.util.ArrayList<>(list);
+    return list == null ? new ArrayList<>() : new ArrayList<>(list);
   }
 
   public void setVeinChopperAllowedBlocks(List<String> blocks) {

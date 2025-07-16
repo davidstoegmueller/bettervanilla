@@ -22,8 +22,6 @@ import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
-import com.daveestar.bettervanilla.gui.VeinMinerSettingsGUI;
-import com.daveestar.bettervanilla.gui.VeinChopperSettingsGUI;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -74,8 +72,8 @@ public class AdminSettingsGUI implements Listener {
     // third row
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
-    entries.put("veinminer", _createVeinMinerItem());
-    entries.put("veinchopper", _createVeinChopperItem());
+    entries.put("veinminersettings", _createVeinMinerSettingsItem());
+    entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -94,8 +92,8 @@ public class AdminSettingsGUI implements Listener {
     // third row
     customSlots.put("cropprotection", 18);
     customSlots.put("rightclickcropharvest", 20);
-    customSlots.put("veinminer", 24);
-    customSlots.put("veinchopper", 26);
+    customSlots.put("veinminersettings", 24);
+    customSlots.put("veinchoppersettings", 26);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -204,14 +202,14 @@ public class AdminSettingsGUI implements Listener {
       }
     });
 
-    actions.put("veinminer", new CustomGUI.ClickAction() {
+    actions.put("veinminersettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         _veinMinerSettingsGUI.displayGUI(p, gui);
       }
     });
 
-    actions.put("veinchopper", new CustomGUI.ClickAction() {
+    actions.put("veinchoppersettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         _veinChopperSettingsGUI.displayGUI(p, gui);
@@ -453,20 +451,17 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createVeinMinerItem() {
-    boolean state = _settingsManager.getVeinMiner();
+  private ItemStack _createVeinMinerSettingsItem() {
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner Settings"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein miner settings.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -475,20 +470,17 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createVeinChopperItem() {
-    boolean state = _settingsManager.getVeinChopper();
+  private ItemStack _createVeinChopperSettingsItem() {
     ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper Settings"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein chopper settings.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -624,33 +616,5 @@ public class AdminSettingsGUI implements Listener {
     _afkManager.applyProtectionToAFKPlayers(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
-  }
-
-  private void _toggleVeinMiner(Player p) {
-    boolean newState = !_settingsManager.getVeinMiner();
-    _settingsManager.setVeinMiner(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vein miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
-
-    if (!newState) {
-      String[] playerUUIDS = _settingsManager.getAllPlayersUUIDS();
-      for (String uuid : playerUUIDS) {
-        _settingsManager.setPlayerVeinMiner(UUID.fromString(uuid), newState);
-      }
-    }
-  }
-
-  private void _toggleVeinChopper(Player p) {
-    boolean newState = !_settingsManager.getVeinChopper();
-    _settingsManager.setVeinChopper(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vein chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
-
-    if (!newState) {
-      String[] playerUUIDS = _settingsManager.getAllPlayersUUIDS();
-      for (String uuid : playerUUIDS) {
-        _settingsManager.setPlayerVeinChopper(UUID.fromString(uuid), newState);
-      }
-    }
   }
 }

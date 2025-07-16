@@ -146,7 +146,7 @@ public class SettingsGUI {
           return;
         }
 
-        boolean globalState = _settingsManager.getVeinMiner();
+        boolean globalState = _settingsManager.getVeinMinerEnabled();
         if (!globalState) {
           p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vein Miner is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -167,7 +167,7 @@ public class SettingsGUI {
           return;
         }
 
-        boolean globalState = _settingsManager.getVeinChopper();
+        boolean globalState = _settingsManager.getVeinChopperEnabled();
         if (!globalState) {
           p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vein Chopper is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -288,7 +288,7 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
-    boolean globalState = _settingsManager.getVeinMiner();
+    boolean globalState = _settingsManager.getVeinMinerEnabled();
     boolean hasPermission = p.hasPermission(Permissions.VEINMINER.getName());
 
     if (meta != null) {
@@ -316,7 +316,7 @@ public class SettingsGUI {
     ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
-    boolean globalState = _settingsManager.getVeinChopper();
+    boolean globalState = _settingsManager.getVeinChopperEnabled();
     boolean hasPermission = p.hasPermission(Permissions.VEINCHOPPER.getName());
 
     if (meta != null) {

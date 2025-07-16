@@ -48,15 +48,19 @@ public class MaterialToggleGUI implements Listener {
       boolean state = allowed.contains(mat.name());
       ItemStack item = new ItemStack(mat);
       ItemMeta meta = item.getItemMeta();
+
       if (meta != null) {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + mat.name()));
         meta.lore(Arrays.asList(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+            "",
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+                + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
             ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
             .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
         item.setItemMeta(meta);
       }
+
       entries.put(mat.name(), item);
     }
 
@@ -72,11 +76,13 @@ public class MaterialToggleGUI implements Listener {
         @Override
         public void onLeftClick(Player player) {
           List<String> list = new java.util.ArrayList<>(_getList.get());
+
           if (list.contains(mat.name())) {
             list.remove(mat.name());
           } else {
             list.add(mat.name());
           }
+
           _setList.accept(list);
           displayGUI(player, parent);
         }
