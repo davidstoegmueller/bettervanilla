@@ -34,6 +34,7 @@ public class CustomGUI implements Listener {
   private final CustomGUI _parentMenu;
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
+  private PageSwitchListener _pageSwitchListener;
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
@@ -65,6 +66,27 @@ public class CustomGUI implements Listener {
     _clickActions = clickActions;
   }
 
+  public Inventory getInventory() {
+    return _gui;
+  }
+
+  public int getCurrentPage() {
+    return _currentPage;
+  }
+
+  public void setEntryItem(String key, ItemStack item) {
+    for (Map.Entry<String, ItemStack> entry : _entryList) {
+      if (entry.getKey().equals(key)) {
+        entry.setValue(item);
+        break;
+      }
+    }
+  }
+
+  public void setPageSwitchListener(PageSwitchListener listener) {
+    _pageSwitchListener = listener;
+  }
+
   private void _clear() {
     _gui.clear();
   }
@@ -83,8 +105,8 @@ public class CustomGUI implements Listener {
     _addItemToSlot(_POS_SWITCH_PAGE_BUTTON, Material.BOOK,
         ChatColor.YELLOW + "Page " + ChatColor.GRAY + _currentPage + "/" + _maxPage,
         Arrays.asList(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next Page",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Previous Page"));
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next Page",
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous Page"));
   }
 
   private void _createBackButton() {
@@ -149,33 +171,90 @@ public class CustomGUI implements Listener {
     if (!e.getInventory().equals(_gui))
       return;
 
-    e.setCancelled(true);
+    boolean allowMove = _options.contains(Option.ALLOW_ITEM_MOVEMENT);
     Player p = (Player) e.getWhoClicked();
-    int slot = e.getRawSlot();
+    int rawSlot = e.getRawSlot();
+    int topSize = _gui.getSize();
 
-    if (slot == _POS_SWITCH_PAGE_BUTTON) {
-      _handlePageSwitch(p, e.isRightClick());
+    if (rawSlot >= topSize) {
+      if (!allowMove) {
+        e.setCancelled(true);
+      }
+
+      // player inventory interaction
+      return;
+    }
+
+    boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
+    boolean isActionSlot = rawSlot == _POS_SWITCH_PAGE_BUTTON
+        || (rawSlot == _POS_BACK_BUTTON && _parentMenu != null);
+    boolean isItemSlot = _slotKeyMap.containsKey(rawSlot);
+
+    if (allowMove && !isNavSlot && !isActionSlot) {
+      // allow default item movement in the editable area
+      return;
+    }
+
+    e.setCancelled(true);
+
+    if (allowMove && isItemSlot && e.getCursor().getType() == Material.AIR
+        && !isNavSlot && !isActionSlot) {
+      ItemStack item = _gui.getItem(rawSlot);
+
+      if (item != null) {
+        if (e.isShiftClick()) {
+          Map<Integer, ItemStack> left = p.getInventory().addItem(item.clone());
+
+          if (left.isEmpty()) {
+            _gui.setItem(rawSlot, null);
+            setEntryItem(_slotKeyMap.get(rawSlot), null);
+          } else {
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          }
+        } else {
+          p.setItemOnCursor(item.clone());
+          _gui.setItem(rawSlot, null);
+          setEntryItem(_slotKeyMap.get(rawSlot), null);
+        }
+
+        return;
+      }
+    }
+
+    if (!isActionSlot && !isItemSlot)
+      return;
+
+    if (rawSlot == _POS_SWITCH_PAGE_BUTTON) {
+      _handlePageSwitch(p, e.isLeftClick());
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
-    } else if (slot == _POS_BACK_BUTTON && _parentMenu != null) {
+    } else if (rawSlot == _POS_BACK_BUTTON && _parentMenu != null) {
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
       _parentMenu.open(p);
-    } else if (_slotKeyMap.containsKey(slot)) {
-      _handleItemClick(p, _slotKeyMap.get(slot), e.isShiftClick(), e.isRightClick());
+    } else if (_slotKeyMap.containsKey(rawSlot)) {
+      _handleItemClick(p, _slotKeyMap.get(rawSlot), e.isShiftClick(), e.isRightClick());
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
     }
   }
 
   private void _handlePageSwitch(Player p, boolean isNextPage) {
+    int oldPage = _currentPage;
+    int newPage = _currentPage;
+
     if (isNextPage && _currentPage < _maxPage) {
-      _currentPage++;
+      newPage = _currentPage + 1;
     } else if (!isNextPage && _currentPage > 1) {
-      _currentPage--;
+      newPage = _currentPage - 1;
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
       return;
     }
 
+    if (_pageSwitchListener != null) {
+      _pageSwitchListener.onPageSwitch(p, newPage, oldPage);
+    }
+
+    _currentPage = newPage;
     _updatePage();
     p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
@@ -218,7 +297,12 @@ public class CustomGUI implements Listener {
     }
   }
 
+  public interface PageSwitchListener {
+    void onPageSwitch(Player p, int newPage, int oldPage);
+  }
+
   public enum Option {
     DISABLE_PAGE_BUTTON,
+    ALLOW_ITEM_MOVEMENT,
   }
 }

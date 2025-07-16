@@ -14,6 +14,7 @@ import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.BackpackManager;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -28,6 +29,7 @@ public class ChatMessages implements Listener {
   private final TimerManager _timerManager;
   private final CompassManager _compassManager;
   private final MaintenanceManager _maintenanceManager;
+  private final BackpackManager _backpackManager;
 
   public ChatMessages() {
     _plugin = Main.getInstance();
@@ -36,15 +38,20 @@ public class ChatMessages implements Listener {
     _timerManager = _plugin.getTimerManager();
     _compassManager = _plugin.getCompassManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _backpackManager = _plugin.getBackpackManager();
   }
 
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent e) {
     Player p = (Player) e.getPlayer();
 
-    if (_maintenanceManager.getState() && !p.hasPermission("bettervanilla.maintenance.bypass")) {
-      _maintenanceManager.sendMaintenance(p);
-      return;
+    _permissionsManager.onPlayerJoined(p);
+
+    if (_maintenanceManager.getState()) {
+      boolean bypass = _maintenanceManager.sendMaintenance(p);
+
+      if (!bypass)
+        return;
     }
 
     p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
@@ -53,7 +60,6 @@ public class ChatMessages implements Listener {
         Component.text(
             ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName()));
 
-    _permissionsManager.onPlayerJoined(p);
     _afkManager.onPlayerJoined(p);
     _timerManager.onPlayerJoined(p);
     _compassManager.onPlayerJoined(p);
@@ -70,6 +76,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);
+    _backpackManager.onPlayerLeft(p);
   }
 
   @EventHandler
@@ -80,6 +87,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);
+    _backpackManager.onPlayerLeft(p);
   }
 
   @EventHandler

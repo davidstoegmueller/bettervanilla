@@ -30,10 +30,20 @@ public final class ItemStackUtils {
   }
 
   public static ItemStack[] deserializeArray(List<?> data) {
-    return Optional.ofNullable(data).orElse(Collections.emptyList()).stream()
-        .filter(Map.class::isInstance)
-        .map(Map.class::cast)
-        .map(ItemStackUtils::deserialize)
-        .toArray(ItemStack[]::new);
+    List<?> list = Optional.ofNullable(data).orElse(Collections.emptyList());
+    ItemStack[] result = new ItemStack[list.size()];
+
+    for (int i = 0; i < list.size(); i++) {
+      Object obj = list.get(i);
+      if (obj instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) obj;
+        result[i] = deserialize(map);
+      } else {
+        result[i] = null;
+      }
+    }
+
+    return result;
   }
 }

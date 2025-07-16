@@ -16,6 +16,7 @@ import com.daveestar.bettervanilla.commands.TimerCommand;
 import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
+import com.daveestar.bettervanilla.commands.BackpackCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
@@ -23,6 +24,7 @@ import com.daveestar.bettervanilla.events.PreventDimension;
 import com.daveestar.bettervanilla.events.ServerMOTD;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
+import com.daveestar.bettervanilla.events.VeinMiningChopping;
 import com.daveestar.bettervanilla.events.RightClickCropHarvest;
 import com.daveestar.bettervanilla.events.ChestSort;
 import com.daveestar.bettervanilla.events.CropProtection;
@@ -35,6 +37,7 @@ import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
+import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -51,13 +54,13 @@ public class Main extends JavaPlugin {
   private NavigationManager _navigationManager;
   private AFKManager _afkManager;
   private CompassManager _compassManager;
-
   private SettingsManager _settingsManager;
   private PermissionsManager _permissionsManager;
   private DeathPointsManager _deathPointManager;
   private WaypointsManager _waypointsManager;
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
+  private BackpackManager _backpackManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -67,12 +70,14 @@ public class Main extends JavaPlugin {
     Config timerConfig = new Config("timer.yml", getDataFolder());
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
+    Config backpackConfig = new Config("backpacks.yml", getDataFolder());
 
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
+    _backpackManager = new BackpackManager(backpackConfig);
 
     _maintenanceManager = new MaintenanceManager();
     _actionBar = new ActionBar();
@@ -102,6 +107,7 @@ public class Main extends JavaPlugin {
     getCommand("playtime").setExecutor(new PlayTimeCommand());
     getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
+    getCommand("backpack").setExecutor(new BackpackCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -115,6 +121,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new CropProtection(), this);
     manager.registerEvents(new RightClickCropHarvest(), this);
     manager.registerEvents(new ChestSort(), this);
+    manager.registerEvents(new VeinMiningChopping(), this);
   }
 
   @Override
@@ -125,6 +132,7 @@ public class Main extends JavaPlugin {
     _timerManager.setRunning(false);
     getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();
+    _backpackManager.saveAllOpenBackpacks();
 
     _LOGGER.info("BetterVanilla - DISABLED");
   }
@@ -181,5 +189,9 @@ public class Main extends JavaPlugin {
 
   public MaintenanceManager getMaintenanceManager() {
     return _maintenanceManager;
+  }
+
+  public BackpackManager getBackpackManager() {
+    return _backpackManager;
   }
 }

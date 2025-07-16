@@ -2,7 +2,6 @@ package com.daveestar.bettervanilla.manager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,7 +11,6 @@ import org.bukkit.scoreboard.Team;
 
 import com.daveestar.bettervanilla.Main;
 
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
@@ -50,7 +48,6 @@ public class AFKManager {
       _afkTeam = team;
     }
 
-    _startAFKTask();
   }
 
   public void onPlayerJoined(Player p) {
@@ -204,11 +201,4 @@ public class AFKManager {
     return 1000 * 60 * afkTimeInMinutes;
   }
 
-  private void _startAFKTask() {
-    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
-
-    scheduler.runAtFixedRate(_plugin, task -> {
-      checkAllPlayersAFKStatus();
-    }, 0, 1, TimeUnit.SECONDS);
-  }
 }

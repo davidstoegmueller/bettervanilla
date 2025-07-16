@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -41,10 +42,9 @@ public class MaintenanceManager {
     }
   }
 
-  public void sendMaintenance(Player p) {
+  public boolean sendMaintenance(Player p) {
     if (_isMaintenance) {
-      if (!p.hasPermission("bettervanilla.maintenance.bypass")) {
-
+      if (!p.hasPermission(Permissions.MAINTENANCE_BYPASS.getName())) {
         String message = _settingsManager.getMaintenanceMessage();
 
         String maintenanceMsg = ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "MAINTENANCE\n\n"
@@ -53,9 +53,13 @@ public class MaintenanceManager {
             + (message != null ? ChatColor.YELLOW + "" + ChatColor.BOLD + "Message: " + ChatColor.GRAY + message
                 : "");
         p.kick(Component.text(maintenanceMsg));
+        return false;
       } else {
         p.sendMessage(Main.getPrefix() + "You bypassed maintenance mode.");
+        return true;
       }
     }
+
+    return true;
   }
 }

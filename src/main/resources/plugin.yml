@@ -1,6 +1,6 @@
 name: bettervanilla
 main: com.daveestar.bettervanilla.Main
-version: 1.5.0
+version: 1.6.0
 api-version: 1.21
 authors: ["daveestar"]
 commands:
@@ -58,3 +58,8 @@ commands:
     description: Manage player and group permissions.
     usage: /permissions
     permission: bettervanilla.permissions
+  backpack:
+    aliases: [bp]
+    description: Open your backpack.
+    usage: /backpack
+    permission: bettervanilla.backpack

@@ -12,7 +12,7 @@ import com.daveestar.bettervanilla.utils.Config;
 import java.util.*;
 
 public class PermissionsManager {
-  private final String _DEFAULT_GROUP_NAME = "default";
+  public final String DEFAULT_GROUP_NAME = "default";
 
   private final Config _config;
   private final FileConfiguration _fileConfig;
@@ -39,8 +39,8 @@ public class PermissionsManager {
     }
 
     // ensure the default group exists
-    if (!_fileConfig.contains("groups." + _DEFAULT_GROUP_NAME)) {
-      addGroup(_DEFAULT_GROUP_NAME);
+    if (!_fileConfig.contains("groups." + DEFAULT_GROUP_NAME)) {
+      addGroup(DEFAULT_GROUP_NAME);
     }
 
     _save();
@@ -64,6 +64,16 @@ public class PermissionsManager {
 
   public void removeGroup(String groupName) {
     _fileConfig.set("groups." + groupName, null);
+
+    // remove all users assigned to this group
+    Set<String> userIds = _fileConfig.getConfigurationSection("users").getKeys(false);
+    for (String userId : userIds) {
+      if (_fileConfig.contains("users." + userId + ".group") &&
+          _fileConfig.getString("users." + userId + ".group").equals(groupName)) {
+        _fileConfig.set("users." + userId + ".group", DEFAULT_GROUP_NAME);
+      }
+    }
+
     _save();
   }
 
@@ -169,7 +179,7 @@ public class PermissionsManager {
   public String getUserGroup(OfflinePlayer p) {
     String uuid = p.getUniqueId().toString();
 
-    return _fileConfig.getString("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
+    return _fileConfig.getString("users." + uuid + ".group", DEFAULT_GROUP_NAME);
   }
 
   public List<String> getEffectivePermissions(OfflinePlayer p) {
@@ -178,7 +188,7 @@ public class PermissionsManager {
     Set<String> effectivePermissions = new HashSet<>();
 
     // get group permissions (default if no group is set).
-    String group = _fileConfig.getString("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
+    String group = _fileConfig.getString("users." + uuid + ".group", DEFAULT_GROUP_NAME);
     List<String> groupPerms = _fileConfig.getStringList("groups." + group + ".permissions");
     effectivePermissions.addAll(groupPerms);
 
@@ -188,6 +198,7 @@ public class PermissionsManager {
 
     return new ArrayList<>(effectivePermissions);
   }
+
   // -------------------------
   // PLAYER JOIN/LEAVE MEHTODS
   // -------------------------
@@ -197,7 +208,7 @@ public class PermissionsManager {
 
     if (!_fileConfig.contains("users." + uuid)) {
       _fileConfig.createSection("users." + uuid);
-      _fileConfig.set("users." + uuid + ".group", _DEFAULT_GROUP_NAME);
+      _fileConfig.set("users." + uuid + ".group", DEFAULT_GROUP_NAME);
       _save();
     }
 

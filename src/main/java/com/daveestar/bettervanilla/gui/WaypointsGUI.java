@@ -7,11 +7,13 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
@@ -221,7 +223,7 @@ public class WaypointsGUI implements Listener {
     Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypointName);
     Location destination = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
 
-    _settingsManager.setToggleLocation(p, false);
+    _settingsManager.setToggleLocation(p.getUniqueId(), false);
     NavigationData navigationData = new NavigationData(waypointName, destination, NavigationType.WAYPOINT,
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);
@@ -232,7 +234,7 @@ public class WaypointsGUI implements Listener {
   }
 
   private void _handleRemove(Player p, String waypointName) {
-    if (!p.hasPermission("bettervanilla.waypoints.remove")) {
+    if (!p.hasPermission(Permissions.WAYPOINTS_REMOVE.getName())) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED
           + "Sorry! You don't have permissions to remove existing waypoints.");
       return;
@@ -263,6 +265,7 @@ public class WaypointsGUI implements Listener {
         ItemStack item = new ItemStack(m);
         ItemMeta meta = item.getItemMeta();
 
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.displayName(
             Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + m.name()));
         meta.lore(Arrays.asList(

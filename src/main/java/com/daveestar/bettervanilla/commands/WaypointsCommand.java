@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.WaypointsGUI;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
@@ -96,7 +97,7 @@ public class WaypointsCommand implements TabExecutor {
 
     if (_waypointsManager.checkWaypointExists(world, waypointName)) {
       if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
-        if (p.hasPermission("bettervanilla.waypoints.overwrite")) {
+        if (p.hasPermission(Permissions.WAYPOINTS_OVERWRITE.getName())) {
           _waypointsManager.addWaypoint(world, waypointName, location.getBlockX(), location.getBlockY(),
               location.getBlockZ());
           p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
@@ -128,7 +129,7 @@ public class WaypointsCommand implements TabExecutor {
   }
 
   private void _handleRemove(Player p, String[] args) {
-    if (!p.hasPermission("bettervanilla.waypoints.remove")) {
+    if (!p.hasPermission(Permissions.WAYPOINTS_REMOVE.getName())) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED
           + "Sorry! You don't have permissions to remove existing waypoints.");
       return;
@@ -196,7 +197,7 @@ public class WaypointsCommand implements TabExecutor {
     Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypointName);
     Location destination = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
 
-    _settingsManager.setToggleLocation(p, false);
+    _settingsManager.setToggleLocation(p.getUniqueId(), false);
     NavigationData navigationData = new NavigationData(waypointName, destination, NavigationType.WAYPOINT,
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);
@@ -219,7 +220,7 @@ public class WaypointsCommand implements TabExecutor {
       int z = Integer.parseInt(args[3]);
 
       Location destination = new Location(p.getWorld(), x, y, z);
-      _settingsManager.setToggleLocation(p, false);
+      _settingsManager.setToggleLocation(p.getUniqueId(), false);
       NavigationData navigationData = new NavigationData("Coordinates", destination, NavigationType.WAYPOINT,
           Color.YELLOW);
       _navigationManager.startNavigation(p, navigationData);
@@ -250,7 +251,7 @@ public class WaypointsCommand implements TabExecutor {
     }
 
     Location targetLocation = targetPlayer.getLocation().toBlockLocation();
-    _settingsManager.setToggleLocation(p, false);
+    _settingsManager.setToggleLocation(p.getUniqueId(), false);
     NavigationData navigationData = new NavigationData(targetPlayerName, targetLocation, NavigationType.PLAYER,
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);
