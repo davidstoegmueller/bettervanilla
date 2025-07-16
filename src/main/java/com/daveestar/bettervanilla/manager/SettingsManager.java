@@ -15,12 +15,12 @@ public class SettingsManager {
   private Config _config;
   private FileConfiguration _fileConfig;
 
-  public static final List<Material> DEFAULT_VEIN_MINER_TOOLS = Arrays.asList(
+  public static final List<Material> VEIN_MINER_TOOLS = Arrays.asList(
       Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE,
       Material.GOLDEN_PICKAXE, Material.DIAMOND_PICKAXE,
       Material.NETHERITE_PICKAXE);
 
-  public static final List<Material> DEFAULT_VEIN_MINER_BLOCKS = Arrays.asList(
+  public static final List<Material> VEIN_MINER_BLOCKS = Arrays.asList(
       Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE,
       Material.REDSTONE_ORE, Material.LAPIS_ORE, Material.DIAMOND_ORE,
       Material.EMERALD_ORE, Material.COPPER_ORE, Material.NETHER_QUARTZ_ORE,
@@ -29,11 +29,11 @@ public class SettingsManager {
       Material.DEEPSLATE_REDSTONE_ORE, Material.DEEPSLATE_LAPIS_ORE,
       Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE);
 
-  public static final List<Material> DEFAULT_VEIN_CHOPPER_TOOLS = Arrays.asList(
+  public static final List<Material> VEIN_CHOPPER_TOOLS = Arrays.asList(
       Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE,
       Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE);
 
-  public static final List<Material> DEFAULT_VEIN_CHOPPER_BLOCKS = Arrays.asList(
+  public static final List<Material> VEIN_CHOPPER_BLOCKS = Arrays.asList(
       Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
       Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG,
       Material.MANGROVE_LOG, Material.CHERRY_LOG);
@@ -286,7 +286,7 @@ public class SettingsManager {
   public List<String> getVeinMinerAllowedTools() {
     String path = "global.veinminer.allowedtools";
     if (!_fileConfig.contains(path)) {
-      return DEFAULT_VEIN_MINER_TOOLS.stream().map(Material::name)
+      return VEIN_MINER_TOOLS.stream().map(Material::name)
           .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -302,7 +302,7 @@ public class SettingsManager {
   public List<String> getVeinMinerAllowedBlocks() {
     String path = "global.veinminer.allowedblocks";
     if (!_fileConfig.contains(path)) {
-      return DEFAULT_VEIN_MINER_BLOCKS.stream().map(Material::name)
+      return VEIN_MINER_BLOCKS.stream().map(Material::name)
           .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -318,7 +318,7 @@ public class SettingsManager {
   public List<String> getVeinChopperAllowedTools() {
     String path = "global.veinchopper.allowedtools";
     if (!_fileConfig.contains(path)) {
-      return DEFAULT_VEIN_CHOPPER_TOOLS.stream().map(Material::name)
+      return VEIN_CHOPPER_TOOLS.stream().map(Material::name)
           .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -334,7 +334,7 @@ public class SettingsManager {
   public List<String> getVeinChopperAllowedBlocks() {
     String path = "global.veinchopper.allowedblocks";
     if (!_fileConfig.contains(path)) {
-      return DEFAULT_VEIN_CHOPPER_BLOCKS.stream().map(Material::name)
+      return VEIN_CHOPPER_BLOCKS.stream().map(Material::name)
           .collect(Collectors.toCollection(ArrayList::new));
     }
 

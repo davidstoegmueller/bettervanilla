@@ -3,9 +3,12 @@ package com.daveestar.bettervanilla.gui;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -34,9 +37,9 @@ public class VeinMinerSettingsGUI implements Listener {
   private final Map<UUID, CustomGUI> _sizePending;
 
   private MaterialToggleGUI _createToggleGUI(String title,
-      java.util.List<Material> defaults,
-      java.util.function.Supplier<java.util.List<String>> getter,
-      java.util.function.Consumer<java.util.List<String>> setter) {
+      List<Material> defaults,
+      Supplier<List<String>> getter,
+      Consumer<List<String>> setter) {
     return new MaterialToggleGUI(title, defaults, getter, setter);
   }
 
@@ -45,14 +48,15 @@ public class VeinMinerSettingsGUI implements Listener {
     _settingsManager = _plugin.getSettingsManager();
 
     _toolsGUI = _createToggleGUI("Vein Miner Tools",
-        SettingsManager.DEFAULT_VEIN_MINER_TOOLS,
+        SettingsManager.VEIN_MINER_TOOLS,
         _settingsManager::getVeinMinerAllowedTools,
         _settingsManager::setVeinMinerAllowedTools);
 
     _blocksGUI = _createToggleGUI("Vein Miner Blocks",
-        SettingsManager.DEFAULT_VEIN_MINER_BLOCKS,
+        SettingsManager.VEIN_MINER_BLOCKS,
         _settingsManager::getVeinMinerAllowedBlocks,
         _settingsManager::setVeinMinerAllowedBlocks);
+
     _sizePending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }

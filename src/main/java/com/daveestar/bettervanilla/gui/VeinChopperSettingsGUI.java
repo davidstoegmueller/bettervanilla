@@ -3,10 +3,13 @@ package com.daveestar.bettervanilla.gui;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -34,24 +37,26 @@ public class VeinChopperSettingsGUI implements Listener {
   private final Map<UUID, CustomGUI> _sizePending;
 
   private MaterialToggleGUI _createToggleGUI(String title,
-      java.util.List<Material> defaults,
-      java.util.function.Supplier<java.util.List<String>> getter,
-      java.util.function.Consumer<java.util.List<String>> setter) {
+      List<Material> defaults,
+      Supplier<List<String>> getter,
+      Consumer<List<String>> setter) {
     return new MaterialToggleGUI(title, defaults, getter, setter);
   }
 
   public VeinChopperSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
+
     _toolsGUI = _createToggleGUI("Vein Chopper Tools",
-        SettingsManager.DEFAULT_VEIN_CHOPPER_TOOLS,
+        SettingsManager.VEIN_CHOPPER_TOOLS,
         _settingsManager::getVeinChopperAllowedTools,
         _settingsManager::setVeinChopperAllowedTools);
 
     _blocksGUI = _createToggleGUI("Vein Chopper Blocks",
-        SettingsManager.DEFAULT_VEIN_CHOPPER_BLOCKS,
+        SettingsManager.VEIN_CHOPPER_BLOCKS,
         _settingsManager::getVeinChopperAllowedBlocks,
         _settingsManager::setVeinChopperAllowedBlocks);
+
     _sizePending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
@@ -127,7 +132,7 @@ public class VeinChopperSettingsGUI implements Listener {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle global vein miner state.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle global vein chopper state.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
