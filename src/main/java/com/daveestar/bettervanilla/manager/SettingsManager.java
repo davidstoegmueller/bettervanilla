@@ -223,20 +223,20 @@ public class SettingsManager {
   }
 
   public boolean getVeinMiner() {
-    return _fileConfig.getBoolean("global.veinminer", false);
+    return _fileConfig.getBoolean("global.veinminer.enabled", false);
   }
 
   public void setVeinMiner(boolean value) {
-    _fileConfig.set("global.veinminer", value);
+    _fileConfig.set("global.veinminer.enabled", value);
     _config.save();
   }
 
   public boolean getVeinChopper() {
-    return _fileConfig.getBoolean("global.veinchopper", false);
+    return _fileConfig.getBoolean("global.veinchopper.enabled", false);
   }
 
   public void setVeinChopper(boolean value) {
-    _fileConfig.set("global.veinchopper", value);
+    _fileConfig.set("global.veinchopper.enabled", value);
     _config.save();
   }
 
@@ -260,7 +260,7 @@ public class SettingsManager {
 
   public List<String> getVeinMinerAllowedTools() {
     List<String> list = _fileConfig.getStringList("global.veinminer.allowedtools");
-    return list == null || list.isEmpty() ? DEFAULT_VEIN_MINER_TOOLS : list;
+    return list == null || list.isEmpty() ? new java.util.ArrayList<>(DEFAULT_VEIN_MINER_TOOLS) : list;
   }
 
   public void setVeinMinerAllowedTools(List<String> tools) {
@@ -270,7 +270,7 @@ public class SettingsManager {
 
   public List<String> getVeinMinerAllowedBlocks() {
     List<String> list = _fileConfig.getStringList("global.veinminer.allowedblocks");
-    return list == null || list.isEmpty() ? DEFAULT_VEIN_MINER_BLOCKS : list;
+    return list == null || list.isEmpty() ? new java.util.ArrayList<>(DEFAULT_VEIN_MINER_BLOCKS) : list;
   }
 
   public void setVeinMinerAllowedBlocks(List<String> blocks) {
@@ -280,7 +280,7 @@ public class SettingsManager {
 
   public List<String> getVeinChopperAllowedTools() {
     List<String> list = _fileConfig.getStringList("global.veinchopper.allowedtools");
-    return list == null || list.isEmpty() ? DEFAULT_VEIN_CHOPPER_TOOLS : list;
+    return list == null || list.isEmpty() ? new java.util.ArrayList<>(DEFAULT_VEIN_CHOPPER_TOOLS) : list;
   }
 
   public void setVeinChopperAllowedTools(List<String> tools) {
@@ -290,7 +290,7 @@ public class SettingsManager {
 
   public List<String> getVeinChopperAllowedBlocks() {
     List<String> list = _fileConfig.getStringList("global.veinchopper.allowedblocks");
-    return list == null || list.isEmpty() ? DEFAULT_VEIN_CHOPPER_BLOCKS : list;
+    return list == null || list.isEmpty() ? new java.util.ArrayList<>(DEFAULT_VEIN_CHOPPER_BLOCKS) : list;
   }
 
   public void setVeinChopperAllowedBlocks(List<String> blocks) {

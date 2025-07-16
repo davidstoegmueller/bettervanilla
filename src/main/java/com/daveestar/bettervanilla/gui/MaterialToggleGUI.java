@@ -71,7 +71,7 @@ public class MaterialToggleGUI implements Listener {
       actions.put(mat.name(), new CustomGUI.ClickAction() {
         @Override
         public void onLeftClick(Player player) {
-          List<String> list = _getList.get();
+          List<String> list = new java.util.ArrayList<>(_getList.get());
           if (list.contains(mat.name())) {
             list.remove(mat.name());
           } else {
