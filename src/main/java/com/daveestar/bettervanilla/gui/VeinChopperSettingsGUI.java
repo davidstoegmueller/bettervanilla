@@ -33,20 +33,25 @@ public class VeinChopperSettingsGUI implements Listener {
   private final MaterialToggleGUI _blocksGUI;
   private final Map<UUID, CustomGUI> _sizePending;
 
+  private MaterialToggleGUI _createToggleGUI(String title,
+      java.util.List<Material> defaults,
+      java.util.function.Supplier<java.util.List<String>> getter,
+      java.util.function.Consumer<java.util.List<String>> setter) {
+    return new MaterialToggleGUI(title, defaults, getter, setter);
+  }
+
   public VeinChopperSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
-    _toolsGUI = new MaterialToggleGUI("Vein Chopper Tools",
-        SettingsManager.DEFAULT_VEIN_CHOPPER_TOOLS.stream()
-            .map(Material::matchMaterial).filter(Objects::nonNull).toList(),
-        () -> _settingsManager.getVeinChopperAllowedTools(),
-        list -> _settingsManager.setVeinChopperAllowedTools(list));
+    _toolsGUI = _createToggleGUI("Vein Chopper Tools",
+        SettingsManager.DEFAULT_VEIN_CHOPPER_TOOLS,
+        _settingsManager::getVeinChopperAllowedTools,
+        _settingsManager::setVeinChopperAllowedTools);
 
-    _blocksGUI = new MaterialToggleGUI("Vein Chopper Blocks",
-        SettingsManager.DEFAULT_VEIN_CHOPPER_BLOCKS.stream()
-            .map(Material::matchMaterial).filter(Objects::nonNull).toList(),
-        () -> _settingsManager.getVeinChopperAllowedBlocks(),
-        list -> _settingsManager.setVeinChopperAllowedBlocks(list));
+    _blocksGUI = _createToggleGUI("Vein Chopper Blocks",
+        SettingsManager.DEFAULT_VEIN_CHOPPER_BLOCKS,
+        _settingsManager::getVeinChopperAllowedBlocks,
+        _settingsManager::setVeinChopperAllowedBlocks);
     _sizePending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }

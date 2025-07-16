@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.Material;
 
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -13,24 +15,28 @@ public class SettingsManager {
   private Config _config;
   private FileConfiguration _fileConfig;
 
-  public static final List<String> DEFAULT_VEIN_MINER_TOOLS = Arrays.asList(
-      "WOODEN_PICKAXE", "STONE_PICKAXE", "IRON_PICKAXE", "GOLDEN_PICKAXE",
-      "DIAMOND_PICKAXE", "NETHERITE_PICKAXE");
+  public static final List<Material> DEFAULT_VEIN_MINER_TOOLS = Arrays.asList(
+      Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE,
+      Material.GOLDEN_PICKAXE, Material.DIAMOND_PICKAXE,
+      Material.NETHERITE_PICKAXE);
 
-  public static final List<String> DEFAULT_VEIN_MINER_BLOCKS = Arrays.asList(
-      "COAL_ORE", "IRON_ORE", "GOLD_ORE", "REDSTONE_ORE", "LAPIS_ORE",
-      "DIAMOND_ORE", "EMERALD_ORE", "COPPER_ORE", "NETHER_QUARTZ_ORE",
-      "NETHER_GOLD_ORE", "DEEPSLATE_COAL_ORE", "DEEPSLATE_IRON_ORE",
-      "DEEPSLATE_GOLD_ORE", "DEEPSLATE_REDSTONE_ORE", "DEEPSLATE_LAPIS_ORE",
-      "DEEPSLATE_DIAMOND_ORE", "DEEPSLATE_COPPER_ORE");
+  public static final List<Material> DEFAULT_VEIN_MINER_BLOCKS = Arrays.asList(
+      Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE,
+      Material.REDSTONE_ORE, Material.LAPIS_ORE, Material.DIAMOND_ORE,
+      Material.EMERALD_ORE, Material.COPPER_ORE, Material.NETHER_QUARTZ_ORE,
+      Material.NETHER_GOLD_ORE, Material.DEEPSLATE_COAL_ORE,
+      Material.DEEPSLATE_IRON_ORE, Material.DEEPSLATE_GOLD_ORE,
+      Material.DEEPSLATE_REDSTONE_ORE, Material.DEEPSLATE_LAPIS_ORE,
+      Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE);
 
-  public static final List<String> DEFAULT_VEIN_CHOPPER_TOOLS = Arrays.asList(
-      "WOODEN_AXE", "STONE_AXE", "IRON_AXE", "GOLDEN_AXE",
-      "DIAMOND_AXE", "NETHERITE_AXE");
+  public static final List<Material> DEFAULT_VEIN_CHOPPER_TOOLS = Arrays.asList(
+      Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE,
+      Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE);
 
-  public static final List<String> DEFAULT_VEIN_CHOPPER_BLOCKS = Arrays.asList(
-      "OAK_LOG", "SPRUCE_LOG", "BIRCH_LOG", "JUNGLE_LOG", "ACACIA_LOG",
-      "DARK_OAK_LOG", "MANGROVE_LOG", "CHERRY_LOG");
+  public static final List<Material> DEFAULT_VEIN_CHOPPER_BLOCKS = Arrays.asList(
+      Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
+      Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG,
+      Material.MANGROVE_LOG, Material.CHERRY_LOG);
 
   public SettingsManager(Config config) {
     _config = config;
@@ -280,7 +286,8 @@ public class SettingsManager {
   public List<String> getVeinMinerAllowedTools() {
     String path = "global.veinminer.allowedtools";
     if (!_fileConfig.contains(path)) {
-      return new ArrayList<>(DEFAULT_VEIN_MINER_TOOLS);
+      return DEFAULT_VEIN_MINER_TOOLS.stream().map(Material::name)
+          .collect(Collectors.toCollection(ArrayList::new));
     }
 
     List<String> list = _fileConfig.getStringList(path);
@@ -295,7 +302,8 @@ public class SettingsManager {
   public List<String> getVeinMinerAllowedBlocks() {
     String path = "global.veinminer.allowedblocks";
     if (!_fileConfig.contains(path)) {
-      return new ArrayList<>(DEFAULT_VEIN_MINER_BLOCKS);
+      return DEFAULT_VEIN_MINER_BLOCKS.stream().map(Material::name)
+          .collect(Collectors.toCollection(ArrayList::new));
     }
 
     List<String> list = _fileConfig.getStringList(path);
@@ -310,7 +318,8 @@ public class SettingsManager {
   public List<String> getVeinChopperAllowedTools() {
     String path = "global.veinchopper.allowedtools";
     if (!_fileConfig.contains(path)) {
-      return new ArrayList<>(DEFAULT_VEIN_CHOPPER_TOOLS);
+      return DEFAULT_VEIN_CHOPPER_TOOLS.stream().map(Material::name)
+          .collect(Collectors.toCollection(ArrayList::new));
     }
 
     List<String> list = _fileConfig.getStringList(path);
@@ -325,7 +334,8 @@ public class SettingsManager {
   public List<String> getVeinChopperAllowedBlocks() {
     String path = "global.veinchopper.allowedblocks";
     if (!_fileConfig.contains(path)) {
-      return new ArrayList<>(DEFAULT_VEIN_CHOPPER_BLOCKS);
+      return DEFAULT_VEIN_CHOPPER_BLOCKS.stream().map(Material::name)
+          .collect(Collectors.toCollection(ArrayList::new));
     }
 
     List<String> list = _fileConfig.getStringList(path);

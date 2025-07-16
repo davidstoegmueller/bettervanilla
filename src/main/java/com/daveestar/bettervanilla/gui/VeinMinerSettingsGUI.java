@@ -33,21 +33,26 @@ public class VeinMinerSettingsGUI implements Listener {
   private final MaterialToggleGUI _blocksGUI;
   private final Map<UUID, CustomGUI> _sizePending;
 
+  private MaterialToggleGUI _createToggleGUI(String title,
+      java.util.List<Material> defaults,
+      java.util.function.Supplier<java.util.List<String>> getter,
+      java.util.function.Consumer<java.util.List<String>> setter) {
+    return new MaterialToggleGUI(title, defaults, getter, setter);
+  }
+
   public VeinMinerSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
 
-    _toolsGUI = new MaterialToggleGUI("Vein Miner Tools",
-        SettingsManager.DEFAULT_VEIN_MINER_TOOLS.stream()
-            .map(Material::matchMaterial).filter(Objects::nonNull).toList(),
-        () -> _settingsManager.getVeinMinerAllowedTools(),
-        list -> _settingsManager.setVeinMinerAllowedTools(list));
+    _toolsGUI = _createToggleGUI("Vein Miner Tools",
+        SettingsManager.DEFAULT_VEIN_MINER_TOOLS,
+        _settingsManager::getVeinMinerAllowedTools,
+        _settingsManager::setVeinMinerAllowedTools);
 
-    _blocksGUI = new MaterialToggleGUI("Vein Miner Blocks",
-        SettingsManager.DEFAULT_VEIN_MINER_BLOCKS.stream()
-            .map(Material::matchMaterial).filter(Objects::nonNull).toList(),
-        () -> _settingsManager.getVeinMinerAllowedBlocks(),
-        list -> _settingsManager.setVeinMinerAllowedBlocks(list));
+    _blocksGUI = _createToggleGUI("Vein Miner Blocks",
+        SettingsManager.DEFAULT_VEIN_MINER_BLOCKS,
+        _settingsManager::getVeinMinerAllowedBlocks,
+        _settingsManager::setVeinMinerAllowedBlocks);
     _sizePending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
