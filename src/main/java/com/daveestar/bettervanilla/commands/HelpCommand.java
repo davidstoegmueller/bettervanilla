@@ -41,6 +41,9 @@ public class HelpCommand implements CommandExecutor {
       }
 
       p.sendMessage("");
+      p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Vein Mining & Vein Chopping: " + ChatColor.GRAY
+          + "If the feature is enabled, you can mine or chop a whole vein of ores or logs by breaking one block of it. Make sure you have to SNEAK while breaking a block.");
+      p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Chest-Sort: " + ChatColor.GRAY
           + "If you want to sort your chests inventories, you can right-click outside the chest inventory to sort it. You can toggle this feature in the settings.");
       p.sendMessage("");
