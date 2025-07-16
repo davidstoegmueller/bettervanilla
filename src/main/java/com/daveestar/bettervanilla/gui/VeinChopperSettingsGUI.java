@@ -54,14 +54,16 @@ public class VeinChopperSettingsGUI implements Listener {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("enabled", _createEnabledItem());
     entries.put("maxsize", _createMaxSizeItem());
+    entries.put("sound", _createSoundItem());
     entries.put("tools", _createToolsItem());
     entries.put("blocks", _createBlocksItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("enabled", 1);
     customSlots.put("maxsize", 3);
-    customSlots.put("tools", 5);
-    customSlots.put("blocks", 7);
+    customSlots.put("sound", 5);
+    customSlots.put("tools", 11);
+    customSlots.put("blocks", 15);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Vein Chopper Settings",
@@ -83,6 +85,14 @@ public class VeinChopperSettingsGUI implements Listener {
         player.sendMessage(Main.getPrefix() + "Enter max vein size (1-1024):");
         _sizePending.put(player.getUniqueId(), parent);
         player.closeInventory();
+      }
+    });
+    actions.put("sound", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player player) {
+        boolean newState = !_settingsManager.getVeinChopperSound();
+        _settingsManager.setVeinChopperSound(newState);
+        displayGUI(player, parent);
       }
     });
     actions.put("tools", new CustomGUI.ClickAction() {
@@ -128,6 +138,22 @@ public class VeinChopperSettingsGUI implements Listener {
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + val,
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+    return item;
+  }
+
+  private ItemStack _createSoundItem() {
+    boolean state = _settingsManager.getVeinChopperSound();
+    ItemStack item = new ItemStack(Material.NOTE_BLOCK);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sound"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }

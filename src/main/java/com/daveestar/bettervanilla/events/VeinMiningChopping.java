@@ -69,6 +69,10 @@ public class VeinMiningChopping implements Listener {
         if (!_applyDurabilityDamage(tool, p))
           break;
       }
+
+      if (veinBlocks.size() > 1 && _settingsManager.getVeinMinerSound()) {
+        p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.7f, 1);
+      }
     }
   }
 
@@ -88,6 +92,10 @@ public class VeinMiningChopping implements Listener {
         if (!_applyDurabilityDamage(tool, p))
           break;
 
+      }
+
+      if (veinBlocks.size() > 1 && _settingsManager.getVeinChopperSound()) {
+        p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.7f, 1);
       }
 
     }
