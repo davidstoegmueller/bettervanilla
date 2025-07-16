@@ -75,7 +75,7 @@ public class YouTubeManager {
   public void handleYouTubeLink(Player player, String message, String videoId) {
     // Extract metadata and store in config
     String url = "https://youtube.com/watch?v=" + videoId;
-    String title = "YouTube Video"; // Placeholder - would normally fetch from API
+    String title = extractTitleFromMessage(message, videoId);
     
     // Store in YAML
     storeYouTubeData(videoId, title, url, player.getName());
@@ -86,6 +86,33 @@ public class YouTubeManager {
     
     // Play notification sound
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.7F, 1.2F);
+  }
+  
+  /**
+   * Extract a reasonable title from the chat message or generate one
+   */
+  private String extractTitleFromMessage(String message, String videoId) {
+    // Try to find text before the URL that might be a title
+    String[] words = message.split("\\s+");
+    StringBuilder titleBuilder = new StringBuilder();
+    
+    for (String word : words) {
+      if (word.contains("youtube.com") || word.contains("youtu.be")) {
+        break;
+      }
+      if (!word.isEmpty() && titleBuilder.length() < 50) {
+        if (titleBuilder.length() > 0) titleBuilder.append(" ");
+        titleBuilder.append(word);
+      }
+    }
+    
+    String title = titleBuilder.toString().trim();
+    if (title.isEmpty() || title.length() < 3) {
+      // Generate a friendly name based on video ID
+      title = "YouTube Song " + videoId.substring(0, 8);
+    }
+    
+    return title;
   }
   
   /**
@@ -115,7 +142,7 @@ public class YouTubeManager {
     }
     
     String title = _fileConfig.getString(path + ".title", "Unknown");
-    double volume = _fileConfig.getDouble("youtube.settings.defaultVolume", 0.5);
+    double volume = getPlayerVolume(player);
     
     // Create playback session
     PlaybackSession session = new PlaybackSession(videoId, title);
@@ -123,6 +150,9 @@ public class YouTubeManager {
     
     // Start playback simulation (using note block sounds as placeholder)
     startPlaybackSimulation(player, session, volume);
+    
+    // Notify all nearby players about the music
+    notifyNearbyPlayers(player, title);
     
     // Notify player
     player.sendMessage(Main.getPrefix() + "Now playing: " + ChatColor.YELLOW + title);
@@ -160,6 +190,30 @@ public class YouTubeManager {
   }
   
   /**
+   * Set volume for a specific player
+   */
+  public void setPlayerVolume(Player player, double volume) {
+    _fileConfig.set("youtube.players." + player.getUniqueId() + ".volume", volume);
+    _config.save();
+    
+    // Update current session if playing
+    PlaybackSession session = _activeSessions.get(player.getUniqueId());
+    if (session != null) {
+      // Restart playback with new volume
+      session.cancel();
+      startPlaybackSimulation(player, session, volume);
+    }
+  }
+  
+  /**
+   * Get player's volume setting
+   */
+  private double getPlayerVolume(Player player) {
+    return _fileConfig.getDouble("youtube.players." + player.getUniqueId() + ".volume", 
+                                _fileConfig.getDouble("youtube.settings.defaultVolume", 0.5));
+  }
+  
+  /**
    * Simulate audio playback using Minecraft sounds
    * In a full implementation, this would handle actual audio streaming
    */
@@ -170,22 +224,51 @@ public class YouTubeManager {
         return;
       }
       
-      // Play a random musical note to simulate audio (placeholder)
+      // Play a sequence of musical notes to simulate a melody
       Sound[] musicalSounds = {
         Sound.BLOCK_NOTE_BLOCK_HARP,
         Sound.BLOCK_NOTE_BLOCK_BASS,
         Sound.BLOCK_NOTE_BLOCK_BELL,
         Sound.BLOCK_NOTE_BLOCK_GUITAR,
-        Sound.BLOCK_NOTE_BLOCK_CHIME
+        Sound.BLOCK_NOTE_BLOCK_CHIME,
+        Sound.BLOCK_NOTE_BLOCK_FLUTE,
+        Sound.BLOCK_NOTE_BLOCK_XYLOPHONE
       };
       
-      Sound sound = musicalSounds[(int) (Math.random() * musicalSounds.length)];
-      float pitch = 0.5F + (float) (Math.random() * 1.5F); // Random pitch
-      player.playSound(player.getLocation(), sound, (float) volume, pitch);
+      // Create a more musical sequence
+      int tick = session.getCurrentTick();
+      Sound sound = musicalSounds[tick % musicalSounds.length];
       
-    }, 0L, 20L); // Every second
+      // Generate a somewhat musical pitch progression
+      float basePitch = 0.5F;
+      float[] melody = {1.0F, 1.1F, 1.3F, 1.5F, 1.3F, 1.1F, 0.9F, 1.0F};
+      float pitch = basePitch * melody[tick % melody.length];
+      
+      player.playSound(player.getLocation(), sound, (float) volume * 0.3F, pitch);
+      session.incrementTick();
+      
+    }, 0L, 10L); // Every half second for better musical flow
     
     session.setTask(task);
+    
+    // Auto-stop after a reasonable duration (5 minutes)
+    _plugin.getServer().getScheduler().runTaskLater(_plugin, () -> {
+      stopSong(player);
+    }, 6000L); // 5 minutes in ticks
+  }
+  
+  /**
+   * Notify nearby players that music is being played
+   */
+  private void notifyNearbyPlayers(Player player, String title) {
+    for (Player nearbyPlayer : _plugin.getServer().getOnlinePlayers()) {
+      if (nearbyPlayer != player && 
+          nearbyPlayer.getWorld() == player.getWorld() &&
+          nearbyPlayer.getLocation().distance(player.getLocation()) <= 50) {
+        nearbyPlayer.sendMessage(Main.getShortPrefix() + ChatColor.GREEN + player.getName() + 
+                                ChatColor.GRAY + " is playing: " + ChatColor.YELLOW + title);
+      }
+    }
   }
   
   /**
@@ -202,6 +285,7 @@ public class YouTubeManager {
     private final String videoId;
     private final String title;
     private BukkitTask task;
+    private int currentTick = 0;
     
     public PlaybackSession(String videoId, String title) {
       this.videoId = videoId;
@@ -218,6 +302,14 @@ public class YouTubeManager {
     
     public void setTask(BukkitTask task) {
       this.task = task;
+    }
+    
+    public int getCurrentTick() {
+      return currentTick;
+    }
+    
+    public void incrementTick() {
+      currentTick++;
     }
     
     public void cancel() {

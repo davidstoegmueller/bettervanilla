@@ -16,7 +16,8 @@ public enum Permissions {
   TOGGLECOMPASS("bettervanilla.togglecompass"),
   CHESTSORT("bettervanilla.chestsort"),
   LASTDEATH("bettervanilla.deathpoints"),
-  PERMISSION("bettervanilla.permissions");
+  PERMISSION("bettervanilla.permissions"),
+  YOUTUBE("bettervanilla.youtube");
 
   private final String _permission;
 
