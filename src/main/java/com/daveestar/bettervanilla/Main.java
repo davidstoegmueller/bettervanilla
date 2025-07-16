@@ -24,6 +24,7 @@ import com.daveestar.bettervanilla.events.PreventDimension;
 import com.daveestar.bettervanilla.events.ServerMOTD;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
+import com.daveestar.bettervanilla.events.VeinMiningChopping;
 import com.daveestar.bettervanilla.events.RightClickCropHarvest;
 import com.daveestar.bettervanilla.events.ChestSort;
 import com.daveestar.bettervanilla.events.CropProtection;
@@ -120,6 +121,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new CropProtection(), this);
     manager.registerEvents(new RightClickCropHarvest(), this);
     manager.registerEvents(new ChestSort(), this);
+    manager.registerEvents(new VeinMiningChopping(), this);
   }
 
   @Override

@@ -56,21 +56,21 @@ public class SettingsManager {
     _config.save();
   }
 
-  public boolean getPlayerVineMiner(UUID uuid) {
-    return _fileConfig.getBoolean("players." + uuid + ".vineminer", false);
+  public boolean getPlayerVeinMiner(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".veinminer", false);
   }
 
-  public void setPlayerVineMiner(UUID uuid, boolean value) {
-    _fileConfig.set("players." + uuid + ".vineminer", value);
+  public void setPlayerVeinMiner(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".veinminer", value);
     _config.save();
   }
 
-  public boolean getPlayerVineChopper(UUID uuid) {
-    return _fileConfig.getBoolean("players." + uuid + ".vinechopper", false);
+  public boolean getPlayerVeinChopper(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".veinchopper", false);
   }
 
-  public void setPlayerVineChopper(UUID uuid, boolean value) {
-    _fileConfig.set("players." + uuid + ".vinechopper", value);
+  public void setPlayerVeinChopper(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".veinchopper", value);
     _config.save();
   }
 
@@ -201,21 +201,21 @@ public class SettingsManager {
     _config.save();
   }
 
-  public boolean getVineMiner() {
-    return _fileConfig.getBoolean("global.vineminer", false);
+  public boolean getVeinMiner() {
+    return _fileConfig.getBoolean("global.veinminer", false);
   }
 
-  public void setVineMiner(boolean value) {
-    _fileConfig.set("global.vineminer", value);
+  public void setVeinMiner(boolean value) {
+    _fileConfig.set("global.veinminer", value);
     _config.save();
   }
 
-  public boolean getVineChopper() {
-    return _fileConfig.getBoolean("global.vinechopper", false);
+  public boolean getVeinChopper() {
+    return _fileConfig.getBoolean("global.veinchopper", false);
   }
 
-  public void setVineChopper(boolean value) {
-    _fileConfig.set("global.vinechopper", value);
+  public void setVeinChopper(boolean value) {
+    _fileConfig.set("global.veinchopper", value);
     _config.save();
   }
 }

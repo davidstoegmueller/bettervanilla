@@ -56,8 +56,8 @@ public class SettingsGUI {
     entries.put("chestsort", _createChestSortItem(p));
 
     // second row
-    entries.put("vineminer", _createVineMinerItem(p));
-    entries.put("vinechopper", _createVineChopperItem(p));
+    entries.put("veinminer", _createVeinMinerItem(p));
+    entries.put("veinchopper", _createVeinChopperItem(p));
 
     // thrid row
     if (showAdminSettings) {
@@ -71,8 +71,8 @@ public class SettingsGUI {
     customSlots.put("navigationtrail", 5);
     customSlots.put("chestsort", 7);
 
-    customSlots.put("vineminer", 11);
-    customSlots.put("vinechopper", 15);
+    customSlots.put("veinminer", 11);
+    customSlots.put("veinchopper", 15);
 
     if (showAdminSettings) {
       customSlots.put("adminsettings", rows * 9 - 10);
@@ -137,44 +137,44 @@ public class SettingsGUI {
       }
     });
 
-    clickActions.put("vineminer", new CustomGUI.ClickAction() {
+    clickActions.put("veinminer", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.VINEMINER.getName())) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vine Miner.");
+        if (!p.hasPermission(Permissions.VEINMINER.getName())) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vein Miner.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        boolean globalState = _settingsManager.getVineMiner();
+        boolean globalState = _settingsManager.getVeinMiner();
         if (!globalState) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vine Miner is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vein Miner is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        _toggleVineMiner(p);
+        _toggleVeinMiner(p);
         displayGUI(p);
       }
     });
 
-    clickActions.put("vinechopper", new CustomGUI.ClickAction() {
+    clickActions.put("veinchopper", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.VINECHOPPER.getName())) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vine Chopper.");
+        if (!p.hasPermission(Permissions.VEINCHOPPER.getName())) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vein Chopper.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        boolean globalState = _settingsManager.getVineChopper();
+        boolean globalState = _settingsManager.getVeinChopper();
         if (!globalState) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vine Chopper is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vein Chopper is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        _toggleVineChopper(p);
+        _toggleVeinChopper(p);
         displayGUI(p);
       }
     });
@@ -283,22 +283,23 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createVineMinerItem(Player p) {
-    boolean state = _settingsManager.getPlayerVineMiner(p.getUniqueId());
+  private ItemStack _createVeinMinerItem(Player p) {
+    boolean state = _settingsManager.getPlayerVeinMiner(p.getUniqueId());
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
-    boolean globalState = _settingsManager.getVineMiner();
-    boolean hasPermission = p.hasPermission(Permissions.VINEMINER.getName());
+    boolean globalState = _settingsManager.getVeinMiner();
+    boolean hasPermission = p.hasPermission(Permissions.VEINMINER.getName());
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Miner"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage your vine miner settings.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY
+              + "While sneaking, mine all ores of the same type if using a pickaxe.",
           (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
-              : !globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
+              : !globalState ? ChatColor.RED + "Vein Miner is gloabally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -310,22 +311,22 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createVineChopperItem(Player p) {
-    boolean state = _settingsManager.getPlayerVineChopper(p.getUniqueId());
+  private ItemStack _createVeinChopperItem(Player p) {
+    boolean state = _settingsManager.getPlayerVeinChopper(p.getUniqueId());
     ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
-    boolean globalState = _settingsManager.getVineChopper();
-    boolean hasPermission = p.hasPermission(Permissions.VINECHOPPER.getName());
+    boolean globalState = _settingsManager.getVeinChopper();
+    boolean hasPermission = p.hasPermission(Permissions.VEINCHOPPER.getName());
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Chopper"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage your vine chopper settings.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "While sneaking, chop all logs of the same type if using an axe.",
           (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
-              : !globalState ? ChatColor.RED + "Vine Miner is gloabally disabled on the server." : null),
+              : !globalState ? ChatColor.RED + "Vein Miner is gloabally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -413,19 +414,19 @@ public class SettingsGUI {
     p.sendMessage(Main.getPrefix() + "Navigation particles are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
-  private void _toggleVineMiner(Player p) {
-    boolean newState = !_settingsManager.getPlayerVineMiner(p.getUniqueId());
-    _settingsManager.setPlayerVineMiner(p.getUniqueId(), newState);
+  private void _toggleVeinMiner(Player p) {
+    boolean newState = !_settingsManager.getPlayerVeinMiner(p.getUniqueId());
+    _settingsManager.setPlayerVeinMiner(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vine Miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Vein Miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
-  private void _toggleVineChopper(Player p) {
-    boolean newState = !_settingsManager.getPlayerVineChopper(p.getUniqueId());
-    _settingsManager.setPlayerVineChopper(p.getUniqueId(), newState);
+  private void _toggleVeinChopper(Player p) {
+    boolean newState = !_settingsManager.getPlayerVeinChopper(p.getUniqueId());
+    _settingsManager.setPlayerVeinChopper(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vine Chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Vein Chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

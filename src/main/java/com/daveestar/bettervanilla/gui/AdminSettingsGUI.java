@@ -68,8 +68,8 @@ public class AdminSettingsGUI implements Listener {
     // third row
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
-    entries.put("vineminer", _createVineMinerItem());
-    entries.put("vinechopper", _createVineChopperItem());
+    entries.put("veinminer", _createVeinMinerItem());
+    entries.put("veinchopper", _createVeinChopperItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
@@ -88,8 +88,8 @@ public class AdminSettingsGUI implements Listener {
     // third row
     customSlots.put("cropprotection", 18);
     customSlots.put("rightclickcropharvest", 20);
-    customSlots.put("vineminer", 24);
-    customSlots.put("vinechopper", 26);
+    customSlots.put("veinminer", 24);
+    customSlots.put("veinchopper", 26);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -198,18 +198,18 @@ public class AdminSettingsGUI implements Listener {
       }
     });
 
-    actions.put("vineminer", new CustomGUI.ClickAction() {
+    actions.put("veinminer", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleVineMiner(p);
+        _toggleVeinMiner(p);
         displayGUI(p, parentMenu);
       }
     });
 
-    actions.put("vinechopper", new CustomGUI.ClickAction() {
+    actions.put("veinchopper", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleVineChopper(p);
+        _toggleVeinChopper(p);
         displayGUI(p, parentMenu);
       }
     });
@@ -449,17 +449,17 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createVineMinerItem() {
-    boolean state = _settingsManager.getVineMiner();
+  private ItemStack _createVeinMinerItem() {
+    boolean state = _settingsManager.getVeinMiner();
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Miner"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vine miner settings.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein miner settings.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -471,17 +471,17 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createVineChopperItem() {
-    boolean state = _settingsManager.getVineChopper();
+  private ItemStack _createVeinChopperItem() {
+    boolean state = _settingsManager.getVeinChopper();
     ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vine Chopper"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vine chopper settings.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein chopper settings.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -622,30 +622,30 @@ public class AdminSettingsGUI implements Listener {
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
-  private void _toggleVineMiner(Player p) {
-    boolean newState = !_settingsManager.getVineMiner();
-    _settingsManager.setVineMiner(newState);
+  private void _toggleVeinMiner(Player p) {
+    boolean newState = !_settingsManager.getVeinMiner();
+    _settingsManager.setVeinMiner(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vine miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Vein miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
 
     if (!newState) {
       String[] playerUUIDS = _settingsManager.getAllPlayersUUIDS();
       for (String uuid : playerUUIDS) {
-        _settingsManager.setPlayerVineMiner(UUID.fromString(uuid), newState);
+        _settingsManager.setPlayerVeinMiner(UUID.fromString(uuid), newState);
       }
     }
   }
 
-  private void _toggleVineChopper(Player p) {
-    boolean newState = !_settingsManager.getVineChopper();
-    _settingsManager.setVineChopper(newState);
+  private void _toggleVeinChopper(Player p) {
+    boolean newState = !_settingsManager.getVeinChopper();
+    _settingsManager.setVeinChopper(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vine chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Vein chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
 
     if (!newState) {
       String[] playerUUIDS = _settingsManager.getAllPlayersUUIDS();
       for (String uuid : playerUUIDS) {
-        _settingsManager.setPlayerVineChopper(UUID.fromString(uuid), newState);
+        _settingsManager.setPlayerVeinChopper(UUID.fromString(uuid), newState);
       }
     }
   }

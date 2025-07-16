@@ -17,8 +17,8 @@ public enum Permissions {
   CHESTSORT("bettervanilla.chestsort"),
   LASTDEATH("bettervanilla.deathpoints"),
   PERMISSION("bettervanilla.permissions"),
-  VINEMINER("bettervanilla.vineminer"),
-  VINECHOPPER("bettervanilla.vinechopper");
+  VEINMINER("bettervanilla.veinminer"),
+  VEINCHOPPER("bettervanilla.veinchopper");
 
   private final String _permission;
 
