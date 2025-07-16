@@ -19,8 +19,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import com.daveestar.bettervanilla.Main;
 
 public class SittableStairs implements Listener {
-  // Maximum distance squared a player can be from a stair to sit (1 block range)
-  private static final double MAX_DISTANCE_SQUARED = 1.0;
+  private static final double MAX_DISTANCE = 2;
   private final HashMap<Player, ArmorStand> _sittingPlayers = new HashMap<>();
 
   @EventHandler
@@ -40,7 +39,7 @@ public class SittableStairs implements Listener {
         // only allow to sit on a chair with an empty hand
         if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
           // range check
-          if (p.getLocation().distanceSquared(clickedBlock.getLocation()) > MAX_DISTANCE_SQUARED) {
+          if (p.getLocation().distance(clickedBlock.getLocation()) > MAX_DISTANCE) {
             p.sendMessage(Main.getPrefix() + "You're too far away from that stair.");
             return;
           }
