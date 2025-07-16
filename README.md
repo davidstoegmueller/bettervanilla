@@ -1,6 +1,6 @@
 # BetterVanilla – SMP All‑in‑One 🍦✨
 
-_A lightweight, drop‑in plugin that upgrades vanilla Minecraft servers with modern quality‑of‑life features—without sacrificing the classic vibe._
+_A lightweight, drop‑in plugin made for cozy SMP servers with friends. Upgrade vanilla with modern quality‑of‑life features—no mods, just pure fun._
 
 [![GitHub release](https://img.shields.io/github/v/release/davidstoegmueller/bettervanilla?style=flat-round)](https://github.com/davidstoegmueller/bettervanilla/releases)
 [![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-round)](LICENSE)
@@ -9,20 +9,9 @@ _A lightweight, drop‑in plugin that upgrades vanilla Minecraft servers with mo
 
 ## ✨ Why BetterVanilla?
 
-Your SMP world deserves more than plain vanilla. **BetterVanilla** sprinkles your server with just‑right upgrades—no mods, no bloat, just 🍦 + 🚀.
+Your SMP world with friends deserves more than plain vanilla. **BetterVanilla** sprinkles your server with just‑right upgrades—no mods, no bloat, just 🍦 + 🚀.
 
 Whether you’re spinning up a fresh community project or running a seasoned network, BetterVanilla delivers the _wow‑factor_ that keeps players logged in and admins chilled out.
-
-### Key Highlights
-
-- 🧭 **Smart Navigation** – Waypoints with an intuitive GUI, a subtle bossbar compass, and live action‑bar coordinates keep everyone headed in the right direction—no external maps required.
-- 🛋️ **Seamless QoL Tweaks** – Sit on any stair, track playtime & ping, auto‑skip rainy days, and bounce back from death with instant chests. Zero learning curve—just play.
-- ⚙️ **Admin Superpowers** – Maintenance mode, creeper‑damage toggles, AFK timers with optional protection, Nether & End access switches, and a live‑reload permission system.
-- 🔄 **Instant Recovery** – Death points & automatic death chests mean lost gear is just a quick stroll away.
-- 🌦️ **Weather? What Weather?** – Skip rain and storms by simply hopping into bed—no one likes soggy boots.
-- 🪑 **Immersive Extras** – Sittable stairs, action‑bar coordinates, and subtle HUD touches make your world feel alive.
-
-_(Scroll down for the complete feature & command list.)_
 
 ---
 
@@ -42,28 +31,31 @@ _(Scroll down for the complete feature & command list.)_
 ### Player‑Centric
 
 - 🧭 **Waypoints** – Add, remove and navigate using a GUI (custom icons supported)
-- ⏱️ **Playtime** – Track and display personal or global playtime, even for offline players
-- 📡 **Ping** – Check your own or any player’s latency
+- 🎒 **Backpacks** – Portable extra storage with customizable size
+- ⛏️ **Vein Miner & Chopper** – Sneak while breaking to clear entire ore veins or tree trunks
+- ⚰️ **Death Points & Death Chests** – Never lose your stuff again
+- 📦 **Chest Sorting** – Right‑click outside a chest inventory to instantly sort it
+- 🛠️ **Settings Menu** – `/settings` player settings can be toggled from there
+- 🎨 **Colored Chat & Mentions** – Use `&` color codes and ping players with `@name`
 - 🔍 **Inventory Viewer** – Peek inside another player’s inventory
 - ⏲️ **Timer** – Global stopwatch with resume, pause, reset & set
+- ⏱️ **Playtime** – Track and display personal or global playtime, even for offline players
+- 📡 **Ping** – Check your own or any player’s latency
 - 📍 **Action‑Bar Location** – Live X / Y / Z in your HUD
 - 🧭 **Bossbar Compass** – Minimalistic direction overlay
-- ⚰️ **Death Points & Death Chests** – Never lose your stuff again
 - 🪑 **Sittable Stairs** – Right‑click stairs with an empty hand to sit
 - 🌧️ **Sleeping Rain Skip** – Sleep through bad weather
-- 📚 **Help** – Get an overview of all available features and commands
 - ✨ **Navigation Particles** – Follow a beam and optional trail while navigating
-- 📦 **Chest Sorting** – Right‑click outside a chest inventory to instantly sort it
-- 🎨 **Colored Chat & Mentions** – Use `&` color codes and ping players with `@name`
+- 🌾 **Crop Protection** – Prevent crops from being trampled by players or mobs
+- 🌱 **Right‑Click Harvest** – Harvest and replant crops with a simple right‑click
+- 📚 **Help** – Get an overview of all available features and commands
 
 ### Admin & Server
 
-- 🛠️ **Settings Menu** – `/settings` opens personal toggles; admins can access global server settings from there
-- 🛡️ **AFK Protection** – AFK players become invulnerable, immovable and collision-free (configurable in the settings menu)
+- 🛠️ **Admin Settings Menu** – `/settings` admins can access global server settings from there
 - 🗝️ **Permissions System** – Group & user permissions with live add/remove and hot‑reload
+- 🛡️ **AFK Protection** – AFK players become invulnerable, immovable and collision-free (configurable in the settings menu)
 - 📚 **Admin Help** – Quick reference for every admin command
-- 🌾 **Crop Protection** – Prevent crops from being trampled by players or mobs
-- 🌱 **Right‑Click Harvest** – Harvest and replant crops with a simple right‑click
 - 💬 **Server MOTD** – Change the server's MOTD from the admin settings menu
 
 ---
@@ -73,7 +65,7 @@ _(Scroll down for the complete feature & command list.)_
 ```text
 1. Download the latest release jar 📥
 2. Drop it into your server’s `plugins/` folder 📂
-3. Restart or reload the server – done ✅
+3. Restart the server – done ✅
 ```
 
 ---
@@ -129,6 +121,13 @@ _(Scroll down for the complete feature & command list.)_
 | 🧳 `/invsee <player>` | View the inventory of another player |
 
 </details>
+<details><summary><strong>Backpack 🎒</strong></summary>
+
+| Command        | Description        |
+| -------------- | ------------------ |
+| 🎒 `/backpack` | Open your backpack |
+
+</details>
 
 <details><summary><strong>Timer ⏲️</strong></summary>
 
@@ -164,6 +163,7 @@ _(Scroll down for the complete feature & command list.)_
 | 🔑 `/permissions` or `/perms`                           | Permissions usage message               |
 | ➕ `/permissions group addperm <group> <permission>`    | Add permission to a group               |
 | ➖ `/permissions group removeperm <group> <permission>` | Remove permission from a group          |
+| ❌ `/permissions group delete <group>`                  | Delete a permission group               |
 | ➕ `/permissions user addperm <user> <permission>`      | Add permission to a user                |
 | ➖ `/permissions user removeperm <user> <permission>`   | Remove permission from a user           |
 | 🔄 `/permissions user setgroup <user> <group>`          | Set a user's group                      |
@@ -204,6 +204,9 @@ bettervanilla.togglelocation
 bettervanilla.togglecompass
 bettervanilla.chestsort
 bettervanilla.deathpoints
+bettervanilla.backpack
+bettervanilla.veinminer
+bettervanilla.veinchopper
 bettervanilla.permissions
 ```
 

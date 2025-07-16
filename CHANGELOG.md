@@ -2,6 +2,15 @@
 
 # 📜 Changelog
 
+## [1.6.0] - 16.07.2025
+
+- **🎒 Backpacks** – Portable storage with configurable pages and rows. Use `/backpack` anywhere.
+- **⛏️ Vein Miner & Chopper** – Sneak to instantly mine entire ore veins or tree trunks. Fully customizable in the settings.
+- **🗑️ Permission Group Delete** – `/permissions group delete` removes unwanted groups.
+- **🚫 Maintenance Bypass Fix** – Bypass permission now works correctly.
+- **🔄 Timer Sync Improvements** – Timer respects AFK time and action bar updates.
+- **🪑 Chair Distance Tweak** – Sittable stairs detection refined.
+
 ## [1.5.0] - 05.07.2025
 
 - **✨ Navigation Particles** – Follow a beam and optional trail while navigating.
