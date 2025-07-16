@@ -1,15 +1,19 @@
 package com.daveestar.bettervanilla.gui;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -45,16 +49,22 @@ public class MaterialToggleGUI implements Listener {
       ItemStack item = new ItemStack(mat);
       ItemMeta meta = item.getItemMeta();
       if (meta != null) {
-        meta.displayName(Component.text(ChatColor.YELLOW + mat.name() + ChatColor.GRAY + " : "
-            + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED")));
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + mat.name()));
+        meta.lore(Arrays.asList(
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: " + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+            .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
         item.setItemMeta(meta);
       }
       entries.put(mat.name(), item);
     }
 
     int rows = Math.max(1, (int) Math.ceil(entries.size() / 9.0)) + 1;
-    CustomGUI gui = new CustomGUI(_plugin, p, ChatColor.YELLOW + "" + ChatColor.BOLD + "» " + _title,
-        entries, rows, null, parent, EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
+    CustomGUI gui = new CustomGUI(_plugin, p,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» " + _title,
+        entries, rows, null, parent,
+        EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     for (Material mat : _materials) {

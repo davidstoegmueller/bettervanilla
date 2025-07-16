@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemFlag;
@@ -20,6 +22,8 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import net.md_5.bungee.api.ChatColor;
 
 public class VeinChopperSettingsGUI implements Listener {
@@ -27,18 +31,22 @@ public class VeinChopperSettingsGUI implements Listener {
   private final SettingsManager _settingsManager;
   private final MaterialToggleGUI _toolsGUI;
   private final MaterialToggleGUI _blocksGUI;
+  private final Map<UUID, CustomGUI> _sizePending;
 
   public VeinChopperSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _toolsGUI = new MaterialToggleGUI("Vein Chopper Tools",
-        SettingsManager.DEFAULT_VEIN_CHOPPER_TOOLS.stream().map(Material::valueOf).toList(),
+        SettingsManager.DEFAULT_VEIN_CHOPPER_TOOLS.stream()
+            .map(Material::matchMaterial).filter(Objects::nonNull).toList(),
         () -> _settingsManager.getVeinChopperAllowedTools(),
         list -> _settingsManager.setVeinChopperAllowedTools(list));
     _blocksGUI = new MaterialToggleGUI("Vein Chopper Blocks",
-        SettingsManager.DEFAULT_VEIN_CHOPPER_BLOCKS.stream().map(Material::valueOf).toList(),
+        SettingsManager.DEFAULT_VEIN_CHOPPER_BLOCKS.stream()
+            .map(Material::matchMaterial).filter(Objects::nonNull).toList(),
         () -> _settingsManager.getVeinChopperAllowedBlocks(),
         list -> _settingsManager.setVeinChopperAllowedBlocks(list));
+    _sizePending = new HashMap<>();
     _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
@@ -72,16 +80,9 @@ public class VeinChopperSettingsGUI implements Listener {
     actions.put("maxsize", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player player) {
-        int newVal = _settingsManager.getVeinChopperMaxVeinSize() + 1;
-        _settingsManager.setVeinChopperMaxVeinSize(newVal);
-        displayGUI(player, parent);
-      }
-
-      @Override
-      public void onRightClick(Player player) {
-        int newVal = Math.max(1, _settingsManager.getVeinChopperMaxVeinSize() - 1);
-        _settingsManager.setVeinChopperMaxVeinSize(newVal);
-        displayGUI(player, parent);
+        player.sendMessage(Main.getPrefix() + "Enter max vein size (1-1024):");
+        _sizePending.put(player.getUniqueId(), parent);
+        player.closeInventory();
       }
     });
     actions.put("tools", new CustomGUI.ClickAction() {
@@ -126,8 +127,7 @@ public class VeinChopperSettingsGUI implements Listener {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Max Vein Size"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + val,
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1")
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -155,5 +155,34 @@ public class VeinChopperSettingsGUI implements Listener {
       item.setItemMeta(meta);
     }
     return item;
+  }
+
+  @EventHandler
+  public void onPlayerChat(AsyncChatEvent e) {
+    Player p = e.getPlayer();
+    UUID id = p.getUniqueId();
+
+    if (_sizePending.containsKey(id)) {
+      e.setCancelled(true);
+      String content = ((TextComponent) e.message()).content();
+
+      try {
+        int val = Integer.parseInt(content);
+        if (val < 1 || val > 1024) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Value must be between 1 and 1024.");
+          return;
+        }
+
+        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+          _settingsManager.setVeinChopperMaxVeinSize(val);
+          p.sendMessage(Main.getPrefix() + "Max vein size set to: " + ChatColor.YELLOW + val);
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+          CustomGUI parent = _sizePending.remove(id);
+          displayGUI(p, parent);
+        });
+      } catch (NumberFormatException ex) {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
+      }
+    }
   }
 }
