@@ -1,6 +1,7 @@
 **Note:** This changelog begins at version 1.2.0 as earlier changes were not tracked.
 
 # 📜 Changelog
+
 ## [1.6.0] - 16.07.2025
 
 - **🎒 Backpacks** – Portable storage with configurable pages and rows. Use `/backpack` anywhere.
@@ -9,7 +10,6 @@
 - **🚫 Maintenance Bypass Fix** – Bypass permission now works correctly.
 - **🔄 Timer Sync Improvements** – Timer respects AFK time and action bar updates.
 - **🪑 Chair Distance Tweak** – Sittable stairs detection refined.
-
 
 ## [1.5.0] - 05.07.2025
 
