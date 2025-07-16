@@ -74,7 +74,7 @@ public class MaterialToggleGUI implements Listener {
     for (Material mat : _materials) {
       actions.put(mat.name(), new CustomGUI.ClickAction() {
         @Override
-        public void onLeftClick(Player player) {
+        public void onLeftClick(Player p) {
           List<String> list = new java.util.ArrayList<>(_getList.get());
 
           if (list.contains(mat.name())) {
@@ -84,7 +84,7 @@ public class MaterialToggleGUI implements Listener {
           }
 
           _setList.accept(list);
-          displayGUI(player, parent);
+          displayGUI(p, parent);
         }
       });
     }

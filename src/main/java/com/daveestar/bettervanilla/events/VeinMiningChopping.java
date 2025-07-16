@@ -135,21 +135,22 @@ public class VeinMiningChopping implements Listener {
     visited.add(originBlock);
     queue.add(originBlock);
 
-    while (!queue.isEmpty()) {
+    // stop as soon as we’ve hit the limit
+    while (!queue.isEmpty() && visited.size() < limit) {
       Block current = queue.poll();
 
-      for (Block neighbourBlock : _getNeighbourBlocks(current)) {
-        if (visited.contains(neighbourBlock))
-          continue;
-
-        if (!neighbourBlock.getType().equals(current.getType()))
-          continue;
-
-        visited.add(neighbourBlock);
-        queue.add(neighbourBlock);
-
+      for (Block neighbour : _getNeighbourBlocks(current)) {
         if (visited.size() >= limit)
           break;
+
+        if (visited.contains(neighbour))
+          continue;
+
+        if (!neighbour.getType().equals(current.getType()))
+          continue;
+
+        visited.add(neighbour);
+        queue.add(neighbour);
       }
     }
 

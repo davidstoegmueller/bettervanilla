@@ -236,6 +236,13 @@ public class SettingsManager {
   public void setVeinMinerEnabled(boolean value) {
     _fileConfig.set("global.veinminer.enabled", value);
     _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setPlayerVeinMiner(UUID.fromString(uuid), value);
+      }
+    }
   }
 
   public boolean getVeinChopperEnabled() {
@@ -245,6 +252,13 @@ public class SettingsManager {
   public void setVeinChopperEnabled(boolean value) {
     _fileConfig.set("global.veinchopper.enabled", value);
     _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setPlayerVeinChopper(UUID.fromString(uuid), value);
+      }
+    }
   }
 
   public int getVeinMinerMaxVeinSize() {

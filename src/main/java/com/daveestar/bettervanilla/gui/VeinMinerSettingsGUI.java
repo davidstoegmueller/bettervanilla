@@ -84,39 +84,39 @@ public class VeinMinerSettingsGUI implements Listener {
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("tools", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _toolsGUI.displayGUI(player, gui);
+      public void onLeftClick(Player p) {
+        _toolsGUI.displayGUI(p, gui);
       }
     });
     actions.put("maxsize", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        player.sendMessage(Main.getPrefix() + "Enter max vein size (1-1024):");
-        _sizePending.put(player.getUniqueId(), parent);
-        player.closeInventory();
+      public void onLeftClick(Player p) {
+        p.sendMessage(Main.getPrefix() + "Enter max vein size (1-1024):");
+        _sizePending.put(p.getUniqueId(), parent);
+        p.closeInventory();
       }
     });
     actions.put("enabled", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
+      public void onLeftClick(Player p) {
         boolean newState = !_settingsManager.getVeinMinerEnabled();
         _settingsManager.setVeinMinerEnabled(newState);
-        displayGUI(player, parent);
+        displayGUI(p, parent);
       }
     });
     actions.put("sound", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
+      public void onLeftClick(Player p) {
         boolean newState = !_settingsManager.getVeinMinerSound();
         _settingsManager.setVeinMinerSound(newState);
-        displayGUI(player, parent);
+        displayGUI(p, parent);
       }
     });
 
     actions.put("blocks", new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _blocksGUI.displayGUI(player, gui);
+      public void onLeftClick(Player p) {
+        _blocksGUI.displayGUI(p, gui);
       }
     });
 
