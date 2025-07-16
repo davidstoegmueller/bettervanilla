@@ -16,6 +16,7 @@ import com.daveestar.bettervanilla.commands.TimerCommand;
 import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
+import com.daveestar.bettervanilla.commands.YouTubeCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
@@ -35,6 +36,7 @@ import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
+import com.daveestar.bettervanilla.manager.YouTubeManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -58,6 +60,7 @@ public class Main extends JavaPlugin {
   private WaypointsManager _waypointsManager;
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
+  private YouTubeManager _youtubeManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -67,12 +70,14 @@ public class Main extends JavaPlugin {
     Config timerConfig = new Config("timer.yml", getDataFolder());
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
+    Config youtubeConfig = new Config("youtube.yml", getDataFolder());
 
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
+    _youtubeManager = new YouTubeManager(youtubeConfig);
 
     _maintenanceManager = new MaintenanceManager();
     _actionBar = new ActionBar();
@@ -102,6 +107,7 @@ public class Main extends JavaPlugin {
     getCommand("playtime").setExecutor(new PlayTimeCommand());
     getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
+    getCommand("youtube").setExecutor(new YouTubeCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -181,5 +187,9 @@ public class Main extends JavaPlugin {
 
   public MaintenanceManager getMaintenanceManager() {
     return _maintenanceManager;
+  }
+
+  public YouTubeManager getYouTubeManager() {
+    return _youtubeManager;
   }
 }

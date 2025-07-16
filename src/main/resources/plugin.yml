@@ -58,3 +58,8 @@ commands:
     description: Manage player and group permissions.
     usage: /permissions
     permission: bettervanilla.permissions
+  youtube:
+    aliases: [yt]
+    description: Control YouTube audio playback.
+    usage: /youtube
+    permission: bettervanilla.youtube

@@ -14,6 +14,7 @@ import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.YouTubeManager;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -28,6 +29,7 @@ public class ChatMessages implements Listener {
   private final TimerManager _timerManager;
   private final CompassManager _compassManager;
   private final MaintenanceManager _maintenanceManager;
+  private final YouTubeManager _youtubeManager;
 
   public ChatMessages() {
     _plugin = Main.getInstance();
@@ -36,6 +38,7 @@ public class ChatMessages implements Listener {
     _timerManager = _plugin.getTimerManager();
     _compassManager = _plugin.getCompassManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _youtubeManager = _plugin.getYouTubeManager();
   }
 
   @EventHandler
@@ -70,6 +73,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);
+    _youtubeManager.onPlayerLeft(p);
   }
 
   @EventHandler
@@ -80,6 +84,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);
+    _youtubeManager.onPlayerLeft(p);
   }
 
   @EventHandler
@@ -87,6 +92,16 @@ public class ChatMessages implements Listener {
     // convert & color codes to actual ChatColor codes
     String raw = ((TextComponent) e.message()).content();
     String translated = ChatColor.translateAlternateColorCodes('&', raw);
+
+    // Check for YouTube links in the message
+    Player player = e.getPlayer();
+    String videoId = _youtubeManager.extractYouTubeVideoId(raw);
+    if (videoId != null) {
+      // Handle YouTube link detection asynchronously to avoid blocking chat
+      _plugin.getServer().getScheduler().runTaskAsynchronously(_plugin, () -> {
+        _youtubeManager.handleYouTubeLink(player, raw, videoId);
+      });
+    }
 
     // set the formatted chat message with ping support
     e.renderer((source, sourceDisplayName, messageComponent, viewer) -> {
