@@ -123,9 +123,9 @@ Whether you’re spinning up a fresh community project or running a seasoned net
 </details>
 <details><summary><strong>Backpack 🎒</strong></summary>
 
-| Command        | Description        |
-| -------------- | ------------------ |
-| 🎒 `/backpack` | Open your backpack |
+| Command                 | Description        |
+| ----------------------- | ------------------ |
+| 🎒 `/backpack` or `/bp` | Open your backpack |
 
 </details>
 
@@ -141,9 +141,10 @@ Whether you’re spinning up a fresh community project or running a seasoned net
 </details>
 
 <details><summary><strong>Settings & Maintenance 🛠️</strong></summary>
-| Command        | Description             |
-| -------------- | ----------------------- |
-| 🔧 `/settings` | Open your settings menu |
+
+| Command                  | Description             |
+| ------------------------ | ----------------------- |
+| 🔧 `/settings` or `/set` | Open your settings menu |
 
 </details>
 
