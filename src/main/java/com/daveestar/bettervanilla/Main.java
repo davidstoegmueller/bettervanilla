@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.daveestar.bettervanilla.commands.HelpCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
 import com.daveestar.bettervanilla.commands.DeathPointsCommand;
+import com.daveestar.bettervanilla.commands.JukeboxCommand;
 import com.daveestar.bettervanilla.commands.PermissionsCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
 import com.daveestar.bettervanilla.commands.PlayTimeCommand;
@@ -29,6 +30,7 @@ import com.daveestar.bettervanilla.events.CropProtection;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
+import com.daveestar.bettervanilla.manager.JukeboxManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
@@ -58,6 +60,7 @@ public class Main extends JavaPlugin {
   private WaypointsManager _waypointsManager;
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
+  private JukeboxManager _jukeboxManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -67,12 +70,14 @@ public class Main extends JavaPlugin {
     Config timerConfig = new Config("timer.yml", getDataFolder());
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
+    Config jukeboxConfig = new Config("jukebox.yml", getDataFolder());
 
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
+    _jukeboxManager = new JukeboxManager(jukeboxConfig);
 
     _maintenanceManager = new MaintenanceManager();
     _actionBar = new ActionBar();
@@ -102,6 +107,7 @@ public class Main extends JavaPlugin {
     getCommand("playtime").setExecutor(new PlayTimeCommand());
     getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
+    getCommand("jukebox").setExecutor(new JukeboxCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -181,5 +187,9 @@ public class Main extends JavaPlugin {
 
   public MaintenanceManager getMaintenanceManager() {
     return _maintenanceManager;
+  }
+
+  public JukeboxManager getJukeboxManager() {
+    return _jukeboxManager;
   }
 }

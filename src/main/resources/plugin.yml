@@ -58,3 +58,7 @@ commands:
     description: Manage player and group permissions.
     usage: /permissions
     permission: bettervanilla.permissions
+  jukebox:
+    description: Open the jukebox GUI or manage the music queue.
+    usage: /jukebox
+    permission: bettervanilla.jukebox

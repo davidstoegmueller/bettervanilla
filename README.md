@@ -55,6 +55,7 @@ _(Scroll down for the complete feature & command list.)_
 - ✨ **Navigation Particles** – Follow a beam and optional trail while navigating
 - 📦 **Chest Sorting** – Right‑click outside a chest inventory to instantly sort it
 - 🎨 **Colored Chat & Mentions** – Use `&` color codes and ping players with `@name`
+- 🎵 **YouTube Jukebox** – Manage and share YouTube music links with other players
 
 ### Admin & Server
 
@@ -140,6 +141,20 @@ _(Scroll down for the complete feature & command list.)_
 | ⏲️ `/timer set <time>` | Set the timer to a specific time |
 
 </details>
+<details><summary><strong>Jukebox 🎵</strong></summary>
+
+| Command                               | Description                           |
+| ------------------------------------- | ------------------------------------- |
+| 🎵 `/jukebox`                         | Open the jukebox GUI                 |
+| ➕ `/jukebox add <url> <title>`       | Add a YouTube song to the queue      |
+| ➖ `/jukebox remove <index>`          | Remove a song from the queue         |
+| 📜 `/jukebox list`                    | List all songs in the queue          |
+| 🎵 `/jukebox current`                 | Show the current song                |
+| ⏭️ `/jukebox next`                    | Skip to the next song                |
+| ⏮️ `/jukebox previous`                | Go to the previous song              |
+| 🗑️ `/jukebox clear`                   | Clear the entire queue               |
+
+</details>
 
 <details><summary><strong>Settings & Maintenance 🛠️</strong></summary>
 | Command        | Description             |
@@ -205,6 +220,7 @@ bettervanilla.togglecompass
 bettervanilla.chestsort
 bettervanilla.deathpoints
 bettervanilla.permissions
+bettervanilla.jukebox
 ```
 
 ---
