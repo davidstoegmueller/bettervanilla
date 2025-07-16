@@ -16,11 +16,13 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\Settings
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PlayerMove.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\TimerManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\VeinChopperSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\CropProtection.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\NavigationData.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SleepingRain.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\TimerCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ServerMOTD.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\VeinMinerSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\BackpackManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
@@ -28,6 +30,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\Right
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\VeinMiningChopping.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\BackpackSettingsGUI.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\MaterialToggleGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\WaypointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PermissionsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\WaypointsCommand.java
