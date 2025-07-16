@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -176,6 +177,7 @@ public class VeinChopperSettingsGUI implements Listener {
     ItemStack item = new ItemStack(Material.OAK_LOG);
     ItemMeta meta = item.getItemMeta();
     if (meta != null) {
+          
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Allowed Blocks"));
       meta.lore(List.of(Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")));
       item.setItemMeta(meta);
