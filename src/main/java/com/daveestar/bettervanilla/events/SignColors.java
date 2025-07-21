@@ -15,6 +15,7 @@ public class SignColors implements Listener {
       Component current = e.line(i);
       String raw = PlainTextComponentSerializer.plainText().serialize(current);
       Component colored = LegacyComponentSerializer.legacyAmpersand().deserialize(raw);
+
       e.line(i, colored);
     }
   }
