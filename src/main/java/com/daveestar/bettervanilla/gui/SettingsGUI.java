@@ -299,7 +299,7 @@ public class SettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY
               + "While sneaking, mine all ores of the same type if using a pickaxe.",
           (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
-              : !globalState ? ChatColor.RED + "Vein Miner is gloabally disabled on the server." : null),
+              : !globalState ? ChatColor.RED + "Vein Miner is globally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -326,7 +326,7 @@ public class SettingsGUI {
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "While sneaking, chop all logs of the same type if using an axe.",
           (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
-              : !globalState ? ChatColor.RED + "Vein Miner is gloabally disabled on the server." : null),
+              : !globalState ? ChatColor.RED + "Vein Chopper is globally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),

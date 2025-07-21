@@ -241,8 +241,8 @@ public class VeinMinerSettingsGUI implements Listener {
         _plugin.getServer().getScheduler().runTask(_plugin, () -> {
           _settingsManager.setVeinMinerMaxVeinSize(veinSize);
           p.sendMessage(Main.getPrefix() + "Maximum vein size set to: " + ChatColor.YELLOW + veinSize);
-
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+          
           CustomGUI parent = _sizePending.remove(id);
           displayGUI(p, parent);
         });

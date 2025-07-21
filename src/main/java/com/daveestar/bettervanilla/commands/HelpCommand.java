@@ -79,7 +79,7 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getShortPrefix()
           + "/permissions user <addperm | removeperm> <username> <permission> - Add or remove a permission from a user");
       p.sendMessage(
-          Main.getShortPrefix() + " » "
+          Main.getShortPrefix()
               + "/permissions user <setgroup> <username> <group> - Set the group of a user");
       p.sendMessage(
           Main.getShortPrefix()
