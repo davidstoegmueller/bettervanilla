@@ -28,6 +28,7 @@ import com.daveestar.bettervanilla.events.VeinMiningChopping;
 import com.daveestar.bettervanilla.events.RightClickCropHarvest;
 import com.daveestar.bettervanilla.events.ChestSort;
 import com.daveestar.bettervanilla.events.CropProtection;
+import com.daveestar.bettervanilla.events.SignColors;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
@@ -122,6 +123,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new RightClickCropHarvest(), this);
     manager.registerEvents(new ChestSort(), this);
     manager.registerEvents(new VeinMiningChopping(), this);
+    manager.registerEvents(new SignColors(), this);
   }
 
   @Override
