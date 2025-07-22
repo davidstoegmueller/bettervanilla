@@ -63,12 +63,13 @@ commands:
     description: Open your backpack.
     usage: /backpack
     permission: bettervanilla.backpack
-  msg:
+  message:
+    aliases: [msg]
     description: Send a private message to another player.
     usage: /msg <player> <message>
     permission: bettervanilla.msg
-  r:
-    aliases: [reply]
+  reply:
+    aliases: [r]
     description: Reply to the last private message.
     usage: /r <message>
     permission: bettervanilla.msg

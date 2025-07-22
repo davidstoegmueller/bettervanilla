@@ -33,12 +33,17 @@ public class MsgCommand implements TabExecutor {
 
       if (args.length >= 2) {
         Player target = Bukkit.getPlayer(args[0]);
-        if (target != null && target.isOnline()) {
-          String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-          _messageManager.sendPrivateMessage(p, target, message);
+
+        if (!target.getUniqueId().equals(p.getUniqueId())) {
+          if (target != null && target.isOnline()) {
+            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            _messageManager.sendPrivateMessage(p, target, message);
+          } else {
+            p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
+                + ChatColor.RED + " is currently not online!");
+          }
         } else {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-              + ChatColor.RED + " is currently not online!");
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot send a message to yourself!");
         }
       } else {
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/msg <player> <message>");

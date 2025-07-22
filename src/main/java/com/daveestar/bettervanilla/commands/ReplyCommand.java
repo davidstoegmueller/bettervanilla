@@ -26,6 +26,7 @@ public class ReplyCommand implements CommandExecutor {
 
       if (args.length >= 1) {
         Player target = _messageManager.getReplyTarget(p);
+
         if (target != null) {
           String message = String.join(" ", args);
           _messageManager.sendPrivateMessage(p, target, message);
