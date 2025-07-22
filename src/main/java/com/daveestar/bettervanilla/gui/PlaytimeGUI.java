@@ -34,10 +34,8 @@ public class PlaytimeGUI {
   public void displayGUI(Player p) {
     Map<String, ItemStack> entries = new LinkedHashMap<>();
 
-    // self playtime item
     entries.put("self", _createSelfItem(p));
 
-    // other players
     for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
       if (op.getUniqueId().equals(p.getUniqueId()))
         continue;
@@ -46,13 +44,12 @@ public class PlaytimeGUI {
       entries.put(op.getUniqueId().toString(), _createPlayerItem(op));
     }
 
-    int rows = Math.max(2, (int) Math.ceil((entries.size()) / 9.0) + 1);
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("self", 4); // center of first row
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
-        entries, rows, customSlots, null, null);
+        entries, 6, customSlots, null, null, 18);
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("self", new CustomGUI.ClickAction() {
@@ -92,19 +89,20 @@ public class PlaytimeGUI {
     int playTime = _timerManager.getPlayTime(p.getUniqueId());
     int afkTime = _timerManager.getAFKTime(p.getUniqueId());
 
-    ItemStack item = new ItemStack(Material.CLOCK);
+    ItemStack item = new ItemStack(Material.PLAYER_HEAD);
     ItemMeta meta = item.getItemMeta();
 
-    if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Your Playtime"));
-      meta.lore(Arrays.asList(
+    if (meta instanceof SkullMeta skullMeta) {
+      skullMeta.setOwningPlayer(p);
+      skullMeta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Your Playtime"));
+      skullMeta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Show Message")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
-      item.setItemMeta(meta);
+      item.setItemMeta(skullMeta);
     }
 
     return item;
