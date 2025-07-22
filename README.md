@@ -186,6 +186,31 @@ _Use `/permissions reload` to apply permission changes without requiring players
 
 </details>
 
+## Settings
+
+### Player Settings
+- **Action-Bar Location** – Display your current XYZ in the HUD
+- **Bossbar Compass** – Minimal compass overlay
+- **Navigation Particles** – Show particles while navigating
+- **Chest Sorting** – Right-click outside inventories to sort them
+- **Vein Miner** – Mine entire ore veins when sneaking with a pickaxe
+- **Vein Chopper** – Chop entire trees when sneaking with an axe
+
+### Admin Settings
+- **Maintenance Mode** – Toggle join restrictions with an optional message
+- **Creeper Damage** – Prevent creepers from destroying blocks
+- **Enable End** – Allow travel to The End dimension
+- **Enable Nether** – Allow travel to The Nether dimension
+- **Sleeping Rain Skip** – Skip rain by sleeping
+- **Server MOTD** – Set the message shown in the server list
+- **AFK Protection** – Make AFK players invulnerable
+- **AFK Time** – Minutes before a player is marked AFK
+- **Crop Protection** – Stop crops from being trampled
+- **Right-Click Crop Harvest** – Harvest crops by right-clicking
+- **Backpacks** – Enable backpacks and adjust pages and rows
+- **Vein Miner Settings** – Global toggle, max size, sound and allowed tools/blocks
+- **Vein Chopper Settings** – Global toggle, max size, sound and allowed tools/blocks
+
 ---
 
 ## Permissions
