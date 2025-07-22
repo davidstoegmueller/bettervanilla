@@ -73,3 +73,7 @@ commands:
     description: Reply to the last private message.
     usage: /r <message>
     permission: bettervanilla.msg
+  vanish:
+    description: Toggle vanish mode.
+    usage: /vanish
+    permission: bettervanilla.vanish
