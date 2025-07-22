@@ -53,13 +53,6 @@ public class ChatMessages implements Listener {
 
     _permissionsManager.onPlayerJoined(p);
 
-    _vanishManager.getVanishedPlayers().forEach(id -> {
-      Player vanished = _plugin.getServer().getPlayer(id);
-      if (vanished != null) {
-        p.hidePlayer(_plugin, vanished);
-      }
-    });
-
     if (_maintenanceManager.getState()) {
       boolean bypass = _maintenanceManager.sendMaintenance(p);
 
@@ -85,9 +78,8 @@ public class ChatMessages implements Listener {
     e.quitMessage(Component
         .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
 
-    _vanishManager.onPlayerLeft(p);
-
     _permissionsManager.onPlayerLeft(p);
+    _vanishManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);

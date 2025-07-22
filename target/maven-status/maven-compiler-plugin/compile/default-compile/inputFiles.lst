@@ -4,6 +4,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SignC
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PermissionsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\DeathPointsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\HelpCommand.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\VanishEvents.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\WaypointsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Waypoint.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\NavigationManager.java
@@ -25,6 +26,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Tim
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ServerMOTD.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\VeinMinerSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\BackpackManager.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\VanishCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\MessageManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
@@ -41,6 +43,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Rep
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SettingsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\DeathChest.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\MaintenanceManager.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\VanishManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ActionBar.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\Permissions.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\CustomGUI.java

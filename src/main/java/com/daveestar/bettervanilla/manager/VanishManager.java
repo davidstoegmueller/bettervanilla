@@ -67,8 +67,4 @@ public class VanishManager {
       unvanish(p);
     }
   }
-
-  public Set<UUID> getVanishedPlayers() {
-    return _vanished;
-  }
 }
