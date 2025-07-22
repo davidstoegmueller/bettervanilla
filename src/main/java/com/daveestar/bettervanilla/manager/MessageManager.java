@@ -14,9 +14,14 @@ public class MessageManager {
     String translated = ChatColor.translateAlternateColorCodes('&', message);
     String prefix = ChatColor.GRAY + "[" + ChatColor.YELLOW + "MSG" + ChatColor.GRAY + "] ";
 
-    sender.sendMessage(prefix + ChatColor.YELLOW + "You " + ChatColor.GRAY + "»" + ChatColor.YELLOW + receiver.getName()
-        + ChatColor.GRAY + ": " + translated);
-    receiver.sendMessage(prefix + ChatColor.YELLOW + sender.getName() + ChatColor.GRAY + " -> You: " + translated);
+    sender.sendMessage(
+        prefix + "(" + ChatColor.YELLOW + "YOU" + ChatColor.GRAY + " » " + ChatColor.YELLOW + receiver.getName()
+            + ChatColor.GRAY + ")" + ChatColor.YELLOW + " » " + ChatColor.GRAY + translated);
+    receiver
+        .sendMessage(
+            prefix + "(" + ChatColor.YELLOW + sender.getName() + ChatColor.GRAY + " » " + ChatColor.YELLOW + "YOU"
+                + ChatColor.GRAY + ")" + ChatColor.YELLOW + " » " + ChatColor.GRAY
+                + translated);
 
     _lastMessages.put(sender, receiver);
     _lastMessages.put(receiver, sender);

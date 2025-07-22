@@ -114,8 +114,8 @@ public class Main extends JavaPlugin {
     getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
     getCommand("backpack").setExecutor(new BackpackCommand());
-    getCommand("msg").setExecutor(new MsgCommand());
-    getCommand("r").setExecutor(new ReplyCommand());
+    getCommand("message").setExecutor(new MsgCommand());
+    getCommand("reply").setExecutor(new ReplyCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
