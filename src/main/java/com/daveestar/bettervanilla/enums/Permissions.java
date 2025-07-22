@@ -19,7 +19,8 @@ public enum Permissions {
   PERMISSION("bettervanilla.permissions"),
   VEINMINER("bettervanilla.veinminer"),
   VEINCHOPPER("bettervanilla.veinchopper"),
-  MSG("bettervanilla.msg");
+  MSG("bettervanilla.msg"),
+  VANISH("bettervanilla.vanish");
 
   private final String _permission;
 

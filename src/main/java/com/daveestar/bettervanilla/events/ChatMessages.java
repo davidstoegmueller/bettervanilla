@@ -16,6 +16,7 @@ import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
+import com.daveestar.bettervanilla.manager.VanishManager;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -32,6 +33,7 @@ public class ChatMessages implements Listener {
   private final MaintenanceManager _maintenanceManager;
   private final BackpackManager _backpackManager;
   private final MessageManager _messageManager;
+  private final VanishManager _vanishManager;
 
   public ChatMessages() {
     _plugin = Main.getInstance();
@@ -42,6 +44,7 @@ public class ChatMessages implements Listener {
     _maintenanceManager = _plugin.getMaintenanceManager();
     _backpackManager = _plugin.getBackpackManager();
     _messageManager = _plugin.getMessageManager();
+    _vanishManager = _plugin.getVanishManager();
   }
 
   @EventHandler
@@ -49,6 +52,13 @@ public class ChatMessages implements Listener {
     Player p = (Player) e.getPlayer();
 
     _permissionsManager.onPlayerJoined(p);
+
+    _vanishManager.getVanishedPlayers().forEach(id -> {
+      Player vanished = _plugin.getServer().getPlayer(id);
+      if (vanished != null) {
+        p.hidePlayer(_plugin, vanished);
+      }
+    });
 
     if (_maintenanceManager.getState()) {
       boolean bypass = _maintenanceManager.sendMaintenance(p);
@@ -75,6 +85,8 @@ public class ChatMessages implements Listener {
     e.quitMessage(Component
         .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
 
+    _vanishManager.onPlayerLeft(p);
+
     _permissionsManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
@@ -93,6 +105,7 @@ public class ChatMessages implements Listener {
     _compassManager.onPlayerLeft(p);
     _backpackManager.onPlayerLeft(p);
     _messageManager.onPlayerLeft(p);
+    _vanishManager.onPlayerLeft(p);
   }
 
   @EventHandler
