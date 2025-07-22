@@ -19,8 +19,9 @@ public class MessageManager {
 
   public void sendPrivateMessage(Player sender, Player receiver, String message) {
     String translated = ChatColor.translateAlternateColorCodes('&', message);
-    sender.sendMessage(Main.getPrefix() + ChatColor.GRAY + "(to " + ChatColor.YELLOW + receiver.getName() + ChatColor.GRAY + ") " + translated);
-    receiver.sendMessage(Main.getPrefix() + ChatColor.GRAY + "(from " + ChatColor.YELLOW + sender.getName() + ChatColor.GRAY + ") " + translated);
+    String prefix = Main.getPrefix() + ChatColor.DARK_AQUA + "[PM] " + ChatColor.GRAY;
+    sender.sendMessage(prefix + ChatColor.YELLOW + "You -> " + receiver.getName() + ChatColor.GRAY + ": " + translated);
+    receiver.sendMessage(prefix + ChatColor.YELLOW + sender.getName() + ChatColor.GRAY + " -> You: " + translated);
     _lastMessages.put(sender, receiver);
     _lastMessages.put(receiver, sender);
   }
