@@ -63,7 +63,9 @@ public class VanishManager {
   }
 
   public void onPlayerLeft(Player p) {
-    _vanished.remove(p.getUniqueId());
+    if (isVanished(p)) {
+      unvanish(p);
+    }
   }
 
   public Set<UUID> getVanishedPlayers() {

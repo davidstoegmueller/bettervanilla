@@ -27,10 +27,10 @@ public class VanishCommand implements CommandExecutor {
 
     if (_vanishManager.isVanished(p)) {
       _vanishManager.unvanish(p);
-      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "You are now visible.");
+      p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "You are now visible.");
     } else {
       _vanishManager.vanish(p);
-      p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + "You vanished.");
+      p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "You vanished.");
     }
 
     return true;
