@@ -28,38 +28,58 @@ public class MsgCommand implements TabExecutor {
 
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (cs instanceof Player) {
-      Player p = (Player) cs;
+    if (!(cs instanceof Player)) {
+      return false;
+    }
 
-      if (args.length >= 2) {
-        Player target = Bukkit.getPlayer(args[0]);
+    Player p = (Player) cs;
+    String name = c.getName().toLowerCase();
 
-        if (!target.getUniqueId().equals(p.getUniqueId())) {
-          if (target != null && target.isOnline()) {
-            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            _messageManager.sendPrivateMessage(p, target, message);
-          } else {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-                + ChatColor.RED + " is currently not online!");
-          }
+    if (name.equals("reply") || name.equals("r")) {
+      if (args.length >= 1) {
+        Player target = _messageManager.getReplyTarget(p);
+
+        if (target != null) {
+          String message = String.join(" ", args);
+          _messageManager.sendPrivateMessage(p, target, message);
         } else {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot send a message to yourself!");
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no one to reply to.");
         }
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/msg <player> <message>");
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/r <message>");
       }
 
       return true;
     }
 
-    return false;
+    // default to message command
+    if (args.length >= 2) {
+      Player target = Bukkit.getPlayer(args[0]);
+
+      if (!target.getUniqueId().equals(p.getUniqueId())) {
+        if (target != null && target.isOnline()) {
+          String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+          _messageManager.sendPrivateMessage(p, target, message);
+        } else {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
+              + ChatColor.RED + " is currently not online!");
+        }
+      } else {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot send a message to yourself!");
+      }
+    } else {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/msg <player> <message>");
+    }
+
+    return true;
   }
 
   @Override
   public List<String> onTabComplete(CommandSender cs, Command c, String label, String[] args) {
     List<String> suggestions = new ArrayList<>();
 
-    if (args.length == 1) {
+    String name = c.getName().toLowerCase();
+    if ((name.equals("message") || name.equals("msg")) && args.length == 1) {
       Collection<? extends Player> onlinePlayers = _plugin.getServer().getOnlinePlayers();
       suggestions.addAll(onlinePlayers.stream().map(Player::getName).collect(Collectors.toList()));
     }

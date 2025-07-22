@@ -18,7 +18,6 @@ import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.commands.BackpackCommand;
 import com.daveestar.bettervanilla.commands.MsgCommand;
-import com.daveestar.bettervanilla.commands.ReplyCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
@@ -115,7 +114,7 @@ public class Main extends JavaPlugin {
     getCommand("permissions").setExecutor(new PermissionsCommand());
     getCommand("backpack").setExecutor(new BackpackCommand());
     getCommand("msg").setExecutor(new MsgCommand());
-    getCommand("r").setExecutor(new ReplyCommand());
+    getCommand("r").setExecutor(new MsgCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
