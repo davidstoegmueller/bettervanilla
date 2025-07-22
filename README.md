@@ -37,6 +37,7 @@ Whether you’re spinning up a fresh community project or running a seasoned net
 - 📦 **Chest Sorting** – Right‑click outside a chest inventory to instantly sort it
 - 🛠️ **Settings Menu** – `/settings` player settings can be toggled from there
 - 🎨 **Colored Chat & Mentions** – Use `&` color codes and ping players with `@name`
+- 💬 **Private Messages** – Send direct messages with `/msg` and reply quickly with `/r`
 - 🔍 **Inventory Viewer** – Peek inside another player’s inventory
 - ⏲️ **Timer** – Global stopwatch with resume, pause, reset & set
 - ⏱️ **Playtime** – Track and display personal or global playtime, even for offline players

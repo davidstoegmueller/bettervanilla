@@ -2,6 +2,10 @@
 
 # 📜 Changelog
 
+## [1.7.0] - Unreleased
+
+- **💬 Private Messages** – New `/msg` and `/r` commands for direct player chats.
+
 ## [1.6.0] - 16.07.2025
 
 - **🎒 Backpacks** – Portable storage with configurable pages and rows. Use `/backpack` anywhere.

@@ -17,6 +17,8 @@ import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.commands.BackpackCommand;
+import com.daveestar.bettervanilla.commands.MsgCommand;
+import com.daveestar.bettervanilla.commands.ReplyCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
@@ -39,6 +41,7 @@ import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.manager.BackpackManager;
+import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -62,6 +65,7 @@ public class Main extends JavaPlugin {
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
   private BackpackManager _backpackManager;
+  private MessageManager _messageManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -79,6 +83,7 @@ public class Main extends JavaPlugin {
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
     _backpackManager = new BackpackManager(backpackConfig);
+    _messageManager = new MessageManager();
 
     _maintenanceManager = new MaintenanceManager();
     _actionBar = new ActionBar();
@@ -109,6 +114,8 @@ public class Main extends JavaPlugin {
     getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
     getCommand("backpack").setExecutor(new BackpackCommand());
+    getCommand("msg").setExecutor(new MsgCommand());
+    getCommand("r").setExecutor(new ReplyCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -195,5 +202,9 @@ public class Main extends JavaPlugin {
 
   public BackpackManager getBackpackManager() {
     return _backpackManager;
+  }
+
+  public MessageManager getMessageManager() {
+    return _messageManager;
   }
 }
