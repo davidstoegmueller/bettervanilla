@@ -33,28 +33,14 @@ public class PlaytimeGUI {
 
   public void displayGUI(Player p) {
     Map<String, ItemStack> entries = new LinkedHashMap<>();
-
-    entries.put("self", _createSelfItem(p));
-
-    for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-      if (op.getUniqueId().equals(p.getUniqueId()))
-        continue;
-      if (op.getName() == null)
-        continue;
-      entries.put(op.getUniqueId().toString(), _createPlayerItem(op));
-    }
-
-    Map<String, Integer> customSlots = new HashMap<>();
-    customSlots.put("self", 4); // center of first row
-
-    CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
-        entries, 6, customSlots, null, null, 18);
-
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
-    actions.put("self", new CustomGUI.ClickAction() {
+
+    String selfKey = p.getUniqueId().toString();
+    entries.put(selfKey, _createPlayerItem(p));
+    actions.put(selfKey, new CustomGUI.ClickAction() {
+      @Override
       public void onLeftClick(Player player) {
-        _sendPlaytimeMessage(player, player);
+        _sendPlaytimeMessage(player, p);
       }
     });
 
@@ -63,13 +49,20 @@ public class PlaytimeGUI {
         continue;
       if (op.getName() == null)
         continue;
+
       String key = op.getUniqueId().toString();
+      entries.put(key, _createPlayerItem(op));
       actions.put(key, new CustomGUI.ClickAction() {
+        @Override
         public void onLeftClick(Player player) {
           _sendPlaytimeMessage(player, op);
         }
       });
     }
+
+    CustomGUI gui = new CustomGUI(_plugin, p,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
+        entries, 6, null, null, null);
 
     gui.setClickActions(actions);
     gui.open(p);
@@ -83,29 +76,6 @@ public class PlaytimeGUI {
     viewer.sendMessage(Main.getShortPrefix() + "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
     viewer.sendMessage(Main.getShortPrefix() + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime));
     viewer.sendMessage(Main.getShortPrefix() + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime));
-  }
-
-  private ItemStack _createSelfItem(Player p) {
-    int playTime = _timerManager.getPlayTime(p.getUniqueId());
-    int afkTime = _timerManager.getAFKTime(p.getUniqueId());
-
-    ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-    ItemMeta meta = item.getItemMeta();
-
-    if (meta instanceof SkullMeta skullMeta) {
-      skullMeta.setOwningPlayer(p);
-      skullMeta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Your Playtime"));
-      skullMeta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime),
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Show Message")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
-      item.setItemMeta(skullMeta);
-    }
-
-    return item;
   }
 
   private ItemStack _createPlayerItem(OfflinePlayer op) {
