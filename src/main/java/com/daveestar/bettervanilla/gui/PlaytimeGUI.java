@@ -34,11 +34,9 @@ public class PlaytimeGUI {
   public void displayGUI(Player p) {
     Map<String, ItemStack> entries = new LinkedHashMap<>();
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
-    Map<String, Integer> customSlots = new HashMap<>();
 
     String selfKey = p.getUniqueId().toString();
     entries.put(selfKey, _createPlayerItem(p));
-    customSlots.put(selfKey, 4);
     actions.put(selfKey, new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player player) {
@@ -64,7 +62,7 @@ public class PlaytimeGUI {
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
-        entries, 6, customSlots, null, null);
+        entries, 6, null, null, null);
 
     gui.setClickActions(actions);
     gui.open(p);
