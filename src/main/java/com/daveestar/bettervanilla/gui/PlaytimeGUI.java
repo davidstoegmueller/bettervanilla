@@ -63,7 +63,7 @@ public class PlayTimeGUI {
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
-        entries, 6, null, null, null);
+        entries, 3, null, null, null);
 
     gui.setClickActions(actions);
     gui.open(p);
