@@ -77,3 +77,23 @@ commands:
     description: Toggle vanish mode.
     usage: /vanish
     permission: bettervanilla.vanish
+  kick:
+    description: Kick a player from the server.
+    usage: /kick <player> [reason]
+    permission: bettervanilla.kick
+  ban:
+    description: Ban a player from the server.
+    usage: /ban <player> [reason] [seconds]
+    permission: bettervanilla.ban
+  unban:
+    description: Remove a player's ban.
+    usage: /unban <player>
+    permission: bettervanilla.unban
+  mute:
+    description: Mute a player.
+    usage: /mute <player> [reason] [seconds]
+    permission: bettervanilla.mute
+  unmute:
+    description: Remove a player's mute.
+    usage: /unmute <player>
+    permission: bettervanilla.unmute
