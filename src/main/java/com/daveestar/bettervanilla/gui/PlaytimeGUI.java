@@ -22,11 +22,11 @@ import com.daveestar.bettervanilla.utils.CustomGUI;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
-public class PlaytimeGUI {
+public class PlayTimeGUI {
   private final Main _plugin;
   private final TimerManager _timerManager;
 
-  public PlaytimeGUI() {
+  public PlayTimeGUI() {
     _plugin = Main.getInstance();
     _timerManager = _plugin.getTimerManager();
   }
@@ -47,6 +47,7 @@ public class PlaytimeGUI {
     for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
       if (op.getUniqueId().equals(p.getUniqueId()))
         continue;
+
       if (op.getName() == null)
         continue;
 
@@ -71,9 +72,12 @@ public class PlaytimeGUI {
   private void _sendPlaytimeMessage(Player viewer, OfflinePlayer target) {
     int playTime = _timerManager.getPlayTime(target.getUniqueId());
     int afkTime = _timerManager.getAFKTime(target.getUniqueId());
-    viewer.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
-        + " » " + ChatColor.GRAY + (target.getName() != null ? target.getName() : "Unknown"));
-    viewer.sendMessage(Main.getShortPrefix() + "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
+
+    viewer.sendMessage(
+        Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
+            + " » " + ChatColor.GRAY + (target.getName() != null ? target.getName() : "Unknown"));
+    viewer.sendMessage(
+        Main.getShortPrefix() + "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
     viewer.sendMessage(Main.getShortPrefix() + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime));
     viewer.sendMessage(Main.getShortPrefix() + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime));
   }
@@ -87,10 +91,14 @@ public class PlaytimeGUI {
 
     if (meta instanceof SkullMeta skullMeta) {
       skullMeta.setOwningPlayer(op);
-      skullMeta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + op.getName()));
+      skullMeta
+          .displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + op.getName()));
       skullMeta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime),
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW
+              + _timerManager.formatTime(playTime + afkTime),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW
+              + _timerManager.formatTime(playTime),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Show Message")

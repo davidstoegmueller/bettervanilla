@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.TimerManager;
-import com.daveestar.bettervanilla.gui.PlaytimeGUI;
+import com.daveestar.bettervanilla.gui.PlayTimeGUI;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -22,12 +22,12 @@ public class PlayTimeCommand implements TabExecutor {
 
   private final Main _plugin;
   private final TimerManager _timerManager;
-  private final PlaytimeGUI _playtimeGUI;
+  private final PlayTimeGUI _playtimeGUI;
 
   public PlayTimeCommand() {
     _plugin = Main.getInstance();
     _timerManager = _plugin.getTimerManager();
-    _playtimeGUI = new PlaytimeGUI();
+    _playtimeGUI = new PlayTimeGUI();
   }
 
   @Override

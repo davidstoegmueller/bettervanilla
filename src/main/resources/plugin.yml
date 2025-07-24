@@ -11,7 +11,7 @@ commands:
     permission: bettervanilla.waypoints
   playtime:
     aliases: [pt]
-    description: Display your playtime or another player's playtime.
+    description: Opens playtime gui and displays your playtime or another player's playtime.
     usage: /playtime
     permission: bettervanilla.playtime
   ping:
