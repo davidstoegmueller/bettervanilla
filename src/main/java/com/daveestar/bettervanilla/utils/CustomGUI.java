@@ -152,17 +152,13 @@ public class CustomGUI implements Listener {
     _slotKeyMap.clear();
 
     List<Map.Entry<String, ItemStack>> currentEntries = _getPageEntries();
-    int defaultSlotIndex = 0;
-    for (Map.Entry<String, ItemStack> entry : currentEntries) {
+    for (int i = 0; i < currentEntries.size(); i++) {
+      Map.Entry<String, ItemStack> entry = currentEntries.get(i);
       String key = entry.getKey();
-      int slot = _customSlots.getOrDefault(key, defaultSlotIndex);
+      int slot = _customSlots.getOrDefault(key, i);
 
       _gui.setItem(slot, entry.getValue());
       _slotKeyMap.put(slot, key);
-
-      if (!_customSlots.containsKey(key)) {
-        defaultSlotIndex++;
-      }
     }
   }
 
