@@ -26,7 +26,6 @@ public class CustomGUI implements Listener {
   private final int _pageSize;
   private int _currentPage;
   private final int _maxPage;
-  private final int _defaultSlotOffset;
 
   private final Inventory _gui;
   private final List<Map.Entry<String, ItemStack>> _entryList;
@@ -39,21 +38,12 @@ public class CustomGUI implements Listener {
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
-    this(pluginInstance, p, title, pageEntries, rows, customSlots, parentMenu, options, 0);
-  }
-
-  public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
-      int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options,
-      int defaultSlotOffset) {
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
     _currentPage = 1;
     _entryList = new ArrayList<>(pageEntries.entrySet());
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
     _slotKeyMap = new HashMap<>();
-    _defaultSlotOffset = Math.max(0, defaultSlotOffset);
-    _pageSize = inventorySize - _INVENTORY_ROW_SIZE - _defaultSlotOffset;
-    if (_pageSize <= 0)
-      _pageSize = 1;
+    _pageSize = inventorySize - _INVENTORY_ROW_SIZE;
     _maxPage = (int) Math.ceil((double) _entryList.size() / _pageSize);
     _parentMenu = parentMenu;
     _options = options != null ? options : EnumSet.noneOf(Option.class);
@@ -162,7 +152,7 @@ public class CustomGUI implements Listener {
     _slotKeyMap.clear();
 
     List<Map.Entry<String, ItemStack>> currentEntries = _getPageEntries();
-    int defaultSlotIndex = _defaultSlotOffset;
+    int defaultSlotIndex = 0;
     for (Map.Entry<String, ItemStack> entry : currentEntries) {
       String key = entry.getKey();
       int slot = _customSlots.getOrDefault(key, defaultSlotIndex);
