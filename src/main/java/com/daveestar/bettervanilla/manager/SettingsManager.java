@@ -202,6 +202,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getHealthDisplay() {
+    return _fileConfig.getBoolean("global.healthdisplay", false);
+  }
+
+  public void setHealthDisplay(boolean value) {
+    _fileConfig.set("global.healthdisplay", value);
+    _config.save();
+  }
+
   public boolean getBackpackEnabled() {
     return _fileConfig.getBoolean("global.backpack.enabled", false);
   }

@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
+import com.daveestar.bettervanilla.manager.HealthDisplayManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
@@ -33,6 +34,7 @@ public class AdminSettingsGUI implements Listener {
   private final SettingsManager _settingsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
+  private final HealthDisplayManager _healthDisplayManager;
   private final Map<UUID, CustomGUI> _afkTimePending;
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
   private final Map<UUID, CustomGUI> _motdPending;
@@ -45,6 +47,7 @@ public class AdminSettingsGUI implements Listener {
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _healthDisplayManager = _plugin.getHealthDisplayManager();
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
     _motdPending = new HashMap<>();
@@ -72,6 +75,7 @@ public class AdminSettingsGUI implements Listener {
     // third row
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+    entries.put("displayhearts", _createDisplayHeartsItem());
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
 
@@ -92,6 +96,7 @@ public class AdminSettingsGUI implements Listener {
     // third row
     customSlots.put("cropprotection", 18);
     customSlots.put("rightclickcropharvest", 20);
+    customSlots.put("displayhearts", 22);
     customSlots.put("veinminersettings", 24);
     customSlots.put("veinchoppersettings", 26);
 
@@ -165,6 +170,14 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleRightClickCropHarvest(p);
+        displayGUI(p, parentMenu);
+      }
+    });
+
+    actions.put("displayhearts", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleDisplayHearts(p);
         displayGUI(p, parentMenu);
       }
     });
@@ -358,6 +371,27 @@ public class AdminSettingsGUI implements Listener {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Right-Click Crop Harvest"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Allows players to harvest crops by right-clicking them.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createDisplayHeartsItem() {
+    boolean state = _settingsManager.getHealthDisplay();
+    ItemStack item = new ItemStack(Material.RED_DYE);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component
+          .text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Display Player Hearts"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shows players' hearts above their heads.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -608,6 +642,15 @@ public class AdminSettingsGUI implements Listener {
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(
         Main.getPrefix() + "Right-Click crop harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleDisplayHearts(Player p) {
+    boolean newState = !_settingsManager.getHealthDisplay();
+    _settingsManager.setHealthDisplay(newState);
+    _healthDisplayManager.applySettingToAllPlayers();
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(
+        Main.getPrefix() + "Player hearts display is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleAFKProtection(Player p) {

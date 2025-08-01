@@ -48,6 +48,7 @@ import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.ModerationManager;
+import com.daveestar.bettervanilla.manager.HealthDisplayManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -74,6 +75,7 @@ public class Main extends JavaPlugin {
   private MessageManager _messageManager;
   private VanishManager _vanishManager;
   private ModerationManager _moderationManager;
+  private HealthDisplayManager _healthDisplayManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -102,6 +104,7 @@ public class Main extends JavaPlugin {
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
+    _healthDisplayManager = new HealthDisplayManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
@@ -162,6 +165,7 @@ public class Main extends JavaPlugin {
     getServer().getOnlinePlayers().forEach(_timerManager::onPlayerLeft);
     _compassManager.destroy();
     _backpackManager.saveAllOpenBackpacks();
+    _healthDisplayManager.disable();
 
     _LOGGER.info("BetterVanilla - DISABLED");
   }
@@ -234,5 +238,9 @@ public class Main extends JavaPlugin {
 
   public ModerationManager getModerationManager() {
     return _moderationManager;
+  }
+
+  public HealthDisplayManager getHealthDisplayManager() {
+    return _healthDisplayManager;
   }
 }
