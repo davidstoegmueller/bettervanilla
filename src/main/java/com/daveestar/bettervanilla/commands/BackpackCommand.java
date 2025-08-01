@@ -18,12 +18,12 @@ public class BackpackCommand implements CommandExecutor {
   }
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    if (!(sender instanceof Player)) {
+  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+    if (!(cs instanceof Player)) {
       return true;
     }
 
-    Player p = (Player) sender;
+    Player p = (Player) cs;
 
     if (args.length > 0) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/backpack");

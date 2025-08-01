@@ -17,9 +17,10 @@ import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.commands.BackpackCommand;
-import com.daveestar.bettervanilla.commands.MsgCommand;
+import com.daveestar.bettervanilla.commands.MessageCommand;
 import com.daveestar.bettervanilla.commands.ReplyCommand;
 import com.daveestar.bettervanilla.commands.VanishCommand;
+import com.daveestar.bettervanilla.commands.ModerationCommands;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
@@ -33,6 +34,7 @@ import com.daveestar.bettervanilla.events.ChestSort;
 import com.daveestar.bettervanilla.events.CropProtection;
 import com.daveestar.bettervanilla.events.SignColors;
 import com.daveestar.bettervanilla.events.VanishEvents;
+import com.daveestar.bettervanilla.events.ModerationEvents;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
@@ -45,6 +47,7 @@ import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
+import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -70,6 +73,7 @@ public class Main extends JavaPlugin {
   private BackpackManager _backpackManager;
   private MessageManager _messageManager;
   private VanishManager _vanishManager;
+  private ModerationManager _moderationManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -80,6 +84,7 @@ public class Main extends JavaPlugin {
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
     Config backpackConfig = new Config("backpacks.yml", getDataFolder());
+    Config moderationConfig = new Config("moderation.yml", getDataFolder());
 
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
@@ -88,6 +93,7 @@ public class Main extends JavaPlugin {
     _waypointsManager = new WaypointsManager(waypointsConfig);
     _backpackManager = new BackpackManager(backpackConfig);
     _messageManager = new MessageManager();
+    _moderationManager = new ModerationManager(moderationConfig);
 
     _vanishManager = new VanishManager();
 
@@ -120,9 +126,14 @@ public class Main extends JavaPlugin {
     getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
     getCommand("backpack").setExecutor(new BackpackCommand());
-    getCommand("message").setExecutor(new MsgCommand());
+    getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("vanish").setExecutor(new VanishCommand());
+    getCommand("kick").setExecutor(new ModerationCommands.KickCommand());
+    getCommand("ban").setExecutor(new ModerationCommands.BanCommand());
+    getCommand("unban").setExecutor(new ModerationCommands.UnbanCommand());
+    getCommand("mute").setExecutor(new ModerationCommands.MuteCommand());
+    getCommand("unmute").setExecutor(new ModerationCommands.UnmuteCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -139,6 +150,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new VeinMiningChopping(), this);
     manager.registerEvents(new SignColors(), this);
     manager.registerEvents(new VanishEvents(), this);
+    manager.registerEvents(new ModerationEvents(), this);
   }
 
   @Override
@@ -218,5 +230,9 @@ public class Main extends JavaPlugin {
 
   public VanishManager getVanishManager() {
     return _vanishManager;
+  }
+
+  public ModerationManager getModerationManager() {
+    return _moderationManager;
   }
 }
