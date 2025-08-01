@@ -10,15 +10,18 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.ModerationManager;
+import com.daveestar.bettervanilla.manager.TimerManager;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class ModerationEvents implements Listener {
   private final ModerationManager _modManager;
+  private final TimerManager _timerManager;
 
   public ModerationEvents() {
     _modManager = Main.getInstance().getModerationManager();
+    _timerManager = Main.getInstance().getTimerManager();
   }
 
   @EventHandler
@@ -27,13 +30,17 @@ public class ModerationEvents implements Listener {
     if (_modManager.isBanned(p)) {
       String reason = _modManager.getBanReason(p);
       long expires = _modManager.getBanExpiry(p);
-      String msg = ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "] " + ChatColor.RED + "You are banned!";
-      if (!reason.isEmpty()) msg += "\n" + ChatColor.GRAY + "Reason: " + ChatColor.YELLOW + reason;
+      String banMsg = ChatColor.YELLOW + "" + ChatColor.BOLD + "BANNED\n\n" + ChatColor.GRAY
+          + "You were banned from the server.\n\n";
+      if (!reason.isEmpty()) {
+        banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Reason: " + ChatColor.GRAY + reason + "\n";
+      }
       if (expires != -1) {
         long remaining = (expires - System.currentTimeMillis()) / 1000;
-        msg += "\n" + ChatColor.GRAY + "Expires in: " + ChatColor.YELLOW + remaining + "s";
+        String time = _timerManager.formatTime((int) remaining);
+        banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Expires in: " + ChatColor.GRAY + time;
       }
-      e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, Component.text(msg));
+      e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, Component.text(banMsg));
     }
   }
 
@@ -42,7 +49,13 @@ public class ModerationEvents implements Listener {
     Player p = e.getPlayer();
     if (_modManager.isMuted(p)) {
       String reason = _modManager.getMuteReason(p);
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "You are muted." + (reason.isEmpty() ? "" : " Reason: " + ChatColor.YELLOW + reason));
+      String msg = Main.getPrefix() + ChatColor.RED + "You are muted.";
+      if (reason != null && !reason.isEmpty()) {
+        msg += " Reason: " + ChatColor.YELLOW + reason;
+      } else {
+        msg += " No reason given.";
+      }
+      p.sendMessage(msg);
       e.setCancelled(true);
     }
   }

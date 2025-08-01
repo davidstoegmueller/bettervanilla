@@ -1,6 +1,13 @@
 package com.daveestar.bettervanilla.manager;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.daveestar.bettervanilla.utils.Config;
@@ -65,6 +72,17 @@ public class ModerationManager {
     return _fileConfig.getLong("bans." + p.getUniqueId() + ".expires", -1);
   }
 
+  public List<String> getBannedPlayerNames() {
+    ConfigurationSection section = _fileConfig.getConfigurationSection("bans");
+    if (section == null) return Collections.emptyList();
+    List<String> names = new ArrayList<>();
+    for (String key : section.getKeys(false)) {
+      OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(key));
+      if (p.getName() != null) names.add(p.getName());
+    }
+    return names;
+  }
+
   public void mutePlayer(OfflinePlayer p, String reason) {
     mutePlayer(p, reason, -1);
   }
@@ -105,5 +123,16 @@ public class ModerationManager {
 
   public long getMuteExpiry(OfflinePlayer p) {
     return _fileConfig.getLong("mutes." + p.getUniqueId() + ".expires", -1);
+  }
+
+  public List<String> getMutedPlayerNames() {
+    ConfigurationSection section = _fileConfig.getConfigurationSection("mutes");
+    if (section == null) return Collections.emptyList();
+    List<String> names = new ArrayList<>();
+    for (String key : section.getKeys(false)) {
+      OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(key));
+      if (p.getName() != null) names.add(p.getName());
+    }
+    return names;
   }
 }

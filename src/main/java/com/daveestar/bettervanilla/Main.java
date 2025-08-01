@@ -129,11 +129,25 @@ public class Main extends JavaPlugin {
     getCommand("message").setExecutor(new MsgCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("vanish").setExecutor(new VanishCommand());
-    getCommand("kick").setExecutor(new ModerationCommands.KickCommand());
-    getCommand("ban").setExecutor(new ModerationCommands.BanCommand());
-    getCommand("unban").setExecutor(new ModerationCommands.UnbanCommand());
-    getCommand("mute").setExecutor(new ModerationCommands.MuteCommand());
-    getCommand("unmute").setExecutor(new ModerationCommands.UnmuteCommand());
+    ModerationCommands.KickCommand kick = new ModerationCommands.KickCommand();
+    getCommand("kick").setExecutor(kick);
+    getCommand("kick").setTabCompleter(kick);
+
+    ModerationCommands.BanCommand ban = new ModerationCommands.BanCommand();
+    getCommand("ban").setExecutor(ban);
+    getCommand("ban").setTabCompleter(ban);
+
+    ModerationCommands.UnbanCommand unban = new ModerationCommands.UnbanCommand();
+    getCommand("unban").setExecutor(unban);
+    getCommand("unban").setTabCompleter(unban);
+
+    ModerationCommands.MuteCommand mute = new ModerationCommands.MuteCommand();
+    getCommand("mute").setExecutor(mute);
+    getCommand("mute").setTabCompleter(mute);
+
+    ModerationCommands.UnmuteCommand unmute = new ModerationCommands.UnmuteCommand();
+    getCommand("unmute").setExecutor(unmute);
+    getCommand("unmute").setTabCompleter(unmute);
 
     // register events
     PluginManager manager = getServer().getPluginManager();
