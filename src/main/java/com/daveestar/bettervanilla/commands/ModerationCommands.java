@@ -15,11 +15,7 @@ import com.daveestar.bettervanilla.manager.ModerationManager;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
-/**
- * Collection of moderation related commands grouped in a single file.
- */
 public class ModerationCommands {
-  /** Kick a player from the server. */
   public static class KickCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -30,52 +26,56 @@ public class ModerationCommands {
 
       Player target = Bukkit.getPlayer(args[0]);
       if (target == null) {
-        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Player not found.");
+        sender.sendMessage(
+            Main.getPrefix() + ChatColor.RED + "Player " + ChatColor.YELLOW + args[0] + ChatColor.RED + " not found.");
         return true;
       }
 
-      String reason = "Kicked";
+      String reason = null;
       if (args.length > 1) {
         reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
       }
 
-      String msg = ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "] "
-          + ChatColor.RED + "You were kicked!";
-      if (!reason.isEmpty()) {
-        msg += "\n" + ChatColor.GRAY + "Reason: " + ChatColor.YELLOW + reason;
-      }
+      String kickMsg = ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "KICKED\n\n"
+          + ChatColor.GRAY
+          + "You were kicked from the server.\n\n"
+          + (reason != null ? ChatColor.YELLOW + "" + ChatColor.BOLD + "Reason: " + ChatColor.GRAY + reason
+              : "");
 
-      target.kick(Component.text(msg));
+      target.kick(Component.text(kickMsg));
       sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been kicked.");
       return true;
     }
   }
 
-  /** Ban or temp-ban a player. */
   public static class BanCommand implements CommandExecutor {
-    private final ModerationManager modManager;
+    private final ModerationManager _moderationManager;
 
     public BanCommand() {
-      modManager = Main.getInstance().getModerationManager();
+      _moderationManager = Main.getInstance().getModerationManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
       if (args.length < 1) {
-        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/ban <player> [reason] [seconds]");
+        sender.sendMessage(
+            Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
+                + "/ban <player> [duration] [reason] ");
+        sender.sendMessage(
+            Main.getPrefix() + "Example: " + ChatColor.YELLOW + "/ban playername 1d15m30s Inappropriate behavior");
         return true;
       }
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
       long duration = -1;
-      String reason = "Banned";
 
+      String reason = null;
       if (args.length > 1) {
         reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+
         if (args.length > 2) {
-          String last = args[args.length - 1];
           try {
-            duration = Long.parseLong(last);
+            duration = Long.parseLong(args[args.length - 1]);
             reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length - 1));
           } catch (NumberFormatException ignore) {
             duration = -1;
@@ -84,9 +84,9 @@ public class ModerationCommands {
       }
 
       if (duration > 0) {
-        modManager.tempBanPlayer(target, reason, duration * 1000);
+        _moderationManager.tempBanPlayer(target, reason, duration * 1000);
       } else {
-        modManager.banPlayer(target, reason);
+        _moderationManager.banPlayer(target, reason);
       }
 
       if (target.isOnline()) {
@@ -105,7 +105,8 @@ public class ModerationCommands {
         sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
             + " has been temp-banned for " + ChatColor.YELLOW + duration + ChatColor.GRAY + " seconds.");
       } else {
-        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been banned.");
+        sender
+            .sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been banned.");
       }
       return true;
     }
@@ -128,7 +129,8 @@ public class ModerationCommands {
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
       modManager.unbanPlayer(target);
-      sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been unbanned.");
+      sender
+          .sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been unbanned.");
       return true;
     }
   }
@@ -144,7 +146,8 @@ public class ModerationCommands {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
       if (args.length < 1) {
-        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/mute <player> [reason] [seconds]");
+        sender.sendMessage(
+            Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/mute <player> [reason] [seconds]");
         return true;
       }
 
@@ -175,7 +178,8 @@ public class ModerationCommands {
         sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
             + " has been muted for " + ChatColor.YELLOW + duration + ChatColor.GRAY + " seconds.");
       } else {
-        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been muted.");
+        sender
+            .sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been muted.");
       }
       return true;
     }
@@ -198,7 +202,8 @@ public class ModerationCommands {
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
       modManager.unmutePlayer(target);
-      sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been unmuted.");
+      sender
+          .sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been unmuted.");
       return true;
     }
   }
