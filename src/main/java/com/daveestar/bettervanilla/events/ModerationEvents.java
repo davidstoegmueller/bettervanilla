@@ -49,11 +49,17 @@ public class ModerationEvents implements Listener {
     Player p = e.getPlayer();
     if (_modManager.isMuted(p)) {
       String reason = _modManager.getMuteReason(p);
-      String msg = Main.getPrefix() + ChatColor.RED + "You are muted.";
+      long expires = _modManager.getMuteExpiry(p);
+      String msg = Main.getPrefix() + ChatColor.RED + "You are muted";
+      if (expires != -1) {
+        long remaining = (expires - System.currentTimeMillis()) / 1000;
+        String time = _timerManager.formatTime((int) remaining);
+        msg += ChatColor.GRAY + " for " + ChatColor.YELLOW + time;
+      }
       if (reason != null && !reason.isEmpty()) {
-        msg += " Reason: " + ChatColor.YELLOW + reason;
+        msg += ChatColor.GRAY + ". Reason: " + ChatColor.YELLOW + reason;
       } else {
-        msg += " No reason given.";
+        msg += ChatColor.GRAY + ". No reason given.";
       }
       p.sendMessage(msg);
       e.setCancelled(true);

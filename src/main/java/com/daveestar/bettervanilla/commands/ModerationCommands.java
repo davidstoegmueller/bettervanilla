@@ -137,11 +137,19 @@ public class ModerationCommands {
 
       if (durationSeconds > 0) {
         String time = _timerManager.formatTime((int) durationSeconds);
-        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
-            + " has been temp-banned for " + ChatColor.YELLOW + time + ChatColor.GRAY + ".");
+        String confirm = Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
+            + " has been temp-banned for " + ChatColor.YELLOW + time + ChatColor.GRAY + ".";
+        if (reason != null && !reason.isEmpty()) {
+          confirm += " Reason: " + ChatColor.YELLOW + reason;
+        }
+        sender.sendMessage(confirm);
       } else {
-        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
-            + " has been banned.");
+        String confirm = Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
+            + " has been banned.";
+        if (reason != null && !reason.isEmpty()) {
+          confirm += " Reason: " + ChatColor.YELLOW + reason;
+        }
+        sender.sendMessage(confirm);
       }
       return true;
     }
@@ -243,27 +251,33 @@ public class ModerationCommands {
       }
 
       if (target.isOnline()) {
-        String msg = Main.getPrefix() + ChatColor.RED + "You have been muted.";
+        String msg = Main.getPrefix() + ChatColor.RED + "You have been muted";
+        if (durationSeconds > 0) {
+          String time = _timerManager.formatTime((int) durationSeconds);
+          msg += ChatColor.GRAY + " for " + ChatColor.YELLOW + time;
+        }
+        msg += ChatColor.GRAY + ".";
         if (reason != null && !reason.isEmpty()) {
           msg += " Reason: " + ChatColor.YELLOW + reason;
         } else {
           msg += " No reason given.";
         }
-        if (durationSeconds > 0) {
-          String time = _timerManager.formatTime((int) durationSeconds);
-          msg += " Expires in: " + ChatColor.YELLOW + time;
-        }
         target.getPlayer().sendMessage(msg);
       }
 
+      String confirm =
+          Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been ";
       if (durationSeconds > 0) {
         String time = _timerManager.formatTime((int) durationSeconds);
-        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
-            + " has been muted for " + ChatColor.YELLOW + time + ChatColor.GRAY + ".");
+        confirm += "muted for " + ChatColor.YELLOW + time + ChatColor.GRAY;
       } else {
-        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
-            + " has been muted.");
+        confirm += "muted";
       }
+      confirm += ".";
+      if (reason != null && !reason.isEmpty()) {
+        confirm += " Reason: " + ChatColor.YELLOW + reason;
+      }
+      sender.sendMessage(confirm);
       return true;
     }
 
@@ -297,6 +311,9 @@ public class ModerationCommands {
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
       modManager.unmutePlayer(target);
+      if (target.isOnline()) {
+        target.getPlayer().sendMessage(Main.getPrefix() + ChatColor.GRAY + "You have been unmuted.");
+      }
       sender.sendMessage(
           Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been unmuted.");
       return true;
