@@ -1,6 +1,8 @@
 package com.daveestar.bettervanilla.commands;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -11,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.ModerationManager;
+import com.daveestar.bettervanilla.manager.TimerManager;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -50,65 +53,98 @@ public class ModerationCommands {
 
   public static class BanCommand implements CommandExecutor {
     private final ModerationManager _moderationManager;
+    private final TimerManager _timerManager;
 
     public BanCommand() {
       _moderationManager = Main.getInstance().getModerationManager();
+      _timerManager = Main.getInstance().getTimerManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
       if (args.length < 1) {
-        sender.sendMessage(
-            Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-                + "/ban <player> [duration] [reason] ");
-        sender.sendMessage(
-            Main.getPrefix() + "Example: " + ChatColor.YELLOW + "/ban playername 1d15m30s Inappropriate behavior");
+        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
+            + "/ban <player> [duration] [reason]");
+        sender.sendMessage(Main.getPrefix() + "Example: " + ChatColor.YELLOW
+            + "/ban playername 1d2h15m30s Inappropriate behavior");
         return true;
       }
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-      long duration = -1;
 
+      long durationSeconds = -1;
       String reason = null;
-      if (args.length > 1) {
-        reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-        if (args.length > 2) {
-          try {
-            duration = Long.parseLong(args[args.length - 1]);
-            reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length - 1));
-          } catch (NumberFormatException ignore) {
-            duration = -1;
+      if (args.length > 1) {
+        long parsed = _parseDuration(args[1]);
+        if (parsed > 0) {
+          durationSeconds = parsed;
+          if (args.length > 2) {
+            reason = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
           }
+        } else {
+          reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         }
       }
 
-      if (duration > 0) {
-        _moderationManager.tempBanPlayer(target, reason, duration * 1000);
+      if (durationSeconds > 0) {
+        _moderationManager.tempBanPlayer(target, reason, durationSeconds * 1000);
       } else {
         _moderationManager.banPlayer(target, reason);
       }
 
       if (target.isOnline()) {
-        String msg = ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "] "
-            + ChatColor.RED + "You are banned!";
-        if (!reason.isEmpty()) {
-          msg += "\n" + ChatColor.GRAY + "Reason: " + ChatColor.YELLOW + reason;
+        String banMsg = ChatColor.YELLOW + "" + ChatColor.BOLD + "BANNED\n\n" + ChatColor.GRAY
+            + "You were banned from the server.\n\n";
+
+        if (reason != null && !reason.isEmpty()) {
+          banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Reason: " + ChatColor.GRAY + reason + "\n";
         }
-        if (duration > 0) {
-          msg += "\n" + ChatColor.GRAY + "Expires in: " + ChatColor.YELLOW + duration + "s";
+
+        if (durationSeconds > 0) {
+          String time = _timerManager.formatTime((int) durationSeconds);
+          banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Expires in: " + ChatColor.GRAY + time;
         }
-        target.getPlayer().kick(Component.text(msg));
+
+        target.getPlayer().kick(Component.text(banMsg));
       }
 
-      if (duration > 0) {
+      if (durationSeconds > 0) {
+        String time = _timerManager.formatTime((int) durationSeconds);
         sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
-            + " has been temp-banned for " + ChatColor.YELLOW + duration + ChatColor.GRAY + " seconds.");
+            + " has been temp-banned for " + ChatColor.YELLOW + time + ChatColor.GRAY + ".");
       } else {
-        sender
-            .sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been banned.");
+        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
+            + " has been banned.");
       }
       return true;
+    }
+
+    private long _parseDuration(String input) {
+      Matcher matcher = Pattern.compile("(\\d+)([dhms])", Pattern.CASE_INSENSITIVE).matcher(input);
+      long total = 0;
+      int matched = 0;
+      while (matcher.find()) {
+        long value = Long.parseLong(matcher.group(1));
+        matched += matcher.group().length();
+        switch (matcher.group(2).toLowerCase()) {
+          case "d":
+            total += value * 86400;
+            break;
+          case "h":
+            total += value * 3600;
+            break;
+          case "m":
+            total += value * 60;
+            break;
+          case "s":
+            total += value;
+            break;
+          default:
+            return -1;
+        }
+      }
+      return matched == input.length() ? total : -1;
     }
   }
 
@@ -138,9 +174,11 @@ public class ModerationCommands {
   /** Mute or temp-mute a player. */
   public static class MuteCommand implements CommandExecutor {
     private final ModerationManager modManager;
+    private final TimerManager _timerManager;
 
     public MuteCommand() {
       modManager = Main.getInstance().getModerationManager();
+      _timerManager = Main.getInstance().getTimerManager();
     }
 
     @Override
@@ -175,11 +213,12 @@ public class ModerationCommands {
       }
 
       if (duration > 0) {
+        String time = _timerManager.formatTime((int) duration);
         sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
-            + " has been muted for " + ChatColor.YELLOW + duration + ChatColor.GRAY + " seconds.");
+            + " has been muted for " + ChatColor.YELLOW + time + ChatColor.GRAY + ".");
       } else {
-        sender
-            .sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been muted.");
+        sender.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
+            + " has been muted.");
       }
       return true;
     }
