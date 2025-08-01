@@ -17,7 +17,7 @@ import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
 import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
 import com.daveestar.bettervanilla.commands.BackpackCommand;
-import com.daveestar.bettervanilla.commands.MsgCommand;
+import com.daveestar.bettervanilla.commands.MessageCommand;
 import com.daveestar.bettervanilla.commands.ReplyCommand;
 import com.daveestar.bettervanilla.commands.VanishCommand;
 import com.daveestar.bettervanilla.commands.ModerationCommands;
@@ -126,23 +126,14 @@ public class Main extends JavaPlugin {
     getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
     getCommand("backpack").setExecutor(new BackpackCommand());
-    getCommand("message").setExecutor(new MsgCommand());
+    getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("vanish").setExecutor(new VanishCommand());
-    ModerationCommands.KickCommand kick = new ModerationCommands.KickCommand();
-    getCommand("kick").setExecutor(kick);
-
-    ModerationCommands.BanCommand ban = new ModerationCommands.BanCommand();
-    getCommand("ban").setExecutor(ban);
-
-    ModerationCommands.UnbanCommand unban = new ModerationCommands.UnbanCommand();
-    getCommand("unban").setExecutor(unban);
-
-    ModerationCommands.MuteCommand mute = new ModerationCommands.MuteCommand();
-    getCommand("mute").setExecutor(mute);
-
-    ModerationCommands.UnmuteCommand unmute = new ModerationCommands.UnmuteCommand();
-    getCommand("unmute").setExecutor(unmute);
+    getCommand("kick").setExecutor(new ModerationCommands.KickCommand());
+    getCommand("ban").setExecutor(new ModerationCommands.BanCommand());
+    getCommand("unban").setExecutor(new ModerationCommands.UnbanCommand());
+    getCommand("mute").setExecutor(new ModerationCommands.MuteCommand());
+    getCommand("unmute").setExecutor(new ModerationCommands.UnmuteCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();

@@ -31,18 +31,11 @@ public class ModerationManager {
   }
 
   public void banPlayer(OfflinePlayer p, String reason) {
-    banPlayer(p, reason, -1);
+    _handleBanPlayer(p, reason, -1);
   }
 
   public void tempBanPlayer(OfflinePlayer p, String reason, long durationMillis) {
-    banPlayer(p, reason, System.currentTimeMillis() + durationMillis);
-  }
-
-  private void banPlayer(OfflinePlayer p, String reason, long expires) {
-    String path = "bans." + p.getUniqueId();
-    _fileConfig.set(path + ".reason", reason);
-    _fileConfig.set(path + ".expires", expires);
-    _config.save();
+    _handleBanPlayer(p, reason, System.currentTimeMillis() + durationMillis);
   }
 
   public void unbanPlayer(OfflinePlayer p) {
@@ -74,28 +67,26 @@ public class ModerationManager {
 
   public List<String> getBannedPlayerNames() {
     ConfigurationSection section = _fileConfig.getConfigurationSection("bans");
-    if (section == null) return Collections.emptyList();
+    if (section == null)
+      return Collections.emptyList();
+
     List<String> names = new ArrayList<>();
     for (String key : section.getKeys(false)) {
       OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(key));
-      if (p.getName() != null) names.add(p.getName());
+
+      if (p.getName() != null)
+        names.add(p.getName());
     }
+
     return names;
   }
 
   public void mutePlayer(OfflinePlayer p, String reason) {
-    mutePlayer(p, reason, -1);
+    _handleMutePlayer(p, reason, -1);
   }
 
   public void tempMutePlayer(OfflinePlayer p, String reason, long durationMillis) {
-    mutePlayer(p, reason, System.currentTimeMillis() + durationMillis);
-  }
-
-  private void mutePlayer(OfflinePlayer p, String reason, long expires) {
-    String path = "mutes." + p.getUniqueId();
-    _fileConfig.set(path + ".reason", reason);
-    _fileConfig.set(path + ".expires", expires);
-    _config.save();
+    _handleMutePlayer(p, reason, System.currentTimeMillis() + durationMillis);
   }
 
   public void unmutePlayer(OfflinePlayer p) {
@@ -127,12 +118,31 @@ public class ModerationManager {
 
   public List<String> getMutedPlayerNames() {
     ConfigurationSection section = _fileConfig.getConfigurationSection("mutes");
-    if (section == null) return Collections.emptyList();
+    if (section == null)
+      return Collections.emptyList();
+
     List<String> names = new ArrayList<>();
     for (String key : section.getKeys(false)) {
       OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(key));
-      if (p.getName() != null) names.add(p.getName());
+
+      if (p.getName() != null)
+        names.add(p.getName());
     }
+
     return names;
+  }
+
+  private void _handleBanPlayer(OfflinePlayer p, String reason, long expires) {
+    String path = "bans." + p.getUniqueId();
+    _fileConfig.set(path + ".reason", reason);
+    _fileConfig.set(path + ".expires", expires);
+    _config.save();
+  }
+
+  private void _handleMutePlayer(OfflinePlayer p, String reason, long expires) {
+    String path = "mutes." + p.getUniqueId();
+    _fileConfig.set(path + ".reason", reason);
+    _fileConfig.set(path + ".expires", expires);
+    _config.save();
   }
 }

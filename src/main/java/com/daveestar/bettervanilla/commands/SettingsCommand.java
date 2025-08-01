@@ -18,7 +18,7 @@ public class SettingsCommand implements CommandExecutor {
   }
 
   @Override
-  public boolean onCommand(CommandSender cs, Command command, String label, String[] args) {
+  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if ((cs instanceof Player)) {
       Player p = (Player) cs;
 

@@ -7,7 +7,9 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Hel
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\VanishEvents.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\WaypointsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Waypoint.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\ModerationManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\NavigationManager.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\PlayTimeGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\AFKManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventDimension.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
@@ -30,14 +32,16 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Van
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\DeathPointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\MessageManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ItemStackUtils.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ModerationEvents.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\RightClickCropHarvest.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\VeinMiningChopping.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\BackpackSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\MaterialToggleGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\WaypointsManager.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\MsgCommand.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\MessageCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PermissionsManager.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ModerationCommands.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\WaypointsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ReplyCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SettingsCommand.java

@@ -17,11 +17,11 @@ import com.daveestar.bettervanilla.manager.MessageManager;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class MsgCommand implements TabExecutor {
+public class MessageCommand implements TabExecutor {
   private final Main _plugin;
   private final MessageManager _messageManager;
 
-  public MsgCommand() {
+  public MessageCommand() {
     _plugin = Main.getInstance();
     _messageManager = _plugin.getMessageManager();
   }

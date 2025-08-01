@@ -79,21 +79,21 @@ commands:
     permission: bettervanilla.vanish
   kick:
     description: Kick a player from the server.
-    usage: /kick <player> [reason]
+    usage: /kick
     permission: bettervanilla.kick
   ban:
     description: Ban a player from the server.
-    usage: /ban <player> [duration] [reason]
+    usage: /ban
     permission: bettervanilla.ban
   unban:
     description: Remove a player's ban.
-    usage: /unban <player>
+    usage: /unban
     permission: bettervanilla.unban
   mute:
     description: Mute a player.
-    usage: /mute <player> [duration] [reason]
+    usage: /mute
     permission: bettervanilla.mute
   unmute:
     description: Remove a player's mute.
-    usage: /unmute <player>
+    usage: /unmute
     permission: bettervanilla.unmute
