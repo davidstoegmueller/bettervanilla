@@ -72,7 +72,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerJoined(p);
     _timerManager.onPlayerJoined(p);
     _compassManager.onPlayerJoined(p);
-    _healthDisplayManager.onPlayerJoin(p);
+    _healthDisplayManager.onPlayerJoined(p);
   }
 
   @EventHandler

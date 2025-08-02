@@ -19,15 +19,15 @@ public class HealthDisplayManager {
     _settingsManager = Main.getInstance().getSettingsManager();
   }
 
-  public void applySettingToAllPlayers() {
+  public void applyHealthDisplaySetting() {
     if (_settingsManager.getHealthDisplay()) {
-      enable();
+      enableHealthDisplay();
     } else {
-      disable();
+      disableHealthDisplay();
     }
   }
 
-  public void enable() {
+  public void enableHealthDisplay() {
     ScoreboardManager manager = Bukkit.getScoreboardManager();
     if (manager == null) {
       return;
@@ -40,7 +40,7 @@ public class HealthDisplayManager {
     obj.setDisplaySlot(DisplaySlot.BELOW_NAME);
   }
 
-  public void disable() {
+  public void disableHealthDisplay() {
     ScoreboardManager manager = Bukkit.getScoreboardManager();
     if (manager == null) {
       return;
@@ -52,7 +52,7 @@ public class HealthDisplayManager {
     }
   }
 
-  public void onPlayerJoin(Player player) {
+  public void onPlayerJoined(Player player) {
     if (!_settingsManager.getHealthDisplay()) {
       return;
     }

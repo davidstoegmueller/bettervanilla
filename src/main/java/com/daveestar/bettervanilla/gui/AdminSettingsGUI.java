@@ -647,7 +647,7 @@ public class AdminSettingsGUI implements Listener {
   private void _toggleDisplayHearts(Player p) {
     boolean newState = !_settingsManager.getHealthDisplay();
     _settingsManager.setHealthDisplay(newState);
-    _healthDisplayManager.applySettingToAllPlayers();
+    _healthDisplayManager.applyHealthDisplaySetting();
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(
         Main.getPrefix() + "Player hearts display is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
