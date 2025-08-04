@@ -202,6 +202,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getNametagHealth() {
+    return _fileConfig.getBoolean("global.nametaghealth", false);
+  }
+
+  public void setNametagHealth(boolean value) {
+    _fileConfig.set("global.nametaghealth", value);
+    _config.save();
+  }
+
   public boolean getBackpackEnabled() {
     return _fileConfig.getBoolean("global.backpack.enabled", false);
   }

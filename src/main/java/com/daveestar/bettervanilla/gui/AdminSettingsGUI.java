@@ -72,6 +72,7 @@ public class AdminSettingsGUI implements Listener {
     // third row
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+    entries.put("nametaghealth", _createNametagHealthItem());
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
 
@@ -92,6 +93,7 @@ public class AdminSettingsGUI implements Listener {
     // third row
     customSlots.put("cropprotection", 18);
     customSlots.put("rightclickcropharvest", 20);
+    customSlots.put("nametaghealth", 22);
     customSlots.put("veinminersettings", 24);
     customSlots.put("veinchoppersettings", 26);
 
@@ -165,6 +167,14 @@ public class AdminSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         _toggleRightClickCropHarvest(p);
+        displayGUI(p, parentMenu);
+      }
+    });
+
+    actions.put("nametaghealth", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleNametagHealth(p);
         displayGUI(p, parentMenu);
       }
     });
@@ -358,6 +368,27 @@ public class AdminSettingsGUI implements Listener {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Right-Click Crop Harvest"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Allows players to harvest crops by right-clicking them.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createNametagHealthItem() {
+    boolean state = _settingsManager.getNametagHealth();
+    ItemStack item = new ItemStack(Material.APPLE);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Health Nametag"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Show player health under their nametag.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -608,6 +639,14 @@ public class AdminSettingsGUI implements Listener {
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(
         Main.getPrefix() + "Right-Click crop harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNametagHealth(Player p) {
+    boolean newState = !_settingsManager.getNametagHealth();
+    _settingsManager.setNametagHealth(newState);
+    _plugin.getHealthDisplayManager().applyToAll(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Health nametag is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleAFKProtection(Player p) {
