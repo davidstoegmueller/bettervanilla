@@ -176,12 +176,26 @@ public class SettingsManager {
   }
 
   public String getServerMOTD() {
-    return _fileConfig.getString("global.motd", "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
+    if (_fileConfig.isList("global.motd")) {
+      return String.join("\n", _fileConfig.getStringList("global.motd"));
+    }
+
+    return _fileConfig.getString("global.motd",
+        "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
   }
 
-  public void setServerMOTD(String value) {
-    _fileConfig.set("global.motd", value);
+  public void setServerMOTD(String line1, String line2) {
+    if (line2 != null && !line2.isEmpty()) {
+      _fileConfig.set("global.motd", Arrays.asList(line1, line2));
+    } else {
+      _fileConfig.set("global.motd", line1);
+    }
+
     _config.save();
+  }
+
+  public void setServerMOTD(String line1) {
+    setServerMOTD(line1, null);
   }
 
   public boolean getCropProtection() {
