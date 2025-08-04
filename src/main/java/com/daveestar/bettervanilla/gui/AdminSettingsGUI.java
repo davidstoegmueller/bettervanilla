@@ -1,8 +1,10 @@
 package com.daveestar.bettervanilla.gui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -36,6 +38,7 @@ public class AdminSettingsGUI implements Listener {
   private final Map<UUID, CustomGUI> _afkTimePending;
   private final Map<UUID, CustomGUI> _maintenanceMessagePending;
   private final Map<UUID, CustomGUI> _motdPending;
+  private final Map<UUID, String> _motdFirstLine;
   private final BackpackSettingsGUI _backpackSettingsGUI;
   private final VeinMinerSettingsGUI _veinMinerSettingsGUI;
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
@@ -48,6 +51,7 @@ public class AdminSettingsGUI implements Listener {
     _afkTimePending = new HashMap<>();
     _maintenanceMessagePending = new HashMap<>();
     _motdPending = new HashMap<>();
+    _motdFirstLine = new HashMap<>();
     _backpackSettingsGUI = new BackpackSettingsGUI();
     _veinMinerSettingsGUI = new VeinMinerSettingsGUI();
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
@@ -189,8 +193,10 @@ public class AdminSettingsGUI implements Listener {
     actions.put("motd", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        p.sendMessage(Main.getPrefix() + "Enter server MOTD:");
-        _motdPending.put(p.getUniqueId(), parentMenu);
+        p.sendMessage(Main.getPrefix() + "Enter server MOTD line 1:");
+        UUID id = p.getUniqueId();
+        _motdPending.put(id, parentMenu);
+        _motdFirstLine.remove(id);
         p.closeInventory();
       }
     });
@@ -416,17 +422,27 @@ public class AdminSettingsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
+      meta.displayName(Component.text(
+          ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
 
-      meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY
-              + "Set the server message of the day (MOTD) visible in the server list.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: "
-              + (motd != null && !motd.isEmpty() ? ChatColor.translateAlternateColorCodes('&', motd)
-                  : ChatColor.RED + "Not set"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      List<String> lore = new ArrayList<>();
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY
+          + "Set the server message of the day (MOTD) visible in the server list.");
+      lore.add("");
+
+      if (motd != null && !motd.isEmpty()) {
+        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current:");
+        String[] lines = motd.split("\\n");
+        for (String line : lines) {
+          lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', line));
+        }
+      } else {
+        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.RED + "Not set");
+      }
+
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
+
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -540,12 +556,21 @@ public class AdminSettingsGUI implements Listener {
       String message = ((TextComponent) e.message()).content();
 
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-        CustomGUI parentMenu = _motdPending.remove(id);
-        _settingsManager.setServerMOTD(message);
+        if (!_motdFirstLine.containsKey(id)) {
+          _motdFirstLine.put(id, message);
+          p.sendMessage(Main.getPrefix() + "Enter server MOTD line 2 (type '-' for none):");
+        } else {
+          String line1 = _motdFirstLine.remove(id);
+          CustomGUI parentMenu = _motdPending.remove(id);
+          String line2 = message.equals("-") ? null : message;
+          _settingsManager.setServerMOTD(line1, line2);
 
-        p.sendMessage(Main.getPrefix() + "MOTD set to: " + ChatColor.translateAlternateColorCodes('&', message));
-        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        displayGUI(p, parentMenu);
+          String motd = line2 != null && !line2.isEmpty() ? line1 + "\n" + line2 : line1;
+          p.sendMessage(Main.getPrefix() + "MOTD set to:\n"
+              + ChatColor.translateAlternateColorCodes('&', motd));
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+          displayGUI(p, parentMenu);
+        }
       });
       return;
     }
