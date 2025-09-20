@@ -22,17 +22,7 @@ public class MaintenanceManager {
 
   public void initManagers() {
     _settingsManager = _plugin.getSettingsManager();
-    _isMaintenance = _settingsManager.getMaintenance();
-  }
-
-  public void setState(boolean isMaintenance, String message) {
-    _isMaintenance = isMaintenance;
-
-    _settingsManager.setMaintenance(isMaintenance, isMaintenance ? message : null);
-  }
-
-  public boolean getState() {
-    return _isMaintenance;
+    _isMaintenance = _settingsManager.getMaintenanceState();
   }
 
   public void kickAll(Collection<? extends Player> players) {

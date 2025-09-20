@@ -103,7 +103,7 @@ public class SettingsManager {
   }
 
   // GLOBAL SETTINGS
-  public boolean getMaintenance() {
+  public boolean getMaintenanceState() {
     return _fileConfig.getBoolean("global.maintenance.value", false);
   }
 
@@ -111,13 +111,13 @@ public class SettingsManager {
     return _fileConfig.getString("global.maintenance.message", "");
   }
 
-  public void setMaintenance(boolean value, String message) {
+  public void setMaintenanceState(boolean value) {
     _fileConfig.set("global.maintenance.value", value);
+    _config.save();
+  }
 
-    if (message != null) {
-      _fileConfig.set("global.maintenance.message", message);
-    }
-
+  public void setMaintenanceMessage(String message) {
+    _fileConfig.set("global.maintenance.message", message);
     _config.save();
   }
 
@@ -184,6 +184,17 @@ public class SettingsManager {
         "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
   }
 
+  public String[] getServerMOTDRaw() {
+    if (_fileConfig.isList("global.motd")) {
+      return _fileConfig.getStringList("global.motd").toArray(new String[0]);
+    }
+
+    return new String[] {
+        _fileConfig.getString("global.motd",
+            "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---")
+    };
+  }
+
   public void setServerMOTD(String line1, String line2) {
     if (line2 != null && !line2.isEmpty()) {
       _fileConfig.set("global.motd", Arrays.asList(line1, line2));
@@ -192,10 +203,6 @@ public class SettingsManager {
     }
 
     _config.save();
-  }
-
-  public void setServerMOTD(String line1) {
-    setServerMOTD(line1, null);
   }
 
   public boolean getCropProtection() {

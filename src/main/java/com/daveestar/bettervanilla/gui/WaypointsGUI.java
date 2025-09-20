@@ -5,8 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,33 +15,32 @@ import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
+import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.dialog.DialogResponseView;
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WaypointsGUI implements Listener {
+public class WaypointsGUI {
 
   private final Main _plugin;
   private final WaypointsManager _waypointsManager;
   private final NavigationManager _navigationManager;
   private final SettingsManager _settingsManager;
-  private final Map<UUID, String> _renamePending;
 
   public WaypointsGUI() {
     _plugin = Main.getInstance();
     _waypointsManager = _plugin.getWaypointsManager();
     _navigationManager = _plugin.getNavigationManager();
     _settingsManager = _plugin.getSettingsManager();
-    _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
-
-    _renamePending = new HashMap<>();
   }
 
   public void displayGUI(Player p) {
@@ -103,12 +100,7 @@ public class WaypointsGUI implements Listener {
     Map<String, CustomGUI.ClickAction> optionClickActions = new HashMap<>();
     optionClickActions.put("rename", new CustomGUI.ClickAction() {
       public void onLeftClick(Player p) {
-        p.sendMessage(
-            Main.getPrefix() + "Enter the new name for the waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-                + ":");
-        _renamePending.put(p.getUniqueId(), waypointName);
-        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        p.closeInventory();
+        _openWaypointRenameDialog(p, waypointName);
       }
     });
 
@@ -309,29 +301,41 @@ public class WaypointsGUI implements Listener {
     itemsGui.open(p);
   }
 
-  @EventHandler
-  public void onPlayerChat(AsyncChatEvent e) {
-    Player p = e.getPlayer();
-    UUID playerId = p.getUniqueId();
+  // -------
+  // DIALOGS
+  // -------
 
-    if (_renamePending.containsKey(playerId)) {
-      e.setCancelled(true);
-      String oldName = _renamePending.remove(playerId);
-      String newName = ((TextComponent) e.message()).content();
+  private void _openWaypointRenameDialog(Player p, String waypointName) {
+    DialogInput inputName = DialogInput
+        .text("name", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Rename Waypoint"))
+        .initial(waypointName)
+        .maxLength(Integer.MAX_VALUE)
+        .build();
 
-      if (newName.split(" ").length > 1 || newName.isEmpty()
-          || _waypointsManager.checkWaypointExists(p.getWorld().getName(), newName)) {
-        p.sendMessage(
-            Main.getPrefix() + ChatColor.RED + "Invalid name or waypoint already exists.");
-        return;
-      }
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Waypoint Name",
+        "Set the new name for the waypoint.",
+        null,
+        List.of(inputName),
+        (view, audience) -> _setWaypointNameDialogCB(view, audience, waypointName),
+        null);
 
-      _waypointsManager.renameWaypoint(p.getWorld().getName(), oldName, newName);
-      p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+    p.showDialog(dialog);
+  }
 
-      p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + oldName + ChatColor.GRAY
-          + " has been renamed to " + ChatColor.YELLOW + newName + ChatColor.GRAY + ".");
-      return;
-    }
+  // ----------------
+  // DIALOG CALLBACKS
+  // ----------------
+
+  private void _setWaypointNameDialogCB(DialogResponseView view, Audience audience, String waypointName) {
+    Player p = (Player) audience;
+    String name = view.getText("name");
+
+    _waypointsManager.renameWaypoint(p.getWorld().getName(), waypointName, name);
+
+    p.sendMessage(Component.text(Main.getPrefix() + "Waypoint name set to: " + ChatColor.YELLOW + name));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p);
   }
 }

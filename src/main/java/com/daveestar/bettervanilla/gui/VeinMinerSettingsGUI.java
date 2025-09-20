@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -14,27 +13,27 @@ import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.dialog.DialogResponseView;
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
 
-public class VeinMinerSettingsGUI implements Listener {
+public class VeinMinerSettingsGUI {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final MaterialToggleGUI _toolsGUI;
   private final MaterialToggleGUI _blocksGUI;
-  private final Map<UUID, CustomGUI> _sizePending;
 
   private MaterialToggleGUI _createToggleGUI(String title,
       List<Material> defaults,
@@ -56,9 +55,6 @@ public class VeinMinerSettingsGUI implements Listener {
         SettingsManager.VEIN_MINER_BLOCKS,
         _settingsManager::getVeinMinerAllowedBlocks,
         _settingsManager::setVeinMinerAllowedBlocks);
-
-    _sizePending = new HashMap<>();
-    _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
   public void displayGUI(Player p, CustomGUI parent) {
@@ -91,9 +87,7 @@ public class VeinMinerSettingsGUI implements Listener {
     actions.put("maxsize", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        p.sendMessage(Main.getPrefix() + "Enter max vein size (1-1024):");
-        _sizePending.put(p.getUniqueId(), parent);
-        p.closeInventory();
+        _openVeinMinerMaxSizeDialog(p, parent);
       }
     });
     actions.put("enabled", new CustomGUI.ClickAction() {
@@ -221,34 +215,44 @@ public class VeinMinerSettingsGUI implements Listener {
     return item;
   }
 
-  @EventHandler
-  public void onPlayerChat(AsyncChatEvent e) {
-    Player p = e.getPlayer();
-    UUID id = p.getUniqueId();
+  // -------
+  // DIALOGS
+  // -------
 
-    if (_sizePending.containsKey(id)) {
-      e.setCancelled(true);
-      String content = ((TextComponent) e.message()).content();
+  private void _openVeinMinerMaxSizeDialog(Player p, CustomGUI parentMenu) {
+    int size = _settingsManager.getVeinMinerMaxVeinSize();
 
-      try {
-        int veinSize = Integer.parseInt(content);
+    DialogInput inputSize = DialogInput
+        .numberRange("size", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Maximum Vein Miner Size"), 1,
+            1024)
+        .step(1f)
+        .initial((float) size)
+        .build();
 
-        if (veinSize < 1 || veinSize > 1024) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Value must be between 1 and 1024.");
-          return;
-        }
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Set Maximum Vein Miner Size",
+        "Set the maximum size of veins that can be mined.",
+        null,
+        List.of(inputSize),
+        (view, audience) -> _setVeinMinerMaxSizeDialogCB(view, audience, parentMenu),
+        null);
 
-        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-          _settingsManager.setVeinMinerMaxVeinSize(veinSize);
-          p.sendMessage(Main.getPrefix() + "Maximum vein size set to: " + ChatColor.YELLOW + veinSize);
-          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-          
-          CustomGUI parent = _sizePending.remove(id);
-          displayGUI(p, parent);
-        });
-      } catch (NumberFormatException ex) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
-      }
-    }
+    p.showDialog(dialog);
+  }
+
+  // ----------------
+  // DIALOG CALLBACKS
+  // ----------------
+
+  private void _setVeinMinerMaxSizeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+    Player p = (Player) audience;
+    int veinSize = Math.round(view.getFloat("size"));
+
+    _settingsManager.setVeinMinerMaxVeinSize(veinSize);
+
+    p.sendMessage(Main.getPrefix() + "Maximum vein miner size set to: " + ChatColor.YELLOW + veinSize);
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu);
   }
 }
