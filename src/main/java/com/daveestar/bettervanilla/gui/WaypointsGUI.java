@@ -77,6 +77,17 @@ public class WaypointsGUI {
       });
     }
 
+    int bottomRowStart = waypointsGUI.getInventory().getSize() - 9;
+    int addWaypointSlot = bottomRowStart + 4;
+    ItemStack addWaypointButton = _createAddWaypointItem();
+    waypointsGUI.addFooterEntry("addWaypoint", addWaypointButton, addWaypointSlot);
+
+    clickActions.put("addWaypoint", new CustomGUI.ClickAction() {
+      public void onLeftClick(Player p) {
+        _openAddWaypointDialog(p, null, "");
+      }
+    });
+
     waypointsGUI.setClickActions(clickActions);
     waypointsGUI.open(p);
   }
@@ -100,7 +111,7 @@ public class WaypointsGUI {
     Map<String, CustomGUI.ClickAction> optionClickActions = new HashMap<>();
     optionClickActions.put("rename", new CustomGUI.ClickAction() {
       public void onLeftClick(Player p) {
-        _openWaypointRenameDialog(p, waypointName);
+        _openWaypointRenameDialog(p, waypointName, null, waypointName);
       }
     });
 
@@ -165,6 +176,24 @@ public class WaypointsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set custom icon for: " + ChatColor.YELLOW
               + waypointName)
+          .stream().map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createAddWaypointItem() {
+    ItemStack item = new ItemStack(Material.EMERALD);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Add Waypoint"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY
+              + "Create a new waypoint using custom coordinates or current location.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Add waypoint")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -305,19 +334,60 @@ public class WaypointsGUI {
   // DIALOGS
   // -------
 
-  private void _openWaypointRenameDialog(Player p, String waypointName) {
+  private void _openAddWaypointDialog(Player p, String errorMessage, String initialName) {
+    Location loc = p.getLocation().toBlockLocation();
+    String initialX = Integer.toString(loc.getBlockX());
+    String initialY = Integer.toString(loc.getBlockY());
+    String initialZ = Integer.toString(loc.getBlockZ());
+
+    DialogInput inputName = DialogInput
+        .text("name", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Waypoint Name"))
+        .initial(initialName)
+        .maxLength(Integer.MAX_VALUE)
+        .build();
+
+    DialogInput inputX = DialogInput
+        .text("x", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "X Coordinate"))
+        .initial(initialX)
+        .maxLength(16)
+        .build();
+
+    DialogInput inputY = DialogInput
+        .text("y", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y Coordinate"))
+        .initial(initialY)
+        .maxLength(16)
+        .build();
+
+    DialogInput inputZ = DialogInput
+        .text("z", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z Coordinate"))
+        .initial(initialZ)
+        .maxLength(16)
+        .build();
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Add Waypoint",
+        "Set the name and coordinates for the new waypoint.",
+        errorMessage,
+        List.of(inputName, inputX, inputY, inputZ),
+        (view, audience) -> _addWaypointDialogCB(view, audience),
+        null);
+
+    p.showDialog(dialog);
+  }
+
+  private void _openWaypointRenameDialog(Player p, String waypointName, String errorMessage, String initialValue) {
     DialogInput inputName = DialogInput
         .text("name", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Rename Waypoint"))
-        .initial(waypointName)
+        .initial(initialValue)
         .maxLength(Integer.MAX_VALUE)
         .build();
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
         "Waypoint Name",
         "Set the new name for the waypoint.",
-        null,
+        errorMessage,
         List.of(inputName),
-        (view, audience) -> _setWaypointNameDialogCB(view, audience, waypointName),
+        (view, audience) -> _renameWaypointDialogCB(view, audience, waypointName),
         null);
 
     p.showDialog(dialog);
@@ -327,13 +397,73 @@ public class WaypointsGUI {
   // DIALOG CALLBACKS
   // ----------------
 
-  private void _setWaypointNameDialogCB(DialogResponseView view, Audience audience, String waypointName) {
+  private void _addWaypointDialogCB(DialogResponseView view, Audience audience) {
     Player p = (Player) audience;
-    String name = view.getText("name");
 
-    _waypointsManager.renameWaypoint(p.getWorld().getName(), waypointName, name);
+    String nameInput = Optional.ofNullable(view.getText("name")).map(String::trim).orElse("");
+    String xInput = Optional.ofNullable(view.getText("x")).map(String::trim).orElse("");
+    String yInput = Optional.ofNullable(view.getText("y")).map(String::trim).orElse("");
+    String zInput = Optional.ofNullable(view.getText("z")).map(String::trim).orElse("");
 
-    p.sendMessage(Component.text(Main.getPrefix() + "Waypoint name set to: " + ChatColor.YELLOW + name));
+    if (nameInput.isEmpty()) {
+      _openAddWaypointDialog(p, "Please provide a waypoint name.", nameInput);
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      return;
+    }
+
+    int x, y, z;
+    try {
+      x = Integer.parseInt(xInput);
+      y = Integer.parseInt(yInput);
+      z = Integer.parseInt(zInput);
+    } catch (NumberFormatException ex) {
+      _openAddWaypointDialog(p, "Please provide valid integer coordinates.", nameInput);
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      return;
+    }
+
+    String world = p.getWorld().getName();
+    boolean alreadyExists = _waypointsManager.checkWaypointExists(world, nameInput);
+
+    if (alreadyExists) {
+      _openAddWaypointDialog(p, "A waypoint with that name already exists.", nameInput);
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      return;
+    }
+
+    _waypointsManager.addWaypoint(world, nameInput, x, y, z);
+
+    p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + nameInput + ChatColor.GRAY
+        + " was successfully added!");
+    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Coordinates: " + ChatColor.YELLOW + "X: " + ChatColor.GRAY + x
+        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + y + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + z);
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p);
+  }
+
+  private void _renameWaypointDialogCB(DialogResponseView view, Audience audience, String waypointName) {
+    Player p = (Player) audience;
+
+    String nameInput = Optional.ofNullable(view.getText("name")).map(String::trim).orElse("");
+
+    if (nameInput.isEmpty()) {
+      _openWaypointRenameDialog(p, waypointName, "Please provide a waypoint name.", nameInput);
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      return;
+    }
+
+    String world = p.getWorld().getName();
+
+    if (_waypointsManager.checkWaypointExists(world, nameInput)) {
+      _openWaypointRenameDialog(p, waypointName, "A waypoint with that name already exists.", nameInput);
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      return;
+    }
+
+    _waypointsManager.renameWaypoint(world, waypointName, nameInput);
+
+    p.sendMessage(Component.text(Main.getPrefix() + "Waypoint name set to: " + ChatColor.YELLOW + nameInput));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p);

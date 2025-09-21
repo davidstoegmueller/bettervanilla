@@ -31,6 +31,7 @@ public class CustomGUI implements Listener {
   private final List<Map.Entry<String, ItemStack>> _entryList;
   private final Map<String, Integer> _customSlots;
   private final Map<Integer, String> _slotKeyMap;
+  private final Map<String, FooterEntry> _footerEntries;
   private final CustomGUI _parentMenu;
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
@@ -43,6 +44,7 @@ public class CustomGUI implements Listener {
     _entryList = new ArrayList<>(pageEntries.entrySet());
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
     _slotKeyMap = new HashMap<>();
+    _footerEntries = new HashMap<>();
     _pageSize = inventorySize - _INVENTORY_ROW_SIZE;
     _maxPage = (int) Math.ceil((double) _entryList.size() / _pageSize);
     _parentMenu = parentMenu;
@@ -64,6 +66,14 @@ public class CustomGUI implements Listener {
 
   public void setClickActions(Map<String, ClickAction> clickActions) {
     _clickActions = clickActions;
+  }
+
+  public void addFooterEntry(String key, ItemStack item, int slot) {
+    if (key == null || item == null)
+      return;
+
+    _footerEntries.put(key, new FooterEntry(item.clone(), slot));
+    _applyFooterEntries();
   }
 
   public Inventory getInventory() {
@@ -159,6 +169,21 @@ public class CustomGUI implements Listener {
 
       _gui.setItem(slot, entry.getValue());
       _slotKeyMap.put(slot, key);
+    }
+
+    _applyFooterEntries();
+  }
+
+  private void _applyFooterEntries() {
+    if (_footerEntries.isEmpty())
+      return;
+
+    for (Map.Entry<String, FooterEntry> entry : _footerEntries.entrySet()) {
+      FooterEntry footerEntry = entry.getValue();
+      int slot = footerEntry.slot();
+
+      _gui.setItem(slot, footerEntry.item().clone());
+      _slotKeyMap.put(slot, entry.getKey());
     }
   }
 
@@ -300,5 +325,8 @@ public class CustomGUI implements Listener {
   public enum Option {
     DISABLE_PAGE_BUTTON,
     ALLOW_ITEM_MOVEMENT,
+  }
+
+  private record FooterEntry(ItemStack item, int slot) {
   }
 }

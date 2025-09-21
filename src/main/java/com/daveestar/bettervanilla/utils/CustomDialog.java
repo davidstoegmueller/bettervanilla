@@ -20,7 +20,7 @@ public class CustomDialog {
   public static Dialog createConfirmationDialog(String title, String message, String errorMessage,
       List<DialogInput> inputs,
       DialogActionCallback yesCallback, DialogActionCallback noCallback) {
-    boolean hasError = errorMessage != null;
+    boolean hasError = errorMessage != null && !errorMessage.isEmpty();
 
     DialogBody dialogBody1 = DialogBody.plainMessage(Component.text(""));
     DialogBody dialogBody2 = DialogBody
