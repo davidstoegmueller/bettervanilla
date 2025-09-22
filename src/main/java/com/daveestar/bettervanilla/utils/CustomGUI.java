@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -206,9 +207,12 @@ public class CustomGUI implements Listener {
       return;
     }
 
+    boolean pageButtonEnabled = !_options.contains(Option.DISABLE_PAGE_BUTTON);
+    boolean hasBackButton = _parentMenu != null;
+    boolean isSwitchSlot = pageButtonEnabled && rawSlot == _POS_SWITCH_PAGE_BUTTON;
+    boolean isBackSlot = hasBackButton && rawSlot == _POS_BACK_BUTTON;
+    boolean isActionSlot = isSwitchSlot || isBackSlot;
     boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
-    boolean isActionSlot = rawSlot == _POS_SWITCH_PAGE_BUTTON
-        || (rawSlot == _POS_BACK_BUTTON && _parentMenu != null);
     boolean isItemSlot = _slotKeyMap.containsKey(rawSlot);
 
     if (allowMove && !isNavSlot && !isActionSlot) {
@@ -245,13 +249,34 @@ public class CustomGUI implements Listener {
     if (!isActionSlot && !isItemSlot)
       return;
 
-    if (rawSlot == _POS_SWITCH_PAGE_BUTTON) {
-      _handlePageSwitch(p, e.isLeftClick());
-      p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
-    } else if (rawSlot == _POS_BACK_BUTTON && _parentMenu != null) {
+    if (isSwitchSlot) {
+      ClickType click = e.getClick();
+      boolean handled = false;
+
+      switch (click) {
+        case LEFT:
+        case SHIFT_LEFT:
+        case WINDOW_BORDER_LEFT:
+          _handlePageSwitch(p, true);
+          handled = true;
+          break;
+        case RIGHT:
+        case SHIFT_RIGHT:
+        case WINDOW_BORDER_RIGHT:
+          _handlePageSwitch(p, false);
+          handled = true;
+          break;
+        default:
+          break;
+      }
+
+      if (handled) {
+        p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
+      }
+    } else if (isBackSlot) {
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
       _parentMenu.open(p);
-    } else if (_slotKeyMap.containsKey(rawSlot)) {
+    } else if (isItemSlot) {
       _handleItemClick(p, _slotKeyMap.get(rawSlot), e.isShiftClick(), e.isRightClick());
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
