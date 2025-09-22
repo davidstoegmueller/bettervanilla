@@ -196,12 +196,7 @@ public class SettingsManager {
   }
 
   public void setServerMOTD(String line1, String line2) {
-    if (line2 != null && !line2.isEmpty()) {
-      _fileConfig.set("global.motd", Arrays.asList(line1, line2));
-    } else {
-      _fileConfig.set("global.motd", line1);
-    }
-
+    _fileConfig.set("global.motd", Arrays.asList(line1, line2));
     _config.save();
   }
 

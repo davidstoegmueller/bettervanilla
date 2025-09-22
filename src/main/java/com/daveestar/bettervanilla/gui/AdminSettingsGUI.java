@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -563,8 +564,8 @@ public class AdminSettingsGUI {
 
   private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
     Player p = (Player) audience;
-    String line1 = view.getText("line1");
-    String line2 = view.getText("line2");
+    String line1 = Optional.ofNullable(view.getText("line1")).map(String::trim).orElse("");
+    String line2 = Optional.ofNullable(view.getText("line2")).map(String::trim).orElse("");
 
     _settingsManager.setServerMOTD(line1, line2);
 
@@ -578,7 +579,7 @@ public class AdminSettingsGUI {
 
   private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
     Player p = (Player) audience;
-    String message = view.getText("message");
+    String message = Optional.ofNullable(view.getText("message")).map(String::trim).orElse("");
 
     _settingsManager.setMaintenanceMessage(message);
 
