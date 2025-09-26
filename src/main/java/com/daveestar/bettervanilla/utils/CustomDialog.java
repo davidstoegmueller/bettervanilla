@@ -66,4 +66,12 @@ public class CustomDialog {
             .base(dialogBase)
             .type(dialogType));
   }
+
+  public static DialogInput createTextInput(String key, String label, String initialValue) {
+    return DialogInput
+        .text(key, Component.text(label))
+        .initial(initialValue)
+        .maxLength(Integer.MAX_VALUE)
+        .build();
+  }
 }

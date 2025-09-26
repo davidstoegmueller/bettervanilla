@@ -49,7 +49,7 @@ public class WaypointsCommand implements TabExecutor {
 
     Player p = (Player) cs;
     if (args.length == 0) {
-      _waypointsGUI.displayGUI(p);
+      _waypointsGUI.displayWaypointsGUI(p);
       return true;
     }
 
