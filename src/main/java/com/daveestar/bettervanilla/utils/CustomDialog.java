@@ -2,6 +2,7 @@ package com.daveestar.bettervanilla.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -11,6 +12,7 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.action.DialogActionCallback;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput.OptionEntry;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback.Options;
@@ -72,6 +74,26 @@ public class CustomDialog {
         .text(key, Component.text(label))
         .initial(initialValue)
         .maxLength(Integer.MAX_VALUE)
+        .build();
+  }
+
+  public static DialogInput createNumberInput(String key, String label, float min, float max, float step,
+      float initialValue) {
+    return DialogInput
+        .numberRange(key, Component.text(label), min, max)
+        .step(step)
+        .initial(initialValue)
+        .build();
+  }
+
+  public static DialogInput createSelectInput(String key, String label, Map<String, String> options,
+      String initialValue) {
+    List<OptionEntry> optionEntries = options.entrySet().stream()
+        .map(entry -> OptionEntry.create(entry.getKey(), Component.text(entry.getValue()),
+            entry.getKey().equals(initialValue)))
+        .toList();
+
+    return DialogInput.singleOption(key, Component.text(label), optionEntries)
         .build();
   }
 }

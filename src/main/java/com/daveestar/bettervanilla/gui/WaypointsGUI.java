@@ -2,11 +2,13 @@ package com.daveestar.bettervanilla.gui;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.bukkit.Color;
@@ -21,6 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
 import com.daveestar.bettervanilla.enums.Permissions;
+import com.daveestar.bettervanilla.enums.WaypointFilter;
+import com.daveestar.bettervanilla.enums.WaypointVisibility;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
@@ -43,6 +47,7 @@ public class WaypointsGUI {
   private final String KEY_WAYPOINT_PREFIX = "waypoint::";
   private final String KEY_ICON_PREFIX = "icon::";
   private final String KEY_ADD_WAYPOINT = "action::addWaypoint";
+  private final String KEY_FILTER_TOGGLE = "action::toggleWaypointFilter";
   private final String KEY_OPTION_RENAME = "option::renameWaypoint";
   private final String KEY_OPTION_DELETE = "option::deleteWaypoint";
   private final String KEY_OPTION_SET_ICON = "option::setWaypointIcon";
@@ -52,6 +57,7 @@ public class WaypointsGUI {
   private final String KEY_COORD_Z = "z";
 
   private final String WAYPOINT_ADD_DIALOG_FIELD_NAME = "name";
+  private final String WAYPOINT_ADD_DIALOG_VISIBILITY = "visibility";
   private final String WAYPOINT_ADD_DIALOG_FIELD_X = "x";
   private final String WAYPOINT_ADD_DIALOG_FIELD_Y = "y";
   private final String WAYPOINT_ADD_DIALOG_FIELD_Z = "z";
@@ -67,12 +73,14 @@ public class WaypointsGUI {
   private final WaypointsManager _waypointsManager;
   private final NavigationManager _navigationManager;
   private final SettingsManager _settingsManager;
+  private final Map<UUID, WaypointFilter> _playerFilterModes;
 
   public WaypointsGUI() {
     _plugin = Main.getInstance();
     _waypointsManager = _plugin.getWaypointsManager();
     _navigationManager = _plugin.getNavigationManager();
     _settingsManager = _plugin.getSettingsManager();
+    _playerFilterModes = new HashMap<>();
   }
 
   public void displayWaypointsGUI(Player p) {
@@ -85,19 +93,24 @@ public class WaypointsGUI {
   // -----------
 
   private CustomGUI _createWaypointsGUI(Player p) {
+    WaypointFilter filterMode = _getFilterMode(p);
+
     String worldName = p.getWorld().getName();
     Location playerLocation = p.getLocation().toBlockLocation();
     List<String> waypointNames = _waypointsManager.getWaypoints(worldName);
 
+    List<String> filteredWaypointNames = _getFilteredWaypoints(worldName, waypointNames, p, filterMode);
+
     Map<String, ItemStack> entries = new LinkedHashMap<>();
-    for (String waypointName : waypointNames) {
+    for (String waypointName : filteredWaypointNames) {
       entries.put(_waypointKey(waypointName), _createWaypointItem(playerLocation, worldName, waypointName));
     }
 
-    CustomGUI waypointsGUI = _createGUI(p, "Waypoints", MAIN_GUI_ROWS, entries, null, null, null);
+    String waypointGUITitle = "Waypoints " + ChatColor.GRAY + "(" + filterMode.getColoredName() + ChatColor.GRAY + ")";
+    CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null, null);
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
-    for (String waypointName : waypointNames) {
+    for (String waypointName : filteredWaypointNames) {
       String key = _waypointKey(waypointName);
 
       actions.put(key, _clickAction(
@@ -107,12 +120,19 @@ public class WaypointsGUI {
           null));
     }
 
+    actions.put(KEY_FILTER_TOGGLE, _clickAction(
+        player -> _handleNextFilterCycle(player),
+        player -> _handlePreviousFilterCycle(player),
+        null,
+        null));
+
     actions.put(KEY_ADD_WAYPOINT, _clickAction(
-        player -> _openAddWaypointDialog(player, null, ""),
+        player -> _openAddWaypointDialog(player, null, "", WaypointVisibility.PUBLIC.getName()),
         null,
         null,
         null));
 
+    waypointsGUI.addFooterEntry(KEY_FILTER_TOGGLE, _createFilterItem(filterMode), _footerFilterSlot(MAIN_GUI_ROWS));
     waypointsGUI.addFooterEntry(KEY_ADD_WAYPOINT, _createAddWaypointItem(), _footerAddWaypointSlot(MAIN_GUI_ROWS));
 
     waypointsGUI.setClickActions(actions);
@@ -237,8 +257,20 @@ public class WaypointsGUI {
         null);
   }
 
+  private ItemStack _createFilterItem(WaypointFilter filterMode) {
+    return _createItem(
+        Material.HOPPER,
+        Component.text(GUI_ITEM_PREFIX + "Filter"),
+        _createLore(
+            GUI_LORE_PREFIX + "Current mode: " + filterMode.getColoredName(),
+            "",
+            GUI_LORE_PREFIX + "Left-Click: Next filter",
+            GUI_LORE_PREFIX + "Right-Click: Previous filter"),
+        meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
+  }
+
   private ItemStack _createWaypointItem(Location playerLocation, String worldName, String waypointName) {
-    Map<String, Integer> waypointData = _waypointsManager.getWaypointByName(worldName, waypointName);
+    Map<String, Integer> waypointData = _waypointsManager.getWaypointCoordinates(worldName, waypointName);
     int x = waypointData.getOrDefault(KEY_COORD_X, 0);
     int y = waypointData.getOrDefault(KEY_COORD_Y, 0);
     int z = waypointData.getOrDefault(KEY_COORD_Z, 0);
@@ -250,7 +282,16 @@ public class WaypointsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(GUI_ITEM_PREFIX + waypointName));
+      WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointName);
+      String visibilityString = "";
+      if (visibility == WaypointVisibility.PRIVATE) {
+        visibilityString = ChatColor.GRAY + " (" + ChatColor.RED + visibility.getDisplayName() + ChatColor.GRAY + ")";
+      } else if (visibility == WaypointVisibility.PUBLIC) {
+        visibilityString = ChatColor.GRAY + " (" + ChatColor.GREEN + visibility.getDisplayName() + ChatColor.GRAY + ")";
+      }
+
+      meta.displayName(
+          Component.text(GUI_ITEM_PREFIX + waypointName + visibilityString));
       meta.lore(_createLore(
           "",
           GUI_LORE_PREFIX + "X: " + ChatColor.YELLOW + x,
@@ -258,6 +299,9 @@ public class WaypointsGUI {
           GUI_LORE_PREFIX + "Z: " + ChatColor.YELLOW + z,
           "",
           GUI_LORE_PREFIX + "Distance: " + ChatColor.YELLOW + distance + ChatColor.GRAY + " blocks",
+          "",
+          GUI_LORE_PREFIX + "Owner: " + ChatColor.YELLOW
+              + _waypointsManager.getWaypointOwnerName(worldName, waypointName),
           "",
           GUI_LORE_PREFIX + "Left-Click: Start navigation",
           GUI_LORE_PREFIX + "Right-Click: Options"));
@@ -303,7 +347,7 @@ public class WaypointsGUI {
       return;
     }
 
-    Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypointName);
+    Map<String, Integer> coords = _waypointsManager.getWaypointCoordinates(world, waypointName);
     Location destination = new Location(p.getWorld(), coords.get(KEY_COORD_X), coords.get(KEY_COORD_Y),
         coords.get(KEY_COORD_Z));
 
@@ -348,8 +392,11 @@ public class WaypointsGUI {
   // DIALOGS
   // -------
 
-  private void _openAddWaypointDialog(Player player, String errorMessage, String initialName) {
-    Location loc = player.getLocation().toBlockLocation();
+  private void _openAddWaypointDialog(Player p, String errorMessage, String initialName,
+      String initialVisibility) {
+    Location loc = p.getLocation().toBlockLocation();
+
+    Map<String, String> visibilityOptions = WaypointVisibility.toMap();
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
         "Add Waypoint",
@@ -358,6 +405,8 @@ public class WaypointsGUI {
         List.of(
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_NAME,
                 GUI_DIALOG_INPUT_PREFIX + "Waypoint Name", initialName),
+            CustomDialog.createSelectInput(WAYPOINT_ADD_DIALOG_VISIBILITY,
+                GUI_DIALOG_INPUT_PREFIX + "Visibility", visibilityOptions, initialVisibility),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_X,
                 GUI_DIALOG_INPUT_PREFIX + "X Coordinate", Integer.toString(loc.getBlockX())),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_Y,
@@ -367,7 +416,7 @@ public class WaypointsGUI {
         (view, audience) -> _addWaypointDialogCB(view, audience),
         null);
 
-    player.showDialog(dialog);
+    p.showDialog(dialog);
   }
 
   private void _openWaypointRenameDialog(Player p, String waypointName, String errorMessage, String initialValue) {
@@ -393,12 +442,14 @@ public class WaypointsGUI {
     Player p = (Player) audience;
 
     String nameInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_FIELD_NAME)).map(String::trim).orElse("");
+    String visibilityInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_VISIBILITY)).map(String::trim)
+        .orElse("");
     String xInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_FIELD_X)).map(String::trim).orElse("");
     String yInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_FIELD_Y)).map(String::trim).orElse("");
     String zInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_FIELD_Z)).map(String::trim).orElse("");
 
     if (nameInput.isEmpty()) {
-      _openAddWaypointDialog(p, "Please provide a waypoint name.", nameInput);
+      _openAddWaypointDialog(p, "Please provide a waypoint name.", nameInput, visibilityInput);
       _playErrorSound(p);
       return;
     }
@@ -409,19 +460,20 @@ public class WaypointsGUI {
       y = Integer.parseInt(yInput);
       z = Integer.parseInt(zInput);
     } catch (NumberFormatException ex) {
-      _openAddWaypointDialog(p, "Please provide valid integer coordinates.", nameInput);
+      _openAddWaypointDialog(p, "Please provide valid integer coordinates.", nameInput, visibilityInput);
       _playErrorSound(p);
       return;
     }
 
     String world = p.getWorld().getName();
     if (_waypointsManager.checkWaypointExists(world, nameInput)) {
-      _openAddWaypointDialog(p, "A waypoint with that name already exists.", nameInput);
+      _openAddWaypointDialog(p, "A waypoint with that name already exists.", nameInput, visibilityInput);
       _playErrorSound(p);
       return;
     }
 
-    _waypointsManager.addWaypoint(world, nameInput, x, y, z);
+    _waypointsManager.addWaypoint(world, nameInput, p.getUniqueId(),
+        WaypointVisibility.fromString(visibilityInput).orElse(WaypointVisibility.PUBLIC), x, y, z);
 
     p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + nameInput + ChatColor.GRAY
         + " was successfully added!");
@@ -511,16 +563,79 @@ public class WaypointsGUI {
     return (rows * 9) - 9 + 4;
   }
 
+  private int _footerFilterSlot(int rows) {
+    return (rows * 9) - 9;
+  }
+
   // ------------
   // SOUND HELPER
   // ------------
 
-  private void _playSuccessSound(Player player) {
-    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+  private void _playSuccessSound(Player p) {
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
   }
 
-  private void _playErrorSound(Player player) {
-    player.playSound(player, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+  private void _playErrorSound(Player p) {
+    p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+  }
+
+  // -------------
+  // FILTER HELPER
+  // -------------
+
+  private void _handleNextFilterCycle(Player p) {
+    UUID playerId = p.getUniqueId();
+    WaypointFilter nextMode = _getFilterMode(p).next();
+
+    _playerFilterModes.put(playerId, nextMode);
+
+    displayWaypointsGUI(p);
+  }
+
+  private void _handlePreviousFilterCycle(Player p) {
+    UUID playerId = p.getUniqueId();
+    WaypointFilter previousMode = _getFilterMode(p).previous();
+
+    _playerFilterModes.put(playerId, previousMode);
+
+    displayWaypointsGUI(p);
+  }
+
+  private List<String> _getFilteredWaypoints(String worldName, List<String> waypointNames, Player p,
+      WaypointFilter filterMode) {
+
+    List<String> filtered = new ArrayList<>();
+    for (String waypointName : waypointNames) {
+      WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointName);
+
+      if (filterMode == WaypointFilter.PRIVATE) {
+        UUID ownerId = _waypointsManager.getWaypointOwnerId(worldName, waypointName);
+
+        if (!ownerId.equals(p.getUniqueId())) {
+          continue;
+        }
+      }
+
+      if (filterMode == WaypointFilter.ALL) {
+        if (visibility == WaypointVisibility.PRIVATE) {
+          UUID ownerId = _waypointsManager.getWaypointOwnerId(worldName, waypointName);
+
+          if (!ownerId.equals(p.getUniqueId())) {
+            continue;
+          }
+        }
+      }
+
+      if (filterMode.matches(visibility)) {
+        filtered.add(waypointName);
+      }
+    }
+
+    return filtered;
+  }
+
+  private WaypointFilter _getFilterMode(Player p) {
+    return _playerFilterModes.getOrDefault(p.getUniqueId(), WaypointFilter.ALL);
   }
 
   // ----------

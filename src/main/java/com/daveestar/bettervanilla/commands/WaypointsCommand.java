@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.NavigationType;
 import com.daveestar.bettervanilla.enums.Permissions;
+import com.daveestar.bettervanilla.enums.WaypointVisibility;
 import com.daveestar.bettervanilla.gui.WaypointsGUI;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
@@ -98,8 +99,8 @@ public class WaypointsCommand implements TabExecutor {
     if (_waypointsManager.checkWaypointExists(world, waypointName)) {
       if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
         if (p.hasPermission(Permissions.WAYPOINTS_OVERWRITE.getName())) {
-          _waypointsManager.addWaypoint(world, waypointName, location.getBlockX(), location.getBlockY(),
-              location.getBlockZ());
+          _waypointsManager.addWaypoint(world, waypointName, p.getUniqueId(), WaypointVisibility.PUBLIC,
+              location.getBlockX(), location.getBlockY(), location.getBlockZ());
           p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
               + " was successfully updated!");
           p.sendMessage(Main.getPrefix() + "It is reset to your current location: " + ChatColor.YELLOW + "X: "
@@ -117,8 +118,8 @@ public class WaypointsCommand implements TabExecutor {
             + ChatColor.YELLOW + "/waypoints add " + waypointName + " confirm");
       }
     } else {
-      _waypointsManager.addWaypoint(world, waypointName, location.getBlockX(), location.getBlockY(),
-          location.getBlockZ());
+      _waypointsManager.addWaypoint(world, waypointName, p.getUniqueId(), WaypointVisibility.PUBLIC,
+          location.getBlockX(), location.getBlockY(), location.getBlockZ());
       p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
           + " was successfully added!");
       p.sendMessage(
@@ -166,7 +167,7 @@ public class WaypointsCommand implements TabExecutor {
     p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "Waypoints » " + world + ":");
 
     for (String waypoint : waypoints) {
-      Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypoint);
+      Map<String, Integer> coords = _waypointsManager.getWaypointCoordinates(world, waypoint);
       Location playerLocation = p.getLocation().toBlockLocation();
       Location waypointLocation = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
       long distance = Math.round(playerLocation.distance(waypointLocation));
@@ -194,7 +195,7 @@ public class WaypointsCommand implements TabExecutor {
       return;
     }
 
-    Map<String, Integer> coords = _waypointsManager.getWaypointByName(world, waypointName);
+    Map<String, Integer> coords = _waypointsManager.getWaypointCoordinates(world, waypointName);
     Location destination = new Location(p.getWorld(), coords.get("x"), coords.get("y"), coords.get("z"));
 
     _settingsManager.setToggleLocation(p.getUniqueId(), false);

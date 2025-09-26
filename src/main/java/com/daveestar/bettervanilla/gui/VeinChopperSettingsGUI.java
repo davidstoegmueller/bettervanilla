@@ -221,12 +221,8 @@ public class VeinChopperSettingsGUI {
   private void _openVeinChopperMaxSizeDialog(Player p, CustomGUI parentMenu) {
     int size = _settingsManager.getVeinChopperMaxVeinSize();
 
-    DialogInput inputSize = DialogInput
-        .numberRange("size", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Maximum Vein Chopper Size"), 1,
-            1024)
-        .step(1f)
-        .initial((float) size)
-        .build();
+    DialogInput inputSize = CustomDialog.createNumberInput("size",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Maximum Vein Chopper Size", 1, 1024, 1, (float) size);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
         "Set Maximum Vein Chopper Size",

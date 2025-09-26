@@ -541,11 +541,8 @@ public class AdminSettingsGUI {
   private void _openAFKTimeDialog(Player p, CustomGUI parentMenu) {
     int afkTime = _settingsManager.getAFKTime();
 
-    DialogInput inputMinutes = DialogInput
-        .numberRange("minutes", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK Time (minutes)"), 1, 300)
-        .step(1f)
-        .initial((float) afkTime)
-        .build();
+    DialogInput inputMinutes = CustomDialog.createNumberInput("minutes",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK Time (minutes)", 1, 300, 1, (float) afkTime);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
         "AFK Time",

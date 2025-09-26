@@ -4,6 +4,7 @@ public enum Permissions {
   WAYPOINTS("bettervanilla.waypoints"),
   WAYPOINTS_OVERWRITE("bettervanilla.waypoints.overwrite"),
   WAYPOINTS_REMOVE("bettervanilla.waypoints.remove"),
+  WAYPOINTS_EDIT_ALL("bettervanilla.waypoints.editall"),
   MAINTENANCE_BYPASS("bettervanilla.maintenance.bypass"),
   PLAYTIME("bettervanilla.playtime"),
   PING("bettervanilla.ping"),
