@@ -2,9 +2,7 @@ package com.daveestar.bettervanilla.enums;
 
 public enum Permissions {
   WAYPOINTS("bettervanilla.waypoints"),
-  WAYPOINTS_OVERWRITE("bettervanilla.waypoints.overwrite"),
-  WAYPOINTS_REMOVE("bettervanilla.waypoints.remove"),
-  WAYPOINTS_EDIT_ALL("bettervanilla.waypoints.editall"),
+  WAYPOINTS_ADMIN("bettervanilla.waypoints.admin"),
   MAINTENANCE_BYPASS("bettervanilla.maintenance.bypass"),
   PLAYTIME("bettervanilla.playtime"),
   PING("bettervanilla.ping"),

@@ -49,6 +49,13 @@ public class WaypointsCommand implements TabExecutor {
     }
 
     Player p = (Player) cs;
+
+    if (!p.hasPermission(Permissions.WAYPOINTS.getName())) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED
+          + "Sorry! You don't have permissions to use the waypoints command.");
+      return true;
+    }
+
     if (args.length == 0) {
       _waypointsGUI.displayWaypointsGUI(p);
       return true;
@@ -57,7 +64,7 @@ public class WaypointsCommand implements TabExecutor {
     String subCommand = args[0].toLowerCase();
     switch (subCommand) {
       case "add":
-        handleAdd(p, args);
+        _handleAdd(p, args);
         break;
       case "remove":
         _handleRemove(p, args);
@@ -83,10 +90,11 @@ public class WaypointsCommand implements TabExecutor {
       default:
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Unknown waypoints command. Use /waypoints help for help.");
     }
+
     return true;
   }
 
-  private void handleAdd(Player p, String[] args) {
+  private void _handleAdd(Player p, String[] args) {
     if (args.length < 2) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/waypoints add <name>");
       return;
@@ -97,26 +105,8 @@ public class WaypointsCommand implements TabExecutor {
     String world = p.getWorld().getName();
 
     if (_waypointsManager.checkWaypointExists(world, waypointName)) {
-      if (args.length == 3 && args[2].equalsIgnoreCase("confirm")) {
-        if (p.hasPermission(Permissions.WAYPOINTS_OVERWRITE.getName())) {
-          _waypointsManager.addWaypoint(world, waypointName, p.getUniqueId(), WaypointVisibility.PUBLIC,
-              location.getBlockX(), location.getBlockY(), location.getBlockZ());
-          p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-              + " was successfully updated!");
-          p.sendMessage(Main.getPrefix() + "It is reset to your current location: " + ChatColor.YELLOW + "X: "
-              + ChatColor.GRAY + location.getBlockX() + ChatColor.YELLOW
-              + " Y: " + ChatColor.GRAY + location.getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
-              + location.getBlockZ());
-        } else {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED
-              + "Sorry! You don't have permissions to overwrite existing waypoints.");
-        }
-      } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
-            + ChatColor.RED + " already exists!");
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Overwrite Usage: "
-            + ChatColor.YELLOW + "/waypoints add " + waypointName + " confirm");
-      }
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "A waypoint with name " + ChatColor.YELLOW + waypointName
+          + ChatColor.RED + " already exists!");
     } else {
       _waypointsManager.addWaypoint(world, waypointName, p.getUniqueId(), WaypointVisibility.PUBLIC,
           location.getBlockX(), location.getBlockY(), location.getBlockZ());
@@ -130,12 +120,6 @@ public class WaypointsCommand implements TabExecutor {
   }
 
   private void _handleRemove(Player p, String[] args) {
-    if (!p.hasPermission(Permissions.WAYPOINTS_REMOVE.getName())) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED
-          + "Sorry! You don't have permissions to remove existing waypoints.");
-      return;
-    }
-
     if (args.length < 2) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
           + ChatColor.YELLOW + "/waypoints remove <name>");

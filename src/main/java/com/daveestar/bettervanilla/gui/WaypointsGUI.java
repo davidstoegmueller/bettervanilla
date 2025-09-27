@@ -96,15 +96,19 @@ public class WaypointsGUI {
     WaypointFilter filterMode = _getFilterMode(p);
 
     String worldName = p.getWorld().getName();
-    Location playerLocation = p.getLocation().toBlockLocation();
     List<String> waypointNames = _waypointsManager.getWaypoints(worldName);
 
     List<String> filteredWaypointNames = _getFilteredWaypoints(worldName, waypointNames, p, filterMode);
 
     Map<String, ItemStack> entries = new LinkedHashMap<>();
     for (String waypointName : filteredWaypointNames) {
-      entries.put(_waypointKey(waypointName), _createWaypointItem(playerLocation, worldName, waypointName));
+      entries.put(_waypointKey(waypointName), _createWaypointItem(p, worldName, waypointName));
     }
+
+    Location pLoc = p.getLocation().toBlockLocation();
+    String inputX = Integer.toString(pLoc.getBlockX());
+    String inputY = Integer.toString(pLoc.getBlockY());
+    String inputZ = Integer.toString(pLoc.getBlockZ());
 
     String waypointGUITitle = "Waypoints " + ChatColor.GRAY + "(" + filterMode.getColoredName() + ChatColor.GRAY + ")";
     CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null, null);
@@ -113,11 +117,19 @@ public class WaypointsGUI {
     for (String waypointName : filteredWaypointNames) {
       String key = _waypointKey(waypointName);
 
-      actions.put(key, _clickAction(
-          player -> _handleNavigation(player, waypointName),
-          player -> _displayOptionsGUI(player, waypointName, waypointsGUI),
-          null,
-          null));
+      if (_canEditWaypointOptions(worldName, waypointName, p)) {
+        actions.put(key, _clickAction(
+            player -> _handleNavigation(player, waypointName),
+            player -> _displayOptionsGUI(player, waypointName, waypointsGUI),
+            null,
+            null));
+      } else {
+        actions.put(key, _clickAction(
+            player -> _handleNavigation(player, waypointName),
+            null,
+            null,
+            null));
+      }
     }
 
     actions.put(KEY_FILTER_TOGGLE, _clickAction(
@@ -127,7 +139,7 @@ public class WaypointsGUI {
         null));
 
     actions.put(KEY_ADD_WAYPOINT, _clickAction(
-        player -> _openAddWaypointDialog(player, null, "", WaypointVisibility.PUBLIC.getName()),
+        player -> _openAddWaypointDialog(player, null, "", WaypointVisibility.PUBLIC.getName(), inputX, inputY, inputZ),
         null,
         null,
         null));
@@ -269,14 +281,16 @@ public class WaypointsGUI {
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
 
-  private ItemStack _createWaypointItem(Location playerLocation, String worldName, String waypointName) {
+  private ItemStack _createWaypointItem(Player p, String worldName, String waypointName) {
     Map<String, Integer> waypointData = _waypointsManager.getWaypointCoordinates(worldName, waypointName);
     int x = waypointData.getOrDefault(KEY_COORD_X, 0);
     int y = waypointData.getOrDefault(KEY_COORD_Y, 0);
     int z = waypointData.getOrDefault(KEY_COORD_Z, 0);
 
-    Location waypointLocation = new Location(playerLocation.getWorld(), x, y, z);
-    long distance = Math.round(playerLocation.distance(waypointLocation));
+    Location pLoc = p.getLocation().toBlockLocation();
+
+    Location waypointLocation = new Location(pLoc.getWorld(), x, y, z);
+    long distance = Math.round(pLoc.distance(waypointLocation));
 
     ItemStack item = _waypointsManager.getWaypointIcon(worldName, waypointName).clone();
     ItemMeta meta = item.getItemMeta();
@@ -292,7 +306,7 @@ public class WaypointsGUI {
 
       meta.displayName(
           Component.text(GUI_ITEM_PREFIX + waypointName + visibilityString));
-      meta.lore(_createLore(
+      List<Component> lore = _createLore(
           "",
           GUI_LORE_PREFIX + "X: " + ChatColor.YELLOW + x,
           GUI_LORE_PREFIX + "Y: " + ChatColor.YELLOW + y,
@@ -303,8 +317,13 @@ public class WaypointsGUI {
           GUI_LORE_PREFIX + "Owner: " + ChatColor.YELLOW
               + _waypointsManager.getWaypointOwnerName(worldName, waypointName),
           "",
-          GUI_LORE_PREFIX + "Left-Click: Start navigation",
-          GUI_LORE_PREFIX + "Right-Click: Options"));
+          GUI_LORE_PREFIX + "Left-Click: Start navigation");
+
+      if (_canEditWaypointOptions(worldName, waypointName, p)) {
+        lore.add(Component.text(GUI_LORE_PREFIX + "Right-Click: Options"));
+      }
+
+      meta.lore(lore);
       item.setItemMeta(meta);
     }
 
@@ -366,12 +385,6 @@ public class WaypointsGUI {
   }
 
   private void _handleRemove(Player p, String waypointName) {
-    if (!p.hasPermission(Permissions.WAYPOINTS_REMOVE.getName())) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED
-          + "Sorry! You don't have permissions to remove existing waypoints.");
-      return;
-    }
-
     String world = p.getWorld().getName();
 
     if (_waypointsManager.checkWaypointExists(world, waypointName)) {
@@ -393,9 +406,7 @@ public class WaypointsGUI {
   // -------
 
   private void _openAddWaypointDialog(Player p, String errorMessage, String initialName,
-      String initialVisibility) {
-    Location loc = p.getLocation().toBlockLocation();
-
+      String initialVisibility, String initialX, String initialY, String initialZ) {
     Map<String, String> visibilityOptions = WaypointVisibility.toMap();
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
@@ -408,11 +419,11 @@ public class WaypointsGUI {
             CustomDialog.createSelectInput(WAYPOINT_ADD_DIALOG_VISIBILITY,
                 GUI_DIALOG_INPUT_PREFIX + "Visibility", visibilityOptions, initialVisibility),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_X,
-                GUI_DIALOG_INPUT_PREFIX + "X Coordinate", Integer.toString(loc.getBlockX())),
+                GUI_DIALOG_INPUT_PREFIX + "X Coordinate", initialX),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_Y,
-                GUI_DIALOG_INPUT_PREFIX + "Y Coordinate", Integer.toString(loc.getBlockY())),
+                GUI_DIALOG_INPUT_PREFIX + "Y Coordinate", initialY),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_Z,
-                GUI_DIALOG_INPUT_PREFIX + "Z Coordinate", Integer.toString(loc.getBlockZ()))),
+                GUI_DIALOG_INPUT_PREFIX + "Z Coordinate", initialZ)),
         (view, audience) -> _addWaypointDialogCB(view, audience),
         null);
 
@@ -449,7 +460,7 @@ public class WaypointsGUI {
     String zInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_FIELD_Z)).map(String::trim).orElse("");
 
     if (nameInput.isEmpty()) {
-      _openAddWaypointDialog(p, "Please provide a waypoint name.", nameInput, visibilityInput);
+      _openAddWaypointDialog(p, "Please provide a waypoint name.", nameInput, visibilityInput, xInput, yInput, zInput);
       _playErrorSound(p);
       return;
     }
@@ -460,14 +471,16 @@ public class WaypointsGUI {
       y = Integer.parseInt(yInput);
       z = Integer.parseInt(zInput);
     } catch (NumberFormatException ex) {
-      _openAddWaypointDialog(p, "Please provide valid integer coordinates.", nameInput, visibilityInput);
+      _openAddWaypointDialog(p, "Please provide valid integer coordinates.", nameInput, visibilityInput, xInput, yInput,
+          zInput);
       _playErrorSound(p);
       return;
     }
 
     String world = p.getWorld().getName();
     if (_waypointsManager.checkWaypointExists(world, nameInput)) {
-      _openAddWaypointDialog(p, "A waypoint with that name already exists.", nameInput, visibilityInput);
+      _openAddWaypointDialog(p, "A waypoint with that name already exists.", nameInput, visibilityInput, xInput, yInput,
+          zInput);
       _playErrorSound(p);
       return;
     }
@@ -565,6 +578,21 @@ public class WaypointsGUI {
 
   private int _footerFilterSlot(int rows) {
     return (rows * 9) - 9;
+  }
+
+  private boolean _canEditWaypointOptions(String worldName, String waypointName, Player p) {
+    WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointName);
+    Optional<UUID> ownerId = _waypointsManager.getWaypointOwnerId(worldName, waypointName);
+
+    boolean isOwner = ownerId.equals(Optional.of(p.getUniqueId()));
+
+    if (visibility == WaypointVisibility.PUBLIC) {
+      return isOwner || p.hasPermission(Permissions.WAYPOINTS_ADMIN.getName());
+    } else if (visibility == WaypointVisibility.PRIVATE) {
+      return isOwner;
+    }
+
+    return false;
   }
 
   // ------------
