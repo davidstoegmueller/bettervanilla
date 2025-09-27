@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -75,7 +76,7 @@ public class WaypointsManager {
     return "unknown";
   }
 
-  public UUID getWaypointOwnerId(String worldName, String waypointName) {
+  public Optional<UUID> getWaypointOwnerId(String worldName, String waypointName) {
     String path = worldName + "." + waypointName + ".owner";
 
     if (_fileConfig.contains(path)) {
@@ -83,14 +84,14 @@ public class WaypointsManager {
 
       if (ownerString != null && !ownerString.isEmpty()) {
         try {
-          return UUID.fromString(ownerString);
+          return Optional.of(UUID.fromString(ownerString));
         } catch (IllegalArgumentException ex) {
-          return null;
+          return Optional.empty();
         }
       }
     }
 
-    return null;
+    return Optional.empty();
   }
 
   public WaypointVisibility getWaypointVisibility(String worldName, String waypointName) {

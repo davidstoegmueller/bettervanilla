@@ -609,18 +609,18 @@ public class WaypointsGUI {
       WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointName);
 
       if (filterMode == WaypointFilter.PRIVATE) {
-        UUID ownerId = _waypointsManager.getWaypointOwnerId(worldName, waypointName);
+        Optional<UUID> ownerId = _waypointsManager.getWaypointOwnerId(worldName, waypointName);
 
-        if (!ownerId.equals(p.getUniqueId())) {
+        if (!ownerId.equals(Optional.of(p.getUniqueId()))) {
           continue;
         }
       }
 
       if (filterMode == WaypointFilter.ALL) {
         if (visibility == WaypointVisibility.PRIVATE) {
-          UUID ownerId = _waypointsManager.getWaypointOwnerId(worldName, waypointName);
+          Optional<UUID> ownerId = _waypointsManager.getWaypointOwnerId(worldName, waypointName);
 
-          if (!ownerId.equals(p.getUniqueId())) {
+          if (!ownerId.equals(Optional.of(p.getUniqueId()))) {
             continue;
           }
         }
