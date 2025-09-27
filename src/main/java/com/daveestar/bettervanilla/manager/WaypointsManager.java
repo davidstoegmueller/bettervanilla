@@ -177,6 +177,11 @@ public class WaypointsManager {
     }
   }
 
+  public void setWaypointVisibility(String worldName, String waypointName, WaypointVisibility visibility) {
+    _fileConfig.set(worldName + "." + waypointName + ".visibility", visibility.name());
+    _config.save();
+  }
+
   public void setWaypointIcon(String worldName, String waypointName, ItemStack iconItem) {
     Map<String, Object> serializedIcon = iconItem.serialize();
     _fileConfig.set(worldName + "." + waypointName + ".icon", serializedIcon);

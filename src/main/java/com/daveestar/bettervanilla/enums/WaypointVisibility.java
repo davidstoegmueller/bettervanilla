@@ -26,6 +26,16 @@ public enum WaypointVisibility {
     return displayName;
   }
 
+  private static final WaypointVisibility[] VALUES = values();
+
+  public WaypointVisibility next() {
+    return VALUES[(ordinal() + 1) % VALUES.length];
+  }
+
+  public WaypointVisibility previous() {
+    return VALUES[(ordinal() - 1 + VALUES.length) % VALUES.length];
+  }
+
   public static Map<String, String> toMap() {
     return ALL.stream().collect(Collectors.toMap(WaypointVisibility::getName, WaypointVisibility::getDisplayName));
   }

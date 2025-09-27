@@ -51,6 +51,7 @@ public class WaypointsGUI {
   private final String KEY_OPTION_RENAME = "option::renameWaypoint";
   private final String KEY_OPTION_DELETE = "option::deleteWaypoint";
   private final String KEY_OPTION_SET_ICON = "option::setWaypointIcon";
+  private final String KEY_OPTION_SET_VISIBILITY = "option::setWaypointVisibility";
 
   private final String KEY_COORD_X = "x";
   private final String KEY_COORD_Y = "y";
@@ -154,13 +155,15 @@ public class WaypointsGUI {
   private void _displayOptionsGUI(Player p, String waypointName, CustomGUI parentGUI) {
     Map<String, ItemStack> entries = new LinkedHashMap<>();
     entries.put(KEY_OPTION_RENAME, _createRenameItem(waypointName));
+    entries.put(KEY_OPTION_SET_VISIBILITY, _createSetVisibilityItem(p, waypointName));
     entries.put(KEY_OPTION_SET_ICON, _createSetIconItem(waypointName));
     entries.put(KEY_OPTION_DELETE, _createDeleteItem(waypointName));
 
     Map<String, Integer> customSlots = new LinkedHashMap<>();
-    customSlots.put(KEY_OPTION_RENAME, 2);
-    customSlots.put(KEY_OPTION_SET_ICON, 4);
-    customSlots.put(KEY_OPTION_DELETE, 6);
+    customSlots.put(KEY_OPTION_RENAME, 1);
+    customSlots.put(KEY_OPTION_SET_VISIBILITY, 3);
+    customSlots.put(KEY_OPTION_SET_ICON, 5);
+    customSlots.put(KEY_OPTION_DELETE, 7);
 
     CustomGUI optionsGUI = _createGUI(p, "Options: " + waypointName, OPTIONS_GUI_ROWS, entries, customSlots,
         parentGUI, OPTIONS_GUI_FLAGS);
@@ -169,6 +172,12 @@ public class WaypointsGUI {
     actions.put(KEY_OPTION_RENAME, _clickAction(
         player -> _openWaypointRenameDialog(player, waypointName, null, waypointName),
         null,
+        null,
+        null));
+
+    actions.put(KEY_OPTION_SET_VISIBILITY, _clickAction(
+        player -> _handleVisibilityCycle(player, waypointName, true),
+        player -> _handleVisibilityCycle(player, waypointName, false),
         null,
         null));
 
@@ -236,6 +245,23 @@ public class WaypointsGUI {
             "",
             GUI_LORE_PREFIX + "Left-Click: Rename waypoint: " + ChatColor.YELLOW + waypointName),
         null);
+  }
+
+  private ItemStack _createSetVisibilityItem(Player p, String waypointName) {
+    String worldName = p.getWorld().getName();
+    WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointName);
+    ChatColor visibilityColor = visibility == WaypointVisibility.PUBLIC ? ChatColor.GREEN : ChatColor.RED;
+
+    return _createItem(
+        Material.SPYGLASS,
+        Component.text(GUI_ITEM_PREFIX + "Visibility"),
+        _createLore(
+            "",
+            GUI_LORE_PREFIX + "Current: " + visibilityColor + visibility.getDisplayName() + ChatColor.GRAY,
+            "",
+            GUI_LORE_PREFIX + "Left-Click: Next visibility",
+            GUI_LORE_PREFIX + "Right-Click: Previous visibility"),
+        meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
 
   private ItemStack _createDeleteItem(String waypointName) {
@@ -355,6 +381,28 @@ public class WaypointsGUI {
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
+  }
+
+  private void _handleVisibilityCycle(Player p, String waypointName, boolean isNext) {
+    String worldName = p.getWorld().getName();
+    WaypointVisibility currentVisibility = _waypointsManager.getWaypointVisibility(worldName, waypointName);
+    WaypointVisibility targetVisibility = isNext ? currentVisibility.next() : currentVisibility.previous();
+
+    if (targetVisibility == currentVisibility) {
+      _playErrorSound(p);
+      return;
+    }
+
+    _waypointsManager.setWaypointVisibility(worldName, waypointName, targetVisibility);
+
+    ChatColor visibilityColor = targetVisibility == WaypointVisibility.PUBLIC ? ChatColor.GREEN : ChatColor.RED;
+
+    p.sendMessage(Main.getPrefix() + "Waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+        + " visibility set to " + visibilityColor + targetVisibility.getDisplayName() + ChatColor.GRAY + ".");
+    _playSuccessSound(p);
+
+    CustomGUI refreshedParentGUI = _createWaypointsGUI(p);
+    _displayOptionsGUI(p, waypointName, refreshedParentGUI);
   }
 
   private void _handleNavigation(Player p, String waypointName) {
