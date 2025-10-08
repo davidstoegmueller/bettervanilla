@@ -46,8 +46,11 @@ public class WaypointsGUI {
 
   private final String KEY_WAYPOINT_PREFIX = "waypoint::";
   private final String KEY_ICON_PREFIX = "icon::";
-  private final String KEY_ADD_WAYPOINT = "action::addWaypoint";
-  private final String KEY_FILTER_TOGGLE = "action::toggleWaypointFilter";
+
+  private final String KEY_ADD_BTN = "action::addWaypoint";
+  private final String KEY_FILTER_BTN = "action::filterWaypoint";
+  private final String KEY_CANCEL_BTN = "action::cancelWaypoint";
+
   private final String KEY_OPTION_RENAME = "option::renameWaypoint";
   private final String KEY_OPTION_DELETE = "option::deleteWaypoint";
   private final String KEY_OPTION_SET_ICON = "option::setWaypointIcon";
@@ -133,20 +136,27 @@ public class WaypointsGUI {
       }
     }
 
-    actions.put(KEY_FILTER_TOGGLE, _clickAction(
-        player -> _handleNextFilterCycle(player),
-        player -> _handlePreviousFilterCycle(player),
+    actions.put(KEY_CANCEL_BTN, _clickAction(
+        player -> _handleCancelNavigation(player),
+        null,
         null,
         null));
 
-    actions.put(KEY_ADD_WAYPOINT, _clickAction(
+    actions.put(KEY_ADD_BTN, _clickAction(
         player -> _openAddWaypointDialog(player, null, "", WaypointVisibility.PUBLIC.getName(), inputX, inputY, inputZ),
         null,
         null,
         null));
 
-    waypointsGUI.addFooterEntry(KEY_FILTER_TOGGLE, _createFilterItem(filterMode), _footerFilterSlot(MAIN_GUI_ROWS));
-    waypointsGUI.addFooterEntry(KEY_ADD_WAYPOINT, _createAddWaypointItem(), _footerAddWaypointSlot(MAIN_GUI_ROWS));
+    actions.put(KEY_FILTER_BTN, _clickAction(
+        player -> _handleNextFilterCycle(player),
+        player -> _handlePreviousFilterCycle(player),
+        null,
+        null));
+
+    waypointsGUI.addFooterEntry(KEY_CANCEL_BTN, _createCancelNavigationItem(), _footerCancelSlot(MAIN_GUI_ROWS));
+    waypointsGUI.addFooterEntry(KEY_ADD_BTN, _createAddWaypointItem(), _footerAddWaypointSlot(MAIN_GUI_ROWS));
+    waypointsGUI.addFooterEntry(KEY_FILTER_BTN, _createFilterItem(filterMode), _footerFilterSlot(MAIN_GUI_ROWS));
 
     waypointsGUI.setClickActions(actions);
     return waypointsGUI;
@@ -281,6 +291,17 @@ public class WaypointsGUI {
         _createLore(
             "",
             GUI_LORE_PREFIX + "Left-Click: Set custom icon for: " + ChatColor.YELLOW + waypointName),
+        null);
+  }
+
+  private ItemStack _createCancelNavigationItem() {
+    return _createItem(
+        Material.BARRIER,
+        Component.text(GUI_ITEM_PREFIX + "Cancel Navigation"),
+        _createLore(
+            GUI_LORE_PREFIX + "Cancel your current active navigation.",
+            "",
+            GUI_LORE_PREFIX + "Left-Click: Cancel navigation"),
         null);
   }
 
@@ -430,6 +451,19 @@ public class WaypointsGUI {
     _playSuccessSound(p);
 
     p.closeInventory();
+  }
+
+  private void _handleCancelNavigation(Player p) {
+    if (_navigationManager.checkActiveNavigation(p)) {
+      _navigationManager.stopNavigation(p);
+      p.sendMessage(Main.getPrefix() + "You've canceled your active navigation!");
+      _playSuccessSound(p);
+      p.closeInventory();
+    } else {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no current destination!");
+      _playErrorSound(p);
+      displayWaypointsGUI(p);
+    }
   }
 
   private void _handleRemove(Player p, String waypointName) {
@@ -625,7 +659,11 @@ public class WaypointsGUI {
   }
 
   private int _footerFilterSlot(int rows) {
-    return (rows * 9) - 9;
+    return (rows * 9) - 9 + 7;
+  }
+
+  private int _footerCancelSlot(int rows) {
+    return (rows * 9) - 9 + 2;
   }
 
   private boolean _canEditWaypointOptions(String worldName, String waypointName, Player p) {
