@@ -13,7 +13,6 @@ import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.WaypointsGUI;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
-import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
 
 import net.md_5.bungee.api.ChatColor;
@@ -24,14 +23,12 @@ import java.util.stream.Collectors;
 public class WaypointsCommand implements TabExecutor {
   private final Main _plugin;
   private final NavigationManager _navigationManager;
-  private final ActionBar _actionBarManager;
   private final SettingsManager _settingsManager;
   private final WaypointsGUI _waypointsGUI;
 
   public WaypointsCommand() {
     _plugin = Main.getInstance();
     _navigationManager = _plugin.getNavigationManager();
-    _actionBarManager = _plugin.getActionBar();
     _settingsManager = _plugin.getSettingsManager();
     _waypointsGUI = new WaypointsGUI();
   }
@@ -63,9 +60,6 @@ public class WaypointsCommand implements TabExecutor {
         break;
       case "coords":
         _handleCoordsNavigation(p, args);
-        break;
-      case "cancel":
-        _handleCancel(p);
         break;
       case "help":
         _handleHelp(p);
@@ -133,21 +127,11 @@ public class WaypointsCommand implements TabExecutor {
         + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + targetLocation.getBlockZ());
   }
 
-  private void _handleCancel(Player p) {
-    if (_navigationManager.checkActiveNavigation(p)) {
-      _navigationManager.stopNavigation(p);
-      _actionBarManager.sendActionBarOnce(p, ChatColor.RED + "You've canceled active navigation!");
-    } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no current destination!");
-    }
-  }
-
   private void _handleHelp(Player p) {
     p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "WAYPOINTS HELP:");
     p.sendMessage(Main.getShortPrefix() + "/waypoints - Opens the waypoints GUI.");
     p.sendMessage(Main.getShortPrefix() + "/waypoints player <player> - Navigates to another player's location.");
     p.sendMessage(Main.getShortPrefix() + "/waypoints coords <x> <y> <z> - Navigates to specific coordinates.");
-    p.sendMessage(Main.getShortPrefix() + "/waypoints cancel - Cancels the current navigation.");
   }
 
   @Override
@@ -155,7 +139,7 @@ public class WaypointsCommand implements TabExecutor {
     List<String> suggestions = new ArrayList<>();
 
     if (args.length == 1) {
-      suggestions.addAll(Arrays.asList("player", "coords", "help", "cancel"));
+      suggestions.addAll(Arrays.asList("player", "coords", "help"));
     } else if (args.length == 2 && args[0].equalsIgnoreCase("player")) {
       Collection<? extends Player> onlinePlayers = _plugin.getServer().getOnlinePlayers();
       suggestions.addAll(onlinePlayers.stream().map(Player::getName).collect(Collectors.toList()));

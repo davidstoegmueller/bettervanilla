@@ -663,7 +663,7 @@ public class WaypointsGUI {
   }
 
   private int _footerCancelSlot(int rows) {
-    return (rows * 9) - 9 + 2;
+    return (rows * 9) - 9;
   }
 
   private boolean _canEditWaypointOptions(String worldName, String waypointName, Player p) {
