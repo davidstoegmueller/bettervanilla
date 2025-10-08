@@ -15,6 +15,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\Preve
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\AdminSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleCompassCommand.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SitCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\CompassManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\SettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PlayerMove.java
@@ -62,5 +63,6 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Bac
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\CustomDialog.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\NavigationType.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChestSort.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\SittingManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\SettingsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PlayTimeCommand.java

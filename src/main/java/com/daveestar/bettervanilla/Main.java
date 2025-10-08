@@ -21,6 +21,7 @@ import com.daveestar.bettervanilla.commands.MessageCommand;
 import com.daveestar.bettervanilla.commands.ReplyCommand;
 import com.daveestar.bettervanilla.commands.VanishCommand;
 import com.daveestar.bettervanilla.commands.ModerationCommands;
+import com.daveestar.bettervanilla.commands.SitCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
@@ -48,6 +49,7 @@ import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.ModerationManager;
+import com.daveestar.bettervanilla.manager.SittingManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -74,6 +76,7 @@ public class Main extends JavaPlugin {
   private MessageManager _messageManager;
   private VanishManager _vanishManager;
   private ModerationManager _moderationManager;
+  private SittingManager _sittingManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -94,7 +97,7 @@ public class Main extends JavaPlugin {
     _backpackManager = new BackpackManager(backpackConfig);
     _messageManager = new MessageManager();
     _moderationManager = new ModerationManager(moderationConfig);
-
+    _sittingManager = new SittingManager(this);
     _vanishManager = new VanishManager();
 
     _maintenanceManager = new MaintenanceManager();
@@ -129,6 +132,7 @@ public class Main extends JavaPlugin {
     getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("vanish").setExecutor(new VanishCommand());
+    getCommand("sit").setExecutor(new SitCommand());
     getCommand("kick").setExecutor(new ModerationCommands.KickCommand());
     getCommand("ban").setExecutor(new ModerationCommands.BanCommand());
     getCommand("unban").setExecutor(new ModerationCommands.UnbanCommand());
@@ -163,6 +167,10 @@ public class Main extends JavaPlugin {
     _backpackManager.destroy();
 
     _LOGGER.info("BetterVanilla - DISABLED");
+
+    if (_sittingManager != null) {
+      _sittingManager.destroy();
+    }
   }
 
   public static String getPrefix() {
@@ -233,5 +241,9 @@ public class Main extends JavaPlugin {
 
   public ModerationManager getModerationManager() {
     return _moderationManager;
+  }
+
+  public SittingManager getSittingManager() {
+    return _sittingManager;
   }
 }
