@@ -11,8 +11,6 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class MaintenanceManager {
-  private Boolean _isMaintenance;
-
   private final Main _plugin;
   private SettingsManager _settingsManager;
 
@@ -22,17 +20,6 @@ public class MaintenanceManager {
 
   public void initManagers() {
     _settingsManager = _plugin.getSettingsManager();
-    _isMaintenance = _settingsManager.getMaintenance();
-  }
-
-  public void setState(boolean isMaintenance, String message) {
-    _isMaintenance = isMaintenance;
-
-    _settingsManager.setMaintenance(isMaintenance, isMaintenance ? message : null);
-  }
-
-  public boolean getState() {
-    return _isMaintenance;
   }
 
   public void kickAll(Collection<? extends Player> players) {
@@ -43,7 +30,7 @@ public class MaintenanceManager {
   }
 
   public boolean sendMaintenance(Player p) {
-    if (_isMaintenance) {
+    if (_settingsManager.getMaintenanceState()) {
       if (!p.hasPermission(Permissions.MAINTENANCE_BYPASS.getName())) {
         String message = _settingsManager.getMaintenanceMessage();
 

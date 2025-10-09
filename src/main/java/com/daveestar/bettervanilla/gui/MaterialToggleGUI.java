@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -37,7 +38,7 @@ public class MaterialToggleGUI implements Listener {
     _materials = materials;
     _getList = getter;
     _setList = setter;
-    _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
+    Bukkit.getPluginManager().registerEvents(this, _plugin);
   }
 
   public void displayGUI(Player p, CustomGUI parent) {

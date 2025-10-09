@@ -106,7 +106,7 @@ public class BackpackManager implements Listener {
     _config.save();
   }
 
-  public void saveAllOpenBackpacks() {
+  public void destroy() {
     for (Map.Entry<UUID, CustomGUI> entry : new HashMap<>(_openGUIs).entrySet()) {
       Player p = _plugin.getServer().getPlayer(entry.getKey());
       Map<Integer, ItemStack[]> backpack = _backpacks.get(entry.getKey());

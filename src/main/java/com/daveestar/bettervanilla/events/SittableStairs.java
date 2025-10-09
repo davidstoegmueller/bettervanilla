@@ -1,26 +1,22 @@
 package com.daveestar.bettervanilla.events;
 
-import java.util.HashMap;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Bisected.Half;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.SittingManager;
 
 public class SittableStairs implements Listener {
   private static final double MAX_DISTANCE = 2;
-  private final HashMap<Player, ArmorStand> _sittingPlayers = new HashMap<>();
 
   @EventHandler
   public void onPlayerRightClick(PlayerInteractEvent e) {
@@ -54,7 +50,8 @@ public class SittableStairs implements Listener {
           }
 
           // unmount before mounting again to a chair (stair)
-          _unmountFromStair(p);
+          SittingManager sittingManager = Main.getInstance().getSittingManager();
+          sittingManager.unsitPlayer(p);
 
           // create armor stand slightly higher so the player sits on top of the stair
           Location location = clickedBlock.getLocation().toBlockLocation().add(0.5, 0.5, 0.5);
@@ -80,40 +77,11 @@ public class SittableStairs implements Listener {
             }
           }
 
-          _mountToStair(p, location);
+          sittingManager.sitPlayer(p, location);
 
           p.sendMessage(Main.getPrefix() + "Well have a rest. Stand up using the 'Shift' key.");
         }
       }
-    }
-  }
-
-  @EventHandler
-  public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
-    Player p = e.getPlayer();
-    _unmountFromStair(p);
-  }
-
-  private void _mountToStair(Player p, Location location) {
-    ArmorStand armorStand = p.getWorld().spawn(location, ArmorStand.class);
-    armorStand.setVisible(false);
-    armorStand.setGravity(false);
-    armorStand.setMarker(true); // smaller hitbox to make it less noticeable
-    armorStand.setInvulnerable(true);
-
-    // mount player on the armor stand and track it
-    armorStand.addPassenger(p);
-    _sittingPlayers.put(p, armorStand);
-  }
-
-  private void _unmountFromStair(Player p) {
-    // check if player is seated on an armor stand
-    if (_sittingPlayers.containsKey(p)) {
-      ArmorStand armorStand = _sittingPlayers.get(p);
-
-      // unmount player and remove armor stand
-      armorStand.remove();
-      _sittingPlayers.remove(p);
     }
   }
 }

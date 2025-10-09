@@ -1,6 +1,6 @@
 name: bettervanilla
 main: com.daveestar.bettervanilla.Main
-version: 1.6.0
+version: 1.7.0
 api-version: 1.21
 authors: ["daveestar"]
 commands:
@@ -11,7 +11,7 @@ commands:
     permission: bettervanilla.waypoints
   playtime:
     aliases: [pt]
-    description: Display your playtime or another player's playtime.
+    description: Opens playtime gui and displays your playtime or another player's playtime.
     usage: /playtime
     permission: bettervanilla.playtime
   ping:
@@ -63,3 +63,42 @@ commands:
     description: Open your backpack.
     usage: /backpack
     permission: bettervanilla.backpack
+  message:
+    aliases: [msg]
+    description: Send a private message to another player.
+    usage: /msg <player> <message>
+    permission: bettervanilla.msg
+  reply:
+    aliases: [r]
+    description: Reply to the last private message.
+    usage: /r <message>
+    permission: bettervanilla.msg
+  vanish:
+    aliases: [v]
+    description: Toggle vanish mode.
+    usage: /vanish
+    permission: bettervanilla.vanish
+  sit:
+    aliases: [s]
+    description: Sit down anywhere on the ground.
+    usage: /sit
+  kick:
+    description: Kick a player from the server.
+    usage: /kick
+    permission: bettervanilla.kick
+  ban:
+    description: Ban a player from the server.
+    usage: /ban
+    permission: bettervanilla.ban
+  unban:
+    description: Remove a player's ban.
+    usage: /unban
+    permission: bettervanilla.unban
+  mute:
+    description: Mute a player.
+    usage: /mute
+    permission: bettervanilla.mute
+  unmute:
+    description: Remove a player's mute.
+    usage: /unmute
+    permission: bettervanilla.unmute

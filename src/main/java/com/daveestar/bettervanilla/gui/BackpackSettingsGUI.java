@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -30,7 +31,7 @@ public class BackpackSettingsGUI implements Listener {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _backpackManager = _plugin.getBackpackManager();
-    _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
+    Bukkit.getPluginManager().registerEvents(this, _plugin);
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu) {

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,6 +32,7 @@ public class CustomGUI implements Listener {
   private final List<Map.Entry<String, ItemStack>> _entryList;
   private final Map<String, Integer> _customSlots;
   private final Map<Integer, String> _slotKeyMap;
+  private final Map<String, FooterEntry> _footerEntries;
   private final CustomGUI _parentMenu;
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
@@ -43,6 +45,7 @@ public class CustomGUI implements Listener {
     _entryList = new ArrayList<>(pageEntries.entrySet());
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
     _slotKeyMap = new HashMap<>();
+    _footerEntries = new HashMap<>();
     _pageSize = inventorySize - _INVENTORY_ROW_SIZE;
     _maxPage = (int) Math.ceil((double) _entryList.size() / _pageSize);
     _parentMenu = parentMenu;
@@ -64,6 +67,14 @@ public class CustomGUI implements Listener {
 
   public void setClickActions(Map<String, ClickAction> clickActions) {
     _clickActions = clickActions;
+  }
+
+  public void addFooterEntry(String key, ItemStack item, int slot) {
+    if (key == null || item == null)
+      return;
+
+    _footerEntries.put(key, new FooterEntry(item.clone(), slot));
+    _applyFooterEntries();
   }
 
   public Inventory getInventory() {
@@ -152,17 +163,28 @@ public class CustomGUI implements Listener {
     _slotKeyMap.clear();
 
     List<Map.Entry<String, ItemStack>> currentEntries = _getPageEntries();
-    int defaultSlotIndex = 0;
-    for (Map.Entry<String, ItemStack> entry : currentEntries) {
+    for (int i = 0; i < currentEntries.size(); i++) {
+      Map.Entry<String, ItemStack> entry = currentEntries.get(i);
       String key = entry.getKey();
-      int slot = _customSlots.getOrDefault(key, defaultSlotIndex);
+      int slot = _customSlots.getOrDefault(key, i);
 
       _gui.setItem(slot, entry.getValue());
       _slotKeyMap.put(slot, key);
+    }
 
-      if (!_customSlots.containsKey(key)) {
-        defaultSlotIndex++;
-      }
+    _applyFooterEntries();
+  }
+
+  private void _applyFooterEntries() {
+    if (_footerEntries.isEmpty())
+      return;
+
+    for (Map.Entry<String, FooterEntry> entry : _footerEntries.entrySet()) {
+      FooterEntry footerEntry = entry.getValue();
+      int slot = footerEntry.slot();
+
+      _gui.setItem(slot, footerEntry.item().clone());
+      _slotKeyMap.put(slot, entry.getKey());
     }
   }
 
@@ -185,9 +207,12 @@ public class CustomGUI implements Listener {
       return;
     }
 
+    boolean pageButtonEnabled = !_options.contains(Option.DISABLE_PAGE_BUTTON);
+    boolean hasBackButton = _parentMenu != null;
+    boolean isSwitchSlot = pageButtonEnabled && rawSlot == _POS_SWITCH_PAGE_BUTTON;
+    boolean isBackSlot = hasBackButton && rawSlot == _POS_BACK_BUTTON;
+    boolean isActionSlot = isSwitchSlot || isBackSlot;
     boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
-    boolean isActionSlot = rawSlot == _POS_SWITCH_PAGE_BUTTON
-        || (rawSlot == _POS_BACK_BUTTON && _parentMenu != null);
     boolean isItemSlot = _slotKeyMap.containsKey(rawSlot);
 
     if (allowMove && !isNavSlot && !isActionSlot) {
@@ -224,13 +249,34 @@ public class CustomGUI implements Listener {
     if (!isActionSlot && !isItemSlot)
       return;
 
-    if (rawSlot == _POS_SWITCH_PAGE_BUTTON) {
-      _handlePageSwitch(p, e.isLeftClick());
-      p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
-    } else if (rawSlot == _POS_BACK_BUTTON && _parentMenu != null) {
+    if (isSwitchSlot) {
+      ClickType click = e.getClick();
+      boolean handled = false;
+
+      switch (click) {
+        case LEFT:
+        case SHIFT_LEFT:
+        case WINDOW_BORDER_LEFT:
+          _handlePageSwitch(p, true);
+          handled = true;
+          break;
+        case RIGHT:
+        case SHIFT_RIGHT:
+        case WINDOW_BORDER_RIGHT:
+          _handlePageSwitch(p, false);
+          handled = true;
+          break;
+        default:
+          break;
+      }
+
+      if (handled) {
+        p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
+      }
+    } else if (isBackSlot) {
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
       _parentMenu.open(p);
-    } else if (_slotKeyMap.containsKey(rawSlot)) {
+    } else if (isItemSlot) {
       _handleItemClick(p, _slotKeyMap.get(rawSlot), e.isShiftClick(), e.isRightClick());
     } else {
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -304,5 +350,8 @@ public class CustomGUI implements Listener {
   public enum Option {
     DISABLE_PAGE_BUTTON,
     ALLOW_ITEM_MOVEMENT,
+  }
+
+  private record FooterEntry(ItemStack item, int slot) {
   }
 }

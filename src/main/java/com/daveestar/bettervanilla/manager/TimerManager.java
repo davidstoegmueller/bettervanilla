@@ -42,6 +42,12 @@ public class TimerManager {
     _initializePlayerTimers();
   }
 
+  private void _loadConfiguration() {
+    _running = _fileConfig.getBoolean("running");
+    _runningOverride = _fileConfig.getBoolean("runningOverride");
+    _globalTimer = _fileConfig.getInt("globalTimer");
+  }
+
   public void initManagers() {
     _settingsManager = _plugin.getSettingsManager();
     _navigationManager = _plugin.getNavigationManager();
@@ -53,18 +59,18 @@ public class TimerManager {
     _startTimerTask();
   }
 
-  private void _loadConfiguration() {
-    _running = _fileConfig.getBoolean("running");
-    _runningOverride = _fileConfig.getBoolean("runningOverride");
-    _globalTimer = _fileConfig.getInt("globalTimer");
-  }
-
   public void onPlayerJoined(Player p) {
     UUID playerId = p.getUniqueId();
     PlayerTimer timer = _loadPlayerTimer(playerId);
     _playerTimers.put(playerId, timer);
 
     updateRunningState(_plugin.getServer().getOnlinePlayers().size());
+  }
+
+  public void destroy() {
+    this.setRunning(false);
+
+    _plugin.getServer().getOnlinePlayers().forEach(this::onPlayerLeft);
   }
 
   public void onPlayerLeft(Player p) {
@@ -76,6 +82,24 @@ public class TimerManager {
     }
 
     updateRunningState(_plugin.getServer().getOnlinePlayers().size() - 1);
+  }
+
+  public String formatTime(int totalSeconds) {
+    int days = totalSeconds / (24 * 3600);
+    int hours = (totalSeconds % (24 * 3600)) / 3600;
+    int minutes = (totalSeconds % 3600) / 60;
+    int seconds = totalSeconds % 60;
+
+    StringBuilder timeBuilder = new StringBuilder();
+    if (days > 0)
+      timeBuilder.append(days).append("d ");
+    if (hours > 0 || days > 0)
+      timeBuilder.append(hours).append("h ");
+    if (minutes > 0 || hours > 0 || days > 0)
+      timeBuilder.append(minutes).append("m ");
+    timeBuilder.append(seconds).append("s");
+
+    return timeBuilder.toString().trim();
   }
 
   public void resetPlayerTimers() {
@@ -111,40 +135,6 @@ public class TimerManager {
     }
 
     return _loadPlayerTimer(playerId).getAFKTime();
-  }
-
-  private PlayerTimer _loadPlayerTimer(UUID playerId) {
-    int playTime = _fileConfig.getInt("playerTimers." + playerId + ".playTime", 0);
-    int afkTime = _fileConfig.getInt("playerTimers." + playerId + ".afkTime", 0);
-    return new PlayerTimer(playTime, afkTime);
-  }
-
-  private void _savePlayerTimer(UUID playerId, PlayerTimer timer) {
-    _fileConfig.set("playerTimers." + playerId + ".playTime", timer.getPlayTime());
-    _fileConfig.set("playerTimers." + playerId + ".afkTime", timer.getAFKTime());
-    _config.save();
-  }
-
-  private void _initializePlayerTimers() {
-    Optional.ofNullable(_fileConfig.getConfigurationSection("playerTimers"))
-        .ifPresent(section -> section.getKeys(false).forEach(key -> {
-          UUID playerId = UUID.fromString(key);
-          _playerTimers.put(playerId, _loadPlayerTimer(playerId));
-        }));
-  }
-
-  private void _handlePlayerTimers() {
-    for (Player p : _plugin.getServer().getOnlinePlayers()) {
-      PlayerTimer timer = _playerTimers.get(p.getUniqueId());
-
-      if (timer != null) {
-        if (_afkManager.isAFK(p)) {
-          timer.incrementAFKTime();
-        } else {
-          timer.incrementPlayTime();
-        }
-      }
-    }
   }
 
   public void updateRunningState(int playerCount) {
@@ -213,22 +203,38 @@ public class TimerManager {
             + ChatColor.RED + formattedTime + ChatColor.GRAY + ")";
   }
 
-  public String formatTime(int totalSeconds) {
-    int days = totalSeconds / (24 * 3600);
-    int hours = (totalSeconds % (24 * 3600)) / 3600;
-    int minutes = (totalSeconds % 3600) / 60;
-    int seconds = totalSeconds % 60;
+  private PlayerTimer _loadPlayerTimer(UUID playerId) {
+    int playTime = _fileConfig.getInt("playerTimers." + playerId + ".playTime", 0);
+    int afkTime = _fileConfig.getInt("playerTimers." + playerId + ".afkTime", 0);
+    return new PlayerTimer(playTime, afkTime);
+  }
 
-    StringBuilder timeBuilder = new StringBuilder();
-    if (days > 0)
-      timeBuilder.append(days).append("d ");
-    if (hours > 0 || days > 0)
-      timeBuilder.append(hours).append("h ");
-    if (minutes > 0 || hours > 0 || days > 0)
-      timeBuilder.append(minutes).append("m ");
-    timeBuilder.append(seconds).append("s");
+  private void _savePlayerTimer(UUID playerId, PlayerTimer timer) {
+    _fileConfig.set("playerTimers." + playerId + ".playTime", timer.getPlayTime());
+    _fileConfig.set("playerTimers." + playerId + ".afkTime", timer.getAFKTime());
+    _config.save();
+  }
 
-    return timeBuilder.toString().trim();
+  private void _initializePlayerTimers() {
+    Optional.ofNullable(_fileConfig.getConfigurationSection("playerTimers"))
+        .ifPresent(section -> section.getKeys(false).forEach(key -> {
+          UUID playerId = UUID.fromString(key);
+          _playerTimers.put(playerId, _loadPlayerTimer(playerId));
+        }));
+  }
+
+  private void _handlePlayerTimers() {
+    for (Player p : _plugin.getServer().getOnlinePlayers()) {
+      PlayerTimer timer = _playerTimers.get(p.getUniqueId());
+
+      if (timer != null) {
+        if (_afkManager.isAFK(p)) {
+          timer.incrementAFKTime();
+        } else {
+          timer.incrementPlayTime();
+        }
+      }
+    }
   }
 
   private void _startTimerTask() {

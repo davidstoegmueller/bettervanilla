@@ -63,6 +63,12 @@ public class HelpCommand implements CommandExecutor {
       Player p = (Player) cs;
 
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "ADMIN COMMANDS:");
+      p.sendMessage(Main.getShortPrefix() + "/kick <player> [reason] - Kick a player from the server");
+      p.sendMessage(Main.getShortPrefix() + "/ban <player> [duration] [reason] - Ban a player from the server");
+      p.sendMessage(Main.getShortPrefix() + "/unban <player> - Remove a player's ban");
+      p.sendMessage(Main.getShortPrefix() + "/mute <player> [duration] [reason] - Mute a player");
+      p.sendMessage(Main.getShortPrefix() + "/unmute <player> - Remove a player's mute");
+      p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + "/waypoints remove <name> - Remove an existing waypoint");
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + "/timer resume - Resume the timer");
@@ -79,7 +85,7 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getShortPrefix()
           + "/permissions user <addperm | removeperm> <username> <permission> - Add or remove a permission from a user");
       p.sendMessage(
-          Main.getShortPrefix() + " » "
+          Main.getShortPrefix()
               + "/permissions user <setgroup> <username> <group> - Set the group of a user");
       p.sendMessage(
           Main.getShortPrefix()

@@ -31,9 +31,9 @@ public class PermissionsCommand implements TabExecutor {
   }
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (args.length < 1) {
-      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
+      cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
           + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");
       return true;
     }
@@ -41,22 +41,22 @@ public class PermissionsCommand implements TabExecutor {
     String section = args[0].toLowerCase();
     switch (section) {
       case "group":
-        handleGroupCommand(sender, args);
+        handleGroupCommand(cs, args);
         break;
       case "user":
-        handleUserCommand(sender, args);
+        handleUserCommand(cs, args);
         break;
       case "assignments":
-        handleAssignmentsCommand(sender);
+        handleAssignmentsCommand(cs);
         break;
       case "list":
-        handleListCommand(sender);
+        handleListCommand(cs);
         break;
       case "reload":
-        handleReloadCommand(sender, args);
+        handleReloadCommand(cs, args);
         break;
       default:
-        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
+        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
             + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");
         break;
     }

@@ -1,18 +1,19 @@
 package com.daveestar.bettervanilla.gui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,21 +22,22 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.dialog.DialogResponseView;
+
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
 
-public class AdminSettingsGUI implements Listener {
+public class AdminSettingsGUI {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
-  private final Map<UUID, CustomGUI> _afkTimePending;
-  private final Map<UUID, CustomGUI> _maintenanceMessagePending;
-  private final Map<UUID, CustomGUI> _motdPending;
   private final BackpackSettingsGUI _backpackSettingsGUI;
   private final VeinMinerSettingsGUI _veinMinerSettingsGUI;
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
@@ -45,13 +47,9 @@ public class AdminSettingsGUI implements Listener {
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
-    _afkTimePending = new HashMap<>();
-    _maintenanceMessagePending = new HashMap<>();
-    _motdPending = new HashMap<>();
     _backpackSettingsGUI = new BackpackSettingsGUI();
     _veinMinerSettingsGUI = new VeinMinerSettingsGUI();
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
-    _plugin.getServer().getPluginManager().registerEvents(this, _plugin);
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu) {
@@ -104,20 +102,13 @@ public class AdminSettingsGUI implements Listener {
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleMaintenance(p, null);
+        _toggleMaintenance(p);
         displayGUI(p, parentMenu);
       }
 
       @Override
       public void onRightClick(Player p) {
-        if (!_maintenanceManager.getState()) {
-          p.sendMessage(Main.getPrefix() + "Enter maintenance message:");
-          _maintenanceMessagePending.put(p.getUniqueId(), parentMenu);
-          p.closeInventory();
-        } else {
-          _toggleMaintenance(p, null);
-          displayGUI(p, parentMenu);
-        }
+        _openMaintenanceMessageDialog(p, parentMenu);
       }
     });
 
@@ -180,18 +171,14 @@ public class AdminSettingsGUI implements Listener {
     actions.put("afktime", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        p.sendMessage(Main.getPrefix() + "Enter AFK time in minutes:");
-        _afkTimePending.put(p.getUniqueId(), parentMenu);
-        p.closeInventory();
+        _openAFKTimeDialog(p, parentMenu);
       }
     });
 
     actions.put("motd", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        p.sendMessage(Main.getPrefix() + "Enter server MOTD:");
-        _motdPending.put(p.getUniqueId(), parentMenu);
-        p.closeInventory();
+        _openMOTDDialog(p, parentMenu);
       }
     });
 
@@ -221,7 +208,7 @@ public class AdminSettingsGUI implements Listener {
   }
 
   private ItemStack _createMaintenanceItem() {
-    boolean state = _maintenanceManager.getState();
+    boolean state = _settingsManager.getMaintenanceState();
     String message = _settingsManager.getMaintenanceMessage();
     ItemStack item = new ItemStack(Material.IRON_BARS);
     ItemMeta meta = item.getItemMeta();
@@ -237,7 +224,7 @@ public class AdminSettingsGUI implements Listener {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: "
               + (message != null && !message.isEmpty() ? ChatColor.YELLOW + message : ChatColor.RED + ""),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle and set message")
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set message")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -416,17 +403,27 @@ public class AdminSettingsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
+      meta.displayName(Component.text(
+          ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
 
-      meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY
-              + "Set the server message of the day (MOTD) visible in the server list.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: "
-              + (motd != null && !motd.isEmpty() ? ChatColor.translateAlternateColorCodes('&', motd)
-                  : ChatColor.RED + "Not set"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      List<String> lore = new ArrayList<>();
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY
+          + "Set the server message of the day (MOTD) visible in the server list.");
+      lore.add("");
+
+      if (motd != null && !motd.isEmpty()) {
+        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current:");
+        String[] lines = motd.split("\\n");
+        for (String line : lines) {
+          lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', line));
+        }
+      } else {
+        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.RED + "Not set");
+      }
+
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
+
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -489,79 +486,135 @@ public class AdminSettingsGUI implements Listener {
     return item;
   }
 
-  @EventHandler
-  public void onPlayerChat(AsyncChatEvent e) {
-    Player p = e.getPlayer();
-    UUID id = p.getUniqueId();
+  // -------
+  // DIALOGS
+  // -------
 
-    if (_afkTimePending.containsKey(id)) {
-      e.setCancelled(true);
-      String content = ((TextComponent) e.message()).content();
+  private void _openMOTDDialog(Player p, CustomGUI parentMenu) {
+    String[] motdLines = _settingsManager.getServerMOTDRaw();
 
-      try {
-        int minutes = Integer.parseInt(content);
+    String motdLine1 = (motdLines != null && motdLines.length > 0 && motdLines[0] != null) ? motdLines[0] : "";
+    String motdLine2 = (motdLines != null && motdLines.length > 1 && motdLines[1] != null) ? motdLines[1] : "";
 
-        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-          _settingsManager.setAFKTime(minutes);
+    DialogInput inputMotdLine1 = DialogInput
+        .text("line1", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "MOTD Line 1"))
+        .initial(motdLine1)
+        .maxLength(Integer.MAX_VALUE)
+        .build();
+    DialogInput inputMotdLine2 = DialogInput
+        .text("line2", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "MOTD Line 2"))
+        .initial(motdLine2)
+        .maxLength(Integer.MAX_VALUE)
+        .build();
 
-          p.sendMessage(
-              Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes");
-          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Server MOTD",
+        "Set the server message of the day (MOTD) visible in the server list.",
+        null,
+        List.of(inputMotdLine1, inputMotdLine2),
+        (view, audience) -> _setServerMOTDDialogCB(view, audience, parentMenu),
+        null);
 
-          CustomGUI parentMenu = _afkTimePending.remove(id);
-          displayGUI(p, parentMenu);
-        });
-      } catch (NumberFormatException ex) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please provide a valid number.");
-      }
-
-      return;
-    }
-
-    if (_maintenanceMessagePending.containsKey(id)) {
-      e.setCancelled(true);
-
-      String message = ((TextComponent) e.message()).content();
-
-      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-        CustomGUI parentMenu = _maintenanceMessagePending.remove(id);
-        _toggleMaintenance(p, message);
-
-        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        displayGUI(p, parentMenu);
-      });
-
-      return;
-    }
-
-    if (_motdPending.containsKey(id)) {
-      e.setCancelled(true);
-
-      String message = ((TextComponent) e.message()).content();
-
-      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-        CustomGUI parentMenu = _motdPending.remove(id);
-        _settingsManager.setServerMOTD(message);
-
-        p.sendMessage(Main.getPrefix() + "MOTD set to: " + ChatColor.translateAlternateColorCodes('&', message));
-        p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-        displayGUI(p, parentMenu);
-      });
-      return;
-    }
-
+    p.showDialog(dialog);
   }
 
-  private void _toggleMaintenance(Player p, String message) {
-    boolean newState = !_maintenanceManager.getState();
-    _maintenanceManager.setState(newState, newState ? message : null);
+  private void _openMaintenanceMessageDialog(Player p, CustomGUI parentMenu) {
+    String maintenanceMessage = _settingsManager.getMaintenanceMessage();
+
+    DialogInput inputMessage = DialogInput
+        .text("message", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Maintenance Message"))
+        .initial(maintenanceMessage != null ? maintenanceMessage : "")
+        .maxLength(Integer.MAX_VALUE)
+        .build();
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Maintenance Message",
+        "Set the maintenance message displayed to players when they are kicked.",
+        null,
+        List.of(inputMessage),
+        (view, audience) -> _setMaintenanceMessageDialogCB(view, audience, parentMenu),
+        null);
+
+    p.showDialog(dialog);
+  }
+
+  private void _openAFKTimeDialog(Player p, CustomGUI parentMenu) {
+    int afkTime = _settingsManager.getAFKTime();
+
+    DialogInput inputMinutes = CustomDialog.createNumberInput("minutes",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK Time (minutes)", 1, 300, 1, (float) afkTime);
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "AFK Time",
+        "Set the AFK timeout in minutes.",
+        null,
+        List.of(inputMinutes),
+        (view, audience) -> _setAFKTimeDialogCB(view, audience, parentMenu),
+        null);
+
+    p.showDialog(dialog);
+  }
+
+  // ----------------
+  // DIALOG CALLBACKS
+  // ----------------
+
+  private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+    Player p = (Player) audience;
+    String line1 = Optional.ofNullable(view.getText("line1")).map(String::trim).orElse("");
+    String line2 = Optional.ofNullable(view.getText("line2")).map(String::trim).orElse("");
+
+    _settingsManager.setServerMOTD(line1, line2);
+
+    p.sendMessage(Component.text(Main.getPrefix() + "Server MOTD set to:\n" +
+        "Line 1: " + ChatColor.translateAlternateColorCodes('&', line1) + "\n" + ChatColor.GRAY +
+        "Line 2: " + ChatColor.translateAlternateColorCodes('&', line2)));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu);
+  }
+
+  private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+    Player p = (Player) audience;
+    String message = Optional.ofNullable(view.getText("message")).map(String::trim).orElse("");
+
+    _settingsManager.setMaintenanceMessage(message);
+
+    p.sendMessage(Component.text(Main.getPrefix() + "Maintenance message set to: " + ChatColor.YELLOW + message));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu);
+  }
+
+  private void _setAFKTimeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+    Player p = (Player) audience;
+    int minutes = Math.round(view.getFloat("minutes"));
+
+    _settingsManager.setAFKTime((int) minutes);
+
+    p.sendMessage(Component
+        .text(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes"));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu);
+  }
+
+  // ----------------
+  // SETTING APPLIERS
+  // ----------------
+
+  private void _toggleMaintenance(Player p) {
+    boolean newState = !_settingsManager.getMaintenanceState();
+    String message = _settingsManager.getMaintenanceMessage();
+
+    _settingsManager.setMaintenanceState(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
 
     p.sendMessage(
-        Main.getPrefix() + "The maintenance mode is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+        Main.getPrefix() + "The maintenance mode is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
 
-    if (newState && message != null) {
-      p.sendMessage(Main.getPrefix() + "Message was set to: " + ChatColor.YELLOW + message);
+    if (newState) {
+      p.sendMessage(Main.getPrefix() + "Message: " + ChatColor.YELLOW + message);
     }
 
     _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
