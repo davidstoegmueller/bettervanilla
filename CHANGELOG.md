@@ -2,9 +2,17 @@
 
 # 📜 Changelog
 
-## [1.7.0] - Unreleased
+## [1.7.0] - 09.10.2025
 
 - **💬 Private Messages** – New `/msg` and `/r` commands for direct player chats.
+- **🧭 Waypoint Overhaul** – Rebuilt waypoint GUI with public/private visibility, filters, cancel navigation item, owner-only editing, and an admin management permission.
+- **🕒 Playtime Hub** – Playtime GUI now lists all players with AFK breakdowns and quick message summaries.
+- **🧘 Sit Anywhere** – Added `/sit` to toggle sitting on the spot and refined stair seating detection.
+- **🫥 Vanish Mode** – Staff can disappear from players and tab lists using `/vanish` with reliable state handling.
+- **🚨 Moderation Suite** – Added `/kick`, `/ban`, `/unban`, `/mute` and `/unmute` commands with duration parsing and sanitized feedback.
+- **🪧 Sign Colors** – Support Minecraft color codes on signs while preserving formatting safety.
+- **🛡️ Admin UX Polish** – Sanitized MOTD/maintenance inputs, added static admin GUI footers, and replaced chat prompts with reusable in-game dialogs.
+- **🧱 Paper 1.21.8 Support** – Updated to the latest Paper API build.
 
 ## [1.6.0] - 16.07.2025
 

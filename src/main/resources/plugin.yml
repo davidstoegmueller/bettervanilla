@@ -74,10 +74,12 @@ commands:
     usage: /r <message>
     permission: bettervanilla.msg
   vanish:
+    aliases: [v]
     description: Toggle vanish mode.
     usage: /vanish
     permission: bettervanilla.vanish
   sit:
+    aliases: [s]
     description: Sit down anywhere on the ground.
     usage: /sit
   kick:
