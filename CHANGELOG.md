@@ -5,6 +5,7 @@
 ## [1.8.0] - 10.10.2025
 
 - 🔐 **Permission System Rework** - Centralized every command check on the `Permissions` enum, refreshed `/permissions` with better validation, tab completion, and clearer feedback, and removed redundant permission declarations from `plugin.yml`.
+- 🔐 **Permission Group Presets** - Added preset groups for permissions. `player`, `moderator` & `admin` now exist as preset groups. Using `/permissions default <groupname>` a default group can be set for all players.
 - 🔨 **Moderation Updates** - Consolidated moderation commands under `bettervanilla.moderation`, added self-target safeguards, and clarified player-facing notifications.
 - 🧰 **Settings Menu Tweaks** - Permission-aware toggles now live entirely inside the GUI, replacing the legacy `/togglelocation` and `/togglecompass` commands.
 - 📦 **Paper 1.21.10 Support** - Updated the build and plugin metadata to target the latest Paper release.

@@ -133,6 +133,13 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ## Permissions
 
+### Built-in Groups
+
+- `player` - default fallback that grants all player-facing QoL features such as `/settings`, waypoints, backpacks, and automation toggles.
+- `moderator` - inherits the player group and adds moderation, vanish, inventory viewing, and timer controls.
+- `admin` - includes every BetterVanilla permission, covering server maintenance, admin settings, and permission management.
+- Use `/permissions default <group>` (e.g. `/permissions default player`) to choose which group new players fall back to. Switching the default moves existing players that still belonged to the previous default.
+
 ```
 bettervanilla.adminhelp
 bettervanilla.permissions

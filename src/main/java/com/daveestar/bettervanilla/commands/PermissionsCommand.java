@@ -15,6 +15,7 @@ import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public class PermissionsCommand implements TabExecutor {
 
     if (args.length < 1) {
       cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
-          + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");
+          + ChatColor.YELLOW + "/permissions <group | user | assignments | default | list | reload>");
       return true;
     }
 
@@ -57,6 +58,9 @@ public class PermissionsCommand implements TabExecutor {
       case "assignments":
         handleAssignmentsCommand(cs);
         break;
+      case "default":
+        handleDefaultGroupCommand(cs, args);
+        break;
       case "list":
         handleListCommand(cs);
         break;
@@ -65,7 +69,7 @@ public class PermissionsCommand implements TabExecutor {
         break;
       default:
         cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
-            + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");
+            + ChatColor.YELLOW + "/permissions <group | user | assignments | default | list | reload>");
         break;
     }
 
@@ -132,7 +136,7 @@ public class PermissionsCommand implements TabExecutor {
         }
 
         if (permissionsManager.getAllGroupNames().contains(group)) {
-          if (group.equalsIgnoreCase(permissionsManager.DEFAULT_GROUP_NAME)) {
+          if (group.equalsIgnoreCase(permissionsManager.getDefaultGroupName())) {
             sender.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot delete the default group.");
             return;
           }
@@ -149,6 +153,36 @@ public class PermissionsCommand implements TabExecutor {
         sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
             + " /permissions group <addperm | removeperm | delete> <group> [<permission>]");
         break;
+    }
+  }
+
+  private void handleDefaultGroupCommand(CommandSender sender, String[] args) {
+    if (args.length == 1) {
+      sender.sendMessage(
+          Main.getPrefix() + ChatColor.GRAY + "Current default group: " + ChatColor.YELLOW
+              + permissionsManager.getDefaultGroupName());
+      sender.sendMessage(Main.getShortPrefix() + ChatColor.GRAY
+          + "Set another group with " + ChatColor.YELLOW + "/permissions default <group>");
+      return;
+    }
+
+    if (args.length != 2) {
+      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
+          + "/permissions default <group>");
+      return;
+    }
+
+    String groupName = args[1];
+    boolean groupExists = permissionsManager.groupExists(groupName);
+
+    permissionsManager.setDefaultGroup(groupName);
+    sender.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Default group set to " + ChatColor.YELLOW + groupName
+        + ChatColor.GRAY + ".");
+
+    if (!groupExists) {
+      sender.sendMessage(Main.getShortPrefix() + ChatColor.GRAY + "Created new group " + ChatColor.YELLOW + groupName
+          + ChatColor.GRAY + ". Add permissions with " + ChatColor.YELLOW
+          + "/permissions group addperm " + groupName + " <permission>");
     }
   }
 
@@ -242,6 +276,9 @@ public class PermissionsCommand implements TabExecutor {
     Set<String> userNames = permissionsManager.getAllUserIds();
 
     p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PERMISSIONS: Group Assignments");
+    p.sendMessage(Main.getShortPrefix() + ChatColor.GRAY + "Current default group: " + ChatColor.YELLOW
+        + permissionsManager.getDefaultGroupName());
+    p.sendMessage("");
 
     for (String group : groupNames) {
       List<String> groupPerms = permissionsManager.getGroupPermissions(group);
@@ -260,6 +297,7 @@ public class PermissionsCommand implements TabExecutor {
       }
 
       p.sendMessage(ChatColor.YELLOW + "     » Users: " + ChatColor.GRAY + usersInGroup);
+      p.sendMessage("");
     }
 
     p.sendMessage("");
@@ -275,6 +313,7 @@ public class PermissionsCommand implements TabExecutor {
       p.sendMessage(ChatColor.YELLOW + " » User: " + ChatColor.GRAY + user.getName());
       p.sendMessage(ChatColor.YELLOW + "     » Group: " + ChatColor.GRAY + userGroup);
       p.sendMessage(ChatColor.YELLOW + "     » Permissions: " + ChatColor.GRAY + userPerms);
+      p.sendMessage("");
     }
   }
 
@@ -315,7 +354,7 @@ public class PermissionsCommand implements TabExecutor {
     Set<String> groupNames = permissionsManager.getAllGroupNames();
 
     if (args.length == 1) {
-      List<String> sections = List.of("group", "user", "assignments", "list", "reload");
+      List<String> sections = List.of("group", "user", "assignments", "default", "list", "reload");
       completions.addAll(sections);
     } else if (args.length == 2) {
       if (args[0].equalsIgnoreCase("group")) {
@@ -324,6 +363,12 @@ public class PermissionsCommand implements TabExecutor {
       } else if (args[0].equalsIgnoreCase("user")) {
         List<String> userActions = List.of("addperm", "removeperm", "setgroup");
         completions.addAll(userActions);
+      } else if (args[0].equalsIgnoreCase("default")) {
+        LinkedHashSet<String> suggestions = new LinkedHashSet<>(groupNames);
+        suggestions.add("player");
+        suggestions.add("moderator");
+        suggestions.add("admin");
+        completions.addAll(suggestions);
       }
     } else if (args.length == 3) {
       if (args[0].equalsIgnoreCase("group")) {
