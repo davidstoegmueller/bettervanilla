@@ -9,14 +9,15 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class VanishManager {
   private final Main _plugin;
   private final Set<UUID> _vanished = new HashSet<>();
+  private TabListManager _tabListManager;
 
   public VanishManager() {
     _plugin = Main.getInstance();
+    _tabListManager = _plugin.getTabListManager();
   }
 
   public void vanish(Player p) {
@@ -55,7 +56,8 @@ public class VanishManager {
     p.setInvulnerable(false);
     p.setCollidable(true);
     p.setAllowFlight(false);
-    p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
+
+    _tabListManager.refreshPlayer(p);
   }
 
   public boolean isVanished(Player p) {

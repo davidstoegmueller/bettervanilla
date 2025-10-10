@@ -8,8 +8,11 @@
 - 🔐 **Permission Group Presets** - Added preset groups for permissions. `player`, `moderator` & `admin` now exist as preset groups. Using `/permissions default <groupname>` a default group can be set for all players.
 - 🔨 **Moderation Updates** - Consolidated moderation commands under `bettervanilla.moderation`, added self-target safeguards, and clarified player-facing notifications.
 - 🧰 **Settings Menu Tweaks** - Permission-aware toggles now live entirely inside the GUI, replacing the legacy `/togglelocation` and `/togglecompass` commands.
-- 📦 **Paper 1.21.10 Support** - Updated the build and plugin metadata to target the latest Paper release.
 - 🧭 **Locator Bar Toggle** - Added an admin GUI control for `/gamerule locatorBar` that syncs the rule across every world.
+- 🧭 **Tab List Refactor** – Rebuilt tab list handling around a dedicated manager that refreshes entries every second and centralizes updates across AFK, vanish, and chat events.
+- 🌤️ **Dynamic Header & Footer** – Added world day/time, weather, online player counts, personal playtime, ping, TPS, and MSPT to the tab list header/footer alongside quick help messaging.
+- 👻 **AFK & Vanish Awareness** – Players marked AFK now receive a `[AFK]` tag with their death count, while vanished staff stay hidden without nameplate flicker.
+- 📦 **Paper 1.21.10 Support** - Updated the build and plugin metadata to target the latest Paper release.
 
 ## [1.7.0] - 09.10.2025
 

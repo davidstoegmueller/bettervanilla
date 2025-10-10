@@ -39,6 +39,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - ⏱️ **Timer** – Global stopwatch with resume, pause, reset, and set commands.
 - 🕒 **Playtime** – View detailed play history with AFK tracking for yourself or other players.
 - 📶 **Ping** – Check personal or remote player latency.
+- 📊 **Dynamic Tab List** – Live header/footer surfaces world day, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
 - 📍 **Action-Bar Location** – Display live XYZ coordinates in your HUD.
 - 🧭 **Bossbar Compass** – Minimal directional overlay in the boss bar.
 - 🪑 **Sittable Stairs** – Sit on stairs with an empty hand.

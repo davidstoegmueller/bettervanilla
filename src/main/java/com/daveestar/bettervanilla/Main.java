@@ -49,6 +49,7 @@ import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.SittingManager;
+import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -76,6 +77,7 @@ public class Main extends JavaPlugin {
   private VanishManager _vanishManager;
   private ModerationManager _moderationManager;
   private SittingManager _sittingManager;
+  private TabListManager _tabListManager;
 
   public void onEnable() {
     _mainInstance = this;
@@ -96,6 +98,7 @@ public class Main extends JavaPlugin {
     _backpackManager = new BackpackManager(backpackConfig);
     _moderationManager = new ModerationManager(moderationConfig);
 
+    _tabListManager = new TabListManager();
     _messageManager = new MessageManager();
     _sittingManager = new SittingManager();
     _vanishManager = new VanishManager();
@@ -111,6 +114,7 @@ public class Main extends JavaPlugin {
     _maintenanceManager.initManagers();
     _navigationManager.initManagers();
     _timerManager.initManagers();
+    _tabListManager.initManagers();
 
     _LOGGER.info("BetterVanilla - ENABLED");
 
@@ -164,6 +168,7 @@ public class Main extends JavaPlugin {
     _timerManager.destroy();
     _compassManager.destroy();
     _backpackManager.destroy();
+    _tabListManager.destroy();
 
     _LOGGER.info("BetterVanilla - DISABLED");
 
@@ -258,5 +263,9 @@ public class Main extends JavaPlugin {
 
   public SittingManager getSittingManager() {
     return _sittingManager;
+  }
+
+  public TabListManager getTabListManager() {
+    return _tabListManager;
   }
 }
