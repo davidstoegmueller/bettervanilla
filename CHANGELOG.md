@@ -9,6 +9,7 @@
 - 🔨 **Moderation Updates** - Consolidated moderation commands under `bettervanilla.moderation`, added self-target safeguards, and clarified player-facing notifications.
 - 🧰 **Settings Menu Tweaks** - Permission-aware toggles now live entirely inside the GUI, replacing the legacy `/togglelocation` and `/togglecompass` commands.
 - 📦 **Paper 1.21.10 Support** - Updated the build and plugin metadata to target the latest Paper release.
+- 🧭 **Locator Bar Toggle** - Added an admin GUI control for `/gamerule locatorBar` that syncs the rule across every world.
 
 ## [1.7.0] - 09.10.2025
 

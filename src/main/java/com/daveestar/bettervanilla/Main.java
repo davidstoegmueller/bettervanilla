@@ -152,6 +152,8 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new SignColors(), this);
     manager.registerEvents(new VanishEvents(), this);
     manager.registerEvents(new ModerationEvents(), this);
+
+    _settingsManager.applyLocatorBarSetting();
   }
 
   @Override

@@ -1,4 +1,4 @@
-﻿# BetterVanilla ✨ SMP All-in-One
+# BetterVanilla ✨ SMP All-in-One
 
 A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVanilla layers modern quality-of-life upgrades onto a vanilla Paper server-no client mods or loaders required. 👑 Core Feature: Configure every player and server toggle through the in-game `/settings` menu and [jump straight to the full settings guide](#settings) when you need the details.
 
@@ -58,6 +58,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🫥 **Vanish Mode** – Hide from players and tab lists with `/vanish`.
 - 🔨 **Moderation Toolkit** – Kick, ban, mute, unmute, and unban directly in-game.
 - 📣 **Server MOTD** – Edit the server list message from the admin menu.
+- 🧭 **Locator Bar Gamerule** - Flip the `/gamerule locatorBar` setting across every world without leaving the GUI.
 - 🚧 **Maintenance Mode** – Toggle server access with custom messaging and bypass support.
 
 ## Installation
@@ -124,6 +125,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🔥 Nether travel toggle
 - 🌧️ Sleeping rain skip
 - 📣 Server MOTD editor
+- 🧭 Locator bar gamerule toggle
 - 💤 AFK protection toggle and AFK timeout
 - 🌾 Crop protection
 - 🌱 Right-click harvest
@@ -140,30 +142,30 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - `admin` - includes every BetterVanilla permission, covering server maintenance, admin settings, and permission management.
 - Use `/permissions default <group>` (e.g. `/permissions default player`) to choose which group new players fall back to. Switching the default moves existing players that still belonged to the previous default.
 
-| Permission | Included in |
-| --- | --- |
-| `bettervanilla.settings` | player, moderator, admin |
-| `bettervanilla.playtime` | player, moderator, admin |
-| `bettervanilla.waypoints` | player, moderator, admin |
-| `bettervanilla.deathpoints` | player, moderator, admin |
-| `bettervanilla.ping` | player, moderator, admin |
-| `bettervanilla.sit` | player, moderator, admin |
-| `bettervanilla.backpack` | player, moderator, admin |
-| `bettervanilla.msg` | player, moderator, admin |
-| `bettervanilla.togglelocation` | player, moderator, admin |
-| `bettervanilla.togglecompass` | player, moderator, admin |
-| `bettervanilla.chestsort` | player, moderator, admin |
-| `bettervanilla.veinminer` | player, moderator, admin |
-| `bettervanilla.veinchopper` | player, moderator, admin |
-| `bettervanilla.adminhelp` | moderator, admin |
-| `bettervanilla.vanish` | moderator, admin |
-| `bettervanilla.invsee` | moderator, admin |
-| `bettervanilla.moderation` | moderator, admin |
-| `bettervanilla.timer` | moderator, admin |
-| `bettervanilla.waypoints.admin` | moderator, admin |
-| `bettervanilla.permissions` | admin |
-| `bettervanilla.maintenance.bypass` | admin |
-| `bettervanilla.adminsettings` | admin |
+| Permission                         | Included in              |
+| ---------------------------------- | ------------------------ |
+| `bettervanilla.settings`           | player, moderator, admin |
+| `bettervanilla.playtime`           | player, moderator, admin |
+| `bettervanilla.waypoints`          | player, moderator, admin |
+| `bettervanilla.deathpoints`        | player, moderator, admin |
+| `bettervanilla.ping`               | player, moderator, admin |
+| `bettervanilla.sit`                | player, moderator, admin |
+| `bettervanilla.backpack`           | player, moderator, admin |
+| `bettervanilla.msg`                | player, moderator, admin |
+| `bettervanilla.togglelocation`     | player, moderator, admin |
+| `bettervanilla.togglecompass`      | player, moderator, admin |
+| `bettervanilla.chestsort`          | player, moderator, admin |
+| `bettervanilla.veinminer`          | player, moderator, admin |
+| `bettervanilla.veinchopper`        | player, moderator, admin |
+| `bettervanilla.adminhelp`          | moderator, admin         |
+| `bettervanilla.vanish`             | moderator, admin         |
+| `bettervanilla.invsee`             | moderator, admin         |
+| `bettervanilla.moderation`         | moderator, admin         |
+| `bettervanilla.timer`              | moderator, admin         |
+| `bettervanilla.waypoints.admin`    | moderator, admin         |
+| `bettervanilla.permissions`        | admin                    |
+| `bettervanilla.maintenance.bypass` | admin                    |
+| `bettervanilla.adminsettings`      | admin                    |
 
 ## Contributing
 
