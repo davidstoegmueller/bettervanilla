@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.daveestar.bettervanilla.commands.HelpCommand;
+import com.daveestar.bettervanilla.commands.HelpCommands;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
 import com.daveestar.bettervanilla.commands.DeathPointsCommand;
 import com.daveestar.bettervanilla.commands.PermissionsCommand;
@@ -13,9 +13,8 @@ import com.daveestar.bettervanilla.commands.PingCommand;
 import com.daveestar.bettervanilla.commands.PlayTimeCommand;
 import com.daveestar.bettervanilla.commands.SettingsCommand;
 import com.daveestar.bettervanilla.commands.TimerCommand;
-import com.daveestar.bettervanilla.commands.ToggleCompassCommand;
-import com.daveestar.bettervanilla.commands.ToggleLocationCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.commands.BackpackCommand;
 import com.daveestar.bettervanilla.commands.MessageCommand;
 import com.daveestar.bettervanilla.commands.ReplyCommand;
@@ -95,11 +94,11 @@ public class Main extends JavaPlugin {
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
     _backpackManager = new BackpackManager(backpackConfig);
-    _messageManager = new MessageManager();
     _moderationManager = new ModerationManager(moderationConfig);
-    _sittingManager = new SittingManager(this);
-    _vanishManager = new VanishManager();
 
+    _messageManager = new MessageManager();
+    _sittingManager = new SittingManager();
+    _vanishManager = new VanishManager();
     _maintenanceManager = new MaintenanceManager();
     _actionBar = new ActionBar();
     _navigationManager = new NavigationManager();
@@ -116,28 +115,26 @@ public class Main extends JavaPlugin {
     _LOGGER.info("BetterVanilla - ENABLED");
 
     // register commands
-    getCommand("waypoints").setExecutor(new WaypointsCommand());
-    getCommand("ping").setExecutor(new PingCommand());
-    getCommand("invsee").setExecutor(new InvseeCommand());
-    getCommand("help").setExecutor(new HelpCommand());
-    getCommand("adminhelp").setExecutor(new HelpCommand());
-    getCommand("togglelocation").setExecutor(new ToggleLocationCommand());
-    getCommand("togglecompass").setExecutor(new ToggleCompassCommand());
-    getCommand("deathpoints").setExecutor(new DeathPointsCommand());
-    getCommand("timer").setExecutor(new TimerCommand());
-    getCommand("playtime").setExecutor(new PlayTimeCommand());
-    getCommand("settings").setExecutor(new SettingsCommand());
+    getCommand("help").setExecutor(new HelpCommands.HelpCommand());
+    getCommand("adminhelp").setExecutor(new HelpCommands.AdminHelpCommand());
     getCommand("permissions").setExecutor(new PermissionsCommand());
-    getCommand("backpack").setExecutor(new BackpackCommand());
-    getCommand("message").setExecutor(new MessageCommand());
-    getCommand("reply").setExecutor(new ReplyCommand());
+    getCommand("settings").setExecutor(new SettingsCommand());
     getCommand("vanish").setExecutor(new VanishCommand());
-    getCommand("sit").setExecutor(new SitCommand());
+    getCommand("invsee").setExecutor(new InvseeCommand());
     getCommand("kick").setExecutor(new ModerationCommands.KickCommand());
     getCommand("ban").setExecutor(new ModerationCommands.BanCommand());
     getCommand("unban").setExecutor(new ModerationCommands.UnbanCommand());
     getCommand("mute").setExecutor(new ModerationCommands.MuteCommand());
     getCommand("unmute").setExecutor(new ModerationCommands.UnmuteCommand());
+    getCommand("timer").setExecutor(new TimerCommand());
+    getCommand("playtime").setExecutor(new PlayTimeCommand());
+    getCommand("waypoints").setExecutor(new WaypointsCommand());
+    getCommand("deathpoints").setExecutor(new DeathPointsCommand());
+    getCommand("ping").setExecutor(new PingCommand());
+    getCommand("sit").setExecutor(new SitCommand());
+    getCommand("backpack").setExecutor(new BackpackCommand());
+    getCommand("message").setExecutor(new MessageCommand());
+    getCommand("reply").setExecutor(new ReplyCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -181,6 +178,20 @@ public class Main extends JavaPlugin {
 
   public static String getShortPrefix() {
     return ChatColor.YELLOW + " » " + ChatColor.GRAY;
+  }
+
+  public static String getNoPermissionMessage(Permissions permission) {
+    return getPrefix() + ChatColor.RED + "Sorry! You do not have permission to use this. " + ChatColor.GRAY + "("
+        + ChatColor.RED + permission.getName() + ChatColor.GRAY + ")";
+  }
+
+  public static String getShortNoPermissionMessage(Permissions permission) {
+    return ChatColor.RED + "You do not have permission to use this. " + ChatColor.GRAY + "("
+        + ChatColor.RED + permission.getName() + ChatColor.GRAY + ")";
+  }
+
+  public static String getNoPlayerMessage() {
+    return getPrefix() + ChatColor.RED + "This command can only be run by a player.";
   }
 
   public static Main getInstance() {

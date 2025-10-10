@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.SettingsGUI;
 
 import net.md_5.bungee.api.ChatColor;
@@ -19,18 +20,25 @@ public class SettingsCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if ((cs instanceof Player)) {
-      Player p = (Player) cs;
-
-      if (args.length == 0) {
-        _settingsGUI.displayGUI(p);
-      } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings");
-      }
-
+    if (!(cs instanceof Player)) {
+      cs.sendMessage(Main.getNoPlayerMessage());
       return true;
     }
 
-    return false;
+    Player p = (Player) cs;
+
+    if (!p.hasPermission(Permissions.SETTINGS.getName()) && !p.hasPermission(Permissions.ADMINSETTINGS.getName())) {
+      p.sendMessage(Main.getNoPermissionMessage(Permissions.SETTINGS));
+      p.sendMessage(Main.getNoPermissionMessage(Permissions.ADMINSETTINGS));
+      return true;
+    }
+
+    if (args.length == 0) {
+      _settingsGUI.displayGUI(p);
+    } else {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings");
+    }
+
+    return true;
   }
 }

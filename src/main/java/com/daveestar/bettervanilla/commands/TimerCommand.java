@@ -10,6 +10,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.TimerManager;
 
 import net.md_5.bungee.api.ChatColor;
@@ -27,10 +28,16 @@ public class TimerCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (!(cs instanceof Player)) {
-      return false;
+      cs.sendMessage(Main.getNoPlayerMessage());
+      return true;
     }
 
     Player p = (Player) cs;
+
+    if (!p.hasPermission(Permissions.TIMER.getName())) {
+      p.sendMessage(Main.getNoPermissionMessage(Permissions.TIMER));
+      return true;
+    }
 
     if (args.length == 0) {
       sendUsageMessage(p);

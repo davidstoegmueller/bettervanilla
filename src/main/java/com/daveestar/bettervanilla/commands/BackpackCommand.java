@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 
 import net.md_5.bungee.api.ChatColor;
@@ -20,10 +21,16 @@ public class BackpackCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (!(cs instanceof Player)) {
+      cs.sendMessage(Main.getNoPlayerMessage());
       return true;
     }
 
     Player p = (Player) cs;
+
+    if (!p.hasPermission(Permissions.BACKPACK.getName())) {
+      p.sendMessage(Main.getNoPermissionMessage(Permissions.BACKPACK));
+      return true;
+    }
 
     if (args.length > 0) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/backpack");

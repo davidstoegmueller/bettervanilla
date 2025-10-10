@@ -32,6 +32,14 @@ public class PermissionsCommand implements TabExecutor {
 
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+    if (cs instanceof Player) {
+      Player p = (Player) cs;
+      if (!p.hasPermission(Permissions.PERMISSIONS.getName())) {
+        p.sendMessage(Main.getNoPermissionMessage(Permissions.PERMISSIONS));
+        return true;
+      }
+    }
+
     if (args.length < 1) {
       cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
           + ChatColor.YELLOW + "/permissions <group | user | assignments | list | reload>");

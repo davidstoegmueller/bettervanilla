@@ -11,13 +11,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class HelpCommand implements CommandExecutor {
-  @Override
-  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (c.getName().equalsIgnoreCase("help") && cs instanceof Player) {
+public class HelpCommands {
+  public static class HelpCommand implements CommandExecutor {
+    @Override
+    public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+      if (!(cs instanceof Player)) {
+        cs.sendMessage(Main.getNoPlayerMessage());
+        return true;
+      }
+
       Player p = (Player) cs;
 
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "COMMANDS:");
@@ -58,9 +64,23 @@ public class HelpCommand implements CommandExecutor {
 
       return true;
     }
+  }
 
-    if (c.getName().equalsIgnoreCase("adminhelp") && cs instanceof Player) {
+  public static class AdminHelpCommand implements CommandExecutor {
+
+    @Override
+    public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+      if (!(cs instanceof Player)) {
+        cs.sendMessage(Main.getNoPlayerMessage());
+        return true;
+      }
+
       Player p = (Player) cs;
+
+      if (!p.hasPermission(Permissions.ADMINHELP.getName())) {
+        p.sendMessage(Main.getNoPermissionMessage(Permissions.ADMINHELP));
+        return true;
+      }
 
       p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "ADMIN COMMANDS:");
       p.sendMessage(Main.getShortPrefix() + "/kick <player> [reason] - Kick a player from the server");
@@ -69,8 +89,6 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage(Main.getShortPrefix() + "/mute <player> [duration] [reason] - Mute a player");
       p.sendMessage(Main.getShortPrefix() + "/unmute <player> - Remove a player's mute");
       p.sendMessage("");
-      p.sendMessage(Main.getShortPrefix() + "/waypoints remove <name> - Remove an existing waypoint");
-      p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + "/timer resume - Resume the timer");
       p.sendMessage(Main.getShortPrefix() + "/timer pause - Pause the timer");
       p.sendMessage(Main.getShortPrefix() + "/timer reset - Reset the timer");
@@ -78,7 +96,7 @@ public class HelpCommand implements CommandExecutor {
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix() + "/invsee <name> - See the inventory of a given player");
       p.sendMessage("");
-      p.sendMessage(Main.getShortPrefix() + "/settings <settingname> - Set and list global settings");
+      p.sendMessage(Main.getShortPrefix() + "/settings - Open the settings GUI and open the admin settings GUI");
       p.sendMessage("");
       p.sendMessage(Main.getShortPrefix()
           + "/permissions group <addperm | removeperm | delete> <username> [<permission>] - Add or remove a permission from a group");
@@ -96,7 +114,5 @@ public class HelpCommand implements CommandExecutor {
 
       return true;
     }
-
-    return false;
   }
 }

@@ -10,19 +10,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.SittingManager;
 
 import net.md_5.bungee.api.ChatColor;
 
 public class SitCommand implements CommandExecutor {
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    if (!(sender instanceof Player)) {
-      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Only players can use this command.");
+  public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+    if (!(cs instanceof Player)) {
+      cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Only players can use this command.");
       return true;
     }
 
-    Player p = (Player) sender;
+    Player p = (Player) cs;
+
+    if (!p.hasPermission(Permissions.SIT.getName())) {
+      p.sendMessage(Main.getNoPermissionMessage(Permissions.SIT));
+      return true;
+    }
+
     SittingManager sittingManager = Main.getInstance().getSittingManager();
 
     if (sittingManager == null) {

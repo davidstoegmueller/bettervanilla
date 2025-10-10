@@ -4,101 +4,76 @@ version: 1.8.0
 api-version: 1.21
 authors: ["daveestar"]
 commands:
-  waypoints:
-    aliases: [wp]
-    description: Open the waypoint GUI or manage waypoints with subcommands.
-    usage: /waypoints
-    permission: bettervanilla.waypoints
-  playtime:
-    aliases: [pt]
-    description: Opens playtime gui and displays your playtime or another player's playtime.
-    usage: /playtime
-    permission: bettervanilla.playtime
-  ping:
-    description: Display your ping or that of another player.
-    usage: /ping
-    permission: bettervanilla.ping
-  invsee:
-    description: View another player's inventory.
-    usage: /invsee
-    permission: bettervanilla.invsee
-  timer:
-    description: Control the timer (resume, pause, reset).
-    usage: /timer
-    permission: bettervanilla.timer
-  adminhelp:
-    description: Show all admin commands for BetterVanilla.
-    usage: /adminhelp
-    permission: bettervanilla.adminhelp
-  settings:
-    aliases: [set]
-    description: Open the settings menu.
-    usage: /settings
-    permission: bettervanilla.settings
   help:
     description: Show in-game help for BetterVanilla.
     usage: /help
-  togglelocation:
-    aliases: [tl]
-    description: Enable or disable action-bar location.
-    usage: /togglelocation
-    permission: bettervanilla.togglelocation
-  togglecompass:
-    aliases: [tc]
-    description: Enable or disable boss-bar compass.
-    usage: /togglecompass
-    permission: bettervanilla.togglecompass
-  deathpoints:
-    aliases: [dp]
-    description: Open the death-points GUI.
-    usage: /deathpoints
-    permission: bettervanilla.deathpoints
+  adminhelp:
+    description: Show all admin commands for BetterVanilla.
+    usage: /adminhelp
   permissions:
     aliases: [perms]
     description: Manage player and group permissions.
     usage: /permissions
-    permission: bettervanilla.permissions
-  backpack:
-    aliases: [bp]
-    description: Open your backpack.
-    usage: /backpack
-    permission: bettervanilla.backpack
-  message:
-    aliases: [msg]
-    description: Send a private message to another player.
-    usage: /msg <player> <message>
-    permission: bettervanilla.msg
-  reply:
-    aliases: [r]
-    description: Reply to the last private message.
-    usage: /r <message>
-    permission: bettervanilla.msg
+  settings:
+    aliases: [set]
+    description: Open the settings menu.
+    usage: /settings
   vanish:
     aliases: [v]
     description: Toggle vanish mode.
     usage: /vanish
-    permission: bettervanilla.vanish
+  invsee:
+    aliases: [is]
+    description: View another player's inventory.
+    usage: /invsee
+  kick:
+    description: Kick a player from the server.
+    usage: /kick
+  ban:
+    description: Ban a player from the server.
+    usage: /ban
+  unban:
+    description: Remove a player's ban.
+    usage: /unban
+  mute:
+    description: Mute a player.
+    usage: /mute
+  unmute:
+    description: Remove a player's mute.
+    usage: /unmute
+  timer:
+    aliases: [t]
+    description: Control the timer (resume, pause, reset).
+    usage: /timer
+  playtime:
+    aliases: [pt]
+    description: Opens playtime gui and displays your playtime or another player's playtime.
+    usage: /playtime
+  waypoints:
+    aliases: [wp]
+    description: Open the waypoint GUI or start player or coords navigation.
+    usage: /waypoints
+  deathpoints:
+    aliases: [dp]
+    description: Open the death-points GUI.
+    usage: /deathpoints
+  ping:
+    aliases: [p]
+    description: Display your ping or that of another player.
+    usage: /ping
   sit:
     aliases: [s]
     description: Sit down anywhere on the ground.
     usage: /sit
-  kick:
-    description: Kick a player from the server.
-    usage: /kick
-    permission: bettervanilla.kick
-  ban:
-    description: Ban a player from the server.
-    usage: /ban
-    permission: bettervanilla.ban
-  unban:
-    description: Remove a player's ban.
-    usage: /unban
-    permission: bettervanilla.unban
-  mute:
-    description: Mute a player.
-    usage: /mute
-    permission: bettervanilla.mute
-  unmute:
-    description: Remove a player's mute.
-    usage: /unmute
-    permission: bettervanilla.unmute
+  backpack:
+    aliases: [bp]
+    description: Open your backpack.
+    usage: /backpack
+  message:
+    aliases: [msg]
+    description: Send a private message to another player.
+    usage: /msg
+  reply:
+    aliases: [r]
+    description: Reply to the last private message.
+    usage: /r
