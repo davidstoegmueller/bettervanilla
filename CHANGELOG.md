@@ -2,6 +2,10 @@
 
 # 📜 Changelog
 
+## [1.8.0] - xx.xx.xxxx
+
+- **new entry** - description
+
 ## [1.7.0] - 09.10.2025
 
 - **💬 Private Messages** – New `/msg` and `/r` commands for direct player chats.
