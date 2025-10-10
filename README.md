@@ -1,6 +1,6 @@
 ﻿# BetterVanilla ✨ SMP All-in-One
 
-A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVanilla layers modern quality-of-life upgrades onto a vanilla Paper server—no client mods or loaders required.
+A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVanilla layers modern quality-of-life upgrades onto a vanilla Paper server-no client mods or loaders required. 👑 Core Feature: Configure every player and server toggle through the in-game `/settings` menu and [jump straight to the full settings guide](#settings) when you need the details.
 
 [![GitHub release](https://img.shields.io/github/v/release/davidstoegmueller/bettervanilla?style=flat-round)](https://github.com/davidstoegmueller/bettervanilla/releases)
 [![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-round)](LICENSE)
@@ -70,9 +70,13 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ## Commands
 
+### Core Command
+
+- `/settings` - Open your personal settings dashboard. Admins can enter the full server control panel from here, making it the fastest way to tweak any BetterVanilla feature. [See everything it unlocks](#settings).
+
 ### Player Utilities
 
-- `/waypoints` – Open the waypoint GUI. Use `player <name>` or `coords <x> <y> <z>` for direct navigation.
+- `/waypoints` - Open the waypoint GUI. Use `player <name>` or `coords <x> <y> <z>` for direct navigation.
 - `/backpack` – Open your personal backpack storage.
 - `/deathpoints` – Manage recent death locations and teleport back via GUI.
 - `/playtime [player]` – Show detailed playtime (AFK included) for you or another player.
@@ -84,8 +88,8 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ### Admin & Moderation
 
-- `/adminhelp` – List key staff commands (`bettervanilla.adminhelp`).
-- `/settings` – Open personal settings; admins can hop into the server settings menu from here.
+- `/adminhelp` - List key staff commands (`bettervanilla.adminhelp`).
+- `/settings` - Open the settings GUI for players and admins.
 - `/invsee <player>` – Inspect another player’s inventory.
 - `/timer <resume|pause|reset|set>` – Control the global timer.
 - `/vanish` – Toggle vanish mode with movement safeguards.
@@ -111,7 +115,6 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🧹 Chest sorting toggle
 - ⛏️ Vein miner toggle with per-player limits
 - 🪓 Vein chopper toggle with per-player limits
-- 🪑 Sit-anywhere toggle
 
 ### Admin Settings
 
