@@ -140,30 +140,30 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - `admin` - includes every BetterVanilla permission, covering server maintenance, admin settings, and permission management.
 - Use `/permissions default <group>` (e.g. `/permissions default player`) to choose which group new players fall back to. Switching the default moves existing players that still belonged to the previous default.
 
-```
-bettervanilla.adminhelp
-bettervanilla.permissions
-bettervanilla.maintenance.bypass
-bettervanilla.settings
-bettervanilla.adminsettings
-bettervanilla.vanish
-bettervanilla.invsee
-bettervanilla.moderation
-bettervanilla.timer
-bettervanilla.playtime
-bettervanilla.waypoints
-bettervanilla.waypoints.admin
-bettervanilla.deathpoints
-bettervanilla.ping
-bettervanilla.sit
-bettervanilla.backpack
-bettervanilla.msg
-bettervanilla.togglelocation
-bettervanilla.togglecompass
-bettervanilla.chestsort
-bettervanilla.veinminer
-bettervanilla.veinchopper
-```
+| Permission | Included in |
+| --- | --- |
+| `bettervanilla.settings` | player, moderator, admin |
+| `bettervanilla.playtime` | player, moderator, admin |
+| `bettervanilla.waypoints` | player, moderator, admin |
+| `bettervanilla.deathpoints` | player, moderator, admin |
+| `bettervanilla.ping` | player, moderator, admin |
+| `bettervanilla.sit` | player, moderator, admin |
+| `bettervanilla.backpack` | player, moderator, admin |
+| `bettervanilla.msg` | player, moderator, admin |
+| `bettervanilla.togglelocation` | player, moderator, admin |
+| `bettervanilla.togglecompass` | player, moderator, admin |
+| `bettervanilla.chestsort` | player, moderator, admin |
+| `bettervanilla.veinminer` | player, moderator, admin |
+| `bettervanilla.veinchopper` | player, moderator, admin |
+| `bettervanilla.adminhelp` | moderator, admin |
+| `bettervanilla.vanish` | moderator, admin |
+| `bettervanilla.invsee` | moderator, admin |
+| `bettervanilla.moderation` | moderator, admin |
+| `bettervanilla.timer` | moderator, admin |
+| `bettervanilla.waypoints.admin` | moderator, admin |
+| `bettervanilla.permissions` | admin |
+| `bettervanilla.maintenance.bypass` | admin |
+| `bettervanilla.adminsettings` | admin |
 
 ## Contributing
 
