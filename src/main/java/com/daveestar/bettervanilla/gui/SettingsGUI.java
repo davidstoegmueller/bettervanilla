@@ -88,8 +88,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!p.hasPermission(Permissions.TOGGLELOCATION.getName())) {
-          p.sendMessage(
-              Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle the Action-Bar location.");
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.TOGGLELOCATION));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -103,8 +102,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!p.hasPermission(Permissions.TOGGLECOMPASS.getName())) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED
-              + "You do not have permission to toggle the Bossbar-Compass.");
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.TOGGLECOMPASS));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -119,8 +117,7 @@ public class SettingsGUI {
       public void onLeftClick(Player p) {
 
         if (!p.hasPermission(Permissions.CHESTSORT.getName())) {
-          p.sendMessage(
-              Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle chest sorting.");
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -141,7 +138,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!p.hasPermission(Permissions.VEINMINER.getName())) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vein Miner.");
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.VEINMINER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -162,7 +159,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!p.hasPermission(Permissions.VEINCHOPPER.getName())) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You do not have permission to toggle Vein Chopper.");
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.VEINCHOPPER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -204,7 +201,7 @@ public class SettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Show your current location in the actionbar.",
-          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting." : null),
+          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TOGGLELOCATION) : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -228,7 +225,7 @@ public class SettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shows a compass in the bossbar",
-          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting." : null),
+          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TOGGLECOMPASS) : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -251,7 +248,7 @@ public class SettingsGUI {
         Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
     meta.lore(Arrays.asList(
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!",
-        (!hasPermission ? ChatColor.RED + "You do not have permission for this setting." : null),
+        (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.CHESTSORT) : null),
         "",
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
             + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -298,7 +295,7 @@ public class SettingsGUI {
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY
               + "While sneaking, mine all ores of the same type if using a pickaxe.",
-          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
+          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.VEINMINER)
               : !globalState ? ChatColor.RED + "Vein Miner is globally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
@@ -325,7 +322,7 @@ public class SettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "While sneaking, chop all logs of the same type if using an axe.",
-          (!hasPermission ? ChatColor.RED + "You do not have permission for this setting."
+          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.VEINCHOPPER)
               : !globalState ? ChatColor.RED + "Vein Chopper is globally disabled on the server." : null),
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "

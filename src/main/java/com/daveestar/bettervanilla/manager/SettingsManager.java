@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -155,6 +158,23 @@ public class SettingsManager {
   public void setSleepingRain(boolean value) {
     _fileConfig.set("global.sleepingrain", value);
     _config.save();
+  }
+
+  public boolean getLocatorBarEnabled() {
+    return _fileConfig.getBoolean("global.locatorbar", true);
+  }
+
+  public void setLocatorBarEnabled(boolean value) {
+    _fileConfig.set("global.locatorbar", value);
+    _config.save();
+  }
+
+  public void applyLocatorBarSetting() {
+    boolean enabled = getLocatorBarEnabled();
+
+    for (World world : Bukkit.getWorlds()) {
+      world.setGameRule(GameRule.LOCATOR_BAR, enabled);
+    }
   }
 
   public boolean getAFKProtection() {

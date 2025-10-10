@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 
@@ -27,6 +28,15 @@ public class ModerationCommands {
   public static class KickCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+      if (cs instanceof Player) {
+        Player p = (Player) cs;
+
+        if (!p.hasPermission(Permissions.MODERATION.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.MODERATION));
+          return true;
+        }
+      }
+
       if (args.length < 1) {
         cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/kick <player> [reason]");
         return true;
@@ -89,6 +99,15 @@ public class ModerationCommands {
 
     @Override
     public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+      if (cs instanceof Player) {
+        Player p = (Player) cs;
+
+        if (!p.hasPermission(Permissions.MODERATION.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.MODERATION));
+          return true;
+        }
+      }
+
       if (args.length < 1) {
         cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
             + "/ban <player> [duration] [reason]");
@@ -193,6 +212,15 @@ public class ModerationCommands {
 
     @Override
     public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+      if (cs instanceof Player) {
+        Player p = (Player) cs;
+
+        if (!p.hasPermission(Permissions.MODERATION.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.MODERATION));
+          return true;
+        }
+      }
+
       if (args.length < 1) {
         cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/unban <player>");
         return true;
@@ -236,6 +264,15 @@ public class ModerationCommands {
 
     @Override
     public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+      if (cs instanceof Player) {
+        Player p = (Player) cs;
+
+        if (!p.hasPermission(Permissions.MODERATION.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.MODERATION));
+          return true;
+        }
+      }
+
       if (args.length < 1) {
         cs.sendMessage(
             Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/mute <player> [duration] [reason]");
@@ -335,6 +372,15 @@ public class ModerationCommands {
 
     @Override
     public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
+      if (cs instanceof Player) {
+        Player p = (Player) cs;
+
+        if (!p.hasPermission(Permissions.MODERATION.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.MODERATION));
+          return true;
+        }
+      }
+
       if (args.length < 1) {
         cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/unmute <player>");
         return true;

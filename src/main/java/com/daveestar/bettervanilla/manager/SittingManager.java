@@ -17,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.daveestar.bettervanilla.Main;
 
@@ -29,7 +28,7 @@ public class SittingManager implements Listener {
   private final Main _plugin;
   private final Map<UUID, ArmorStand> _sittingPlayers = new HashMap<>();
 
-  public SittingManager(JavaPlugin plugin) {
+  public SittingManager() {
     _plugin = Main.getInstance();
     Bukkit.getPluginManager().registerEvents(this, _plugin);
   }

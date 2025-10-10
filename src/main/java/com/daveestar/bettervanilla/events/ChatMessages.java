@@ -18,6 +18,7 @@ import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
+import com.daveestar.bettervanilla.manager.TabListManager;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -36,6 +37,7 @@ public class ChatMessages implements Listener {
   private final BackpackManager _backpackManager;
   private final MessageManager _messageManager;
   private final VanishManager _vanishManager;
+  private final TabListManager _tabListManager;
 
   public ChatMessages() {
     _plugin = Main.getInstance();
@@ -48,6 +50,7 @@ public class ChatMessages implements Listener {
     _backpackManager = _plugin.getBackpackManager();
     _messageManager = _plugin.getMessageManager();
     _vanishManager = _plugin.getVanishManager();
+    _tabListManager = _plugin.getTabListManager();
   }
 
   @EventHandler
@@ -63,8 +66,6 @@ public class ChatMessages implements Listener {
         return;
     }
 
-    p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
-
     e.joinMessage(
         Component.text(
             ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName()));
@@ -72,6 +73,7 @@ public class ChatMessages implements Listener {
     _afkManager.onPlayerJoined(p);
     _timerManager.onPlayerJoined(p);
     _compassManager.onPlayerJoined(p);
+    _tabListManager.refreshPlayer(p);
   }
 
   @EventHandler

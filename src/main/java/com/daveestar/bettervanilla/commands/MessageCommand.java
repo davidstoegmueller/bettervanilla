@@ -13,6 +13,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.MessageManager;
 
 import net.md_5.bungee.api.ChatColor;
@@ -28,31 +29,37 @@ public class MessageCommand implements TabExecutor {
 
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
-    if (cs instanceof Player) {
-      Player p = (Player) cs;
-
-      if (args.length >= 2) {
-        Player target = Bukkit.getPlayer(args[0]);
-
-        if (!target.getUniqueId().equals(p.getUniqueId())) {
-          if (target != null && target.isOnline()) {
-            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            _messageManager.sendPrivateMessage(p, target, message);
-          } else {
-            p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-                + ChatColor.RED + " is currently not online!");
-          }
-        } else {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot send a message to yourself!");
-        }
-      } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/msg <player> <message>");
-      }
-
+    if (!(cs instanceof Player)) {
+      cs.sendMessage(Main.getNoPlayerMessage());
       return true;
     }
 
-    return false;
+    Player p = (Player) cs;
+
+    if (!p.hasPermission(Permissions.MSG.getName())) {
+      p.sendMessage(Main.getNoPermissionMessage(Permissions.MSG));
+      return true;
+    }
+
+    if (args.length >= 2) {
+      Player target = Bukkit.getPlayer(args[0]);
+
+      if (!target.getUniqueId().equals(p.getUniqueId())) {
+        if (target != null && target.isOnline()) {
+          String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+          _messageManager.sendPrivateMessage(p, target, message);
+        } else {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
+              + ChatColor.RED + " is currently not online!");
+        }
+      } else {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot send a message to yourself!");
+      }
+    } else {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/msg <player> <message>");
+    }
+
+    return true;
   }
 
   @Override

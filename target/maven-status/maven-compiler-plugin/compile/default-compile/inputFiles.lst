@@ -3,7 +3,6 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\Play
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SignColors.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PermissionsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\DeathPointsGUI.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\HelpCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\VanishEvents.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\WaypointsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Waypoint.java
@@ -14,11 +13,11 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\AFKM
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PreventDimension.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\PingCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\AdminSettingsGUI.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleCompassCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\SitCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\CompassManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\SettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\PlayerMove.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\HelpCommands.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\TimerManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\VeinChopperSettingsGUI.java
@@ -49,13 +48,13 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\Set
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\DeathChest.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\MaintenanceManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\VanishManager.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\TabListManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ActionBar.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\WaypointVisibility.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\WaypointFilter.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\Permissions.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\CustomGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\ParticleNavigation.java
-e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\ToggleLocationCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChatMessages.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\DeathPointsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\InvseeCommand.java

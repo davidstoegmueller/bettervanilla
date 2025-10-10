@@ -36,15 +36,14 @@ public class WaypointsCommand implements TabExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (!(cs instanceof Player)) {
-      cs.sendMessage(ChatColor.RED + "This command can only be used by players.");
+      cs.sendMessage(Main.getNoPlayerMessage());
       return true;
     }
 
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.WAYPOINTS.getName())) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED
-          + "Sorry! You don't have permissions to use the waypoints command.");
+      p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
       return true;
     }
 

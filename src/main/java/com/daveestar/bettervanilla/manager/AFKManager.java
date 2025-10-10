@@ -11,7 +11,6 @@ import org.bukkit.scoreboard.Team;
 
 import com.daveestar.bettervanilla.Main;
 
-import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class AFKManager {
@@ -24,6 +23,7 @@ public class AFKManager {
   private TimerManager _timerManager;
   private SettingsManager _settingsManager;
   private Team _afkTeam;
+  private TabListManager _tabListManager;
 
   public AFKManager() {
     _plugin = Main.getInstance();
@@ -35,6 +35,7 @@ public class AFKManager {
   public void initManagers() {
     _timerManager = _plugin.getTimerManager();
     _settingsManager = _plugin.getSettingsManager();
+    _tabListManager = _plugin.getTabListManager();
 
     // prepare scoreboard team used to disable collisions while AFK
     ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -47,7 +48,6 @@ public class AFKManager {
       }
       _afkTeam = team;
     }
-
   }
 
   public void onPlayerJoined(Player p) {
@@ -60,6 +60,8 @@ public class AFKManager {
     if (_afkTeam != null) {
       _afkTeam.removeEntry(p.getName());
     }
+
+    _tabListManager.refreshPlayerListEntry(p);
   }
 
   public void onPlayerLeft(Player p) {
@@ -115,47 +117,52 @@ public class AFKManager {
   }
 
   public void setPlayerAFKState(Player p) {
-    if (_lastMovement.containsKey(p)) {
-      boolean nowAFK = isAFK(p);
+    if (!_lastMovement.containsKey(p)) {
+      return;
+    }
 
-      if (_afkStates.containsKey(p)) {
-        boolean wasAFK = _afkStates.get(p);
+    boolean nowAFK = isAFK(p);
+    boolean updated = false;
 
-        if (wasAFK && !nowAFK) {
-          p.sendMessage(Main.getPrefix() + "You are no longer AFK");
-          p.playerListName(Component.text(ChatColor.RED + " » " + ChatColor.YELLOW + p.getName()));
-          _afkStates.put(p, false);
+    if (_afkStates.containsKey(p)) {
+      boolean wasAFK = _afkStates.get(p);
 
-          // restore normal state
-          if (_settingsManager.getAFKProtection()) {
-            p.setInvulnerable(false);
-            p.setCollidable(true);
-            if (_afkTeam != null) {
-              _afkTeam.removeEntry(p.getName());
-            }
+      if (wasAFK && !nowAFK) {
+        p.sendMessage(Main.getPrefix() + "You are no longer AFK");
+        _afkStates.put(p, false);
+        updated = true;
+
+        if (_settingsManager.getAFKProtection()) {
+          p.setInvulnerable(false);
+          p.setCollidable(true);
+          if (_afkTeam != null) {
+            _afkTeam.removeEntry(p.getName());
           }
-
-          announceAFKToOthers(p, false);
-        } else if (!wasAFK && nowAFK) {
-          p.sendMessage(Main.getPrefix() + "You are now AFK!");
-          p.playerListName(Component.text(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
-              + ChatColor.YELLOW + p.getName()));
-          _afkStates.put(p, true);
-
-          // make player invincible and immovable by entities
-          if (_settingsManager.getAFKProtection()) {
-            p.setInvulnerable(true);
-            p.setCollidable(false);
-            if (_afkTeam != null) {
-              _afkTeam.addEntry(p.getName());
-            }
-          }
-
-          announceAFKToOthers(p, true);
         }
-      } else {
-        _afkStates.put(p, nowAFK);
+
+        announceAFKToOthers(p, false);
+      } else if (!wasAFK && nowAFK) {
+        p.sendMessage(Main.getPrefix() + "You are now AFK!");
+        _afkStates.put(p, true);
+        updated = true;
+
+        if (_settingsManager.getAFKProtection()) {
+          p.setInvulnerable(true);
+          p.setCollidable(false);
+          if (_afkTeam != null) {
+            _afkTeam.addEntry(p.getName());
+          }
+        }
+
+        announceAFKToOthers(p, true);
       }
+    } else {
+      _afkStates.put(p, nowAFK);
+      updated = true;
+    }
+
+    if (updated && _tabListManager != null) {
+      _tabListManager.refreshPlayerListEntry(p);
     }
   }
 
@@ -194,6 +201,10 @@ public class AFKManager {
         }
       }
     });
+  }
+
+  public boolean isPlayerMarkedAFK(Player p) {
+    return _afkStates.getOrDefault(p, false);
   }
 
   private int _getAFKTime() {
