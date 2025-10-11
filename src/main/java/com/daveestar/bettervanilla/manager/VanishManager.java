@@ -64,6 +64,10 @@ public class VanishManager {
     return _vanished.contains(p.getUniqueId());
   }
 
+  public int getVanishedCount() {
+    return _vanished.size();
+  }
+
   public void onPlayerLeft(Player p) {
     if (isVanished(p)) {
       unvanish(p);

@@ -30,6 +30,7 @@ import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
 import com.daveestar.bettervanilla.events.VeinMiningChopping;
 import com.daveestar.bettervanilla.events.RightClickCropHarvest;
+import com.daveestar.bettervanilla.events.DoubleDoorSync;
 import com.daveestar.bettervanilla.events.ChestSort;
 import com.daveestar.bettervanilla.events.CropProtection;
 import com.daveestar.bettervanilla.events.SignColors;
@@ -98,7 +99,6 @@ public class Main extends JavaPlugin {
     _backpackManager = new BackpackManager(backpackConfig);
     _moderationManager = new ModerationManager(moderationConfig);
 
-    _tabListManager = new TabListManager();
     _messageManager = new MessageManager();
     _sittingManager = new SittingManager();
     _vanishManager = new VanishManager();
@@ -107,6 +107,7 @@ public class Main extends JavaPlugin {
     _navigationManager = new NavigationManager();
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
+    _tabListManager = new TabListManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
@@ -114,7 +115,6 @@ public class Main extends JavaPlugin {
     _maintenanceManager.initManagers();
     _navigationManager.initManagers();
     _timerManager.initManagers();
-    _tabListManager.initManagers();
 
     _LOGGER.info("BetterVanilla - ENABLED");
 
@@ -151,6 +151,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new SleepingRain(), this);
     manager.registerEvents(new CropProtection(), this);
     manager.registerEvents(new RightClickCropHarvest(), this);
+    manager.registerEvents(new DoubleDoorSync(), this);
     manager.registerEvents(new ChestSort(), this);
     manager.registerEvents(new VeinMiningChopping(), this);
     manager.registerEvents(new SignColors(), this);

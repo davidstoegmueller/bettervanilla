@@ -31,9 +31,6 @@ public class TabListManager {
 
   public TabListManager() {
     _plugin = Main.getInstance();
-  }
-
-  public void initManagers() {
     _timerManager = _plugin.getTimerManager();
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
@@ -123,7 +120,7 @@ public class TabListManager {
 
   private Component _buildFooter(Player p) {
     int playTimeSeconds = _timerManager.getPlayTime(p);
-    int onlinePlayersCount = _plugin.getServer().getOnlinePlayers().size();
+    int onlinePlayersCount = _plugin.getServer().getOnlinePlayers().size() - _vanishManager.getVanishedCount();
     int maxPlayerCount = _plugin.getServer().getMaxPlayers();
 
     List<String> lines = Arrays.asList(

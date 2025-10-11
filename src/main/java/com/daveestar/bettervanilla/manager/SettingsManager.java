@@ -78,6 +78,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getDoubleDoorSync(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".doubledoor", false);
+  }
+
+  public void setDoubleDoorSync(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".doubledoor", value);
+    _config.save();
+  }
+
   public boolean getNavigationTrail(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".navigationtrail", false);
   }

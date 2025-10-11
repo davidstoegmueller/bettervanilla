@@ -48,6 +48,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🧚 **Navigation Particles** – Follow a beam and optional trail during waypoint navigation.
 - 🌾 **Crop Protection** – Prevent farmland trampling.
 - 🌱 **Right-Click Harvest** – Harvest and replant crops with a single interaction.
+- 🚪 **Double Door Sync** - Sync state across connected double doors.
 - 📖 **Help** – Built-in `/help` overview of every command.
 
 ### Admin & Server Tools
@@ -117,6 +118,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🧭 Bossbar compass overlay
 - ✨ Navigation particles
 - 🧹 Chest sorting toggle
+- 🚪 Double Door Sync
 - ⛏️ Vein miner toggle with per-player limits
 - 🪓 Vein chopper toggle with per-player limits
 
@@ -158,6 +160,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 | `bettervanilla.togglelocation`     | player, moderator, admin |
 | `bettervanilla.togglecompass`      | player, moderator, admin |
 | `bettervanilla.chestsort`          | player, moderator, admin |
+| `bettervanilla.doubledoor`         | player, moderator, admin |
 | `bettervanilla.veinminer`          | player, moderator, admin |
 | `bettervanilla.veinchopper`        | player, moderator, admin |
 | `bettervanilla.adminhelp`          | moderator, admin         |

@@ -5,6 +5,7 @@
 ## [1.9.0] - unreleased
 
 - 📁 **Renamed Moderation Config File** - For better consistence the `moderation.yml` file was renamed to `moderations.yml`.
+- 🚪**Double Door Sync** - Syncs the state across connected double doors.
 
 ## [1.8.0] - 10.10.2025
 

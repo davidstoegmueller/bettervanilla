@@ -33,12 +33,12 @@ public class SittingManager implements Listener {
     Bukkit.getPluginManager().registerEvents(this, _plugin);
   }
 
-  public boolean isSitting(Player player) {
-    return player != null && _sittingPlayers.containsKey(player.getUniqueId());
+  public boolean isSitting(Player p) {
+    return p != null && _sittingPlayers.containsKey(p.getUniqueId());
   }
 
-  public void sitPlayer(Player player, Location location) {
-    if (player == null || location == null) {
+  public void sitPlayer(Player p, Location location) {
+    if (p == null || location == null) {
       return;
     }
 
@@ -48,7 +48,7 @@ public class SittingManager implements Listener {
     }
 
     // ensure the player is not already sitting on an armor stand
-    unsitPlayer(player);
+    unsitPlayer(p);
 
     Location seatLocation = location.clone();
     ArmorStand armorStand = world.spawn(seatLocation, ArmorStand.class);
@@ -62,22 +62,22 @@ public class SittingManager implements Listener {
     armorStand.setPersistent(false);
     armorStand.setRotation(seatLocation.getYaw(), seatLocation.getPitch());
 
-    armorStand.addPassenger(player);
-    _sittingPlayers.put(player.getUniqueId(), armorStand);
+    armorStand.addPassenger(p);
+    _sittingPlayers.put(p.getUniqueId(), armorStand);
   }
 
-  public void unsitPlayer(Player player) {
-    if (player == null) {
+  public void unsitPlayer(Player p) {
+    if (p == null) {
       return;
     }
 
-    ArmorStand armorStand = _sittingPlayers.remove(player.getUniqueId());
+    ArmorStand armorStand = _sittingPlayers.remove(p.getUniqueId());
     if (armorStand == null) {
       return;
     }
 
-    if (player.isInsideVehicle()) {
-      player.leaveVehicle();
+    if (p.isInsideVehicle()) {
+      p.leaveVehicle();
     }
 
     armorStand.remove();
@@ -86,9 +86,10 @@ public class SittingManager implements Listener {
   public void destroy() {
     Set<UUID> trackedPlayers = new HashSet<>(_sittingPlayers.keySet());
     for (UUID uuid : trackedPlayers) {
-      Player player = Bukkit.getPlayer(uuid);
-      if (player != null) {
-        unsitPlayer(player);
+      Player p = Bukkit.getPlayer(uuid);
+
+      if (p != null) {
+        unsitPlayer(p);
         continue;
       }
 
