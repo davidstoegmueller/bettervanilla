@@ -64,7 +64,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ## Installation
 
-```text
+```
 1. Download the latest BetterVanilla release jar.
 2. Drop it into your server's plugins/ folder.
 3. Restart the server and you are ready to go!
@@ -78,6 +78,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ### Player Utilities
 
+- `/settings` - Open the settings GUI for players.
 - `/waypoints` - Open the waypoint GUI. Use `player <name>` or `coords <x> <y> <z>` for direct navigation.
 - `/backpack` – Open your personal backpack storage.
 - `/deathpoints` – Manage recent death locations and teleport back via GUI.
@@ -90,7 +91,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ### Admin & Moderation
 
-- `/adminhelp` - List key staff commands (`bettervanilla.adminhelp`).
+- `/adminhelp` - List key staff commands.
 - `/settings` - Open the settings GUI for players and admins.
 - `/invsee <player>` – Inspect another player’s inventory.
 - `/timer <resume|pause|reset|set>` – Control the global timer.
@@ -103,6 +104,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
   - `user addperm <player> <permission>`
   - `user removeperm <player> <permission>`
   - `user setgroup <player> <group>`
+  - `default <group>` - Sets the default group for all players
   - `assignments` – Show current group and user mapping
   - `list` – Display built-in permission nodes
   - `reload` – Reload configuration and refresh online players
