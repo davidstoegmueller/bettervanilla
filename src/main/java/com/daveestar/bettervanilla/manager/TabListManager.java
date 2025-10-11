@@ -85,6 +85,7 @@ public class TabListManager {
     World world = p.getWorld();
     long day = world.getFullTime() / 24000L;
     String timeStr = _formatWorldTime(world);
+    String timTextStr = _getTimeOfDayText(world);
     Environment env = world.getEnvironment();
 
     String weatherStr;
@@ -106,7 +107,9 @@ public class TabListManager {
         isMaintenance ? Main.getShortPrefix() + ChatColor.RED + "" + ChatColor.BOLD + "Maintenance-Mode: ON" : null,
         "",
         Main.getShortPrefix() + ChatColor.GRAY + "Day: " + ChatColor.YELLOW + day + ChatColor.GRAY + " | "
-            + ChatColor.GRAY + "Time: " + ChatColor.YELLOW + timeStr + ChatColor.GRAY,
+            + ChatColor.GRAY + "Time: " + ChatColor.YELLOW + timeStr + ChatColor.GRAY + " (" + ChatColor.YELLOW
+            + timTextStr
+            + ChatColor.GRAY + ")",
         Main.getShortPrefix() + ChatColor.GRAY + "Weather: " + ChatColor.YELLOW + weatherStr,
         "");
 
@@ -159,6 +162,23 @@ public class TabListManager {
             + ChatColor.YELLOW + deaths);
 
     return playerNameComponent;
+  }
+
+  private String _getTimeOfDayText(World world) {
+    long time = (world.getTime() + 6000L) % 24000L;
+    int hours = (int) (time / 1000L);
+
+    if (hours >= 6 && hours < 12) {
+      return "Morning";
+    } else if (hours >= 12 && hours < 13.5) {
+      return "Midday";
+    } else if (hours >= 13.5 && hours < 18) {
+      return "Afternoon";
+    } else if (hours >= 18 && hours < 21) {
+      return "Evening";
+    } else {
+      return "Night";
+    }
   }
 
   private String _formatWorldTime(World world) {
