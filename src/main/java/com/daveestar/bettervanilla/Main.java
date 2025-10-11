@@ -88,7 +88,7 @@ public class Main extends JavaPlugin {
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
     Config backpackConfig = new Config("backpacks.yml", getDataFolder());
-    Config moderationConfig = new Config("moderation.yml", getDataFolder());
+    Config moderationConfig = new Config("moderations.yml", getDataFolder());
 
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);

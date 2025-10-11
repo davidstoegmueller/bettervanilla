@@ -2,6 +2,10 @@
 
 # Changelog
 
+## [1.9.0] - unreleased
+
+- 📁 **Renamed Moderation Config File** - For better consistence the `moderation.yml` file was renamed to `moderations.yml`.
+
 ## [1.8.0] - 10.10.2025
 
 - 🔐 **Permission System Rework** - Centralized every command check on the `Permissions` enum, refreshed `/permissions` with better validation, tab completion, and clearer feedback, and removed redundant permission declarations from `plugin.yml`.
