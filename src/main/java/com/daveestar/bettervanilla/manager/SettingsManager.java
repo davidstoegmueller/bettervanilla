@@ -133,12 +133,25 @@ public class SettingsManager {
     _config.save();
   }
 
-  public boolean getToggleCreeperDamage() {
+  public boolean getCreeperBlockDamage() {
+    if (_fileConfig.contains("global.creeper.blockdamage")) {
+      return _fileConfig.getBoolean("global.creeper.blockdamage", true);
+    }
+
     return _fileConfig.getBoolean("global.creeperdamage", true);
   }
 
-  public void setToggleCreeperDamage(boolean value) {
-    _fileConfig.set("global.creeperdamage", value);
+  public void setCreeperBlockDamage(boolean value) {
+    _fileConfig.set("global.creeper.blockdamage", value);
+    _config.save();
+  }
+
+  public boolean getCreeperEntityDamage() {
+    return _fileConfig.getBoolean("global.creeper.entitydamage", true);
+  }
+
+  public void setCreeperEntityDamage(boolean value) {
+    _fileConfig.set("global.creeper.entitydamage", value);
     _config.save();
   }
 

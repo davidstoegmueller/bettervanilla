@@ -7,13 +7,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -24,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
-import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager.DeathPointReference;
 
 import net.kyori.adventure.text.Component;
@@ -37,12 +39,10 @@ public class DeathChest implements Listener {
 
   private final Main _plugin;
   private final DeathPointsManager _deathPointsManager;
-  private final SettingsManager _settingsManager;
 
   public DeathChest() {
     _plugin = Main.getInstance();
     _deathPointsManager = _plugin.getDeathPointsManager();
-    _settingsManager = _plugin.getSettingsManager();
   }
 
   @EventHandler
@@ -186,15 +186,48 @@ public class DeathChest implements Listener {
   public void onEntityExplode(EntityExplodeEvent e) {
     e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
 
-    if (!_settingsManager.getToggleCreeperDamage()) {
-      if (e.getEntity() != null && e.getEntity().getType() == EntityType.CREEPER) {
-        e.blockList().clear();
-      }
+  }
+
+  @EventHandler
+  public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    _protectDeathChestArmorStand(e);
+  }
+
+  @EventHandler
+  public void onDeathChestExplosionDamage(EntityDamageEvent e) {
+    if (e.getCause() != EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
+        && e.getCause() != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+      return;
     }
+
+    _protectDeathChestArmorStand(e);
   }
 
   @EventHandler
   public void onBlockExplode(BlockExplodeEvent e) {
     e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
+  }
+
+  private boolean _protectDeathChestArmorStand(EntityDamageEvent event) {
+    if (!_isDeathChestArmorStand(event.getEntity())) {
+      return false;
+    }
+
+    event.setCancelled(true);
+    return true;
+  }
+
+  private boolean _isDeathChestArmorStand(Entity entity) {
+    if (!(entity instanceof ArmorStand stand) || !stand.isMarker()) {
+      return false;
+    }
+
+    Location loc = stand.getLocation().toBlockLocation();
+
+    if (loc.getWorld() == null) {
+      return false;
+    }
+
+    return _deathPointsManager.isDeathPointBlock(loc.getBlock());
   }
 }

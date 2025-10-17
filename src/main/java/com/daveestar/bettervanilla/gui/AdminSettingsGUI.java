@@ -61,7 +61,8 @@ public class AdminSettingsGUI {
     Map<String, ItemStack> entries = new HashMap<>();
     // first row
     entries.put("maintenance", _createMaintenanceItem());
-    entries.put("creeperdamage", _createCreeperDamageItem());
+    entries.put("creeperblockdamage", _createCreeperBlockDamageItem());
+    entries.put("creeperentitydamage", _createCreeperEntityDamageItem());
     entries.put("enableend", _createEnableEndItem());
     entries.put("enablenether", _createEnableNetherItem());
     entries.put("sleepingrain", _createSleepingRainItem());
@@ -82,10 +83,9 @@ public class AdminSettingsGUI {
     Map<String, Integer> customSlots = new HashMap<>();
     // first row
     customSlots.put("maintenance", 0);
-    customSlots.put("creeperdamage", 2);
-    customSlots.put("enableend", 4);
-    customSlots.put("enablenether", 6);
-    customSlots.put("sleepingrain", 8);
+    customSlots.put("sleepingrain", 2);
+    customSlots.put("enablenether", 4);
+    customSlots.put("enableend", 6);
 
     // second row
     customSlots.put("motd", 10);
@@ -100,9 +100,13 @@ public class AdminSettingsGUI {
     customSlots.put("veinminersettings", 24);
     customSlots.put("veinchoppersettings", 26);
 
+    // fourth row
+    customSlots.put("creeperblockdamage", 30);
+    customSlots.put("creeperentitydamage", 34);
+
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 4, customSlots, parentMenu,
+        entries, 5, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     if (backAction != null) {
@@ -123,10 +127,18 @@ public class AdminSettingsGUI {
       }
     });
 
-    actions.put("creeperdamage", new CustomGUI.ClickAction() {
+    actions.put("creeperblockdamage", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleCreeperDamage(p);
+        _toggleCreeperBlockDamage(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("creeperentitydamage", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleCreeperEntityDamage(p);
         displayGUI(p, parentMenu, backAction);
       }
     });
@@ -251,16 +263,37 @@ public class AdminSettingsGUI {
     return item;
   }
 
-  private ItemStack _createCreeperDamageItem() {
-    boolean state = _settingsManager.getToggleCreeperDamage();
+  private ItemStack _createCreeperBlockDamageItem() {
+    boolean state = _settingsManager.getCreeperBlockDamage();
     ItemStack item = new ItemStack(Material.CREEPER_HEAD);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Damage"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Block Damage"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Prevents creepers from destroying blocks.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether creepers destroy blocks when exploding.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createCreeperEntityDamageItem() {
+    boolean state = _settingsManager.getCreeperEntityDamage();
+    ItemStack item = new ItemStack(Material.TNT);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Entity Damage"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether creepers damage non-player entities.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -568,7 +601,6 @@ public class AdminSettingsGUI {
     return item;
   }
 
-
   // -------
   // DIALOGS
   // -------
@@ -642,7 +674,8 @@ public class AdminSettingsGUI {
   // DIALOG CALLBACKS
   // ----------------
 
-  private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
+  private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     String line1 = Optional.ofNullable(view.getText("line1")).map(String::trim).orElse("");
     String line2 = Optional.ofNullable(view.getText("line2")).map(String::trim).orElse("");
@@ -657,7 +690,8 @@ public class AdminSettingsGUI {
     displayGUI(p, parentMenu, backAction);
   }
 
-  private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
+  private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     String message = Optional.ofNullable(view.getText("message")).map(String::trim).orElse("");
 
@@ -669,7 +703,8 @@ public class AdminSettingsGUI {
     displayGUI(p, parentMenu, backAction);
   }
 
-  private void _setAFKTimeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
+  private void _setAFKTimeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     int minutes = Math.round(view.getFloat("minutes"));
 
@@ -703,11 +738,20 @@ public class AdminSettingsGUI {
     _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
   }
 
-  private void _toggleCreeperDamage(Player p) {
-    boolean newState = !_settingsManager.getToggleCreeperDamage();
-    _settingsManager.setToggleCreeperDamage(newState);
+  private void _toggleCreeperBlockDamage(Player p) {
+    boolean newState = !_settingsManager.getCreeperBlockDamage();
+    _settingsManager.setCreeperBlockDamage(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Creeper damage is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(
+        Main.getPrefix() + "Creeper block damage is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleCreeperEntityDamage(Player p) {
+    boolean newState = !_settingsManager.getCreeperEntityDamage();
+    _settingsManager.setCreeperEntityDamage(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(
+        Main.getPrefix() + "Creeper entity damage is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleEnd(Player p) {
