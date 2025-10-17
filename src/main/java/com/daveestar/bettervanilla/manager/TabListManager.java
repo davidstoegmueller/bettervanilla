@@ -20,6 +20,9 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.md_5.bungee.api.ChatColor;
 
 public class TabListManager {
+  private static final double DEFAULT_TPS = 20.0D;
+  private static final double DEFAULT_MSPT = 0.0D;
+
   private final Main _plugin;
 
   private TimerManager _timerManager;
@@ -194,15 +197,39 @@ public class TabListManager {
   }
 
   private String _formatTps() {
-    double[] tpsValues = _plugin.getServer().getTPS();
-    double tps = tpsValues.length > 0 ? tpsValues[0] : 20.0D;
-    double capped = Math.min(20.0D, tps);
+    double tpsValue = DEFAULT_TPS;
 
-    return String.format(Locale.US, "%.1f", capped);
+    try {
+      double[] tpsValues = _plugin.getServer().getTPS();
+      if (tpsValues != null && tpsValues.length > 0) {
+        tpsValue = tpsValues[0];
+      }
+    } catch (RuntimeException ex) {
+      // Folia's TPS access is not thread-safe; default to the fallback when the API
+      // throws
+    }
+
+    if (Double.isNaN(tpsValue) || Double.isInfinite(tpsValue) || tpsValue < 0.0D) {
+      tpsValue = DEFAULT_TPS;
+    }
+
+    return String.format(Locale.US, "%.1f", tpsValue);
   }
 
   private String _formatMspt() {
-    double mspt = _plugin.getServer().getAverageTickTime();
+    double mspt = DEFAULT_MSPT;
+
+    try {
+      mspt = _plugin.getServer().getAverageTickTime();
+    } catch (RuntimeException ex) {
+      // Folia may throw when accessed off-thread; fall back to the default
+      mspt = DEFAULT_MSPT;
+    }
+
+    if (Double.isNaN(mspt) || Double.isInfinite(mspt) || mspt < 0.0D) {
+      mspt = DEFAULT_MSPT;
+    }
+
     return String.format(Locale.US, "%.1f", mspt);
   }
 }
