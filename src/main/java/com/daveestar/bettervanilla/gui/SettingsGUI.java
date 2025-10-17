@@ -196,7 +196,7 @@ public class SettingsGUI {
       clickActions.put("adminsettings", new CustomGUI.ClickAction() {
         @Override
         public void onLeftClick(Player p) {
-          _adminSettingsGUI.displayGUI(p, gui);
+          _adminSettingsGUI.displayGUI(p, gui, player -> displayGUI(player));
         }
       });
     }

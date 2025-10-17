@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -53,6 +54,10 @@ public class AdminSettingsGUI {
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu) {
+    displayGUI(p, parentMenu, null);
+  }
+
+  public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
     // first row
     entries.put("maintenance", _createMaintenanceItem());
@@ -100,17 +105,21 @@ public class AdminSettingsGUI {
         entries, 4, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
+    if (backAction != null) {
+      gui.setBackAction(backAction);
+    }
+
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         _toggleMaintenance(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
 
       @Override
       public void onRightClick(Player p) {
-        _openMaintenanceMessageDialog(p, parentMenu);
+        _openMaintenanceMessageDialog(p, parentMenu, backAction);
       }
     });
 
@@ -118,7 +127,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleCreeperDamage(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -126,7 +135,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleEnd(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -134,7 +143,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleNether(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -142,7 +151,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleSleepingRain(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -150,7 +159,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleCropProtection(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -158,7 +167,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleRightClickCropHarvest(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -166,7 +175,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleLocatorBar(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -174,42 +183,42 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleAFKProtection(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
     actions.put("afktime", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _openAFKTimeDialog(p, parentMenu);
+        _openAFKTimeDialog(p, parentMenu, backAction);
       }
     });
 
     actions.put("motd", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _openMOTDDialog(p, parentMenu);
+        _openMOTDDialog(p, parentMenu, backAction);
       }
     });
 
     actions.put("backpacksettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _backpackSettingsGUI.displayGUI(p, gui);
+        _backpackSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
     actions.put("veinminersettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _veinMinerSettingsGUI.displayGUI(p, gui);
+        _veinMinerSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
     actions.put("veinchoppersettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _veinChopperSettingsGUI.displayGUI(p, gui);
+        _veinChopperSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
@@ -462,17 +471,25 @@ public class AdminSettingsGUI {
   }
 
   private ItemStack _createBackpackSettingsItem() {
+    boolean enabled = _settingsManager.getBackpackEnabled();
+    int pages = _settingsManager.getBackpackPages();
+    int rows = _settingsManager.getBackpackRows();
     ItemStack item = new ItemStack(Material.BARREL);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Settings"));
-      meta.lore(Arrays.asList(
+      List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+          ""));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Pages: " + ChatColor.YELLOW + pages);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Rows/Page: " + ChatColor.YELLOW + rows);
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -480,6 +497,13 @@ public class AdminSettingsGUI {
   }
 
   private ItemStack _createVeinMinerSettingsItem() {
+    boolean enabled = _settingsManager.getVeinMinerEnabled();
+    int maxSize = _settingsManager.getVeinMinerMaxVeinSize();
+    boolean sound = _settingsManager.getVeinMinerSound();
+    List<String> allowedTools = _settingsManager.getVeinMinerAllowedTools();
+    List<String> allowedBlocks = _settingsManager.getVeinMinerAllowedBlocks();
+    int totalTools = SettingsManager.VEIN_MINER_TOOLS.size();
+    int totalBlocks = SettingsManager.VEIN_MINER_BLOCKS.size();
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
@@ -487,11 +511,21 @@ public class AdminSettingsGUI {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner Settings"));
-      meta.lore(Arrays.asList(
+      List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein miner settings.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+          ""));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Max Size: " + ChatColor.YELLOW + maxSize);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sound: "
+          + (sound ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tools: "
+          + ChatColor.YELLOW + allowedTools.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalTools);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Blocks: "
+          + ChatColor.YELLOW + allowedBlocks.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalBlocks);
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -499,6 +533,13 @@ public class AdminSettingsGUI {
   }
 
   private ItemStack _createVeinChopperSettingsItem() {
+    boolean enabled = _settingsManager.getVeinChopperEnabled();
+    int maxSize = _settingsManager.getVeinChopperMaxVeinSize();
+    boolean sound = _settingsManager.getVeinChopperSound();
+    List<String> allowedTools = _settingsManager.getVeinChopperAllowedTools();
+    List<String> allowedBlocks = _settingsManager.getVeinChopperAllowedBlocks();
+    int totalTools = SettingsManager.VEIN_CHOPPER_TOOLS.size();
+    int totalBlocks = SettingsManager.VEIN_CHOPPER_BLOCKS.size();
     ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
@@ -506,22 +547,33 @@ public class AdminSettingsGUI {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper Settings"));
-      meta.lore(Arrays.asList(
+      List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein chopper settings.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+          ""));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Max Size: " + ChatColor.YELLOW + maxSize);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sound: "
+          + (sound ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tools: "
+          + ChatColor.YELLOW + allowedTools.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalTools);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Blocks: "
+          + ChatColor.YELLOW + allowedBlocks.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalBlocks);
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
     return item;
   }
 
+
   // -------
   // DIALOGS
   // -------
 
-  private void _openMOTDDialog(Player p, CustomGUI parentMenu) {
+  private void _openMOTDDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     String[] motdLines = _settingsManager.getServerMOTDRaw();
 
     String motdLine1 = (motdLines != null && motdLines.length > 0 && motdLines[0] != null) ? motdLines[0] : "";
@@ -543,13 +595,13 @@ public class AdminSettingsGUI {
         "Set the server message of the day (MOTD) visible in the server list.",
         null,
         List.of(inputMotdLine1, inputMotdLine2),
-        (view, audience) -> _setServerMOTDDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setServerMOTDDialogCB(view, audience, parentMenu, backAction),
         null);
 
     p.showDialog(dialog);
   }
 
-  private void _openMaintenanceMessageDialog(Player p, CustomGUI parentMenu) {
+  private void _openMaintenanceMessageDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     String maintenanceMessage = _settingsManager.getMaintenanceMessage();
 
     DialogInput inputMessage = DialogInput
@@ -563,13 +615,13 @@ public class AdminSettingsGUI {
         "Set the maintenance message displayed to players when they are kicked.",
         null,
         List.of(inputMessage),
-        (view, audience) -> _setMaintenanceMessageDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setMaintenanceMessageDialogCB(view, audience, parentMenu, backAction),
         null);
 
     p.showDialog(dialog);
   }
 
-  private void _openAFKTimeDialog(Player p, CustomGUI parentMenu) {
+  private void _openAFKTimeDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     int afkTime = _settingsManager.getAFKTime();
 
     DialogInput inputMinutes = CustomDialog.createNumberInput("minutes",
@@ -580,7 +632,7 @@ public class AdminSettingsGUI {
         "Set the AFK timeout in minutes.",
         null,
         List.of(inputMinutes),
-        (view, audience) -> _setAFKTimeDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setAFKTimeDialogCB(view, audience, parentMenu, backAction),
         null);
 
     p.showDialog(dialog);
@@ -590,7 +642,7 @@ public class AdminSettingsGUI {
   // DIALOG CALLBACKS
   // ----------------
 
-  private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+  private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
     Player p = (Player) audience;
     String line1 = Optional.ofNullable(view.getText("line1")).map(String::trim).orElse("");
     String line2 = Optional.ofNullable(view.getText("line2")).map(String::trim).orElse("");
@@ -602,10 +654,10 @@ public class AdminSettingsGUI {
         "Line 2: " + ChatColor.translateAlternateColorCodes('&', line2)));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p, parentMenu);
+    displayGUI(p, parentMenu, backAction);
   }
 
-  private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+  private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
     Player p = (Player) audience;
     String message = Optional.ofNullable(view.getText("message")).map(String::trim).orElse("");
 
@@ -614,10 +666,10 @@ public class AdminSettingsGUI {
     p.sendMessage(Component.text(Main.getPrefix() + "Maintenance message set to: " + ChatColor.YELLOW + message));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p, parentMenu);
+    displayGUI(p, parentMenu, backAction);
   }
 
-  private void _setAFKTimeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+  private void _setAFKTimeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
     Player p = (Player) audience;
     int minutes = Math.round(view.getFloat("minutes"));
 
@@ -627,7 +679,7 @@ public class AdminSettingsGUI {
         .text(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes"));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p, parentMenu);
+    displayGUI(p, parentMenu, backAction);
   }
 
   // ----------------

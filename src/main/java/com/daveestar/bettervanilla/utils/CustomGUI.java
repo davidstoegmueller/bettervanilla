@@ -1,6 +1,7 @@
 package com.daveestar.bettervanilla.utils;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -36,6 +37,7 @@ public class CustomGUI implements Listener {
   private final CustomGUI _parentMenu;
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
+  private Consumer<Player> _backAction;
   private PageSwitchListener _pageSwitchListener;
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
@@ -67,6 +69,10 @@ public class CustomGUI implements Listener {
 
   public void setClickActions(Map<String, ClickAction> clickActions) {
     _clickActions = clickActions;
+  }
+
+  public void setBackAction(Consumer<Player> backAction) {
+    _backAction = backAction;
   }
 
   public void addFooterEntry(String key, ItemStack item, int slot) {
@@ -275,7 +281,11 @@ public class CustomGUI implements Listener {
       }
     } else if (isBackSlot) {
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
-      _parentMenu.open(p);
+      if (_backAction != null) {
+        _backAction.accept(p);
+      } else if (_parentMenu != null) {
+        _parentMenu.open(p);
+      }
     } else if (isItemSlot) {
       _handleItemClick(p, _slotKeyMap.get(rawSlot), e.isShiftClick(), e.isRightClick());
     } else {

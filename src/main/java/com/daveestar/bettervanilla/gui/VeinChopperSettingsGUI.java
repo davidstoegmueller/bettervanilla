@@ -57,7 +57,7 @@ public class VeinChopperSettingsGUI {
         _settingsManager::setVeinChopperAllowedBlocks);
   }
 
-  public void displayGUI(Player p, CustomGUI parent) {
+  public void displayGUI(Player p, CustomGUI parent, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("tools", _createToolsItem());
     entries.put("maxsize", _createMaxSizeItem());
@@ -77,6 +77,10 @@ public class VeinChopperSettingsGUI {
         entries, 2, customSlots, parent,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
+    if (backAction != null) {
+      gui.setBackAction(backAction);
+    }
+
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("tools", new CustomGUI.ClickAction() {
       @Override
@@ -87,7 +91,7 @@ public class VeinChopperSettingsGUI {
     actions.put("maxsize", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _openVeinChopperMaxSizeDialog(p, parent);
+        _openVeinChopperMaxSizeDialog(p, parent, backAction);
       }
     });
     actions.put("enabled", new CustomGUI.ClickAction() {
@@ -95,7 +99,7 @@ public class VeinChopperSettingsGUI {
       public void onLeftClick(Player p) {
         boolean newState = !_settingsManager.getVeinChopperEnabled();
         _settingsManager.setVeinChopperEnabled(newState);
-        displayGUI(p, parent);
+        displayGUI(p, parent, backAction);
       }
     });
     actions.put("sound", new CustomGUI.ClickAction() {
@@ -103,7 +107,7 @@ public class VeinChopperSettingsGUI {
       public void onLeftClick(Player p) {
         boolean newState = !_settingsManager.getVeinChopperSound();
         _settingsManager.setVeinChopperSound(newState);
-        displayGUI(p, parent);
+        displayGUI(p, parent, backAction);
       }
     });
     actions.put("blocks", new CustomGUI.ClickAction() {
@@ -218,7 +222,7 @@ public class VeinChopperSettingsGUI {
   // DIALOGS
   // -------
 
-  private void _openVeinChopperMaxSizeDialog(Player p, CustomGUI parentMenu) {
+  private void _openVeinChopperMaxSizeDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     int size = _settingsManager.getVeinChopperMaxVeinSize();
 
     DialogInput inputSize = CustomDialog.createNumberInput("size",
@@ -229,7 +233,7 @@ public class VeinChopperSettingsGUI {
         "Set the maximum size of veins that can be chopped.",
         null,
         List.of(inputSize),
-        (view, audience) -> _setVeinChopperMaxSizeDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setVeinChopperMaxSizeDialogCB(view, audience, parentMenu, backAction),
         null);
 
     p.showDialog(dialog);
@@ -239,7 +243,7 @@ public class VeinChopperSettingsGUI {
   // DIALOG CALLBACKS
   // ----------------
 
-  private void _setVeinChopperMaxSizeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+  private void _setVeinChopperMaxSizeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
     Player p = (Player) audience;
     int veinSize = Math.round(view.getFloat("size"));
 
@@ -248,6 +252,6 @@ public class VeinChopperSettingsGUI {
     p.sendMessage(Main.getPrefix() + "Maximum vein chopper size set to: " + ChatColor.YELLOW + veinSize);
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p, parentMenu);
+    displayGUI(p, parentMenu, backAction);
   }
 }

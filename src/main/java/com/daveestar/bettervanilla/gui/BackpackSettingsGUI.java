@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -34,7 +35,7 @@ public class BackpackSettingsGUI implements Listener {
     Bukkit.getPluginManager().registerEvents(this, _plugin);
   }
 
-  public void displayGUI(Player p, CustomGUI parentMenu) {
+  public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
     entries.put("pages", _createPagesItem());
     entries.put("enabled", _createEnabledItem());
@@ -50,6 +51,10 @@ public class BackpackSettingsGUI implements Listener {
         entries, 2, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
+    if (backAction != null) {
+      gui.setBackAction(backAction);
+    }
+
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
 
     actions.put("pages", new CustomGUI.ClickAction() {
@@ -58,7 +63,7 @@ public class BackpackSettingsGUI implements Listener {
         int newPages = _settingsManager.getBackpackPages() + 1;
         _settingsManager.setBackpackPages(newPages);
         _backpackManager.setPages(newPages);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
 
       @Override
@@ -66,14 +71,14 @@ public class BackpackSettingsGUI implements Listener {
         int newPages = Math.max(1, _settingsManager.getBackpackPages() - 1);
         _settingsManager.setBackpackPages(newPages);
         _backpackManager.setPages(newPages);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
     actions.put("enabled", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         _toggleEnabled(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
     actions.put("rows", new CustomGUI.ClickAction() {
@@ -82,7 +87,7 @@ public class BackpackSettingsGUI implements Listener {
         int newRows = Math.min(6, _settingsManager.getBackpackRows() + 1);
         _settingsManager.setBackpackRows(newRows);
         _backpackManager.setRows(newRows);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
 
       @Override
@@ -90,7 +95,7 @@ public class BackpackSettingsGUI implements Listener {
         int newRows = Math.max(1, _settingsManager.getBackpackRows() - 1);
         _settingsManager.setBackpackRows(newRows);
         _backpackManager.setRows(newRows);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
