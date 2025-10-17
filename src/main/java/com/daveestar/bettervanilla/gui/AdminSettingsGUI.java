@@ -59,50 +59,52 @@ public class AdminSettingsGUI {
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
-    // first row
+    // top row - core server controls
     entries.put("maintenance", _createMaintenanceItem());
+    entries.put("motd", _createMOTDItem());
+    entries.put("sleepingrain", _createSleepingRainItem());
+    entries.put("enablenether", _createEnableNetherItem());
+    entries.put("enableend", _createEnableEndItem());
+
+    // second row - world safety toggles
     entries.put("creeperblockdamage", _createCreeperBlockDamageItem());
     entries.put("creeperentitydamage", _createCreeperEntityDamageItem());
-    entries.put("enableend", _createEnableEndItem());
-    entries.put("enablenether", _createEnableNetherItem());
-    entries.put("sleepingrain", _createSleepingRainItem());
-
-    // second row
-    entries.put("motd", _createMOTDItem());
-    entries.put("afkprotection", _createAFKProtectionItem());
-    entries.put("afktime", _createAFKTimeItem());
-    entries.put("backpacksettings", _createBackpackSettingsItem());
-
-    // third row
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+
+    // third row - player protection & info
+    entries.put("afkprotection", _createAFKProtectionItem());
+    entries.put("afktime", _createAFKTimeItem());
     entries.put("locatorbar", _createLocatorBarItem());
+
+    // fourth row - feature configuration
+    entries.put("backpacksettings", _createBackpackSettingsItem());
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
-    // first row
+    // top row - slots 0 to 8
     customSlots.put("maintenance", 0);
-    customSlots.put("sleepingrain", 2);
-    customSlots.put("enablenether", 4);
-    customSlots.put("enableend", 6);
+    customSlots.put("motd", 2);
+    customSlots.put("sleepingrain", 4);
+    customSlots.put("enablenether", 6);
+    customSlots.put("enableend", 8);
 
-    // second row
-    customSlots.put("motd", 10);
-    customSlots.put("afkprotection", 12);
-    customSlots.put("afktime", 14);
-    customSlots.put("backpacksettings", 16);
+    // second row - slots 9 to 17
+    customSlots.put("creeperblockdamage", 10);
+    customSlots.put("creeperentitydamage", 12);
+    customSlots.put("cropprotection", 14);
+    customSlots.put("rightclickcropharvest", 16);
 
-    // third row
-    customSlots.put("cropprotection", 18);
-    customSlots.put("rightclickcropharvest", 20);
-    customSlots.put("locatorbar", 22);
-    customSlots.put("veinminersettings", 24);
-    customSlots.put("veinchoppersettings", 26);
+    // third row - slots 18 to 26
+    customSlots.put("afkprotection", 20);
+    customSlots.put("afktime", 22);
+    customSlots.put("locatorbar", 24);
 
-    // fourth row
-    customSlots.put("creeperblockdamage", 30);
-    customSlots.put("creeperentitydamage", 34);
+    // fourth row - slots 27 to 35
+    customSlots.put("backpacksettings", 28);
+    customSlots.put("veinminersettings", 30);
+    customSlots.put("veinchoppersettings", 32);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
