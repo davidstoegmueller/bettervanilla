@@ -2,7 +2,7 @@
 
 # Changelog
 
-## [1.9.0] - unreleased
+## [1.9.0] - 18.10.2025
 
 - 📁 **Renamed Moderation Config File** - For better consistency the `moderation.yml` file was renamed to `moderations.yml`.
 - 🚪 **Double Door Sync** - Syncs the state across connected double doors.

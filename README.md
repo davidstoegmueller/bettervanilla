@@ -31,6 +31,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - ⛏️ **Vein Miner & Tree Chopper** - Sneak-break to harvest entire ore veins or tree trunks instantly.
 - 💀 **Death Points & Chests** - Track every death, teleport back, and safely reclaim your belongings.
 - ✨ **Chest Sorting** - Right-click outside inventories to auto-organize loot.
+- 🔁 **Item Restock Automation** - Automatically refill empty hotbar slots with matching items using global and per-player toggles.
 - 🧰 **Settings Menu** - Toggle personal QoL options in an in-game UI.
 - 🎨 **Colored Chat & Mentions** - Use `&` color codes and ping friends with `@name`.
 - 📬 **Private Messages** - Chat directly with `/msg` and reply quickly using `/r`.
@@ -57,7 +58,8 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🗝️ **Permissions System** - Manage groups and users with hot-reload via `/permissions`.
 - 💤 **AFK Protection** - Shield idle players from damage, movement, and collisions.
 - 🧭 **Waypoint Management** - Review and edit public/private waypoints with dedicated staff tools.
-- 🫥 **Vanish Mode** - Hide from players and tab lists with `/vanish`.
+- 🫥 **Vanish Mode** - Hide from players, tab lists, join/leave messages, the server list, and AFK timers with `/vanish`.
+- ⚰️ **Deathchest Toggle** - Switch global deathchests on or off without leaving the GUI.
 - 🔨 **Moderation Toolkit** - Kick, ban, mute, unmute, and unban directly in-game.
 - 📣 **Server MOTD** - Edit the server list message from the admin menu.
 - 🧭 **Locator Bar Gamerule** - Flip the `/gamerule locatorBar` setting across every world without leaving the GUI.
@@ -118,6 +120,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🧭 Bossbar compass overlay
 - ✨ Navigation particles
 - 🧹 Chest sorting toggle
+- 🔁 Item restock automation toggle
 - 🚪 Double Door Sync
 - ⛏️ Vein miner toggle with per-player limits
 - 🪓 Vein chopper toggle with per-player limits
@@ -125,13 +128,15 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 ### Admin Settings
 
 - 🚧 Maintenance mode and custom message
-- 💣 Creeper block damage toggle
+- 💣 Creeper explosion protection toggle (blocks + entities)
 - 🔭 End travel toggle
 - 🔥 Nether travel toggle
 - 🌧️ Sleeping rain skip
 - 📣 Server MOTD editor
 - 🧭 Locator bar gamerule toggle
 - 💤 AFK protection toggle and AFK timeout
+- ⚰️ Deathchest toggle
+- 🔁 Item restock automation defaults and global toggle
 - 🌾 Crop protection
 - 🌱 Right-click harvest
 - 🎒 Backpack availability, page count, and row count
@@ -163,6 +168,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 | `bettervanilla.doubledoor`         | player, moderator, admin |
 | `bettervanilla.veinminer`          | player, moderator, admin |
 | `bettervanilla.veinchopper`        | player, moderator, admin |
+| `bettervanilla.itemrestock`        | player, moderator, admin |
 | `bettervanilla.adminhelp`          | moderator, admin         |
 | `bettervanilla.vanish`             | moderator, admin         |
 | `bettervanilla.invsee`             | moderator, admin         |
