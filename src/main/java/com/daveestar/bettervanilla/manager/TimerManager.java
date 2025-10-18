@@ -189,7 +189,7 @@ public class TimerManager {
     String message = _generateTimerMessage();
 
     _plugin.getServer().getOnlinePlayers().forEach(p -> {
-      if (!_settingsManager.getToggleLocation(p.getUniqueId()) && !_navigationManager.checkActiveNavigation(p)) {
+      if (!_settingsManager.getPlayerToggleLocation(p.getUniqueId()) && !_navigationManager.checkActiveNavigation(p)) {
         _actionBarManager.sendActionBarOnce(p, message);
       }
     });

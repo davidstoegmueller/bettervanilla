@@ -111,7 +111,7 @@ public class VeinMiningChopping implements Listener {
 
     // 1 / (unbreakingLvl + 1) chance to actually consume durability
     if (unbreakingLvl > 0 && ThreadLocalRandom.current().nextDouble() >= 1D / (unbreakingLvl + 1)) {
-      return true; // lucky swing – no damage
+      return true; // lucky swing - no damage
     }
 
     dmg.setDamage(dmg.getDamage() + 1);

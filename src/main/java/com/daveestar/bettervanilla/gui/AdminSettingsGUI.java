@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -53,72 +54,98 @@ public class AdminSettingsGUI {
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu) {
+    displayGUI(p, parentMenu, null);
+  }
+
+  public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
-    // first row
+    // top row - core server controls
     entries.put("maintenance", _createMaintenanceItem());
-    entries.put("creeperdamage", _createCreeperDamageItem());
-    entries.put("enableend", _createEnableEndItem());
-    entries.put("enablenether", _createEnableNetherItem());
-    entries.put("sleepingrain", _createSleepingRainItem());
-
-    // second row
     entries.put("motd", _createMOTDItem());
-    entries.put("afkprotection", _createAFKProtectionItem());
-    entries.put("afktime", _createAFKTimeItem());
-    entries.put("backpacksettings", _createBackpackSettingsItem());
+    entries.put("sleepingrain", _createSleepingRainItem());
+    entries.put("enablenether", _createEnableNetherItem());
+    entries.put("enableend", _createEnableEndItem());
 
-    // third row
+    // second row - world safety toggles
+    entries.put("creeperblockdamage", _createCreeperBlockDamageItem());
+    entries.put("creeperentitydamage", _createCreeperEntityDamageItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
+
+    // third row - player protection & info
+    entries.put("afkprotection", _createAFKProtectionItem());
+    entries.put("afktime", _createAFKTimeItem());
     entries.put("locatorbar", _createLocatorBarItem());
+    entries.put("deathchest", _createDeathChestItem());
+    entries.put("itemrestock", _createItemRestockItem());
+
+    // fourth row - feature configuration
+    entries.put("backpacksettings", _createBackpackSettingsItem());
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
-    // first row
+    // top row - slots 0 to 8
     customSlots.put("maintenance", 0);
-    customSlots.put("creeperdamage", 2);
-    customSlots.put("enableend", 4);
+    customSlots.put("motd", 2);
+    customSlots.put("sleepingrain", 4);
     customSlots.put("enablenether", 6);
-    customSlots.put("sleepingrain", 8);
+    customSlots.put("enableend", 8);
 
-    // second row
-    customSlots.put("motd", 10);
-    customSlots.put("afkprotection", 12);
-    customSlots.put("afktime", 14);
-    customSlots.put("backpacksettings", 16);
+    // second row - slots 9 to 17
+    customSlots.put("creeperblockdamage", 10);
+    customSlots.put("creeperentitydamage", 12);
+    customSlots.put("cropprotection", 14);
+    customSlots.put("rightclickcropharvest", 16);
 
-    // third row
-    customSlots.put("cropprotection", 18);
-    customSlots.put("rightclickcropharvest", 20);
-    customSlots.put("locatorbar", 22);
-    customSlots.put("veinminersettings", 24);
-    customSlots.put("veinchoppersettings", 26);
+    // third row - slots 18 to 26
+    customSlots.put("afkprotection", 20);
+    customSlots.put("afktime", 22);
+    customSlots.put("locatorbar", 24);
+    customSlots.put("itemrestock", 26);
+
+    // fourth row - slots 27 to 35
+    customSlots.put("backpacksettings", 28);
+    customSlots.put("veinminersettings", 30);
+    customSlots.put("veinchoppersettings", 32);
+    customSlots.put("deathchest", 34);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 4, customSlots, parentMenu,
+        entries, 5, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
+
+    if (backAction != null) {
+      gui.setBackAction(backAction);
+    }
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         _toggleMaintenance(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
 
       @Override
       public void onRightClick(Player p) {
-        _openMaintenanceMessageDialog(p, parentMenu);
+        _openMaintenanceMessageDialog(p, parentMenu, backAction);
       }
     });
 
-    actions.put("creeperdamage", new CustomGUI.ClickAction() {
+    actions.put("creeperblockdamage", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleCreeperDamage(p);
-        displayGUI(p, parentMenu);
+        _toggleCreeperBlockDamage(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("creeperentitydamage", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleCreeperEntityDamage(p);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -126,7 +153,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleEnd(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -134,7 +161,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleNether(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -142,7 +169,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleSleepingRain(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -150,7 +177,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleCropProtection(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -158,7 +185,7 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleRightClickCropHarvest(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -166,7 +193,15 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleLocatorBar(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("deathchest", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleDeathChest(p);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -174,42 +209,49 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleAFKProtection(p);
-        displayGUI(p, parentMenu);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
     actions.put("afktime", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _openAFKTimeDialog(p, parentMenu);
+        _openAFKTimeDialog(p, parentMenu, backAction);
       }
     });
 
     actions.put("motd", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _openMOTDDialog(p, parentMenu);
+        _openMOTDDialog(p, parentMenu, backAction);
       }
     });
 
     actions.put("backpacksettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _backpackSettingsGUI.displayGUI(p, gui);
+        _backpackSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
     actions.put("veinminersettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _veinMinerSettingsGUI.displayGUI(p, gui);
+        _veinMinerSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
     actions.put("veinchoppersettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _veinChopperSettingsGUI.displayGUI(p, gui);
+        _veinChopperSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
+      }
+    });
+    actions.put("itemrestock", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleItemRestock(p);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -242,16 +284,37 @@ public class AdminSettingsGUI {
     return item;
   }
 
-  private ItemStack _createCreeperDamageItem() {
-    boolean state = _settingsManager.getToggleCreeperDamage();
+  private ItemStack _createCreeperBlockDamageItem() {
+    boolean state = _settingsManager.getCreeperBlockDamage();
     ItemStack item = new ItemStack(Material.CREEPER_HEAD);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Damage"));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Block Damage"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Prevents creepers from destroying blocks.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether creepers destroy blocks when exploding.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createCreeperEntityDamageItem() {
+    boolean state = _settingsManager.getCreeperEntityDamage();
+    ItemStack item = new ItemStack(Material.TNT);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Entity Damage"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether creepers damage non-player entities.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -387,6 +450,49 @@ public class AdminSettingsGUI {
     return item;
   }
 
+  private ItemStack _createDeathChestItem() {
+    boolean state = _settingsManager.getDeathChestEnabled();
+    ItemStack item = new ItemStack(Material.CHEST);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Death Chest"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether death chests spawn on player death.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Disabling drops items and hides stored inventories.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createItemRestockItem() {
+    boolean state = _settingsManager.getItemRestockEnabled();
+    ItemStack item = new ItemStack(Material.HOPPER);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Item Restock"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable automatic hotbar restocking.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createAFKProtectionItem() {
     boolean state = _settingsManager.getAFKProtection();
     ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING);
@@ -462,17 +568,25 @@ public class AdminSettingsGUI {
   }
 
   private ItemStack _createBackpackSettingsItem() {
+    boolean enabled = _settingsManager.getBackpackEnabled();
+    int pages = _settingsManager.getBackpackPages();
+    int rows = _settingsManager.getBackpackRows();
     ItemStack item = new ItemStack(Material.BARREL);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Settings"));
-      meta.lore(Arrays.asList(
+      List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+          ""));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Pages: " + ChatColor.YELLOW + pages);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Rows/Page: " + ChatColor.YELLOW + rows);
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -480,6 +594,13 @@ public class AdminSettingsGUI {
   }
 
   private ItemStack _createVeinMinerSettingsItem() {
+    boolean enabled = _settingsManager.getVeinMinerEnabled();
+    int maxSize = _settingsManager.getVeinMinerMaxVeinSize();
+    boolean sound = _settingsManager.getVeinMinerSound();
+    List<String> allowedTools = _settingsManager.getVeinMinerAllowedTools();
+    List<String> allowedBlocks = _settingsManager.getVeinMinerAllowedBlocks();
+    int totalTools = SettingsManager.VEIN_MINER_TOOLS.size();
+    int totalBlocks = SettingsManager.VEIN_MINER_BLOCKS.size();
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
@@ -487,11 +608,21 @@ public class AdminSettingsGUI {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner Settings"));
-      meta.lore(Arrays.asList(
+      List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein miner settings.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+          ""));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Max Size: " + ChatColor.YELLOW + maxSize);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sound: "
+          + (sound ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tools: "
+          + ChatColor.YELLOW + allowedTools.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalTools);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Blocks: "
+          + ChatColor.YELLOW + allowedBlocks.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalBlocks);
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -499,6 +630,13 @@ public class AdminSettingsGUI {
   }
 
   private ItemStack _createVeinChopperSettingsItem() {
+    boolean enabled = _settingsManager.getVeinChopperEnabled();
+    int maxSize = _settingsManager.getVeinChopperMaxVeinSize();
+    boolean sound = _settingsManager.getVeinChopperSound();
+    List<String> allowedTools = _settingsManager.getVeinChopperAllowedTools();
+    List<String> allowedBlocks = _settingsManager.getVeinChopperAllowedBlocks();
+    int totalTools = SettingsManager.VEIN_CHOPPER_TOOLS.size();
+    int totalBlocks = SettingsManager.VEIN_CHOPPER_BLOCKS.size();
     ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
@@ -506,11 +644,21 @@ public class AdminSettingsGUI {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper Settings"));
-      meta.lore(Arrays.asList(
+      List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein chopper settings.",
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+          ""));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Max Size: " + ChatColor.YELLOW + maxSize);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sound: "
+          + (sound ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tools: "
+          + ChatColor.YELLOW + allowedTools.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalTools);
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Blocks: "
+          + ChatColor.YELLOW + allowedBlocks.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalBlocks);
+      lore.add("");
+      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -521,7 +669,7 @@ public class AdminSettingsGUI {
   // DIALOGS
   // -------
 
-  private void _openMOTDDialog(Player p, CustomGUI parentMenu) {
+  private void _openMOTDDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     String[] motdLines = _settingsManager.getServerMOTDRaw();
 
     String motdLine1 = (motdLines != null && motdLines.length > 0 && motdLines[0] != null) ? motdLines[0] : "";
@@ -543,13 +691,13 @@ public class AdminSettingsGUI {
         "Set the server message of the day (MOTD) visible in the server list.",
         null,
         List.of(inputMotdLine1, inputMotdLine2),
-        (view, audience) -> _setServerMOTDDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setServerMOTDDialogCB(view, audience, parentMenu, backAction),
         null);
 
     p.showDialog(dialog);
   }
 
-  private void _openMaintenanceMessageDialog(Player p, CustomGUI parentMenu) {
+  private void _openMaintenanceMessageDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     String maintenanceMessage = _settingsManager.getMaintenanceMessage();
 
     DialogInput inputMessage = DialogInput
@@ -563,13 +711,13 @@ public class AdminSettingsGUI {
         "Set the maintenance message displayed to players when they are kicked.",
         null,
         List.of(inputMessage),
-        (view, audience) -> _setMaintenanceMessageDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setMaintenanceMessageDialogCB(view, audience, parentMenu, backAction),
         null);
 
     p.showDialog(dialog);
   }
 
-  private void _openAFKTimeDialog(Player p, CustomGUI parentMenu) {
+  private void _openAFKTimeDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     int afkTime = _settingsManager.getAFKTime();
 
     DialogInput inputMinutes = CustomDialog.createNumberInput("minutes",
@@ -580,7 +728,7 @@ public class AdminSettingsGUI {
         "Set the AFK timeout in minutes.",
         null,
         List.of(inputMinutes),
-        (view, audience) -> _setAFKTimeDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setAFKTimeDialogCB(view, audience, parentMenu, backAction),
         null);
 
     p.showDialog(dialog);
@@ -590,7 +738,8 @@ public class AdminSettingsGUI {
   // DIALOG CALLBACKS
   // ----------------
 
-  private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+  private void _setServerMOTDDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     String line1 = Optional.ofNullable(view.getText("line1")).map(String::trim).orElse("");
     String line2 = Optional.ofNullable(view.getText("line2")).map(String::trim).orElse("");
@@ -602,10 +751,11 @@ public class AdminSettingsGUI {
         "Line 2: " + ChatColor.translateAlternateColorCodes('&', line2)));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p, parentMenu);
+    displayGUI(p, parentMenu, backAction);
   }
 
-  private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+  private void _setMaintenanceMessageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     String message = Optional.ofNullable(view.getText("message")).map(String::trim).orElse("");
 
@@ -614,10 +764,11 @@ public class AdminSettingsGUI {
     p.sendMessage(Component.text(Main.getPrefix() + "Maintenance message set to: " + ChatColor.YELLOW + message));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p, parentMenu);
+    displayGUI(p, parentMenu, backAction);
   }
 
-  private void _setAFKTimeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+  private void _setAFKTimeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     int minutes = Math.round(view.getFloat("minutes"));
 
@@ -627,7 +778,7 @@ public class AdminSettingsGUI {
         .text(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes"));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p, parentMenu);
+    displayGUI(p, parentMenu, backAction);
   }
 
   // ----------------
@@ -651,11 +802,20 @@ public class AdminSettingsGUI {
     _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
   }
 
-  private void _toggleCreeperDamage(Player p) {
-    boolean newState = !_settingsManager.getToggleCreeperDamage();
-    _settingsManager.setToggleCreeperDamage(newState);
+  private void _toggleCreeperBlockDamage(Player p) {
+    boolean newState = !_settingsManager.getCreeperBlockDamage();
+    _settingsManager.setCreeperBlockDamage(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Creeper damage is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(
+        Main.getPrefix() + "Creeper block damage is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleCreeperEntityDamage(Player p) {
+    boolean newState = !_settingsManager.getCreeperEntityDamage();
+    _settingsManager.setCreeperEntityDamage(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(
+        Main.getPrefix() + "Creeper entity damage is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleEnd(Player p) {
@@ -702,11 +862,26 @@ public class AdminSettingsGUI {
     p.sendMessage(Main.getPrefix() + "Locator bar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
+  private void _toggleDeathChest(Player p) {
+    boolean newState = !_settingsManager.getDeathChestEnabled();
+    _settingsManager.setDeathChestEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Death chest creation is now "
+        + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
   private void _toggleAFKProtection(Player p) {
     boolean newState = !_settingsManager.getAFKProtection();
     _settingsManager.setAFKProtection(newState);
     _afkManager.applyProtectionToAFKPlayers(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleItemRestock(Player p) {
+    boolean newState = !_settingsManager.getItemRestockEnabled();
+    _settingsManager.setItemRestockEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Item restock is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

@@ -439,7 +439,7 @@ public class WaypointsGUI {
     Location destination = new Location(p.getWorld(), coords.get(KEY_COORD_X), coords.get(KEY_COORD_Y),
         coords.get(KEY_COORD_Z));
 
-    _settingsManager.setToggleLocation(p.getUniqueId(), false);
+    _settingsManager.setPlayerToggleLocation(p.getUniqueId(), false);
     NavigationData navigationData = new NavigationData(waypointName, destination, NavigationType.WAYPOINT,
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);

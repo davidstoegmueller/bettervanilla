@@ -22,9 +22,12 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\Time
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\VeinChopperSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\CropProtection.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ItemRestock.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\NavigationData.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\DoubleDoorSync.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SleepingRain.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\TimerCommand.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\CreeperProtection.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ServerMOTD.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\VeinMinerSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\BackpackManager.java

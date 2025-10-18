@@ -20,6 +20,9 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.md_5.bungee.api.ChatColor;
 
 public class TabListManager {
+  private static final double DEFAULT_TPS = 20.0D;
+  private static final double DEFAULT_MSPT = 0.0D;
+
   private final Main _plugin;
 
   private TimerManager _timerManager;
@@ -31,9 +34,6 @@ public class TabListManager {
 
   public TabListManager() {
     _plugin = Main.getInstance();
-  }
-
-  public void initManagers() {
     _timerManager = _plugin.getTimerManager();
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
@@ -88,6 +88,7 @@ public class TabListManager {
     World world = p.getWorld();
     long day = world.getFullTime() / 24000L;
     String timeStr = _formatWorldTime(world);
+    String timTextStr = _getTimeOfDayText(world);
     Environment env = world.getEnvironment();
 
     String weatherStr;
@@ -109,7 +110,9 @@ public class TabListManager {
         isMaintenance ? Main.getShortPrefix() + ChatColor.RED + "" + ChatColor.BOLD + "Maintenance-Mode: ON" : null,
         "",
         Main.getShortPrefix() + ChatColor.GRAY + "Day: " + ChatColor.YELLOW + day + ChatColor.GRAY + " | "
-            + ChatColor.GRAY + "Time: " + ChatColor.YELLOW + timeStr + ChatColor.GRAY,
+            + ChatColor.GRAY + "Time: " + ChatColor.YELLOW + timeStr + ChatColor.GRAY + " (" + ChatColor.YELLOW
+            + timTextStr
+            + ChatColor.GRAY + ")",
         Main.getShortPrefix() + ChatColor.GRAY + "Weather: " + ChatColor.YELLOW + weatherStr,
         "");
 
@@ -123,7 +126,7 @@ public class TabListManager {
 
   private Component _buildFooter(Player p) {
     int playTimeSeconds = _timerManager.getPlayTime(p);
-    int onlinePlayersCount = _plugin.getServer().getOnlinePlayers().size();
+    int onlinePlayersCount = _plugin.getServer().getOnlinePlayers().size() - _vanishManager.getVanishedCount();
     int maxPlayerCount = _plugin.getServer().getMaxPlayers();
 
     List<String> lines = Arrays.asList(
@@ -164,6 +167,23 @@ public class TabListManager {
     return playerNameComponent;
   }
 
+  private String _getTimeOfDayText(World world) {
+    long time = (world.getTime() + 6000L) % 24000L;
+    int hours = (int) (time / 1000L);
+
+    if (hours >= 6 && hours < 12) {
+      return "Morning";
+    } else if (hours >= 12 && hours < 13.5) {
+      return "Midday";
+    } else if (hours >= 13.5 && hours < 18) {
+      return "Afternoon";
+    } else if (hours >= 18 && hours < 21) {
+      return "Evening";
+    } else {
+      return "Night";
+    }
+  }
+
   private String _formatWorldTime(World world) {
     long time = (world.getTime() + 6000L) % 24000L;
     int hours = (int) (time / 1000L);
@@ -177,15 +197,39 @@ public class TabListManager {
   }
 
   private String _formatTps() {
-    double[] tpsValues = _plugin.getServer().getTPS();
-    double tps = tpsValues.length > 0 ? tpsValues[0] : 20.0D;
-    double capped = Math.min(20.0D, tps);
+    double tpsValue = DEFAULT_TPS;
 
-    return String.format(Locale.US, "%.1f", capped);
+    try {
+      double[] tpsValues = _plugin.getServer().getTPS();
+      if (tpsValues != null && tpsValues.length > 0) {
+        tpsValue = tpsValues[0];
+      }
+    } catch (RuntimeException ex) {
+      // Folia's TPS access is not thread-safe; default to the fallback when the API
+      // throws
+    }
+
+    if (Double.isNaN(tpsValue) || Double.isInfinite(tpsValue) || tpsValue < 0.0D) {
+      tpsValue = DEFAULT_TPS;
+    }
+
+    return String.format(Locale.US, "%.1f", tpsValue);
   }
 
   private String _formatMspt() {
-    double mspt = _plugin.getServer().getAverageTickTime();
+    double mspt = DEFAULT_MSPT;
+
+    try {
+      mspt = _plugin.getServer().getAverageTickTime();
+    } catch (RuntimeException ex) {
+      // Folia may throw when accessed off-thread; fall back to the default
+      mspt = DEFAULT_MSPT;
+    }
+
+    if (Double.isNaN(mspt) || Double.isInfinite(mspt) || mspt < 0.0D) {
+      mspt = DEFAULT_MSPT;
+    }
+
     return String.format(Locale.US, "%.1f", mspt);
   }
 }

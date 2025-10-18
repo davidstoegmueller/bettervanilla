@@ -82,7 +82,7 @@ public class WaypointsCommand implements TabExecutor {
       int z = Integer.parseInt(args[3]);
 
       Location destination = new Location(p.getWorld(), x, y, z);
-      _settingsManager.setToggleLocation(p.getUniqueId(), false);
+      _settingsManager.setPlayerToggleLocation(p.getUniqueId(), false);
 
       NavigationData navigationData = new NavigationData("Coordinates", destination, NavigationType.WAYPOINT,
           Color.YELLOW);
@@ -113,7 +113,7 @@ public class WaypointsCommand implements TabExecutor {
     }
 
     Location targetLocation = targetPlayer.getLocation().toBlockLocation();
-    _settingsManager.setToggleLocation(p.getUniqueId(), false);
+    _settingsManager.setPlayerToggleLocation(p.getUniqueId(), false);
 
     NavigationData navigationData = new NavigationData(targetPlayerName, targetLocation, NavigationType.PLAYER,
         Color.YELLOW);

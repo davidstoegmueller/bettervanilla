@@ -27,8 +27,8 @@ public class MessageManager {
     _lastMessages.put(receiver, sender);
   }
 
-  public Player getReplyTarget(Player player) {
-    Player target = _lastMessages.get(player);
+  public Player getReplyTarget(Player p) {
+    Player target = _lastMessages.get(p);
     if (target != null && target.isOnline()) {
       return target;
     }
@@ -36,8 +36,8 @@ public class MessageManager {
     return null;
   }
 
-  public void onPlayerLeft(Player player) {
-    _lastMessages.remove(player);
-    _lastMessages.entrySet().removeIf(entry -> entry.getValue().equals(player));
+  public void onPlayerLeft(Player p) {
+    _lastMessages.remove(p);
+    _lastMessages.entrySet().removeIf(entry -> entry.getValue().equals(p));
   }
 }

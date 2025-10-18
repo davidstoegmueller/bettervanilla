@@ -21,8 +21,10 @@ public enum Permissions {
   TOGGLELOCATION("bettervanilla.togglelocation", Category.PLAYER),
   TOGGLECOMPASS("bettervanilla.togglecompass", Category.PLAYER),
   CHESTSORT("bettervanilla.chestsort", Category.PLAYER),
+  DOUBLE_DOOR("bettervanilla.doubledoor", Category.PLAYER),
   VEINMINER("bettervanilla.veinminer", Category.PLAYER),
-  VEINCHOPPER("bettervanilla.veinchopper", Category.PLAYER);
+  VEINCHOPPER("bettervanilla.veinchopper", Category.PLAYER),
+  ITEM_RESTOCK("bettervanilla.itemrestock", Category.PLAYER);
 
   public enum Category {
     PLAYER,

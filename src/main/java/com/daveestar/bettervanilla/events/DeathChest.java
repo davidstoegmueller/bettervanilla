@@ -7,13 +7,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -24,8 +27,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
-import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager.DeathPointReference;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -58,24 +61,40 @@ public class DeathChest implements Listener {
       deathChestLocation.setY(100.5);
     }
 
-    _deathPointsManager.addDeathPoint(p, deathChestLocation);
-    e.getDrops().clear();
+    boolean deathChestEnabled = _settingsManager.getDeathChestEnabled();
+
+    _deathPointsManager.addDeathPoint(p, deathChestLocation, deathChestEnabled);
+
+    if (deathChestEnabled) {
+      e.getDrops().clear();
+    }
 
     int chestX = deathChestLocation.getBlockX();
     int chestY = deathChestLocation.getBlockY();
     int chestZ = deathChestLocation.getBlockZ();
 
-    p.sendMessage(Main.getPrefix() + "You died. All your items are stored in the death chest on: "
+    p.sendMessage(Main.getPrefix() + "You died at: "
         + ChatColor.YELLOW + "X: " + ChatColor.GRAY + chestX
         + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + chestY
         + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + chestZ);
-    p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
-        + " As soon as you close or break the chest all items will be dropped!");
+
+    if (deathChestEnabled) {
+      p.sendMessage(Main.getPrefix() + "All your items are stored in the death chest at this location.");
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
+          + " As soon as you close or break the chest all items will be dropped!");
+    } else {
+      p.sendMessage(Main.getPrefix() + "Your items were dropped on the ground.");
+    }
 
     if (fellIntoVoid) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
-          + " You fell into the void! Your deathchest will spawn at "
-          + ChatColor.YELLOW + "Y: " + ChatColor.GRAY + "100");
+      if (deathChestEnabled) {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+            + " You fell into the void! Your deathchest will spawn at "
+            + ChatColor.YELLOW + "Y: " + ChatColor.GRAY + "100");
+      } else {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+            + " You fell into the void while death chests are disabled. Items lost in the void cannot be recovered.");
+      }
     }
 
     p.sendMessage(Main.getPrefix() + "If you want to list your deathpoints please use: "
@@ -186,15 +205,48 @@ public class DeathChest implements Listener {
   public void onEntityExplode(EntityExplodeEvent e) {
     e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
 
-    if (!_settingsManager.getToggleCreeperDamage()) {
-      if (e.getEntity() != null && e.getEntity().getType() == EntityType.CREEPER) {
-        e.blockList().clear();
-      }
+  }
+
+  @EventHandler
+  public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    _protectDeathChestArmorStand(e);
+  }
+
+  @EventHandler
+  public void onDeathChestExplosionDamage(EntityDamageEvent e) {
+    if (e.getCause() != EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
+        && e.getCause() != EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+      return;
     }
+
+    _protectDeathChestArmorStand(e);
   }
 
   @EventHandler
   public void onBlockExplode(BlockExplodeEvent e) {
     e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
+  }
+
+  private boolean _protectDeathChestArmorStand(EntityDamageEvent event) {
+    if (!_isDeathChestArmorStand(event.getEntity())) {
+      return false;
+    }
+
+    event.setCancelled(true);
+    return true;
+  }
+
+  private boolean _isDeathChestArmorStand(Entity entity) {
+    if (!(entity instanceof ArmorStand stand) || !stand.isMarker()) {
+      return false;
+    }
+
+    Location loc = stand.getLocation().toBlockLocation();
+
+    if (loc.getWorld() == null) {
+      return false;
+    }
+
+    return _deathPointsManager.isDeathPointBlock(loc.getBlock());
   }
 }

@@ -51,38 +51,56 @@ public class SettingsManager {
   }
 
   // USER SETTINGS
-  public boolean getToggleLocation(UUID uuid) {
+  public boolean getPlayerToggleLocation(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".togglelocation", false);
   }
 
-  public void setToggleLocation(UUID uuid, boolean value) {
+  public void setPlayerToggleLocation(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".togglelocation", value);
     _config.save();
   }
 
-  public boolean getToggleCompass(UUID uuid) {
+  public boolean getPlayerToggleCompass(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".togglecompass", false);
   }
 
-  public void setToggleCompass(UUID uuid, boolean value) {
+  public void setPlayerToggleCompass(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".togglecompass", value);
     _config.save();
   }
 
-  public boolean getChestSort(UUID uuid) {
+  public boolean getPlayerChestSort(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".chestsort", false);
   }
 
-  public void setChestSort(UUID uuid, boolean value) {
+  public void setPlayerChestSort(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".chestsort", value);
     _config.save();
   }
 
-  public boolean getNavigationTrail(UUID uuid) {
+  public boolean getPlayerDoubleDoorSync(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".doubledoor", false);
+  }
+
+  public void setPlayerDoubleDoorSync(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".doubledoor", value);
+    _config.save();
+  }
+
+  public boolean getPlayerItemRestock(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".itemrestock", false);
+  }
+
+  public void setPlayerItemRestock(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".itemrestock", value);
+    _config.save();
+  }
+
+  public boolean getPlayerNavigationTrail(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".navigationtrail", false);
   }
 
-  public void setNavigationTrail(UUID uuid, boolean value) {
+  public void setPlayerNavigationTrail(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".navigationtrail", value);
     _config.save();
   }
@@ -107,7 +125,7 @@ public class SettingsManager {
 
   // GLOBAL SETTINGS
   public boolean getMaintenanceState() {
-    return _fileConfig.getBoolean("global.maintenance.value", false);
+    return _fileConfig.getBoolean("global.maintenance.enabled", false);
   }
 
   public String getMaintenanceMessage() {
@@ -115,7 +133,7 @@ public class SettingsManager {
   }
 
   public void setMaintenanceState(boolean value) {
-    _fileConfig.set("global.maintenance.value", value);
+    _fileConfig.set("global.maintenance.enabled", value);
     _config.save();
   }
 
@@ -124,12 +142,21 @@ public class SettingsManager {
     _config.save();
   }
 
-  public boolean getToggleCreeperDamage() {
-    return _fileConfig.getBoolean("global.creeperdamage", true);
+  public boolean getCreeperBlockDamage() {
+    return _fileConfig.getBoolean("global.creeperblockdamage", true);
   }
 
-  public void setToggleCreeperDamage(boolean value) {
-    _fileConfig.set("global.creeperdamage", value);
+  public void setCreeperBlockDamage(boolean value) {
+    _fileConfig.set("global.creeperblockdamage", value);
+    _config.save();
+  }
+
+  public boolean getCreeperEntityDamage() {
+    return _fileConfig.getBoolean("global.creeperentitydamage", true);
+  }
+
+  public void setCreeperEntityDamage(boolean value) {
+    _fileConfig.set("global.creeperentitydamage", value);
     _config.save();
   }
 
@@ -157,6 +184,15 @@ public class SettingsManager {
 
   public void setSleepingRain(boolean value) {
     _fileConfig.set("global.sleepingrain", value);
+    _config.save();
+  }
+
+  public boolean getDeathChestEnabled() {
+    return _fileConfig.getBoolean("global.deathchest", true);
+  }
+
+  public void setDeathChestEnabled(boolean value) {
+    _fileConfig.set("global.deathchest", value);
     _config.save();
   }
 
@@ -221,7 +257,7 @@ public class SettingsManager {
   }
 
   public boolean getCropProtection() {
-    return _fileConfig.getBoolean("global.cropprotection", true);
+    return _fileConfig.getBoolean("global.cropprotection", false);
   }
 
   public void setCropProtection(boolean value) {
@@ -293,6 +329,22 @@ public class SettingsManager {
       String[] uuids = getAllPlayersUUIDS();
       for (String uuid : uuids) {
         setPlayerVeinChopper(UUID.fromString(uuid), value);
+      }
+    }
+  }
+
+  public boolean getItemRestockEnabled() {
+    return _fileConfig.getBoolean("global.itemrestock", false);
+  }
+
+  public void setItemRestockEnabled(boolean value) {
+    _fileConfig.set("global.itemrestock", value);
+    _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setPlayerItemRestock(UUID.fromString(uuid), false);
       }
     }
   }

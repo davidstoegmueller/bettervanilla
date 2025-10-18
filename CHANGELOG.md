@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [1.9.0] - 18.10.2025
+
+- 📁 **Renamed Moderation Config File** - For better consistency the `moderation.yml` file was renamed to `moderations.yml`.
+- 🚪 **Double Door Sync** - Syncs the state across connected double doors.
+- 💣 **Creeper Protection Settings** - Extended protection system to cover both block and entity explosions.
+- 🧭 **GUI Back-Navigation** - Custom GUIs now dynamically update when using the back-navigation footer item.
+- ⚙️ **TPS & MSPT Stability** - Fixed rare async null-pointer exceptions in Folia task handling.
+- 🧩 **Admin GUI Reorganization** - Reordered admin settings into a more logical and intuitive structure.
+- 🫥 **Vanish Mode Enhancements** - Hidden from server list, join/leave messages, AFK timers, tab list, and nametags for full invisibility.
+- ⚰️ **Deathchest Toggle** - Added an admin settings GUI option to enable or disable deathchests.
+- 🔄 **Item Restock Automation** - Global and per-player toggles for automatically refilling empty hotbar slots with matching items.
+
 ## [1.8.0] - 10.10.2025
 
 - 🔐 **Permission System Rework** - Centralized every command check on the `Permissions` enum, refreshed `/permissions` with better validation, tab completion, and clearer feedback, and removed redundant permission declarations from `plugin.yml`.
@@ -9,9 +21,9 @@
 - 🔨 **Moderation Updates** - Consolidated moderation commands under `bettervanilla.moderation`, added self-target safeguards, and clarified player-facing notifications.
 - 🧰 **Settings Menu Tweaks** - Permission-aware toggles now live entirely inside the GUI, replacing the legacy `/togglelocation` and `/togglecompass` commands.
 - 🧭 **Locator Bar Toggle** - Added an admin GUI control for `/gamerule locatorBar` that syncs the rule across every world.
-- 🧭 **Tab List Refactor** – Rebuilt tab list handling around a dedicated manager that refreshes entries every second and centralizes updates across AFK, vanish, and chat events.
-- 🌤️ **Dynamic Header & Footer** – Added world day/time, weather, online player counts, personal playtime, ping, TPS, and MSPT to the tab list header/footer alongside quick help messaging.
-- 👻 **AFK & Vanish Awareness** – Players marked AFK now receive a `[AFK]` tag with their death count, while vanished staff stay hidden without nameplate flicker.
+- 🧭 **Tab List Refactor** - Rebuilt tab list handling around a dedicated manager that refreshes entries every second and centralizes updates across AFK, vanish, and chat events.
+- 🌤️ **Dynamic Header & Footer** - Added world day/time, weather, online player counts, personal playtime, ping, TPS, and MSPT to the tab list header/footer alongside quick help messaging.
+- 👻 **AFK & Vanish Awareness** - Players marked AFK now receive a `[AFK]` tag with their death count, while vanished staff stay hidden without nameplate flicker.
 - 📦 **Paper 1.21.10 Support** - Updated the build and plugin metadata to target the latest Paper release.
 
 ## [1.7.0] - 09.10.2025

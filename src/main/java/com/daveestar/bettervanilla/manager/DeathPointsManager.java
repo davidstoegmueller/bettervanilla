@@ -33,7 +33,7 @@ public class DeathPointsManager {
     _fileConfig = config.getFileConfig();
   }
 
-  public void addDeathPoint(Player p, Location loc) {
+  public void addDeathPoint(Player p, Location loc, boolean deathChestEnabled) {
     String playerName = p.getName();
     String playerUUID = p.getUniqueId().toString();
     String pointUUID = UUID.randomUUID().toString();
@@ -53,23 +53,35 @@ public class DeathPointsManager {
     long timestamp = System.currentTimeMillis();
     _fileConfig.set(deathPointPath + ".timestamp", timestamp);
 
-    List<Map<String, Object>> serializedItemStacks = ItemStackUtils.serializeArray(p.getInventory().getContents());
+    if (deathChestEnabled) {
+      List<Map<String, Object>> serializedItemStacks = ItemStackUtils
+          .serializeArray(p.getInventory().getContents());
+      _fileConfig.set(deathPointPath + ".inventory", serializedItemStacks);
+    } else {
+      _fileConfig.set(deathPointPath + ".inventory", null);
+    }
 
-    _fileConfig.set(deathPointPath + ".inventory", serializedItemStacks);
+    _fileConfig.set(deathPointPath + ".deathchest", deathChestEnabled);
     _config.save();
 
-    _createDeathChest(loc);
-    _createDeathHologram(playerName, loc);
+    if (deathChestEnabled) {
+      _createDeathChest(loc);
+      _createDeathHologram(playerName, loc);
+    }
   }
 
   public void removeDeathPoint(String ownerUUID, String pointUUID) {
-    Location loc = getDeathPointLocation(ownerUUID, pointUUID);
-    if (loc != null) {
-      _removeDeathChest(loc);
-      _removeDeathHologram(loc);
+    String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
+    boolean hadDeathChest = _fileConfig.getBoolean(deathPointPath + ".deathchest", true);
+
+    if (hadDeathChest) {
+      Location loc = getDeathPointLocation(ownerUUID, pointUUID);
+      if (loc != null) {
+        _removeDeathChest(loc);
+        _removeDeathHologram(loc);
+      }
     }
 
-    String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
     _fileConfig.set(deathPointPath, null);
     _config.save();
   }
@@ -116,8 +128,23 @@ public class DeathPointsManager {
   public ItemStack[] getDeathPointItems(String ownerUUID, String pointUUID) {
     String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
 
+    if (!hasDeathPointInventory(ownerUUID, pointUUID)) {
+      return new ItemStack[0];
+    }
+
     List<Map<?, ?>> inventoryList = _fileConfig.getMapList(deathPointPath + ".inventory");
     return ItemStackUtils.deserializeArray(inventoryList);
+  }
+
+  public boolean hasDeathPointInventory(String ownerUUID, String pointUUID) {
+    String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
+    String deathChestFlagPath = deathPointPath + ".deathchest";
+
+    if (_fileConfig.contains(deathChestFlagPath)) {
+      return _fileConfig.getBoolean(deathChestFlagPath);
+    }
+
+    return _fileConfig.contains(deathPointPath + ".inventory");
   }
 
   public DeathPointReference getDeathPointAtLocation(Location loc) {

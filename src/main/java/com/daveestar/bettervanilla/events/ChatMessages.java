@@ -66,25 +66,35 @@ public class ChatMessages implements Listener {
         return;
     }
 
-    e.joinMessage(
-        Component.text(
-            ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW + p.getName()));
+    boolean wasVanished = _vanishManager.isVanished(p);
+    if (wasVanished) {
+      e.joinMessage(null);
+    } else {
+      e.joinMessage(
+          Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW
+              + p.getName()));
+    }
 
     _afkManager.onPlayerJoined(p);
     _timerManager.onPlayerJoined(p);
     _compassManager.onPlayerJoined(p);
     _tabListManager.refreshPlayer(p);
+
+    _vanishManager.handlePlayerJoin(p);
   }
 
   @EventHandler
   public void onPlayerLeave(PlayerQuitEvent e) {
     Player p = (Player) e.getPlayer();
 
-    e.quitMessage(Component
-        .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
+    if (_vanishManager.isVanished(p)) {
+      e.quitMessage(null);
+    } else {
+      e.quitMessage(Component
+          .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
+    }
 
     _permissionsManager.onPlayerLeft(p);
-    _vanishManager.onPlayerLeft(p);
     _afkManager.onPlayerLeft(p);
     _timerManager.onPlayerLeft(p);
     _compassManager.onPlayerLeft(p);
@@ -102,7 +112,6 @@ public class ChatMessages implements Listener {
     _compassManager.onPlayerLeft(p);
     _backpackManager.onPlayerLeft(p);
     _messageManager.onPlayerLeft(p);
-    _vanishManager.onPlayerLeft(p);
   }
 
   @EventHandler
