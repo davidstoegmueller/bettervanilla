@@ -54,7 +54,7 @@ public class NavigationManager {
     particleNavigation.displayBeam();
 
     // if the player has the trail setting enabled, display the trail
-    if (_settingsManager.getNavigationTrail(p.getUniqueId())) {
+    if (_settingsManager.getPlayerNavigationTrail(p.getUniqueId())) {
       particleNavigation.displayTrail();
     }
 
@@ -80,7 +80,7 @@ public class NavigationManager {
       _actionBar.sendActionBar(p, navigationText);
 
       ParticleNavigation particleNavigation = _activeParticleNavigations.get(p);
-      particleNavigation.update(targetLocation, true, _settingsManager.getNavigationTrail(p.getUniqueId()));
+      particleNavigation.update(targetLocation, true, _settingsManager.getPlayerNavigationTrail(p.getUniqueId()));
     }
   }
 

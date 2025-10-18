@@ -62,7 +62,7 @@ public class CompassManager {
     _settingsManager = _plugin.getSettingsManager();
 
     _plugin.getServer().getOnlinePlayers().forEach(p -> {
-      if (_settingsManager.getToggleCompass(p.getUniqueId())) {
+      if (_settingsManager.getPlayerToggleCompass(p.getUniqueId())) {
         addPlayerToCompass(p);
       }
     });
@@ -75,7 +75,7 @@ public class CompassManager {
   }
 
   public void onPlayerJoined(Player p) {
-    if (_settingsManager.getToggleCompass(p.getUniqueId())) {
+    if (_settingsManager.getPlayerToggleCompass(p.getUniqueId())) {
       _plugin.getServer().getScheduler().runTask(_plugin, () -> addPlayerToCompass(p));
     }
   }
@@ -101,7 +101,7 @@ public class CompassManager {
       BossBar compassBossBar = Bukkit.createBossBar("", BarColor.YELLOW, BarStyle.SOLID);
       compassBossBar.addPlayer(p);
 
-      _settingsManager.setToggleCompass(p.getUniqueId(), true);
+      _settingsManager.setPlayerToggleCompass(p.getUniqueId(), true);
 
       return compassBossBar;
     });
@@ -110,7 +110,7 @@ public class CompassManager {
   public void removePlayerFromCompass(Player p) {
     BossBar compassBossBar = _activeCompass.remove(p);
 
-    _settingsManager.setToggleCompass(p.getUniqueId(), false);
+    _settingsManager.setPlayerToggleCompass(p.getUniqueId(), false);
 
     if (compassBossBar != null) {
       compassBossBar.removePlayer(p);

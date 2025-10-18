@@ -112,7 +112,7 @@ public class DeathPointsGUI {
   }
 
   private void _handleNavigation(Player p, String pointUUID) {
-    _settingsManager.setToggleLocation(p.getUniqueId(), false);
+    _settingsManager.setPlayerToggleLocation(p.getUniqueId(), false);
 
     String playerUUID = p.getUniqueId().toString();
     Location deathPointLocation = _deathPointsManager.getDeathPointLocation(playerUUID, pointUUID);

@@ -135,6 +135,6 @@ public class ItemRestock implements Listener {
   }
 
   private boolean _shouldRestock(Player player) {
-    return settings.getItemRestockEnabled() && settings.getItemRestock(player.getUniqueId());
+    return settings.getItemRestockEnabled() && settings.getPlayerItemRestock(player.getUniqueId());
   }
 }

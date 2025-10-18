@@ -51,7 +51,7 @@ public class DoubleDoorSync implements Listener {
     }
 
     Player p = e.getPlayer();
-    if (!_settingsManager.getDoubleDoorSync(p.getUniqueId())) {
+    if (!_settingsManager.getPlayerDoubleDoorSync(p.getUniqueId())) {
       return;
     }
 
