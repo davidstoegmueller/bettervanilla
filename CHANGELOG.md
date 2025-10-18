@@ -11,6 +11,7 @@
 - ⚙️ **TPS & MSPT Stability** - Fixed rare async null-pointer exceptions in Folia task handling.
 - 🧩 **Admin GUI Reorganization** - Reordered admin settings into a more logical and intuitive structure.
 - 🫥 **Vanish Mode Enhancements** - Hidden from server list, join/leave messages, AFK timers, tab list, and nametags for full invisibility.
+- ⚰️ **Deathchest Toggle** - Added an admin settings GUI option to enable or disable deathchests.
 
 ## [1.8.0] - 10.10.2025
 
