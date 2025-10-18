@@ -26,42 +26,42 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ### Player-Focused Features
 
-- 🧭 **Waypoints** – Add, share, and filter public or private waypoints with GUI navigation and particle trails.
-- 🎒 **Backpacks** – Carry expandable storage with configurable rows and pages.
-- ⛏️ **Vein Miner & Tree Chopper** – Sneak-break to harvest entire ore veins or tree trunks instantly.
-- 💀 **Death Points & Chests** – Track every death, teleport back, and safely reclaim your belongings.
-- ✨ **Chest Sorting** – Right-click outside inventories to auto-organize loot.
-- 🧰 **Settings Menu** – Toggle personal QoL options in an in-game UI.
-- 🎨 **Colored Chat & Mentions** – Use `&` color codes and ping friends with `@name`.
-- 📬 **Private Messages** – Chat directly with `/msg` and reply quickly using `/r`.
-- 🪧 **Sign Colors** – Decorate signs with vibrant color codes.
-- 👀 **Inventory Viewer** – Peek inside another player’s inventory when permitted.
-- ⏱️ **Timer** – Global stopwatch with resume, pause, reset, and set commands.
-- 🕒 **Playtime** – View detailed play history with AFK tracking for yourself or other players.
-- 📶 **Ping** – Check personal or remote player latency.
-- 📊 **Dynamic Tab List** – Live header/footer surfaces world day, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
-- 📍 **Action-Bar Location** – Display live XYZ coordinates in your HUD.
-- 🧭 **Bossbar Compass** – Minimal directional overlay in the boss bar.
-- 🪑 **Sittable Stairs** – Sit on stairs with an empty hand.
-- 🪑 **Sit Anywhere** – Use `/sit` to plop down on any solid block and stand with Shift.
-- 🌧️ **Sleep to Clear Weather** – Skip rain and fast-forward the day by sleeping.
-- 🧚 **Navigation Particles** – Follow a beam and optional trail during waypoint navigation.
-- 🌾 **Crop Protection** – Prevent farmland trampling.
-- 🌱 **Right-Click Harvest** – Harvest and replant crops with a single interaction.
+- 🧭 **Waypoints** - Add, share, and filter public or private waypoints with GUI navigation and particle trails.
+- 🎒 **Backpacks** - Carry expandable storage with configurable rows and pages.
+- ⛏️ **Vein Miner & Tree Chopper** - Sneak-break to harvest entire ore veins or tree trunks instantly.
+- 💀 **Death Points & Chests** - Track every death, teleport back, and safely reclaim your belongings.
+- ✨ **Chest Sorting** - Right-click outside inventories to auto-organize loot.
+- 🧰 **Settings Menu** - Toggle personal QoL options in an in-game UI.
+- 🎨 **Colored Chat & Mentions** - Use `&` color codes and ping friends with `@name`.
+- 📬 **Private Messages** - Chat directly with `/msg` and reply quickly using `/r`.
+- 🪧 **Sign Colors** - Decorate signs with vibrant color codes.
+- 👀 **Inventory Viewer** - Peek inside another player’s inventory when permitted.
+- ⏱️ **Timer** - Global stopwatch with resume, pause, reset, and set commands.
+- 🕒 **Playtime** - View detailed play history with AFK tracking for yourself or other players.
+- 📶 **Ping** - Check personal or remote player latency.
+- 📊 **Dynamic Tab List** - Live header/footer surfaces world day, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
+- 📍 **Action-Bar Location** - Display live XYZ coordinates in your HUD.
+- 🧭 **Bossbar Compass** - Minimal directional overlay in the boss bar.
+- 🪑 **Sittable Stairs** - Sit on stairs with an empty hand.
+- 🪑 **Sit Anywhere** - Use `/sit` to plop down on any solid block and stand with Shift.
+- 🌧️ **Sleep to Clear Weather** - Skip rain and fast-forward the day by sleeping.
+- 🧚 **Navigation Particles** - Follow a beam and optional trail during waypoint navigation.
+- 🌾 **Crop Protection** - Prevent farmland trampling.
+- 🌱 **Right-Click Harvest** - Harvest and replant crops with a single interaction.
 - 🚪 **Double Door Sync** - Sync state across connected double doors.
-- 📖 **Help** – Built-in `/help` overview of every command.
+- 📖 **Help** - Built-in `/help` overview of every command.
 
 ### Admin & Server Tools
 
-- 🛠️ **Admin Settings Menu** – Configure every feature live from the GUI.
-- 🗝️ **Permissions System** – Manage groups and users with hot-reload via `/permissions`.
-- 💤 **AFK Protection** – Shield idle players from damage, movement, and collisions.
-- 🧭 **Waypoint Management** – Review and edit public/private waypoints with dedicated staff tools.
-- 🫥 **Vanish Mode** – Hide from players and tab lists with `/vanish`.
-- 🔨 **Moderation Toolkit** – Kick, ban, mute, unmute, and unban directly in-game.
-- 📣 **Server MOTD** – Edit the server list message from the admin menu.
+- 🛠️ **Admin Settings Menu** - Configure every feature live from the GUI.
+- 🗝️ **Permissions System** - Manage groups and users with hot-reload via `/permissions`.
+- 💤 **AFK Protection** - Shield idle players from damage, movement, and collisions.
+- 🧭 **Waypoint Management** - Review and edit public/private waypoints with dedicated staff tools.
+- 🫥 **Vanish Mode** - Hide from players and tab lists with `/vanish`.
+- 🔨 **Moderation Toolkit** - Kick, ban, mute, unmute, and unban directly in-game.
+- 📣 **Server MOTD** - Edit the server list message from the admin menu.
 - 🧭 **Locator Bar Gamerule** - Flip the `/gamerule locatorBar` setting across every world without leaving the GUI.
-- 🚧 **Maintenance Mode** – Toggle server access with custom messaging and bypass support.
+- 🚧 **Maintenance Mode** - Toggle server access with custom messaging and bypass support.
 
 ## Installation
 
@@ -81,24 +81,24 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 - `/settings` - Open the settings GUI for players.
 - `/waypoints` - Open the waypoint GUI. Use `player <name>` or `coords <x> <y> <z>` for direct navigation.
-- `/backpack` – Open your personal backpack storage.
-- `/deathpoints` – Manage recent death locations and teleport back via GUI.
-- `/playtime [player]` – Show detailed playtime (AFK included) for you or another player.
-- `/ping [player]` – Check network latency for yourself or another player.
-- `/sit` – Sit on any solid block; sneak to stand up.
-- `/msg <player> <message>` – Send a private message. Alias: `/message`.
-- `/r <message>` – Reply to the last private message.
-- `/help` – View all available commands pulled directly from `plugin.yml`.
+- `/backpack` - Open your personal backpack storage.
+- `/deathpoints` - Manage recent death locations and teleport back via GUI.
+- `/playtime [player]` - Show detailed playtime (AFK included) for you or another player.
+- `/ping [player]` - Check network latency for yourself or another player.
+- `/sit` - Sit on any solid block; sneak to stand up.
+- `/msg <player> <message>` - Send a private message. Alias: `/message`.
+- `/r <message>` - Reply to the last private message.
+- `/help` - View all available commands pulled directly from `plugin.yml`.
 
 ### Admin & Moderation
 
 - `/adminhelp` - List key staff commands.
 - `/settings` - Open the settings GUI for players and admins.
-- `/invsee <player>` – Inspect another player’s inventory.
-- `/timer <resume|pause|reset|set>` – Control the global timer.
-- `/vanish` – Toggle vanish mode with movement safeguards.
-- `/kick`, `/ban`, `/unban`, `/mute`, `/unmute` – Moderation toolset with duration parsing (e.g. `1d2h30m`).
-- `/permissions` – Manage groups and assignments:
+- `/invsee <player>` - Inspect another player’s inventory.
+- `/timer <resume|pause|reset|set>` - Control the global timer.
+- `/vanish` - Toggle vanish mode with movement safeguards.
+- `/kick`, `/ban`, `/unban`, `/mute`, `/unmute` - Moderation toolset with duration parsing (e.g. `1d2h30m`).
+- `/permissions` - Manage groups and assignments:
   - `group addperm <group> <permission>`
   - `group removeperm <group> <permission>`
   - `group delete <group>`
@@ -106,9 +106,9 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
   - `user removeperm <player> <permission>`
   - `user setgroup <player> <group>`
   - `default <group>` - Sets the default group for all players
-  - `assignments` – Show current group and user mapping
-  - `list` – Display built-in permission nodes
-  - `reload` – Reload configuration and refresh online players
+  - `assignments` - Show current group and user mapping
+  - `list` - Display built-in permission nodes
+  - `reload` - Reload configuration and refresh online players
 
 ## Settings
 

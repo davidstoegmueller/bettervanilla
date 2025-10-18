@@ -24,6 +24,7 @@ public class AFKManager {
   private SettingsManager _settingsManager;
   private Team _afkTeam;
   private TabListManager _tabListManager;
+  private VanishManager _vanishManager;
 
   public AFKManager() {
     _plugin = Main.getInstance();
@@ -36,6 +37,7 @@ public class AFKManager {
     _timerManager = _plugin.getTimerManager();
     _settingsManager = _plugin.getSettingsManager();
     _tabListManager = _plugin.getTabListManager();
+    _vanishManager = _plugin.getVanishManager();
 
     // prepare scoreboard team used to disable collisions while AFK
     ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -101,17 +103,27 @@ public class AFKManager {
       setPlayerAFKState(entry.getKey());
     }
 
-    boolean allPlayersAFK = _afkStates.values().stream().allMatch(entry -> entry == true);
-    if (Bukkit.getOnlinePlayers().size() > 0) {
-      if (allPlayersAFK) {
-        if (_timerManager.isRunning()) {
-          _timerManager.setRunning(false);
-        }
-      } else {
-        if (!_timerManager.isRunning() && _timerManager.isRunningOverride()) {
-          _timerManager.setRunning(true);
-        }
+    long visiblePlayers = Bukkit.getOnlinePlayers().stream()
+        .filter(player -> _vanishManager == null || !_vanishManager.isVanished(player))
+        .count();
+
+    boolean allVisibleAFK = visiblePlayers > 0 && Bukkit.getOnlinePlayers().stream()
+        .filter(player -> _vanishManager == null || !_vanishManager.isVanished(player))
+        .allMatch(player -> _afkStates.getOrDefault(player, false));
+
+    if (visiblePlayers == 0) {
+      if (_timerManager.isRunning()) {
+        _timerManager.setRunning(false);
       }
+      return;
+    }
+
+    if (allVisibleAFK) {
+      if (_timerManager.isRunning()) {
+        _timerManager.setRunning(false);
+      }
+    } else if (!_timerManager.isRunning() && _timerManager.isRunningOverride()) {
+      _timerManager.setRunning(true);
     }
 
   }
@@ -167,16 +179,19 @@ public class AFKManager {
   }
 
   public void announceAFKToOthers(Player targetPlayer, boolean isAFK) {
+    if (_vanishManager != null && _vanishManager.isVanished(targetPlayer)) {
+      return;
+    }
+
     _plugin.getServer().getOnlinePlayers().stream()
+        .filter(player -> !player.equals(targetPlayer))
         .forEach(player -> {
-          if (!player.equals(targetPlayer)) {
-            if (isAFK) {
-              player.sendMessage(
-                  Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is now AFK.");
-            } else {
-              player.sendMessage(
-                  Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is no longer AFK.");
-            }
+          if (isAFK) {
+            player.sendMessage(
+                Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is now AFK.");
+          } else {
+            player.sendMessage(
+                Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is no longer AFK.");
           }
         });
   }
