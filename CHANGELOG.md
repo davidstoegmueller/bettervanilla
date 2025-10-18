@@ -4,7 +4,7 @@
 
 ## [1.9.0] - unreleased
 
-- 📁 **Renamed Moderation Config File** - For better consistence the `moderation.yml` file was renamed to `moderations.yml`.
+- 📁 **Renamed Moderation Config File** - For better consistency the `moderation.yml` file was renamed to `moderations.yml`.
 - 🚪 **Double Door Sync** - Syncs the state across connected double doors.
 - 💣 **Creeper Protection Settings** - Extended protection system to cover both block and entity explosions.
 - 🧭 **GUI Back-Navigation** - Custom GUIs now dynamically update when using the back-navigation footer item.
