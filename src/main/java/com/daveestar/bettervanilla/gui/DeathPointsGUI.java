@@ -75,23 +75,30 @@ public class DeathPointsGUI {
 
     // create a new GUI for the options-menu
     Map<String, ItemStack> optionPageEntries = new HashMap<>();
-    optionPageEntries.put("items", _createListItem());
-    optionPageEntries.put("delete", _createDeleteItem());
-
     Map<String, Integer> customSlots = new HashMap<>();
-    customSlots.put("items", 3);
-    customSlots.put("delete", 5);
+
+    boolean inventoryAvailable = _deathPointsManager.hasDeathPointInventory(p.getUniqueId().toString(), pointUUID);
+
+    if (inventoryAvailable) {
+      optionPageEntries.put("items", _createListItem());
+      customSlots.put("items", 3);
+    }
+
+    optionPageEntries.put("delete", _createDeleteItem());
+    customSlots.put("delete", inventoryAvailable ? 5 : 4);
 
     CustomGUI optionsGUI = new CustomGUI(_plugin, p, title, optionPageEntries, 2, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     Map<String, CustomGUI.ClickAction> optionClickActions = new HashMap<>();
 
-    optionClickActions.put("items", new CustomGUI.ClickAction() {
-      public void onLeftClick(Player p) {
-        _displayItemsGUI(p, pointUUID, optionsGUI);
-      }
-    });
+    if (inventoryAvailable) {
+      optionClickActions.put("items", new CustomGUI.ClickAction() {
+        public void onLeftClick(Player p) {
+          _displayItemsGUI(p, pointUUID, optionsGUI);
+        }
+      });
+    }
 
     optionClickActions.put("delete", new CustomGUI.ClickAction() {
       public void onLeftClick(Player p) {

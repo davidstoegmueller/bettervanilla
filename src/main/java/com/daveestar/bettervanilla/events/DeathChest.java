@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager.DeathPointReference;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -39,10 +40,12 @@ public class DeathChest implements Listener {
 
   private final Main _plugin;
   private final DeathPointsManager _deathPointsManager;
+  private final SettingsManager _settingsManager;
 
   public DeathChest() {
     _plugin = Main.getInstance();
     _deathPointsManager = _plugin.getDeathPointsManager();
+    _settingsManager = _plugin.getSettingsManager();
   }
 
   @EventHandler
@@ -58,24 +61,40 @@ public class DeathChest implements Listener {
       deathChestLocation.setY(100.5);
     }
 
-    _deathPointsManager.addDeathPoint(p, deathChestLocation);
-    e.getDrops().clear();
+    boolean deathChestEnabled = _settingsManager.getDeathChestEnabled();
+
+    _deathPointsManager.addDeathPoint(p, deathChestLocation, deathChestEnabled);
+
+    if (deathChestEnabled) {
+      e.getDrops().clear();
+    }
 
     int chestX = deathChestLocation.getBlockX();
     int chestY = deathChestLocation.getBlockY();
     int chestZ = deathChestLocation.getBlockZ();
 
-    p.sendMessage(Main.getPrefix() + "You died. All your items are stored in the death chest on: "
+    p.sendMessage(Main.getPrefix() + "You died at: "
         + ChatColor.YELLOW + "X: " + ChatColor.GRAY + chestX
         + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + chestY
         + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + chestZ);
-    p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
-        + " As soon as you close or break the chest all items will be dropped!");
+
+    if (deathChestEnabled) {
+      p.sendMessage(Main.getPrefix() + "All your items are stored in the death chest at this location.");
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
+          + " As soon as you close or break the chest all items will be dropped!");
+    } else {
+      p.sendMessage(Main.getPrefix() + "Your items were dropped on the ground.");
+    }
 
     if (fellIntoVoid) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
-          + " You fell into the void! Your deathchest will spawn at "
-          + ChatColor.YELLOW + "Y: " + ChatColor.GRAY + "100");
+      if (deathChestEnabled) {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+            + " You fell into the void! Your deathchest will spawn at "
+            + ChatColor.YELLOW + "Y: " + ChatColor.GRAY + "100");
+      } else {
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+            + " You fell into the void while death chests are disabled. Items lost in the void cannot be recovered.");
+      }
     }
 
     p.sendMessage(Main.getPrefix() + "If you want to list your deathpoints please use: "

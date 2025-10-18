@@ -182,6 +182,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getDeathChestEnabled() {
+    return _fileConfig.getBoolean("global.deathchest.enabled", true);
+  }
+
+  public void setDeathChestEnabled(boolean value) {
+    _fileConfig.set("global.deathchest.enabled", value);
+    _config.save();
+  }
+
   public boolean getLocatorBarEnabled() {
     return _fileConfig.getBoolean("global.locatorbar", true);
   }

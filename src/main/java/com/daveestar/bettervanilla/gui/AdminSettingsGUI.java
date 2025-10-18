@@ -76,6 +76,7 @@ public class AdminSettingsGUI {
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
     entries.put("locatorbar", _createLocatorBarItem());
+    entries.put("deathchest", _createDeathChestItem());
 
     // fourth row - feature configuration
     entries.put("backpacksettings", _createBackpackSettingsItem());
@@ -105,6 +106,7 @@ public class AdminSettingsGUI {
     customSlots.put("backpacksettings", 28);
     customSlots.put("veinminersettings", 30);
     customSlots.put("veinchoppersettings", 32);
+    customSlots.put("deathchest", 34);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -189,6 +191,14 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleLocatorBar(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("deathchest", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleDeathChest(p);
         displayGUI(p, parentMenu, backAction);
       }
     });
@@ -420,6 +430,28 @@ public class AdminSettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Locator Bar"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle the locator bar gamerule for all worlds.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createDeathChestItem() {
+    boolean state = _settingsManager.getDeathChestEnabled();
+    ItemStack item = new ItemStack(Material.CHEST);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Death Chest"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether death chests spawn on player death.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Disabling drops items and hides stored inventories.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -798,6 +830,14 @@ public class AdminSettingsGUI {
     _settingsManager.applyLocatorBarSetting();
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Locator bar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleDeathChest(Player p) {
+    boolean newState = !_settingsManager.getDeathChestEnabled();
+    _settingsManager.setDeathChestEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Death chest creation is now "
+        + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleAFKProtection(Player p) {
