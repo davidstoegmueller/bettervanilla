@@ -59,6 +59,7 @@ public class SettingsGUI {
     entries.put("veinminer", _createVeinMinerItem(p));
     entries.put("veinchopper", _createVeinChopperItem(p));
     entries.put("doubledoor", _createDoubleDoorItem(p));
+    entries.put("itemrestock", _createItemRestockItem(p));
 
     // thrid row
     if (showAdminSettings) {
@@ -75,6 +76,7 @@ public class SettingsGUI {
     customSlots.put("veinminer", 11);
     customSlots.put("veinchopper", 15);
     customSlots.put("doubledoor", 13);
+    customSlots.put("itemrestock", 9);
 
     if (showAdminSettings) {
       customSlots.put("adminsettings", rows * 9 - 10);
@@ -96,6 +98,26 @@ public class SettingsGUI {
         }
 
         _toggleLocation(p);
+        displayGUI(p);
+      }
+    });
+
+    clickActions.put("itemrestock", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!p.hasPermission(Permissions.ITEM_RESTOCK.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.ITEM_RESTOCK));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        if (!_settingsManager.getItemRestockEnabled()) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Item Restock is globally disabled on the server.");
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleItemRestock(p);
         displayGUI(p);
       }
     });
@@ -351,6 +373,32 @@ public class SettingsGUI {
     return item;
   }
 
+  private ItemStack _createItemRestockItem(Player p) {
+    boolean state = _settingsManager.getItemRestock(p.getUniqueId());
+    ItemStack item = new ItemStack(Material.HOPPER);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean globalState = _settingsManager.getItemRestockEnabled();
+    boolean hasPermission = p.hasPermission(Permissions.ITEM_RESTOCK.getName());
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Item Restock"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Refill your hotbar slot with matching items automatically.",
+          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.ITEM_RESTOCK)
+              : !globalState ? ChatColor.RED + "Item Restock is globally disabled on the server." : null),
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createDoubleDoorItem(Player p) {
     boolean state = _settingsManager.getDoubleDoorSync(p.getUniqueId());
     ItemStack item = new ItemStack(Material.OAK_DOOR);
@@ -474,5 +522,13 @@ public class SettingsGUI {
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(
         Main.getPrefix() + "Double door sync is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleItemRestock(Player p) {
+    boolean newState = !_settingsManager.getItemRestock(p.getUniqueId());
+    _settingsManager.setItemRestock(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Item restock is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

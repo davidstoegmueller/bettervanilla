@@ -77,6 +77,7 @@ public class AdminSettingsGUI {
     entries.put("afktime", _createAFKTimeItem());
     entries.put("locatorbar", _createLocatorBarItem());
     entries.put("deathchest", _createDeathChestItem());
+    entries.put("itemrestock", _createItemRestockItem());
 
     // fourth row - feature configuration
     entries.put("backpacksettings", _createBackpackSettingsItem());
@@ -101,6 +102,7 @@ public class AdminSettingsGUI {
     customSlots.put("afkprotection", 20);
     customSlots.put("afktime", 22);
     customSlots.put("locatorbar", 24);
+    customSlots.put("itemrestock", 26);
 
     // fourth row - slots 27 to 35
     customSlots.put("backpacksettings", 28);
@@ -243,6 +245,13 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _veinChopperSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
+      }
+    });
+    actions.put("itemrestock", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleItemRestock(p);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -452,6 +461,27 @@ public class AdminSettingsGUI {
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether death chests spawn on player death.",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Disabling drops items and hides stored inventories.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createItemRestockItem() {
+    boolean state = _settingsManager.getItemRestockEnabled();
+    ItemStack item = new ItemStack(Material.HOPPER);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Item Restock"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable automatic hotbar restocking.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -846,5 +876,12 @@ public class AdminSettingsGUI {
     _afkManager.applyProtectionToAFKPlayers(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleItemRestock(Player p) {
+    boolean newState = !_settingsManager.getItemRestockEnabled();
+    _settingsManager.setItemRestockEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Item restock is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 }

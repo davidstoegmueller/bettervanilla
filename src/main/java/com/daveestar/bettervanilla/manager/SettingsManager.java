@@ -87,6 +87,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getItemRestock(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".itemrestock", false);
+  }
+
+  public void setItemRestock(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".itemrestock", value);
+    _config.save();
+  }
+
   public boolean getNavigationTrail(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".navigationtrail", false);
   }
@@ -324,6 +333,22 @@ public class SettingsManager {
       String[] uuids = getAllPlayersUUIDS();
       for (String uuid : uuids) {
         setPlayerVeinChopper(UUID.fromString(uuid), value);
+      }
+    }
+  }
+
+  public boolean getItemRestockEnabled() {
+    return _fileConfig.getBoolean("global.itemrestock.enabled", false);
+  }
+
+  public void setItemRestockEnabled(boolean value) {
+    _fileConfig.set("global.itemrestock.enabled", value);
+    _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setItemRestock(UUID.fromString(uuid), false);
       }
     }
   }
