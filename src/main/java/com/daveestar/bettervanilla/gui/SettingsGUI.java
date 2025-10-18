@@ -61,7 +61,7 @@ public class SettingsGUI {
     entries.put("doubledoor", _createDoubleDoorItem(p));
     entries.put("itemrestock", _createItemRestockItem(p));
 
-    // thrid row
+    // third row
     if (showAdminSettings) {
       entries.put("adminsettings", _createAdminSettingsItem());
     }
