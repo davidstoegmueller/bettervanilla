@@ -243,7 +243,7 @@ public class SettingsManager {
   }
 
   public boolean getCropProtection() {
-    return _fileConfig.getBoolean("global.cropprotection", true);
+    return _fileConfig.getBoolean("global.cropprotection", false);
   }
 
   public void setCropProtection(boolean value) {
