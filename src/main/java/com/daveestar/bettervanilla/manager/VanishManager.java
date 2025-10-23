@@ -22,71 +22,71 @@ public class VanishManager {
     _plugin = Main.getInstance();
   }
 
-  public void vanish(Player player) {
-    if (player == null) {
+  public void vanish(Player p) {
+    if (p == null) {
       return;
     }
 
-    UUID uuid = player.getUniqueId();
+    UUID uuid = p.getUniqueId();
     if (_vanishedStates.containsKey(uuid)) {
       return;
     }
 
-    VanishState state = VanishState.capture(player);
+    VanishState state = VanishState.capture(p);
     _vanishedStates.put(uuid, state);
 
-    _applyVanishState(player);
-    _hideFromOthers(player);
+    _applyVanishState(p);
+    _hideFromOthers(p);
   }
 
-  public void unvanish(Player player) {
-    if (player == null) {
+  public void unvanish(Player p) {
+    if (p == null) {
       return;
     }
 
-    UUID uuid = player.getUniqueId();
+    UUID uuid = p.getUniqueId();
     VanishState state = _vanishedStates.remove(uuid);
     if (state == null) {
       return;
     }
 
-    _showToOthers(player);
-    _restorePlayerState(player, state);
+    _showToOthers(p);
+    _restorePlayerState(p, state);
 
     TabListManager tabListManager = _getTabListManager();
     if (tabListManager != null) {
-      tabListManager.refreshPlayer(player);
+      tabListManager.refreshPlayer(p);
     }
   }
 
-  public boolean handlePlayerJoin(Player player) {
-    if (player == null) {
+  public boolean handlePlayerJoin(Player p) {
+    if (p == null) {
       return false;
     }
 
-    UUID uuid = player.getUniqueId();
+    UUID uuid = p.getUniqueId();
     boolean stillVanished = _vanishedStates.containsKey(uuid);
 
     if (stillVanished) {
       // reapply vanish effects for returning player
-      _applyVanishState(player);
-      _hideFromOthers(player);
+      _applyVanishState(p);
+      _hideFromOthers(p);
     }
 
     // ensure the joining player cannot see currently vanished players
     _onlineVanishedPlayers()
-        .filter(other -> !other.equals(player))
-        .forEach(other -> player.hidePlayer(_plugin, other));
+        .filter(other -> !other.equals(p))
+        .forEach(other -> p.hidePlayer(_plugin, other));
 
     return stillVanished;
   }
 
-  public boolean isVanished(Player player) {
-    if (player == null) {
+  public boolean isVanished(Player p) {
+    if (p == null) {
       return false;
     }
 
-    return _vanishedStates.containsKey(player.getUniqueId());
+    return _vanishedStates.containsKey(p.getUniqueId());
   }
 
   public boolean isVanished(UUID uuid) {
@@ -97,42 +97,42 @@ public class VanishManager {
     return (int) _onlineVanishedPlayers().count();
   }
 
-  private void _applyVanishState(Player player) {
-    player.setAllowFlight(true);
-    player.setFlying(true);
-    player.setInvulnerable(true);
-    player.setCollidable(false);
-    player.setInvisible(true);
-    player.playerListName(Component.empty());
+  private void _applyVanishState(Player p) {
+    p.setAllowFlight(true);
+    p.setFlying(true);
+    p.setInvulnerable(true);
+    p.setCollidable(false);
+    p.setInvisible(true);
+    p.playerListName(Component.empty());
   }
 
-  private void _hideFromOthers(Player player) {
+  private void _hideFromOthers(Player p) {
     _plugin.getServer().getOnlinePlayers().forEach(other -> {
-      if (!other.equals(player)) {
-        other.hidePlayer(_plugin, player);
+      if (!other.equals(p)) {
+        other.hidePlayer(_plugin, p);
       }
     });
   }
 
-  private void _showToOthers(Player player) {
+  private void _showToOthers(Player p) {
     _plugin.getServer().getOnlinePlayers().forEach(other -> {
-      if (!other.equals(player)) {
-        other.showPlayer(_plugin, player);
+      if (!other.equals(p)) {
+        other.showPlayer(_plugin, p);
       }
     });
   }
 
-  private void _restorePlayerState(Player player, VanishState state) {
-    player.setAllowFlight(state.allowFlight);
+  private void _restorePlayerState(Player p, VanishState state) {
+    p.setAllowFlight(state.allowFlight);
     if (state.allowFlight) {
-      player.setFlying(state.flying);
+      p.setFlying(state.flying);
     } else {
-      player.setFlying(false);
+      p.setFlying(false);
     }
 
-    player.setInvulnerable(state.invulnerable);
-    player.setCollidable(state.collidable);
-    player.setInvisible(state.invisible);
+    p.setInvulnerable(state.invulnerable);
+    p.setCollidable(state.collidable);
+    p.setInvisible(state.invisible);
   }
 
   private Stream<Player> _onlineVanishedPlayers() {
@@ -167,13 +167,13 @@ public class VanishManager {
       this.invisible = invisible;
     }
 
-    public static VanishState capture(Player player) {
+    public static VanishState capture(Player p) {
       return new VanishState(
-          player.getAllowFlight(),
-          player.isFlying(),
-          player.isInvulnerable(),
-          player.isCollidable(),
-          player.isInvisible());
+          p.getAllowFlight(),
+          p.isFlying(),
+          p.isInvulnerable(),
+          p.isCollidable(),
+          p.isInvisible());
     }
   }
 }

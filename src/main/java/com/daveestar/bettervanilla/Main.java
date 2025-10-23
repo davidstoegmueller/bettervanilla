@@ -1,5 +1,8 @@
 package com.daveestar.bettervanilla;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.PluginManager;
@@ -14,6 +17,8 @@ import com.daveestar.bettervanilla.commands.PlayTimeCommand;
 import com.daveestar.bettervanilla.commands.SettingsCommand;
 import com.daveestar.bettervanilla.commands.TimerCommand;
 import com.daveestar.bettervanilla.commands.WaypointsCommand;
+import com.daveestar.bettervanilla.crafting.CustomCraftingRecipe;
+import com.daveestar.bettervanilla.enums.CraftingRecipe;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.commands.BackpackCommand;
 import com.daveestar.bettervanilla.commands.MessageCommand;
@@ -39,20 +44,20 @@ import com.daveestar.bettervanilla.events.VanishEvents;
 import com.daveestar.bettervanilla.events.ModerationEvents;
 import com.daveestar.bettervanilla.events.CreeperProtection;
 import com.daveestar.bettervanilla.manager.AFKManager;
+import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
+import com.daveestar.bettervanilla.manager.MessageManager;
+import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
-import com.daveestar.bettervanilla.manager.TimerManager;
-import com.daveestar.bettervanilla.manager.WaypointsManager;
-import com.daveestar.bettervanilla.manager.BackpackManager;
-import com.daveestar.bettervanilla.manager.MessageManager;
-import com.daveestar.bettervanilla.manager.VanishManager;
-import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.SittingManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
+import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.VanishManager;
+import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -81,6 +86,7 @@ public class Main extends JavaPlugin {
   private ModerationManager _moderationManager;
   private SittingManager _sittingManager;
   private TabListManager _tabListManager;
+  private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
     _mainInstance = this;
@@ -93,6 +99,7 @@ public class Main extends JavaPlugin {
     Config backpackConfig = new Config("backpacks.yml", getDataFolder());
     Config moderationConfig = new Config("moderations.yml", getDataFolder());
 
+    // initialize managers with configs
     _settingsManager = new SettingsManager(settingsConfig);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
@@ -101,6 +108,7 @@ public class Main extends JavaPlugin {
     _backpackManager = new BackpackManager(backpackConfig);
     _moderationManager = new ModerationManager(moderationConfig);
 
+    // initialize managers without configs
     _messageManager = new MessageManager();
     _sittingManager = new SittingManager();
     _vanishManager = new VanishManager();
@@ -117,6 +125,10 @@ public class Main extends JavaPlugin {
     _maintenanceManager.initManagers();
     _navigationManager.initManagers();
     _timerManager.initManagers();
+
+    // crafting recipes
+    _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
+    _registerCraftingRecipe(CraftingRecipe.INVISIBLE_LIGHT);
 
     _LOGGER.info("BetterVanilla - ENABLED");
 
@@ -174,12 +186,26 @@ public class Main extends JavaPlugin {
     _compassManager.destroy();
     _backpackManager.destroy();
     _tabListManager.destroy();
+    if (_craftingRecipes != null) {
+      _craftingRecipes.values().forEach(CustomCraftingRecipe::destroyRecipe);
+      _craftingRecipes.clear();
+    }
 
     _LOGGER.info("BetterVanilla - DISABLED");
 
     if (_sittingManager != null) {
       _sittingManager.destroy();
     }
+  }
+
+  private void _registerCraftingRecipe(CraftingRecipe recipe) {
+    if (_craftingRecipes == null) {
+      _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
+    }
+
+    CustomCraftingRecipe customCraftingRecipe = new CustomCraftingRecipe(recipe);
+    customCraftingRecipe.applyRecipe();
+    _craftingRecipes.put(recipe, customCraftingRecipe);
   }
 
   public static String getPrefix() {
@@ -272,5 +298,21 @@ public class Main extends JavaPlugin {
 
   public TabListManager getTabListManager() {
     return _tabListManager;
+  }
+
+  public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {
+    if (_craftingRecipes == null) {
+      return null;
+    }
+
+    return _craftingRecipes.get(recipe);
+  }
+
+  public Map<CraftingRecipe, CustomCraftingRecipe> getCraftingRecipes() {
+    if (_craftingRecipes == null) {
+      return Collections.emptyMap();
+    }
+
+    return Collections.unmodifiableMap(_craftingRecipes);
   }
 }

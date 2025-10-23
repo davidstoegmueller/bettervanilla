@@ -2,6 +2,7 @@ package com.daveestar.bettervanilla.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -446,6 +448,58 @@ public class SettingsManager {
 
   public void setVeinChopperAllowedBlocks(List<String> blocks) {
     _fileConfig.set("global.veinchopper.allowedblocks", blocks);
+    _config.save();
+  }
+
+  public boolean getCraftingRecipeEnabled(String recipeKey) {
+    String path = "global.recipes." + recipeKey + ".enabled";
+    return _fileConfig.getBoolean(path, false);
+  }
+
+  public void setCraftingRecipeEnabled(String recipeKey, boolean value) {
+    _fileConfig.set("global.recipes." + recipeKey + ".enabled", value);
+    _config.save();
+  }
+
+  public List<ItemStack> getCraftingRecipeMatrix(String recipeKey, List<ItemStack> defaultMatrix) {
+    String basePath = "global.recipes." + recipeKey + ".slots";
+    List<ItemStack> matrix = new ArrayList<>(Collections.nCopies(9, null));
+    boolean hasConfiguredItem = false;
+
+    for (int i = 0; i < matrix.size(); i++) {
+      ItemStack configured = _fileConfig.getItemStack(basePath + "." + i);
+
+      if (configured != null && configured.getType() != Material.AIR) {
+        matrix.set(i, configured.clone());
+        hasConfiguredItem = true;
+      }
+    }
+
+    if (hasConfiguredItem) {
+      return matrix;
+    }
+
+    List<ItemStack> fallback = new ArrayList<>(Collections.nCopies(9, null));
+    if (defaultMatrix == null) {
+      return fallback;
+    }
+
+    for (int i = 0; i < Math.min(defaultMatrix.size(), fallback.size()); i++) {
+      ItemStack item = defaultMatrix.get(i);
+      fallback.set(i, item == null ? null : item.clone());
+    }
+
+    return fallback;
+  }
+
+  public void setCraftingRecipeMatrix(String recipeKey, List<ItemStack> matrix) {
+    String basePath = "global.recipes." + recipeKey + ".slots";
+
+    for (int i = 0; i < 9; i++) {
+      ItemStack item = (matrix != null && i < matrix.size()) ? matrix.get(i) : null;
+      _fileConfig.set(basePath + "." + i, item == null ? null : item.clone());
+    }
+
     _config.save();
   }
 }

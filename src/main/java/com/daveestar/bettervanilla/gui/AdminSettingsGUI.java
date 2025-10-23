@@ -42,6 +42,7 @@ public class AdminSettingsGUI {
   private final BackpackSettingsGUI _backpackSettingsGUI;
   private final VeinMinerSettingsGUI _veinMinerSettingsGUI;
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
+  private final CraftingRecipeSettingsGUI _craftingRecipeSettingsGUI;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -51,6 +52,7 @@ public class AdminSettingsGUI {
     _backpackSettingsGUI = new BackpackSettingsGUI();
     _veinMinerSettingsGUI = new VeinMinerSettingsGUI();
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
+    _craftingRecipeSettingsGUI = new CraftingRecipeSettingsGUI();
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu) {
@@ -82,6 +84,7 @@ public class AdminSettingsGUI {
     // fourth row - feature configuration
     entries.put("backpacksettings", _createBackpackSettingsItem());
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
+    entries.put("craftingrecipes", _createCraftingRecipesItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
@@ -99,6 +102,7 @@ public class AdminSettingsGUI {
     customSlots.put("rightclickcropharvest", 16);
 
     // third row - slots 18 to 26
+    customSlots.put("deathchest", 18);
     customSlots.put("afkprotection", 20);
     customSlots.put("afktime", 22);
     customSlots.put("locatorbar", 24);
@@ -107,8 +111,8 @@ public class AdminSettingsGUI {
     // fourth row - slots 27 to 35
     customSlots.put("backpacksettings", 28);
     customSlots.put("veinminersettings", 30);
-    customSlots.put("veinchoppersettings", 32);
-    customSlots.put("deathchest", 34);
+    customSlots.put("craftingrecipes", 32);
+    customSlots.put("veinchoppersettings", 34);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -238,6 +242,12 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _veinMinerSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
+      }
+    });
+    actions.put("craftingrecipes", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _craftingRecipeSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
@@ -487,6 +497,25 @@ public class AdminSettingsGUI {
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createCraftingRecipesItem() {
+    ItemStack item = new ItemStack(Material.CRAFTING_TABLE);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Crafting Recipes"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Configure custom crafting recipes.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+
       item.setItemMeta(meta);
     }
 
