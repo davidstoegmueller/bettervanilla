@@ -41,7 +41,7 @@ public class SettingsManager {
   public static final List<Material> VEIN_CHOPPER_BLOCKS = Arrays.asList(
       Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
       Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG,
-      Material.MANGROVE_LOG, Material.CHERRY_LOG);
+      Material.MANGROVE_LOG, Material.CHERRY_LOG, Material.CRIMSON_STEM, Material.WARPED_STEM, Material.PALE_OAK_LOG);
 
   public SettingsManager(Config config) {
     _config = config;
