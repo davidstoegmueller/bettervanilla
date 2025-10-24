@@ -13,7 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -173,8 +173,8 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
     _scheduleVisibilityUpdate(frame);
   }
 
-  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-  public void onFrameDrop(EntityDropItemEvent event) {
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+  public void onFrameBreak(HangingBreakEvent event) {
     if (!(event.getEntity() instanceof ItemFrame frame)) {
       return;
     }
@@ -183,14 +183,17 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
       return;
     }
 
-    ItemStack drop = event.getItemDrop().getItemStack();
-    if (drop.getType() != Material.ITEM_FRAME) {
-      return;
-    }
-
     event.setCancelled(true);
 
-    Location dropLocation = event.getItemDrop().getLocation();
-    frame.getWorld().dropItem(dropLocation, createResultItem());
+    Location dropLocation = frame.getLocation();
+    ItemStack displayed = frame.getItem();
+
+    if (displayed != null && displayed.getType() != Material.AIR) {
+      frame.getWorld().dropItemNaturally(dropLocation, displayed.clone());
+    }
+
+    frame.getWorld().dropItemNaturally(dropLocation, createResultItem());
+    frame.setItem(null);
+    frame.remove();
   }
 }

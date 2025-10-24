@@ -26,10 +26,7 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class CraftingRecipeSettingsGUI {
-  private static final int[] _DEFAULT_SLOTS = {
-      4, 3, 5, 2, 6, 1, 7, 0, 8,
-      13, 12, 14, 11, 15, 10, 16, 9, 17
-  };
+  private static final int[] _DEFAULT_SLOTS = { 3, 5 };
 
   private final Main _plugin;
   private final SettingsManager _settingsManager;
