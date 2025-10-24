@@ -1,3 +1,4 @@
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\crafting\CustomCraftingRecipe.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SittableStairs.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\PlayerTimer.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\SignColors.java
@@ -22,6 +23,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\Time
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Config.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\VeinChopperSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\CropProtection.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\CraftingRecipeSettingsGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ItemRestock.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\NavigationData.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\DoubleDoorSync.java
@@ -40,6 +42,7 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\Right
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\VeinMiningChopping.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\Main.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\BackpackSettingsGUI.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\CraftingRecipeEditorGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\gui\MaterialToggleGUI.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\WaypointsManager.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\MessageCommand.java
@@ -61,8 +64,10 @@ e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\Partic
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChatMessages.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\DeathPointsCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\InvseeCommand.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\crafting\InvisibleLightCrafting.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\commands\BackpackCommand.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\utils\CustomDialog.java
+e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\CraftingRecipe.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\enums\NavigationType.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\events\ChestSort.java
 e:\PROJECTS\bettervanilla\src\main\java\com\daveestar\bettervanilla\manager\SittingManager.java

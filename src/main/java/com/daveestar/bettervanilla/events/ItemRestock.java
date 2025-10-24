@@ -74,16 +74,16 @@ public class ItemRestock implements Listener {
     _scheduleRestock(event.getPlayer(), item.getType());
   }
 
-  private void _scheduleRestock(Player player, Material material) {
-    if (material == Material.AIR || !_shouldRestock(player)) {
+  private void _scheduleRestock(Player p, Material material) {
+    if (material == Material.AIR || !_shouldRestock(p)) {
       return;
     }
 
-    Bukkit.getScheduler().runTask(plugin, () -> _restock(player, material));
+    Bukkit.getScheduler().runTask(plugin, () -> _restock(p, material));
   }
 
-  private void _restock(Player player, Material material) {
-    PlayerInventory inventory = player.getInventory();
+  private void _restock(Player p, Material material) {
+    PlayerInventory inventory = p.getInventory();
     int hotbarSlot = inventory.getHeldItemSlot();
 
     if (hotbarSlot < 0 || hotbarSlot > 8) {
@@ -107,7 +107,7 @@ public class ItemRestock implements Listener {
 
     inventory.setItem(hotbarSlot, sourceStack.clone());
     inventory.setItem(sourceSlot, null);
-    player.updateInventory();
+    p.updateInventory();
   }
 
   private int _findMatchingInventorySlot(PlayerInventory inventory, Material material, int hotbarSlot) {
@@ -134,7 +134,7 @@ public class ItemRestock implements Listener {
     return -1;
   }
 
-  private boolean _shouldRestock(Player player) {
-    return settings.getItemRestockEnabled() && settings.getPlayerItemRestock(player.getUniqueId());
+  private boolean _shouldRestock(Player p) {
+    return settings.getItemRestockEnabled() && settings.getPlayerItemRestock(p.getUniqueId());
   }
 }
