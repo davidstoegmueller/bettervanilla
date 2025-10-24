@@ -98,14 +98,14 @@ public class CraftingRecipeSettingsGUI {
       String key = config.recipe().getKey();
       actions.put(key, new CustomGUI.ClickAction() {
         @Override
-        public void onLeftClick(Player player) {
-          _toggleRecipe(player, config);
-          displayGUI(player, parentMenu, backAction);
+        public void onLeftClick(Player p) {
+          _toggleRecipe(p, config);
+          displayGUI(p, parentMenu, backAction);
         }
 
         @Override
-        public void onRightClick(Player player) {
-          _displayCraftingEditorGUI(player, config, viewer -> displayGUI(viewer, parentMenu, backAction));
+        public void onRightClick(Player p) {
+          _displayCraftingEditorGUI(p, config, viewer -> displayGUI(viewer, parentMenu, backAction));
         }
       });
     }

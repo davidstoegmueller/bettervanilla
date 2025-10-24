@@ -5,9 +5,20 @@ import java.util.function.Supplier;
 import org.bukkit.Material;
 
 import com.daveestar.bettervanilla.crafting.CustomCraftingRecipe;
+import com.daveestar.bettervanilla.crafting.InvisibleItemFrameCrafting;
 import com.daveestar.bettervanilla.crafting.InvisibleLightCrafting;
 
 public enum CraftingRecipe {
+  INVISIBLE_ITEM_FRAME(
+      "bettervanilla_invisible_item_frame",
+      "Invisible Item Frame",
+      "Item frame that hides when it holds an item.",
+      new Material[] {
+          Material.GLASS, Material.GLASS, Material.GLASS,
+          Material.GLASS, Material.ITEM_FRAME, Material.GLASS,
+          Material.GLASS, Material.GLASS, Material.GLASS
+      },
+      InvisibleItemFrameCrafting::new),
   INVISIBLE_LIGHT(
       "bettervanilla_invisible_light",
       "Invisible Light",
