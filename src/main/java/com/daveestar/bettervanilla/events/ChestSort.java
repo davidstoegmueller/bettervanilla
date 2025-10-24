@@ -2,9 +2,7 @@ package com.daveestar.bettervanilla.events;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -64,31 +62,77 @@ public class ChestSort implements Listener {
   }
 
   private void _sortInventory(Inventory inv) {
-    Map<Material, Integer> itemCount = new HashMap<>();
+    List<ItemStack> items = _collectStackedItems(inv);
+    Comparator<ItemStack> comparator = Comparator
+        .comparing((ItemStack item) -> item.getType().name())
+        .thenComparing(item -> item.hasItemMeta() ? item.getItemMeta().toString() : "")
+        .thenComparingInt(ItemStack::getAmount);
+
+    items.sort(comparator);
+    inv.clear();
+
+    int slot = 0;
+    for (ItemStack stack : items) {
+      if (slot >= inv.getSize()) {
+        break;
+      }
+
+      inv.setItem(slot++, stack);
+    }
+  }
+
+  private List<ItemStack> _collectStackedItems(Inventory inv) {
+    List<ItemStack> stacked = new ArrayList<>();
 
     for (ItemStack item : inv.getContents()) {
       if (item == null || item.getType() == Material.AIR) {
         continue;
       }
 
-      itemCount.merge(item.getType(), item.getAmount(), Integer::sum);
-    }
+      ItemStack source = item.clone();
 
-    List<Material> materials = new ArrayList<>(itemCount.keySet());
-    materials.sort(Comparator.comparing(Enum::name));
+      if (source.getMaxStackSize() <= 1) {
+        int copies = Math.max(1, source.getAmount());
+        source.setAmount(1);
 
-    inv.clear();
+        for (int i = 0; i < copies; i++) {
+          stacked.add(source.clone());
+        }
 
-    int slot = 0;
-    for (Material mat : materials) {
-      int amount = itemCount.get(mat);
-      int max = mat.getMaxStackSize();
+        continue;
+      }
 
-      while (amount > 0 && slot < inv.getSize()) {
-        int toSet = Math.min(max, amount);
-        inv.setItem(slot++, new ItemStack(mat, toSet));
-        amount -= toSet;
+      int amountToDistribute = source.getAmount();
+      int maxStackSize = source.getMaxStackSize();
+
+      for (ItemStack existing : stacked) {
+        if (!existing.isSimilar(source)) {
+          continue;
+        }
+
+        int space = maxStackSize - existing.getAmount();
+        if (space <= 0) {
+          continue;
+        }
+
+        int transfer = Math.min(space, amountToDistribute);
+        existing.setAmount(existing.getAmount() + transfer);
+        amountToDistribute -= transfer;
+
+        if (amountToDistribute == 0) {
+          break;
+        }
+      }
+
+      while (amountToDistribute > 0) {
+        ItemStack newStack = source.clone();
+        int stackSize = Math.min(maxStackSize, amountToDistribute);
+        newStack.setAmount(stackSize);
+        stacked.add(newStack);
+        amountToDistribute -= stackSize;
       }
     }
+
+    return stacked;
   }
 }

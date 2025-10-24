@@ -39,8 +39,8 @@ public class PlayTimeGUI {
     entries.put(selfKey, _createPlayerItem(p));
     actions.put(selfKey, new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
-        _sendPlaytimeMessage(player, p);
+      public void onLeftClick(Player p) {
+        _sendPlaytimeMessage(p, p);
       }
     });
 
@@ -55,8 +55,8 @@ public class PlayTimeGUI {
       entries.put(key, _createPlayerItem(op));
       actions.put(key, new CustomGUI.ClickAction() {
         @Override
-        public void onLeftClick(Player player) {
-          _sendPlaytimeMessage(player, op);
+        public void onLeftClick(Player p) {
+          _sendPlaytimeMessage(p, op);
         }
       });
     }

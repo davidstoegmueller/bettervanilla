@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [1.10.0] - unreleased
+
+- 🛠️ **Crafting Recipe Controls** - Added an in-game crafting recipe manager to the admin settings, including enable/disable toggles and a 3x3 editor that writes straight to `settings.yml`.
+- 🕯️ **Invisible Light Recipe** - Ships with a configurable Invisible Light recipe that defaults to torches around glowstone and saves custom ingredient layouts.
+- 🖼️ **Invisible Item Frame Recipe** - Added a new crafting recipe for invisible item frames.
+- ✅ **Chest Sort Fix** - Improved the chest sorting algorithm to correctly preserve item metadata, which was previously lost.
+
 ## [1.9.0] - 18.10.2025
 
 - 📁 **Renamed Moderation Config File** - For better consistency the `moderation.yml` file was renamed to `moderations.yml`.

@@ -768,30 +768,30 @@ public class WaypointsGUI {
       Consumer<Player> onShiftLeft, Consumer<Player> onShiftRight) {
     return new CustomGUI.ClickAction() {
       @Override
-      public void onLeftClick(Player player) {
+      public void onLeftClick(Player p) {
         if (onLeft != null) {
-          onLeft.accept(player);
+          onLeft.accept(p);
         }
       }
 
       @Override
-      public void onRightClick(Player player) {
+      public void onRightClick(Player p) {
         if (onRight != null) {
-          onRight.accept(player);
+          onRight.accept(p);
         }
       }
 
       @Override
-      public void onShiftLeftClick(Player player) {
+      public void onShiftLeftClick(Player p) {
         if (onShiftLeft != null) {
-          onShiftLeft.accept(player);
+          onShiftLeft.accept(p);
         }
       }
 
       @Override
-      public void onShiftRightClick(Player player) {
+      public void onShiftRightClick(Player p) {
         if (onShiftRight != null) {
-          onShiftRight.accept(player);
+          onShiftRight.accept(p);
         }
       }
     };
