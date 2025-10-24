@@ -61,9 +61,36 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🫥 **Vanish Mode** - Hide from players, tab lists, join/leave messages, the server list, and AFK timers with `/vanish`.
 - ⚰️ **Deathchest Toggle** - Switch global deathchests on or off without leaving the GUI.
 - 🔨 **Moderation Toolkit** - Kick, ban, mute, unmute, and unban directly in-game.
+- 🧩 **Crafting Recipe Manager** Manage predefined crafting recipes.
 - 📣 **Server MOTD** - Edit the server list message from the admin menu.
 - 🧭 **Locator Bar Gamerule** - Flip the `/gamerule locatorBar` setting across every world without leaving the GUI.
 - 🚧 **Maintenance Mode** - Toggle server access with custom messaging and bypass support.
+
+### Custom Crafting Recipes
+
+#### 💡 **Invisible Light Source**
+
+Craft an invisible light block that emits light at level 15.
+
+##### 🧾 Default Recipe
+
+| Slot 1 | Slot 2    | Slot 3 |
+| ------ | --------- | ------ |
+| empty  | torch     | empty  |
+| torch  | glowstone | torch  |
+| empty  | torch     | empty  |
+
+#### 🖼️ **Invisible Item Frame**
+
+Craft an invisible item frame that becomes invisible once an item is placed inside.
+
+##### 🧾 Default Recipe
+
+| Slot 1 | Slot 2     | Slot 3 |
+| ------ | ---------- | ------ |
+| glass  | glass      | glass  |
+| glass  | item frame | glass  |
+| glass  | glass      | glass  |
 
 ## Installation
 
