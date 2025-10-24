@@ -128,7 +128,9 @@ public class Main extends JavaPlugin {
 
     // crafting recipes
     _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
-    _registerCraftingRecipe(CraftingRecipe.INVISIBLE_LIGHT);
+    for (CraftingRecipe recipe : CraftingRecipe.values()) {
+      _registerCraftingRecipe(recipe);
+    }
 
     _LOGGER.info("BetterVanilla - ENABLED");
 
@@ -203,7 +205,11 @@ public class Main extends JavaPlugin {
       _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
     }
 
-    CustomCraftingRecipe customCraftingRecipe = new CustomCraftingRecipe(recipe);
+    CustomCraftingRecipe customCraftingRecipe = recipe.createHandler();
+    if (customCraftingRecipe == null) {
+      return;
+    }
+
     customCraftingRecipe.applyRecipe();
     _craftingRecipes.put(recipe, customCraftingRecipe);
   }

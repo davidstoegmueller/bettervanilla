@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -16,13 +15,13 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.CraftingRecipe;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 
-public class CustomCraftingRecipe {
+public abstract class CustomCraftingRecipe {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final CraftingRecipe _recipe;
   private final NamespacedKey _recipeKey;
 
-  public CustomCraftingRecipe(CraftingRecipe recipe) {
+  protected CustomCraftingRecipe(CraftingRecipe recipe) {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _recipe = recipe;
@@ -34,7 +33,7 @@ public class CustomCraftingRecipe {
   }
 
   public void applyRecipe() {
-    Bukkit.removeRecipe(_recipeKey);
+    _plugin.getServer().removeRecipe(_recipeKey, true);
 
     if (!isRecipeEnabled()) {
       return;
@@ -47,12 +46,12 @@ public class CustomCraftingRecipe {
 
     ShapedRecipe recipe = _createRecipe(recipeMatrix);
     if (recipe != null) {
-      Bukkit.addRecipe(recipe);
+      _plugin.getServer().addRecipe(recipe, true);
     }
   }
 
   public void destroyRecipe() {
-    Bukkit.removeRecipe(_recipeKey);
+    _plugin.getServer().removeRecipe(_recipeKey, true);
   }
 
   public boolean isRecipeEnabled() {
@@ -65,16 +64,33 @@ public class CustomCraftingRecipe {
   }
 
   public List<ItemStack> getDefaultRecipeMatrix() {
-    return _sanitizeMatrix(_recipe.buildDefaultMatrix());
+    return _sanitizeMatrix(buildDefaultMatrix());
   }
 
   public ItemStack createResultItem() {
-    ItemStack result = _recipe.createResultItem();
+    ItemStack result = buildResultItem();
     if (result == null) {
       return new ItemStack(Material.AIR);
     }
 
     return result.clone();
+  }
+
+  protected List<ItemStack> buildDefaultMatrix() {
+    return createMatrixFromMaterials(_recipe.getDefaultPattern());
+  }
+
+  protected abstract ItemStack buildResultItem();
+
+  protected List<ItemStack> createMatrixFromMaterials(Material... pattern) {
+    List<ItemStack> defaults = new ArrayList<>(CraftingRecipe.getGridSize());
+
+    for (int i = 0; i < CraftingRecipe.getGridSize(); i++) {
+      Material material = (pattern != null && i < pattern.length) ? pattern[i] : null;
+      defaults.add(material == null ? null : new ItemStack(material));
+    }
+
+    return defaults;
   }
 
   private ShapedRecipe _createRecipe(List<ItemStack> matrix) {

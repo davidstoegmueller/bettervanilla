@@ -85,7 +85,7 @@ public class CraftingRecipeSettingsGUI {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "A� Crafting Recipes",
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Crafting Recipes",
         entries, 2, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -121,17 +121,17 @@ public class CraftingRecipeSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "A� " + ChatColor.YELLOW + config.recipe().getName()));
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + config.recipe().getName()));
 
       List<String> loreLines = new ArrayList<>();
-      loreLines.add(ChatColor.YELLOW + "A� " + ChatColor.GRAY + "Manage this crafting recipe.");
+      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage this crafting recipe.");
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "A� " + ChatColor.GRAY + config.recipe().getDescription());
+      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + config.recipe().getDescription());
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "A� " + ChatColor.GRAY + "State: "
+      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
           + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-      loreLines.add(ChatColor.YELLOW + "A� " + ChatColor.GRAY + "Left-Click: Toggle");
-      loreLines.add(ChatColor.YELLOW + "A� " + ChatColor.GRAY + "Right-Click: Edit recipe");
+      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
+      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Edit recipe");
 
       meta.lore(loreLines.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       icon.setItemMeta(meta);
