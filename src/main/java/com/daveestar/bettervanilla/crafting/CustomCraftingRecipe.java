@@ -16,6 +16,10 @@ import com.daveestar.bettervanilla.enums.CraftingRecipe;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 
 public abstract class CustomCraftingRecipe {
+  private static final int GRID_SIZE = CraftingRecipe.getGridSize();
+  private static final int GRID_WIDTH = CraftingRecipe.getGridWidth();
+  private static final char[] SHAPE_KEYS = CraftingRecipe.getShapeKeys();
+
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final CraftingRecipe _recipe;
@@ -64,7 +68,15 @@ public abstract class CustomCraftingRecipe {
   }
 
   public List<ItemStack> getDefaultRecipeMatrix() {
-    return _sanitizeMatrix(buildDefaultMatrix());
+    Material[] pattern = _recipe.getDefaultPattern();
+    List<ItemStack> defaults = new ArrayList<>(GRID_SIZE);
+
+    for (int i = 0; i < GRID_SIZE; i++) {
+      Material material = (pattern != null && i < pattern.length) ? pattern[i] : null;
+      defaults.add(material == null ? null : new ItemStack(material));
+    }
+
+    return _sanitizeMatrix(defaults);
   }
 
   public ItemStack createResultItem() {
@@ -76,22 +88,7 @@ public abstract class CustomCraftingRecipe {
     return result.clone();
   }
 
-  protected List<ItemStack> buildDefaultMatrix() {
-    return createMatrixFromMaterials(_recipe.getDefaultPattern());
-  }
-
   protected abstract ItemStack buildResultItem();
-
-  protected List<ItemStack> createMatrixFromMaterials(Material... pattern) {
-    List<ItemStack> defaults = new ArrayList<>(CraftingRecipe.getGridSize());
-
-    for (int i = 0; i < CraftingRecipe.getGridSize(); i++) {
-      Material material = (pattern != null && i < pattern.length) ? pattern[i] : null;
-      defaults.add(material == null ? null : new ItemStack(material));
-    }
-
-    return defaults;
-  }
 
   private ShapedRecipe _createRecipe(List<ItemStack> matrix) {
     List<ItemStack> layout = _sanitizeMatrix(matrix);
@@ -106,15 +103,15 @@ public abstract class CustomCraftingRecipe {
     };
 
     Map<Character, ItemStack> ingredients = new HashMap<>();
-    for (int i = 0; i < CraftingRecipe.getGridSize(); i++) {
+    for (int i = 0; i < GRID_SIZE; i++) {
       ItemStack item = layout.get(i);
       if (item == null || item.getType() == Material.AIR) {
         continue;
       }
 
-      int row = i / CraftingRecipe.getGridWidth();
-      int column = i % CraftingRecipe.getGridWidth();
-      char key = CraftingRecipe.getShapeKeys()[i];
+      int row = i / GRID_WIDTH;
+      int column = i % GRID_WIDTH;
+      char key = SHAPE_KEYS[i];
 
       rows[row].setCharAt(column, key);
       ingredients.put(key, item);
@@ -146,9 +143,9 @@ public abstract class CustomCraftingRecipe {
   }
 
   private List<ItemStack> _sanitizeMatrix(List<ItemStack> matrix) {
-    List<ItemStack> sanitized = new ArrayList<>(CraftingRecipe.getGridSize());
+    List<ItemStack> sanitized = new ArrayList<>(GRID_SIZE);
 
-    for (int i = 0; i < CraftingRecipe.getGridSize(); i++) {
+    for (int i = 0; i < GRID_SIZE; i++) {
       ItemStack item = (matrix != null && i < matrix.size()) ? matrix.get(i) : null;
       if (item == null || item.getType() == Material.AIR) {
         sanitized.add(null);

@@ -131,7 +131,7 @@ public class CraftingRecipeSettingsGUI {
       loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
           + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
       loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Edit recipe");
+      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Edit Recipe");
 
       meta.lore(loreLines.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       icon.setItemMeta(meta);
