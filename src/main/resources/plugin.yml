@@ -1,6 +1,6 @@
 name: bettervanilla
 main: com.daveestar.bettervanilla.Main
-version: 1.10.0
+version: 1.10.1
 api-version: 1.21
 authors: ["daveestar"]
 commands:

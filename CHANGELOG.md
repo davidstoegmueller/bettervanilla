@@ -2,7 +2,11 @@
 
 # Changelog
 
-## [1.10.0] - unreleased
+## [1.10.1] - 24.10.2025
+
+- ⛏️ **Vein Chopper Missing Blocks** - Added the missing blocks to the vein chopper blocks configuration screen. (Crimson, Warped and PaleOak)
+
+## [1.10.0] - 24.10.2025
 
 - 🛠️ **Crafting Recipe Controls** - Added an in-game crafting recipe manager to the admin settings, including enable/disable toggles and a 3x3 editor that writes straight to `settings.yml`.
 - 🕯️ **Invisible Light Recipe** - Ships with a configurable Invisible Light recipe that defaults to torches around glowstone and saves custom ingredient layouts.
