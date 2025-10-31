@@ -2,6 +2,10 @@
 
 # Changelog
 
+## [1.10.2] - 31.10.2025
+
+- ⛏️ **Vein Chopper Missing Blocks** - Added the missing blocks to the vein chopper blocks configuration screen. (Mangrove Roots)
+
 ## [1.10.1] - 24.10.2025
 
 - ⛏️ **Vein Chopper Missing Blocks** - Added the missing blocks to the vein chopper blocks configuration screen. (Crimson, Warped and PaleOak)

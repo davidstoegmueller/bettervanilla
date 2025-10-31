@@ -243,7 +243,8 @@ public class VeinChopperSettingsGUI {
   // DIALOG CALLBACKS
   // ----------------
 
-  private void _setVeinChopperMaxSizeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
+  private void _setVeinChopperMaxSizeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     int veinSize = Math.round(view.getFloat("size"));
 
