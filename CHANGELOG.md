@@ -2,6 +2,8 @@
 
 # Changelog
 
+## [1.11.0] - xx.xx.202x
+
 ## [1.10.2] - 31.10.2025
 
 - ⛏️ **Vein Chopper Missing Blocks** - Added the missing blocks to the vein chopper blocks configuration screen. (Mangrove Roots)

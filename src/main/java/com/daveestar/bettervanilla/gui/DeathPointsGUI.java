@@ -11,6 +11,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -157,7 +158,17 @@ public class DeathPointsGUI {
     String deathPointDateTime = _deathPointsManager.getDeathPointDateTime(p, pointUUID);
 
     Location playerLocation = p.getLocation().toBlockLocation();
-    long distance = Math.round(playerLocation.distance(deathPointLocation));
+    World deathPointWorld = deathPointLocation.getWorld();
+    String worldName = deathPointWorld != null ? deathPointWorld.getName() : "Unknown";
+
+    String distanceString = "";
+    if (deathPointWorld != null && deathPointWorld.equals(playerLocation.getWorld())) {
+      long distance = Math.round(playerLocation.distance(deathPointLocation));
+
+      distanceString = "" + distance + ChatColor.GRAY + " blocks";
+    } else {
+      distanceString = "Not Available";
+    }
 
     ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING);
     ItemMeta meta = item.getItemMeta();
@@ -167,15 +178,13 @@ public class DeathPointsGUI {
           + ChatColor.GRAY + " (" + deathPointDateTime + ")"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "World: " + ChatColor.YELLOW
-              + deathPointLocation.getWorld().getName(),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "World: " + ChatColor.YELLOW + worldName,
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + deathPointLocation.getBlockX(),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + deathPointLocation.getBlockY(),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + deathPointLocation.getBlockZ(),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distance + ChatColor.GRAY
-              + " blocks",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distanceString,
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options").stream()

@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -212,7 +212,7 @@ public class SettingsManager {
     boolean enabled = getLocatorBarEnabled();
 
     for (World world : Bukkit.getWorlds()) {
-      world.setGameRule(GameRule.LOCATOR_BAR, enabled);
+      world.setGameRule(GameRules.LOCATOR_BAR, enabled);
     }
   }
 
