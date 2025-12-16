@@ -32,7 +32,7 @@ public class SettingsManager {
       Material.NETHER_GOLD_ORE, Material.DEEPSLATE_COAL_ORE,
       Material.DEEPSLATE_IRON_ORE, Material.DEEPSLATE_GOLD_ORE,
       Material.DEEPSLATE_REDSTONE_ORE, Material.DEEPSLATE_LAPIS_ORE,
-      Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE);
+      Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE, Material.GLOWSTONE);
 
   public static final List<Material> VEIN_CHOPPER_TOOLS = Arrays.asList(
       Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE,
