@@ -158,7 +158,7 @@ public class TabListManager {
     int deaths = p.getStatistic(Statistic.DEATHS);
 
     Component playerNameComponent = isAfk
-        ? Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + "AFK" + ChatColor.GRAY + "] "
+        ? Component.text(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
             + ChatColor.YELLOW + p.getName() + ChatColor.GRAY + " | " + ChatColor.GRAY + "Deaths: "
             + ChatColor.YELLOW + deaths)
         : Component.text(ChatColor.YELLOW + p.getName() + ChatColor.GRAY + " | " + ChatColor.GRAY + "Deaths: "
