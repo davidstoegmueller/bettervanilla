@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,8 @@ public class DeathPointsGUI {
     String[] deathPointUUIDs = _deathPointsManager.getDeathPointUUIDs(p);
 
     Map<String, ItemStack> deathPointEntries = Arrays.stream(deathPointUUIDs)
-        .collect(Collectors.toMap(pointUUID -> pointUUID, pointUUID -> _createDeathPointItem(p, pointUUID)));
+        .collect(Collectors.toMap(pointUUID -> pointUUID, pointUUID -> _createDeathPointItem(p, pointUUID), (a, b) -> a,
+            LinkedHashMap::new));
 
     String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Points";
     CustomGUI deathPointsGUI = new CustomGUI(_plugin, p, title, deathPointEntries, 3, null, null, null);
