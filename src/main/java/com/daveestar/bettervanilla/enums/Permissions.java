@@ -20,6 +20,7 @@ public enum Permissions {
   MSG("bettervanilla.msg", Category.PLAYER),
   TOGGLELOCATION("bettervanilla.togglelocation", Category.PLAYER),
   TOGGLECOMPASS("bettervanilla.togglecompass", Category.PLAYER),
+  ACTIONBAR_TIMER("bettervanilla.actionbartimer", Category.PLAYER),
   CHESTSORT("bettervanilla.chestsort", Category.PLAYER),
   DOUBLE_DOOR("bettervanilla.doubledoor", Category.PLAYER),
   VEINMINER("bettervanilla.veinminer", Category.PLAYER),

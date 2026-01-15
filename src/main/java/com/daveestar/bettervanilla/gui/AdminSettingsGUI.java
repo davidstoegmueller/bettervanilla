@@ -78,6 +78,7 @@ public class AdminSettingsGUI {
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
     entries.put("locatorbar", _createLocatorBarItem());
+    entries.put("actionbartimer", _createActionBarTimerItem());
     entries.put("deathchest", _createDeathChestItem());
     entries.put("itemrestock", _createItemRestockItem());
 
@@ -114,9 +115,12 @@ public class AdminSettingsGUI {
     customSlots.put("craftingrecipes", 32);
     customSlots.put("veinchoppersettings", 34);
 
+    // fifth row - slots 36 to 44
+    customSlots.put("actionbartimer", 40);
+
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 5, customSlots, parentMenu,
+        entries, 6, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     if (backAction != null) {
@@ -197,6 +201,14 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleLocatorBar(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("actionbartimer", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleActionBarTimer(p);
         displayGUI(p, parentMenu, backAction);
       }
     });
@@ -449,6 +461,27 @@ public class AdminSettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Locator Bar"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle the locator bar gamerule for all worlds.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createActionBarTimerItem() {
+    boolean state = _settingsManager.getActionBarTimerEnabled();
+    ItemStack item = new ItemStack(Material.CLOCK);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Timer"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable the timer in the actionbar.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -889,6 +922,13 @@ public class AdminSettingsGUI {
     _settingsManager.applyLocatorBarSetting();
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Locator bar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleActionBarTimer(Player p) {
+    boolean newState = !_settingsManager.getActionBarTimerEnabled();
+    _settingsManager.setActionBarTimerEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleDeathChest(Player p) {

@@ -46,7 +46,7 @@ public class SettingsGUI {
   public void displayGUI(Player p) {
     boolean showAdminSettings = p.hasPermission(Permissions.ADMINSETTINGS.getName());
     // two entry rows for admins, one for normal players (plus navigation row)
-    int rows = showAdminSettings ? 4 : 3;
+    int rows = showAdminSettings ? 5 : 4;
 
     Map<String, ItemStack> entries = new HashMap<>();
     // first row
@@ -62,6 +62,9 @@ public class SettingsGUI {
     entries.put("itemrestock", _createItemRestockItem(p));
 
     // third row
+    entries.put("actionbartimer", _createActionBarTimerItem(p));
+
+    // fourth row
     if (showAdminSettings) {
       entries.put("adminsettings", _createAdminSettingsItem());
     }
@@ -73,11 +76,16 @@ public class SettingsGUI {
     customSlots.put("navigationtrail", 5);
     customSlots.put("chestsort", 7);
 
+    // second row
     customSlots.put("veinminer", 11);
     customSlots.put("veinchopper", 15);
     customSlots.put("doubledoor", 13);
     customSlots.put("itemrestock", 9);
 
+    // third row
+    customSlots.put("actionbartimer", 21);
+
+    // fourth row
     if (showAdminSettings) {
       customSlots.put("adminsettings", rows * 9 - 10);
     }
@@ -118,6 +126,26 @@ public class SettingsGUI {
         }
 
         _toggleItemRestock(p);
+        displayGUI(p);
+      }
+    });
+
+    clickActions.put("actionbartimer", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!p.hasPermission(Permissions.ACTIONBAR_TIMER.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.ACTIONBAR_TIMER));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        if (!_settingsManager.getActionBarTimerEnabled()) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Action-Bar timer is globally disabled on the server.");
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleActionBarTimer(p);
         displayGUI(p);
       }
     });
@@ -245,6 +273,32 @@ public class SettingsGUI {
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createActionBarTimerItem(Player p) {
+    boolean state = _settingsManager.getPlayerActionBarTimer(p.getUniqueId());
+    ItemStack item = new ItemStack(Material.CLOCK);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean globalState = _settingsManager.getActionBarTimerEnabled();
+    boolean hasPermission = p.hasPermission(Permissions.ACTIONBAR_TIMER.getName());
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Timer"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Show the server timer in the actionbar.",
+          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.ACTIONBAR_TIMER)
+              : !globalState ? ChatColor.RED + "Action-Bar timer is globally disabled on the server." : null),
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -465,6 +519,14 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Action-Bar location is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleActionBarTimer(Player p) {
+    boolean newState = !_settingsManager.getPlayerActionBarTimer(p.getUniqueId());
+    _settingsManager.setPlayerActionBarTimer(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleCompass(Player p) {

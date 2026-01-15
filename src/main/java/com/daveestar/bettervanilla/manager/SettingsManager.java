@@ -63,6 +63,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getPlayerActionBarTimer(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".actionbartimer", true);
+  }
+
+  public void setPlayerActionBarTimer(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".actionbartimer", value);
+    _config.save();
+  }
+
   public boolean getPlayerToggleCompass(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".togglecompass", false);
   }
@@ -213,6 +222,22 @@ public class SettingsManager {
 
     for (World world : Bukkit.getWorlds()) {
       world.setGameRule(GameRules.LOCATOR_BAR, enabled);
+    }
+  }
+
+  public boolean getActionBarTimerEnabled() {
+    return _fileConfig.getBoolean("global.actionbartimer", true);
+  }
+
+  public void setActionBarTimerEnabled(boolean value) {
+    _fileConfig.set("global.actionbartimer", value);
+    _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setPlayerActionBarTimer(UUID.fromString(uuid), false);
+      }
     }
   }
 
