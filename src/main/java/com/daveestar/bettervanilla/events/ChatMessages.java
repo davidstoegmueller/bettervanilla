@@ -1,5 +1,7 @@
 package com.daveestar.bettervanilla.events;
 
+import java.util.regex.Pattern;
+
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -128,8 +130,10 @@ public class ChatMessages implements Listener {
         Player chatViewer = (Player) viewer;
         String name = chatViewer.getName();
 
-        if (formatted.toLowerCase().contains("@" + name.toLowerCase())) {
-          formatted = formatted.replaceAll("(?i)@" + java.util.regex.Pattern.quote(name),
+        String lowerName = name.toLowerCase();
+
+        if (formatted.toLowerCase().contains(lowerName) || formatted.toLowerCase().contains("@" + lowerName)) {
+          formatted = formatted.replaceAll("(?i)@?" + Pattern.quote(name),
               ChatColor.YELLOW + "" + ChatColor.BOLD + name + ChatColor.GRAY);
 
           chatViewer.playSound(chatViewer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1);

@@ -27,19 +27,23 @@ public class ModerationEvents implements Listener {
   @EventHandler
   public void onPreLogin(AsyncPlayerPreLoginEvent e) {
     OfflinePlayer p = Main.getInstance().getServer().getOfflinePlayer(e.getUniqueId());
+
     if (_modManager.isBanned(p)) {
       String reason = _modManager.getBanReason(p);
       long expires = _modManager.getBanExpiry(p);
       String banMsg = ChatColor.YELLOW + "" + ChatColor.BOLD + "BANNED\n\n" + ChatColor.GRAY
           + "You were banned from the server.\n\n";
+
       if (!reason.isEmpty()) {
         banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Reason: " + ChatColor.GRAY + reason + "\n";
       }
+
       if (expires != -1) {
         long remaining = (expires - System.currentTimeMillis()) / 1000;
         String time = _timerManager.formatTime((int) remaining);
         banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Expires in: " + ChatColor.GRAY + time;
       }
+
       e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, Component.text(banMsg));
     }
   }

@@ -11,8 +11,8 @@ import com.daveestar.bettervanilla.Main;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.md_5.bungee.api.ChatColor;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class CompassManager {
@@ -50,7 +50,7 @@ public class CompassManager {
     _FULL_SCALE_LENGTH = _FULL_SCALE_TEMPLATE.length();
   }
 
-  private final Map<Player, BossBar> _activeCompass = new HashMap<>();
+  private final Map<Player, BossBar> _activeCompass = new ConcurrentHashMap<>();
 
   private final Main _plugin;
   private SettingsManager _settingsManager;
