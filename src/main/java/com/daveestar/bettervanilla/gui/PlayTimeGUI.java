@@ -91,18 +91,32 @@ public class PlayTimeGUI {
 
     if (meta instanceof SkullMeta skullMeta) {
       skullMeta.setOwningPlayer(op);
-      skullMeta
-          .displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + op.getName()));
-      skullMeta.lore(Arrays.asList(
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW
-              + _timerManager.formatTime(playTime + afkTime),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW
-              + _timerManager.formatTime(playTime),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime),
-          "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Show Message")
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+
+      String status = op.isOnline()
+          ? ChatColor.GRAY + " (" + ChatColor.GREEN + "online" + ChatColor.GRAY + ")"
+          : ChatColor.GRAY + " (" + ChatColor.RED + "offline" + ChatColor.GRAY + ")";
+
+      skullMeta.displayName(
+          Component.text(
+              ChatColor.RED + "" + ChatColor.BOLD + "» "
+                  + ChatColor.YELLOW + op.getName()
+                  + status));
+
+      skullMeta.lore(
+          Arrays.asList(
+              "",
+              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW
+                  + _timerManager.formatTime(playTime + afkTime),
+              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW
+                  + _timerManager.formatTime(playTime),
+              ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK: " + ChatColor.YELLOW
+                  + _timerManager.formatTime(afkTime),
+              "",
+              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Show Message").stream()
+              .filter(Objects::nonNull)
+              .map(Component::text)
+              .collect(Collectors.toList()));
+
       item.setItemMeta(skullMeta);
     }
 
