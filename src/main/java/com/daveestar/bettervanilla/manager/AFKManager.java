@@ -140,7 +140,7 @@ public class AFKManager {
       boolean wasAFK = _afkStates.get(p);
 
       if (wasAFK && !nowAFK) {
-        p.sendMessage(Main.getPrefix() + "You are no longer AFK");
+        p.sendMessage(Main.getPrefix() + "You are no longer AFK!");
         _afkStates.put(p, false);
         updated = true;
 
