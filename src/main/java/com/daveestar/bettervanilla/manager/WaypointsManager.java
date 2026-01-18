@@ -20,6 +20,13 @@ import com.daveestar.bettervanilla.enums.WaypointVisibility;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class WaypointsManager {
+  private final String KEY_NAME = "name";
+  private final String KEY_X = "x";
+  private final String KEY_Y = "y";
+  private final String KEY_Z = "z";
+  private final String KEY_OWNER = "owner";
+  private final String KEY_VISIBILITY = "visibility";
+  private final String KEY_ICON = "icon";
   private final Config _config;
   private final FileConfiguration _fileConfig;
 
@@ -30,33 +37,53 @@ public class WaypointsManager {
 
   public List<String> getWaypoints(String worldName) {
     ConfigurationSection waypointsConfigSection = _fileConfig.getConfigurationSection(worldName);
-    Set<String> allWaypointNames = waypointsConfigSection != null ? waypointsConfigSection.getKeys(false) : null;
+    Set<String> allWaypointIds = waypointsConfigSection != null ? waypointsConfigSection.getKeys(false) : null;
 
-    if (allWaypointNames == null) {
+    if (allWaypointIds == null) {
       return new ArrayList<>();
     }
 
-    List<String> sortedWaypointNames = new ArrayList<>(allWaypointNames);
-    Collections.sort(sortedWaypointNames);
+    List<String> sortedWaypointIds = new ArrayList<>(allWaypointIds);
+    Collections.sort(sortedWaypointIds,
+        (left, right) -> {
+          String leftName = getWaypointDisplayName(worldName, left);
+          String rightName = getWaypointDisplayName(worldName, right);
+          int compare = leftName.compareToIgnoreCase(rightName);
+          if (compare != 0) {
+            return compare;
+          }
+          return left.compareToIgnoreCase(right);
+        });
 
-    return sortedWaypointNames;
+    return sortedWaypointIds;
   }
 
-  public HashMap<String, Integer> getWaypointCoordinates(String worldName, String waypointName) {
-    String basePath = worldName + "." + waypointName;
+  public String getWaypointDisplayName(String worldName, String waypointId) {
+    String path = _getWaypointBasePath(worldName, waypointId) + "." + KEY_NAME;
+    String storedName = _fileConfig.getString(path);
+
+    if (storedName != null && !storedName.isEmpty()) {
+      return storedName;
+    }
+
+    return waypointId;
+  }
+
+  public HashMap<String, Integer> getWaypointCoordinates(String worldName, String waypointId) {
+    String basePath = _getWaypointBasePath(worldName, waypointId);
     ConfigurationSection waypoint = _fileConfig.getConfigurationSection(basePath);
 
     HashMap<String, Integer> coordinates = new HashMap<>();
 
-    coordinates.put("x", waypoint != null ? waypoint.getInt("x", 0) : 0);
-    coordinates.put("y", waypoint != null ? waypoint.getInt("y", 0) : 0);
-    coordinates.put("z", waypoint != null ? waypoint.getInt("z", 0) : 0);
+    coordinates.put(KEY_X, waypoint != null ? waypoint.getInt(KEY_X, 0) : 0);
+    coordinates.put(KEY_Y, waypoint != null ? waypoint.getInt(KEY_Y, 0) : 0);
+    coordinates.put(KEY_Z, waypoint != null ? waypoint.getInt(KEY_Z, 0) : 0);
 
     return coordinates;
   }
 
-  public String getWaypointOwnerName(String worldName, String waypointName) {
-    String path = worldName + "." + waypointName + ".owner";
+  public String getWaypointOwnerName(String worldName, String waypointId) {
+    String path = _getWaypointBasePath(worldName, waypointId) + "." + KEY_OWNER;
 
     if (_fileConfig.contains(path)) {
       String ownerString = _fileConfig.getString(path);
@@ -76,8 +103,8 @@ public class WaypointsManager {
     return "unknown";
   }
 
-  public Optional<UUID> getWaypointOwnerId(String worldName, String waypointName) {
-    String path = worldName + "." + waypointName + ".owner";
+  public Optional<UUID> getWaypointOwnerId(String worldName, String waypointId) {
+    String path = _getWaypointBasePath(worldName, waypointId) + "." + KEY_OWNER;
 
     if (_fileConfig.contains(path)) {
       String ownerString = _fileConfig.getString(path);
@@ -94,8 +121,8 @@ public class WaypointsManager {
     return Optional.empty();
   }
 
-  public WaypointVisibility getWaypointVisibility(String worldName, String waypointName) {
-    String path = worldName + "." + waypointName + ".visibility";
+  public WaypointVisibility getWaypointVisibility(String worldName, String waypointId) {
+    String path = _getWaypointBasePath(worldName, waypointId) + "." + KEY_VISIBILITY;
 
     if (_fileConfig.contains(path)) {
       String visibilityString = _fileConfig.getString(path);
@@ -108,8 +135,8 @@ public class WaypointsManager {
     return WaypointVisibility.PUBLIC;
   }
 
-  public ItemStack getWaypointIcon(String worldName, String waypointName) {
-    String path = worldName + "." + waypointName + ".icon";
+  public ItemStack getWaypointIcon(String worldName, String waypointId) {
+    String path = _getWaypointBasePath(worldName, waypointId) + "." + KEY_ICON;
 
     if (_fileConfig.contains(path)) {
       Object raw = _fileConfig.get(path);
@@ -133,62 +160,65 @@ public class WaypointsManager {
 
   public void addWaypoint(String worldName, String waypointName, UUID playerId, WaypointVisibility visibility,
       int x, int y, int z) {
-    String basePath = worldName + "." + waypointName;
+    String waypointId = _createWaypointId(worldName);
+    String basePath = _getWaypointBasePath(worldName, waypointId);
 
-    _fileConfig.set(basePath + ".x", x);
-    _fileConfig.set(basePath + ".y", y);
-    _fileConfig.set(basePath + ".z", z);
-    _fileConfig.set(basePath + ".owner", playerId.toString());
-    _fileConfig.set(basePath + ".visibility", visibility.name());
-
+    _fileConfig.set(basePath + "." + KEY_NAME, waypointName);
+    _fileConfig.set(basePath + "." + KEY_X, x);
+    _fileConfig.set(basePath + "." + KEY_Y, y);
+    _fileConfig.set(basePath + "." + KEY_Z, z);
+    _fileConfig.set(basePath + "." + KEY_OWNER, playerId.toString());
+    _fileConfig.set(basePath + "." + KEY_VISIBILITY, visibility.name());
     _config.save();
   }
 
-  public void removeWaypoint(String worldName, String waypointName) {
-    _fileConfig.set(worldName + "." + waypointName, null);
-
+  public void removeWaypoint(String worldName, String waypointId) {
+    _fileConfig.set(_getWaypointBasePath(worldName, waypointId), null);
     _config.save();
   }
 
-  public void renameWaypoint(String worldName, String oldName, String newName) {
-    String oldPath = worldName + "." + oldName;
-    String newPath = worldName + "." + newName;
-    ConfigurationSection waypoint = _fileConfig.getConfigurationSection(oldPath);
-    if (waypoint != null) {
-      _fileConfig.set(newPath + ".x", waypoint.getInt("x"));
-      _fileConfig.set(newPath + ".y", waypoint.getInt("y"));
-      _fileConfig.set(newPath + ".z", waypoint.getInt("z"));
-
-      if (_fileConfig.contains(oldPath + ".icon")) {
-        Object iconData = _fileConfig.get(oldPath + ".icon");
-        _fileConfig.set(newPath + ".icon", iconData);
-      }
-
-      if (_fileConfig.contains(oldPath + ".owner")) {
-        _fileConfig.set(newPath + ".owner", _fileConfig.getString(oldPath + ".owner"));
-      }
-
-      if (_fileConfig.contains(oldPath + ".visibility")) {
-        _fileConfig.set(newPath + ".visibility", _fileConfig.getString(oldPath + ".visibility"));
-      }
-
-      _fileConfig.set(oldPath, null);
-      _config.save();
-    }
-  }
-
-  public void setWaypointVisibility(String worldName, String waypointName, WaypointVisibility visibility) {
-    _fileConfig.set(worldName + "." + waypointName + ".visibility", visibility.name());
+  public void renameWaypoint(String worldName, String waypointId, String newName) {
+    String basePath = _getWaypointBasePath(worldName, waypointId);
+    _fileConfig.set(basePath + "." + KEY_NAME, newName);
     _config.save();
   }
 
-  public void setWaypointIcon(String worldName, String waypointName, ItemStack iconItem) {
+  public void setWaypointVisibility(String worldName, String waypointId, WaypointVisibility visibility) {
+    _fileConfig.set(_getWaypointBasePath(worldName, waypointId) + "." + KEY_VISIBILITY, visibility.name());
+    _config.save();
+  }
+
+  public void setWaypointIcon(String worldName, String waypointId, ItemStack iconItem) {
     Map<String, Object> serializedIcon = iconItem.serialize();
-    _fileConfig.set(worldName + "." + waypointName + ".icon", serializedIcon);
+    _fileConfig.set(_getWaypointBasePath(worldName, waypointId) + "." + KEY_ICON, serializedIcon);
     _config.save();
   }
 
-  public Boolean checkWaypointExists(String worldName, String waypointName) {
-    return _fileConfig.contains(worldName + "." + waypointName);
+  public boolean isPublicNameAvailable(String worldName, String waypointName, String excludeWaypointId) {
+    for (String waypointId : getWaypoints(worldName)) {
+      if (excludeWaypointId != null && excludeWaypointId.equals(waypointId)) {
+        continue;
+      }
+
+      if (getWaypointVisibility(worldName, waypointId) == WaypointVisibility.PUBLIC
+          && getWaypointDisplayName(worldName, waypointId).equals(waypointName)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public boolean checkWaypointExists(String worldName, String waypointId) {
+    return _fileConfig.contains(_getWaypointBasePath(worldName, waypointId));
+  }
+
+  private String _getWaypointBasePath(String worldName, String waypointId) {
+    return worldName + "." + waypointId;
+  }
+
+  private String _createWaypointId(String worldName) {
+    String uuidString = UUID.randomUUID().toString();
+    return uuidString;
   }
 }
