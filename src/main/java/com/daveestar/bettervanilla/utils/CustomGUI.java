@@ -228,6 +228,10 @@ public class CustomGUI implements Listener {
 
     e.setCancelled(true);
 
+    if (e.getClick() == ClickType.DOUBLE_CLICK) {
+      return;
+    }
+
     if (allowMove && isItemSlot && e.getCursor().getType() == Material.AIR
         && !isNavSlot && !isActionSlot) {
       ItemStack item = _gui.getItem(rawSlot);
