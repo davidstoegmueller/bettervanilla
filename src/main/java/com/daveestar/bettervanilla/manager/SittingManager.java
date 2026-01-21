@@ -104,21 +104,21 @@ public class SittingManager implements Listener {
   }
 
   @EventHandler
-  public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-    if (!event.isSneaking()) {
+  public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
+    if (!e.isSneaking()) {
       return;
     }
 
-    unsitPlayer(event.getPlayer());
+    unsitPlayer(e.getPlayer());
   }
 
   @EventHandler
-  public void onPlayerQuit(PlayerQuitEvent event) {
-    unsitPlayer(event.getPlayer());
+  public void onPlayerQuit(PlayerQuitEvent e) {
+    unsitPlayer(e.getPlayer());
   }
 
   @EventHandler
-  public void onPlayerKick(PlayerKickEvent event) {
-    unsitPlayer(event.getPlayer());
+  public void onPlayerKick(PlayerKickEvent e) {
+    unsitPlayer(e.getPlayer());
   }
 }

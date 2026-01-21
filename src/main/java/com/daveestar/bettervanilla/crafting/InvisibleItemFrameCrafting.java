@@ -135,12 +135,12 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
   // ------
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onFramePlaced(HangingPlaceEvent event) {
-    if (!(event.getEntity() instanceof ItemFrame frame)) {
+  public void onFramePlaced(HangingPlaceEvent e) {
+    if (!(e.getEntity() instanceof ItemFrame frame)) {
       return;
     }
 
-    if (!_isInvisibleItemFrameItem(event.getItemStack())) {
+    if (!_isInvisibleItemFrameItem(e.getItemStack())) {
       return;
     }
 
@@ -148,8 +148,8 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onFrameInteract(PlayerInteractEntityEvent event) {
-    if (!(event.getRightClicked() instanceof ItemFrame frame)) {
+  public void onFrameInteract(PlayerInteractEntityEvent e) {
+    if (!(e.getRightClicked() instanceof ItemFrame frame)) {
       return;
     }
 
@@ -161,8 +161,8 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onFrameDamaged(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof ItemFrame frame)) {
+  public void onFrameDamaged(EntityDamageByEntityEvent e) {
+    if (!(e.getEntity() instanceof ItemFrame frame)) {
       return;
     }
 
@@ -174,8 +174,8 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
   }
 
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-  public void onFrameBreak(HangingBreakEvent event) {
-    if (!(event.getEntity() instanceof ItemFrame frame)) {
+  public void onFrameBreak(HangingBreakEvent e) {
+    if (!(e.getEntity() instanceof ItemFrame frame)) {
       return;
     }
 
@@ -183,7 +183,7 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
       return;
     }
 
-    event.setCancelled(true);
+    e.setCancelled(true);
 
     Location dropLocation = frame.getLocation();
     ItemStack displayed = frame.getItem();

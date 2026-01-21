@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id('io.papermc.paperweight.userdev') version "${dependency_papermc_paperweight_user_dev}"
 }
 
 group = 'com.daveestar'
@@ -13,7 +14,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly dependency_papermc_api
+    compileOnly "io.papermc.paper:paper-api:${dependency_papermc_api}"
+    paperweight.paperDevBundle(dependency_papermc_paperweight)
 }
 
 java {
@@ -29,6 +31,8 @@ jar {
         )
     }
 }
+
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 tasks.register('deploy', Copy) {
     dependsOn tasks.named('jar')

@@ -239,12 +239,12 @@ public class DeathChest implements Listener {
     e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
   }
 
-  private boolean _protectDeathChestArmorStand(EntityDamageEvent event) {
-    if (!_isDeathChestArmorStand(event.getEntity())) {
+  private boolean _protectDeathChestArmorStand(EntityDamageEvent e) {
+    if (!_isDeathChestArmorStand(e.getEntity())) {
       return false;
     }
 
-    event.setCancelled(true);
+    e.setCancelled(true);
     return true;
   }
 

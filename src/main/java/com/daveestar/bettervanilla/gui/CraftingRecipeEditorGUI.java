@@ -190,42 +190,42 @@ public class CraftingRecipeEditorGUI implements Listener {
   // ------
 
   @EventHandler
-  public void onInventoryClick(InventoryClickEvent event) {
-    RecipeEditorSession session = RecipeEditorSession.from(event.getView().getTopInventory());
+  public void onInventoryClick(InventoryClickEvent e) {
+    RecipeEditorSession session = RecipeEditorSession.from(e.getView().getTopInventory());
     if (session == null) {
       return;
     }
 
-    if (!(event.getWhoClicked() instanceof Player p)) {
+    if (!(e.getWhoClicked() instanceof Player p)) {
       return;
     }
 
-    if (event.getRawSlot() == RESULT_SLOT) {
-      event.setCancelled(true);
-      if (event.getSlot() == RESULT_SLOT && event.isLeftClick()) {
+    if (e.getRawSlot() == RESULT_SLOT) {
+      e.setCancelled(true);
+      if (e.getSlot() == RESULT_SLOT && e.isLeftClick()) {
         _handleSave(p, session);
       }
       return;
     }
 
-    if (event.getClickedInventory() != null && event.getClickedInventory().equals(session.getInventory())) {
+    if (e.getClickedInventory() != null && e.getClickedInventory().equals(session.getInventory())) {
       Bukkit.getScheduler().runTask(plugin, () -> _sanitizeGrid(p, session.getInventory()));
     }
   }
 
   @EventHandler
-  public void onInventoryDrag(InventoryDragEvent event) {
-    RecipeEditorSession session = RecipeEditorSession.from(event.getView().getTopInventory());
+  public void onInventoryDrag(InventoryDragEvent e) {
+    RecipeEditorSession session = RecipeEditorSession.from(e.getView().getTopInventory());
     if (session == null) {
       return;
     }
 
-    if (!(event.getWhoClicked() instanceof Player p)) {
+    if (!(e.getWhoClicked() instanceof Player p)) {
       return;
     }
 
-    if (event.getRawSlots().contains(RESULT_SLOT)) {
-      event.setCancelled(true);
+    if (e.getRawSlots().contains(RESULT_SLOT)) {
+      e.setCancelled(true);
       return;
     }
 
@@ -233,9 +233,9 @@ public class CraftingRecipeEditorGUI implements Listener {
   }
 
   @EventHandler
-  public void onInventoryClose(InventoryCloseEvent event) {
-    RecipeEditorSession session = RecipeEditorSession.from(event.getInventory());
-    if (session == null || !(event.getPlayer() instanceof Player p)) {
+  public void onInventoryClose(InventoryCloseEvent e) {
+    RecipeEditorSession session = RecipeEditorSession.from(e.getInventory());
+    if (session == null || !(e.getPlayer() instanceof Player p)) {
       return;
     }
 
@@ -250,8 +250,8 @@ public class CraftingRecipeEditorGUI implements Listener {
   }
 
   @EventHandler
-  public void onPlayerQuit(PlayerQuitEvent event) {
-    Player p = event.getPlayer();
+  public void onPlayerQuit(PlayerQuitEvent e) {
+    Player p = e.getPlayer();
     RecipeEditorSession session = RecipeEditorSession.from(p.getOpenInventory().getTopInventory());
     if (session == null) {
       return;

@@ -54,6 +54,7 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.SittingManager;
+import com.daveestar.bettervanilla.manager.RecipeSyncManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
@@ -86,6 +87,7 @@ public class Main extends JavaPlugin {
   private ModerationManager _moderationManager;
   private SittingManager _sittingManager;
   private TabListManager _tabListManager;
+  private RecipeSyncManager _recipeSyncManager;
   private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
@@ -118,6 +120,7 @@ public class Main extends JavaPlugin {
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
     _tabListManager = new TabListManager();
+    _recipeSyncManager = new RecipeSyncManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
@@ -188,6 +191,7 @@ public class Main extends JavaPlugin {
     _compassManager.destroy();
     _backpackManager.destroy();
     _tabListManager.destroy();
+
     if (_craftingRecipes != null) {
       _craftingRecipes.values().forEach(CustomCraftingRecipe::destroyRecipe);
       _craftingRecipes.clear();
@@ -304,6 +308,10 @@ public class Main extends JavaPlugin {
 
   public TabListManager getTabListManager() {
     return _tabListManager;
+  }
+
+  public RecipeSyncManager getRecipeSyncManager() {
+    return _recipeSyncManager;
   }
 
   public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {

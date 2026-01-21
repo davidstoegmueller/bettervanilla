@@ -27,51 +27,51 @@ public class ItemRestock implements Listener {
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onBlockPlace(BlockPlaceEvent event) {
-    if (event.getHand() != EquipmentSlot.HAND) {
+  public void onBlockPlace(BlockPlaceEvent e) {
+    if (e.getHand() != EquipmentSlot.HAND) {
       return;
     }
 
-    ItemStack usedItem = event.getItemInHand();
+    ItemStack usedItem = e.getItemInHand();
     if (usedItem == null || usedItem.getType() == Material.AIR) {
       return;
     }
 
-    _scheduleRestock(event.getPlayer(), usedItem.getType());
+    _scheduleRestock(e.getPlayer(), usedItem.getType());
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onItemBreak(PlayerItemBreakEvent event) {
-    ItemStack broken = event.getBrokenItem();
+  public void onItemBreak(PlayerItemBreakEvent e) {
+    ItemStack broken = e.getBrokenItem();
     if (broken == null || broken.getType() == Material.AIR) {
       return;
     }
 
-    _scheduleRestock(event.getPlayer(), broken.getType());
+    _scheduleRestock(e.getPlayer(), broken.getType());
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onItemConsume(PlayerItemConsumeEvent event) {
-    ItemStack consumed = event.getItem();
+  public void onItemConsume(PlayerItemConsumeEvent e) {
+    ItemStack consumed = e.getItem();
     if (consumed == null || consumed.getType() == Material.AIR) {
       return;
     }
 
-    _scheduleRestock(event.getPlayer(), consumed.getType());
+    _scheduleRestock(e.getPlayer(), consumed.getType());
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onInteract(PlayerInteractEvent event) {
-    if (event.getHand() != EquipmentSlot.HAND) {
+  public void onInteract(PlayerInteractEvent e) {
+    if (e.getHand() != EquipmentSlot.HAND) {
       return;
     }
 
-    ItemStack item = event.getItem();
+    ItemStack item = e.getItem();
     if (item == null || item.getType() == Material.AIR) {
       return;
     }
 
-    _scheduleRestock(event.getPlayer(), item.getType());
+    _scheduleRestock(e.getPlayer(), item.getType());
   }
 
   private void _scheduleRestock(Player p, Material material) {
