@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.utils;
+﻿package com.daveestar.bettervanilla.utils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -16,44 +16,51 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import io.papermc.paper.dialog.Dialog;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
 public class CustomGUI implements Listener {
-
   private static final int _INVENTORY_ROW_SIZE = 9;
   private final int _POS_SWITCH_PAGE_BUTTON;
+  private final int _POS_SEARCH_BUTTON;
   private final int _POS_BACK_BUTTON;
-
   private final int _pageSize;
   private int _currentPage;
-  private final int _maxPage;
-
+  private int _maxPage;
   private final Inventory _gui;
-  private final List<Map.Entry<String, ItemStack>> _entryList;
+  private final List<Map.Entry<String, ItemStack>> _allEntryList;
+  private List<Map.Entry<String, ItemStack>> _entryList;
   private final Map<String, Integer> _customSlots;
   private final Map<Integer, String> _slotKeyMap;
   private final Map<String, FooterEntry> _footerEntries;
   private final CustomGUI _parentMenu;
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
+  private final boolean _searchEnabled;
   private Consumer<Player> _backAction;
   private PageSwitchListener _pageSwitchListener;
+  private String _searchTerm;
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
     _currentPage = 1;
-    _entryList = new ArrayList<>(pageEntries.entrySet());
+    _allEntryList = new ArrayList<>(pageEntries.entrySet());
+    _entryList = new ArrayList<>(_allEntryList);
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
     _slotKeyMap = new HashMap<>();
     _footerEntries = new HashMap<>();
     _pageSize = inventorySize - _INVENTORY_ROW_SIZE;
-    _maxPage = (int) Math.ceil((double) _entryList.size() / _pageSize);
+    _maxPage = _calculateMaxPage();
     _parentMenu = parentMenu;
     _options = options != null ? options : EnumSet.noneOf(Option.class);
+    _searchEnabled = _options.contains(Option.SEARCH);
+    _searchTerm = "";
 
     _POS_SWITCH_PAGE_BUTTON = inventorySize - 1;
+    _POS_SEARCH_BUTTON = inventorySize - 2;
     _POS_BACK_BUTTON = inventorySize - _INVENTORY_ROW_SIZE;
 
     _gui = Bukkit.createInventory(null, inventorySize, Component.text(title));
@@ -92,7 +99,7 @@ public class CustomGUI implements Listener {
   }
 
   public void setEntryItem(String key, ItemStack item) {
-    for (Map.Entry<String, ItemStack> entry : _entryList) {
+    for (Map.Entry<String, ItemStack> entry : _allEntryList) {
       if (entry.getKey().equals(key)) {
         entry.setValue(item);
         break;
@@ -112,7 +119,13 @@ public class CustomGUI implements Listener {
     if (!_options.contains(Option.DISABLE_PAGE_BUTTON)) {
       _createSwitchPageButton();
     }
+
+    if (_options.contains(Option.SEARCH)) {
+      _createSearchButton();
+    }
+
     _createPlaceholderButtons();
+
     if (_parentMenu != null) {
       _createBackButton();
     }
@@ -120,14 +133,31 @@ public class CustomGUI implements Listener {
 
   private void _createSwitchPageButton() {
     _addItemToSlot(_POS_SWITCH_PAGE_BUTTON, Material.BOOK,
-        ChatColor.YELLOW + "Page " + ChatColor.GRAY + _currentPage + "/" + _maxPage,
+        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Page",
         Arrays.asList(
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current Page: " + ChatColor.YELLOW + _currentPage
+                + ChatColor.GRAY + " of " + ChatColor.YELLOW + _maxPage,
+            "",
             ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next Page",
             ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous Page"));
   }
 
   private void _createBackButton() {
     _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW, ChatColor.YELLOW + "Back", null);
+  }
+
+  private void _createSearchButton() {
+    String term = _searchTerm != null && !_searchTerm.isEmpty()
+        ? ChatColor.YELLOW + _searchTerm
+        : ChatColor.RED + "None";
+
+    _addItemToSlot(_POS_SEARCH_BUTTON, Material.NAME_TAG,
+        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Search",
+        Arrays.asList(
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Search for: " + term,
+            "",
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Search",
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Reset"));
   }
 
   private void _createPlaceholderButtons() {
@@ -217,7 +247,8 @@ public class CustomGUI implements Listener {
     boolean hasBackButton = _parentMenu != null;
     boolean isSwitchSlot = pageButtonEnabled && rawSlot == _POS_SWITCH_PAGE_BUTTON;
     boolean isBackSlot = hasBackButton && rawSlot == _POS_BACK_BUTTON;
-    boolean isActionSlot = isSwitchSlot || isBackSlot;
+    boolean isSearchSlot = _searchEnabled && rawSlot == _POS_SEARCH_BUTTON;
+    boolean isActionSlot = isSwitchSlot || isBackSlot || isSearchSlot;
     boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
     boolean isItemSlot = _slotKeyMap.containsKey(rawSlot);
 
@@ -259,7 +290,9 @@ public class CustomGUI implements Listener {
     if (!isActionSlot && !isItemSlot)
       return;
 
-    if (isSwitchSlot) {
+    if (isSearchSlot) {
+      _handleSearchClick(p, e.getClick());
+    } else if (isSwitchSlot) {
       ClickType click = e.getClick();
       boolean handled = false;
 
@@ -319,6 +352,58 @@ public class CustomGUI implements Listener {
     p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, 0.5F, 1);
   }
 
+  private void _handleSearchClick(Player p, ClickType click) {
+    if (!_searchEnabled) {
+      return;
+    }
+
+    boolean handled = false;
+    switch (click) {
+      case LEFT:
+      case SHIFT_LEFT:
+      case WINDOW_BORDER_LEFT:
+        _openSearchDialog(p);
+        handled = true;
+        break;
+      case RIGHT:
+      case SHIFT_RIGHT:
+      case WINDOW_BORDER_RIGHT:
+        _applySearchTerm("");
+        p.openInventory(_gui);
+        handled = true;
+        break;
+      default:
+        break;
+    }
+
+    if (handled) {
+      p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
+    }
+  }
+
+  private void _openSearchDialog(Player p) {
+    if (!_searchEnabled) {
+      return;
+    }
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Search",
+        "Enter text to filter items.",
+        null,
+        List.of(CustomDialog.createTextInput("search",
+            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Search",
+            _searchTerm)),
+        (view, audience) -> {
+          Player player = (Player) audience;
+          String input = Optional.ofNullable(view.getText("search")).map(String::trim).orElse("");
+          _applySearchTerm(input);
+          player.openInventory(_gui);
+        },
+        null);
+
+    p.showDialog(dialog);
+  }
+
   private void _handleItemClick(Player p, String key, boolean isShiftClick, boolean isRightClick) {
     if (key == null)
       return;
@@ -337,6 +422,93 @@ public class CustomGUI implements Listener {
 
       p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
     }
+  }
+
+  private void _applySearchTerm(String term) {
+    _searchTerm = term != null ? term.trim() : "";
+
+    if (_searchTerm.isEmpty()) {
+      _entryList = new ArrayList<>(_allEntryList);
+      _currentPage = 1;
+      _maxPage = _calculateMaxPage();
+      _updatePage();
+      return;
+    }
+
+    String normalizedTerm = _normalizeText(_searchTerm);
+    _entryList = new ArrayList<>(_allEntryList.stream()
+        .filter(entry -> _searchMatcher(entry.getKey(), entry.getValue(), normalizedTerm))
+        .toList());
+
+    _currentPage = 1;
+    _maxPage = _calculateMaxPage();
+    _updatePage();
+  }
+
+  private boolean _searchMatcher(String key, ItemStack item, String normalizedTerm) {
+    if (normalizedTerm.isEmpty()) {
+      return true;
+    }
+
+    if (_normalizeText(key).contains(normalizedTerm)) {
+      return true;
+    }
+
+    if (item == null) {
+      return false;
+    }
+
+    if (_normalizeText(item.getType().name()).contains(normalizedTerm)) {
+      return true;
+    }
+
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return false;
+    }
+
+    Component displayName = meta.displayName();
+    if (displayName != null && _normalizeComponent(displayName).contains(normalizedTerm)) {
+      return true;
+    }
+
+    List<Component> lore = meta.lore();
+    if (lore == null) {
+      return false;
+    }
+
+    for (Component line : lore) {
+      if (_normalizeComponent(line).contains(normalizedTerm)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private String _normalizeComponent(Component component) {
+    return _normalizeText(PlainTextComponentSerializer.plainText().serialize(component));
+  }
+
+  private String _normalizeText(String text) {
+    if (text == null) {
+      return "";
+    }
+
+    String stripped = ChatColor.stripColor(text);
+    if (stripped == null) {
+      stripped = text;
+    }
+
+    return stripped.toLowerCase(Locale.ROOT);
+  }
+
+  private int _calculateMaxPage() {
+    if (_pageSize <= 0) {
+      return 1;
+    }
+
+    return Math.max(1, (int) Math.ceil((double) _entryList.size() / _pageSize));
   }
 
   public interface ClickAction {
@@ -364,6 +536,7 @@ public class CustomGUI implements Listener {
   public enum Option {
     DISABLE_PAGE_BUTTON,
     ALLOW_ITEM_MOVEMENT,
+    SEARCH,
   }
 
   private record FooterEntry(ItemStack item, int slot) {

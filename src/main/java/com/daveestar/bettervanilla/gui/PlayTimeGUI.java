@@ -1,6 +1,7 @@
 package com.daveestar.bettervanilla.gui;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class PlayTimeGUI {
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
-        entries, 3, null, null, null);
+        entries, 3, null, null, EnumSet.of(CustomGUI.Option.SEARCH));
 
     gui.setClickActions(actions);
     gui.open(p);

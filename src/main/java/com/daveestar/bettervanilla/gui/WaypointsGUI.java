@@ -115,7 +115,8 @@ public class WaypointsGUI {
     String inputZ = Integer.toString(pLoc.getBlockZ());
 
     String waypointGUITitle = "Waypoints " + ChatColor.GRAY + "(" + filterMode.getColoredName() + ChatColor.GRAY + ")";
-    CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null, null);
+    CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null,
+        EnumSet.of(CustomGUI.Option.SEARCH));
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
     for (String waypointId : filteredWaypointIds) {
@@ -234,7 +235,8 @@ public class WaypointsGUI {
       }
     }
 
-    CustomGUI iconGUI = _createGUI(p, "Icon: " + waypointName, ICON_GUI_ROWS, entries, null, parentGUI, null);
+    CustomGUI iconGUI = _createGUI(p, "Icon: " + waypointName, ICON_GUI_ROWS, entries, null, parentGUI,
+        EnumSet.of(CustomGUI.Option.SEARCH));
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
     iconLookup.forEach((key, material) -> actions.put(key, _clickAction(
@@ -679,7 +681,7 @@ public class WaypointsGUI {
   }
 
   private int _footerFilterSlot(int rows) {
-    return (rows * 9) - 9 + 7;
+    return (rows * 9) - 9 + 6;
   }
 
   private int _footerCancelSlot(int rows) {
