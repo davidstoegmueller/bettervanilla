@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.daveestar'
+version = plugin_version
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'com.daveestar.bettervanilla.Main'
+        )
+    }
+}
+
+tasks.register('deploy', Copy) {
+    dependsOn tasks.named('jar')
+    onlyIf { local_server_plugin_dir != null }
+    from tasks.named('jar').map { it.archiveFile }
+    into local_server_plugin_dir
+    doFirst {
+        println "Copying plugin jar to ${local_server_plugin_dir}"
+    }
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('deploy')
+}

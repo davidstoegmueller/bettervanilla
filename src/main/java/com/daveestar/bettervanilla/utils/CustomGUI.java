@@ -1,4 +1,4 @@
-﻿package com.daveestar.bettervanilla.utils;
+package com.daveestar.bettervanilla.utils;
 
 import java.util.*;
 import java.util.function.Consumer;
