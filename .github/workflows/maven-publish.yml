@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       actions: write
 
@@ -24,14 +24,28 @@ jobs:
           java-version: "24"
           distribution: "temurin"
 
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      # if you build a shaded/fat jar (recommended for many plugins),
+      # replace this with: ./gradlew shadowJar
       - name: Build .jar
-        run: mvn -B package --file pom.xml
+        run: ./gradlew build
 
       - name: Set version output
         id: build
+        shell: bash
         run: |
-          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-          echo "timestamp=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+          set -euo pipefail
+
+          version=$(./gradlew properties -q | awk -F': ' '$1=="version"{print $2; exit}')
+          if [ -z "${version}" ] || [ "${version}" = "unspecified" ]; then
+            echo "Could not determine Gradle project version (got: '${version}'). Set 'version' in build.gradle(.kts)." >&2
+            exit 1
+          fi
+
+          echo "version=${version}" >> "$GITHUB_ENV"
+          echo "timestamp=$(date +'%Y%m%d%H%M%S')" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
         id: create_release
@@ -50,6 +64,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/bettervanilla-${{ env.version }}.jar
+          asset_path: ./build/libs/bettervanilla-${{ env.version }}.jar
           asset_name: bettervanilla-${{ env.version }}.jar
           asset_content_type: application/java-archive
