@@ -24,8 +24,9 @@ import net.md_5.bungee.api.ChatColor;
 public class CustomGUI implements Listener {
   private static final int _INVENTORY_ROW_SIZE = 9;
   private final int _POS_SWITCH_PAGE_BUTTON;
-  private final int _POS_SEARCH_BUTTON;
+  private int _POS_SEARCH_BUTTON;
   private final int _POS_BACK_BUTTON;
+  private int _POS_SORT_BUTTON;
   private final int _pageSize;
   private int _currentPage;
   private int _maxPage;
@@ -39,6 +40,9 @@ public class CustomGUI implements Listener {
   private Map<String, ClickAction> _clickActions;
   private final Set<Option> _options;
   private final boolean _searchEnabled;
+  private final boolean _sortEnabled;
+  private List<SortOption> _sortOptions;
+  private int _currentSortIdx;
   private Consumer<Player> _backAction;
   private PageSwitchListener _pageSwitchListener;
   private String _searchTerm;
@@ -56,11 +60,15 @@ public class CustomGUI implements Listener {
     _maxPage = _calculateMaxPage();
     _parentMenu = parentMenu;
     _options = options != null ? options : EnumSet.noneOf(Option.class);
-    _searchEnabled = _options.contains(Option.SEARCH);
+    _searchEnabled = _options.contains(Option.ENABLE_SEARCH);
+    _sortEnabled = _options.contains(Option.ENABLE_SORT);
     _searchTerm = "";
+    _sortOptions = new ArrayList<>();
+    _currentSortIdx = 0;
 
     _POS_SWITCH_PAGE_BUTTON = inventorySize - 1;
     _POS_SEARCH_BUTTON = inventorySize - 2;
+    _POS_SORT_BUTTON = inventorySize - 3;
     _POS_BACK_BUTTON = inventorySize - _INVENTORY_ROW_SIZE;
 
     _gui = Bukkit.createInventory(null, inventorySize, Component.text(title));
@@ -80,6 +88,22 @@ public class CustomGUI implements Listener {
 
   public void setBackAction(Consumer<Player> backAction) {
     _backAction = backAction;
+  }
+
+  public void setSortOptions(List<SortOption> sortOptions) {
+    _sortOptions = sortOptions != null ? new ArrayList<>(sortOptions) : new ArrayList<>();
+    _currentSortIdx = 0;
+    _applySearchTerm(_searchTerm);
+  }
+
+  public void setSearchButtonSlot(int slot) {
+    _POS_SEARCH_BUTTON = slot;
+    _updatePage();
+  }
+
+  public void setSortButtonSlot(int slot) {
+    _POS_SORT_BUTTON = slot;
+    _updatePage();
   }
 
   public void addFooterEntry(String key, ItemStack item, int slot) {
@@ -120,8 +144,12 @@ public class CustomGUI implements Listener {
       _createSwitchPageButton();
     }
 
-    if (_options.contains(Option.SEARCH)) {
+    if (_options.contains(Option.ENABLE_SEARCH)) {
       _createSearchButton();
+    }
+
+    if (_options.contains(Option.ENABLE_SORT)) {
+      _createSortButton();
     }
 
     _createPlaceholderButtons();
@@ -158,6 +186,30 @@ public class CustomGUI implements Listener {
             "",
             ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Search",
             ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Reset"));
+  }
+
+  private void _createSortButton() {
+    if (!_sortEnabled || _sortOptions.isEmpty()) {
+      return;
+    }
+
+    List<String> lore = new ArrayList<>();
+    lore.add("");
+
+    for (int i = 0; i < _sortOptions.size(); i++) {
+      SortOption option = _sortOptions.get(i);
+      if (option != null && option.displayName() != null) {
+        ChatColor color = i == _currentSortIdx ? ChatColor.GREEN : ChatColor.YELLOW;
+        lore.add(ChatColor.YELLOW + "» " + color + option.displayName());
+      }
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next option");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous option");
+
+    _addItemToSlot(_POS_SORT_BUTTON, Material.COMPARATOR,
+        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sort", lore);
   }
 
   private void _createPlaceholderButtons() {
@@ -248,7 +300,8 @@ public class CustomGUI implements Listener {
     boolean isSwitchSlot = pageButtonEnabled && rawSlot == _POS_SWITCH_PAGE_BUTTON;
     boolean isBackSlot = hasBackButton && rawSlot == _POS_BACK_BUTTON;
     boolean isSearchSlot = _searchEnabled && rawSlot == _POS_SEARCH_BUTTON;
-    boolean isActionSlot = isSwitchSlot || isBackSlot || isSearchSlot;
+    boolean isSortSlot = _sortEnabled && rawSlot == _POS_SORT_BUTTON && !_sortOptions.isEmpty();
+    boolean isActionSlot = isSwitchSlot || isBackSlot || isSearchSlot || isSortSlot;
     boolean isNavSlot = rawSlot >= topSize - _INVENTORY_ROW_SIZE;
     boolean isItemSlot = _slotKeyMap.containsKey(rawSlot);
 
@@ -292,6 +345,8 @@ public class CustomGUI implements Listener {
 
     if (isSearchSlot) {
       _handleSearchClick(p, e.getClick());
+    } else if (isSortSlot) {
+      _handleSortClick(p, e.getClick());
     } else if (isSwitchSlot) {
       ClickType click = e.getClick();
       boolean handled = false;
@@ -381,6 +436,34 @@ public class CustomGUI implements Listener {
     }
   }
 
+  private void _handleSortClick(Player p, ClickType click) {
+    if (!_sortEnabled || _sortOptions.isEmpty()) {
+      return;
+    }
+
+    boolean handled = false;
+    switch (click) {
+      case LEFT:
+      case SHIFT_LEFT:
+      case WINDOW_BORDER_LEFT:
+        _cycleSortOption(true);
+        handled = true;
+        break;
+      case RIGHT:
+      case SHIFT_RIGHT:
+      case WINDOW_BORDER_RIGHT:
+        _cycleSortOption(false);
+        handled = true;
+        break;
+      default:
+        break;
+    }
+
+    if (handled) {
+      p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
+    }
+  }
+
   private void _openSearchDialog(Player p) {
     if (!_searchEnabled) {
       return;
@@ -430,6 +513,7 @@ public class CustomGUI implements Listener {
     if (_searchTerm.isEmpty()) {
       _entryList = new ArrayList<>(_allEntryList);
       _currentPage = 1;
+      _applySort();
       _maxPage = _calculateMaxPage();
       _updatePage();
       return;
@@ -441,8 +525,33 @@ public class CustomGUI implements Listener {
         .toList());
 
     _currentPage = 1;
+    _applySort();
     _maxPage = _calculateMaxPage();
     _updatePage();
+  }
+
+  private void _applySort() {
+    if (!_sortEnabled || _sortOptions.isEmpty()) {
+      return;
+    }
+
+    SortOption current = _sortOptions.get(_currentSortIdx);
+    if (current == null || current.comparator() == null) {
+      return;
+    }
+
+    _entryList.sort(current.comparator());
+  }
+
+  private void _cycleSortOption(boolean next) {
+    if (_sortOptions.isEmpty()) {
+      return;
+    }
+
+    int size = _sortOptions.size();
+    int delta = next ? 1 : -1;
+    _currentSortIdx = (_currentSortIdx + delta + size) % size;
+    _applySearchTerm(_searchTerm);
   }
 
   private boolean _searchMatcher(String key, ItemStack item, String normalizedTerm) {
@@ -536,9 +645,13 @@ public class CustomGUI implements Listener {
   public enum Option {
     DISABLE_PAGE_BUTTON,
     ALLOW_ITEM_MOVEMENT,
-    SEARCH,
+    ENABLE_SEARCH,
+    ENABLE_SORT,
   }
 
   private record FooterEntry(ItemStack item, int slot) {
+  }
+
+  public record SortOption(String displayName, Comparator<Map.Entry<String, ItemStack>> comparator) {
   }
 }

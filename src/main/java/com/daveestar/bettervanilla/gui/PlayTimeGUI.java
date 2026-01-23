@@ -1,9 +1,11 @@
 package com.daveestar.bettervanilla.gui;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -35,9 +37,11 @@ public class PlayTimeGUI {
   public void displayGUI(Player p) {
     Map<String, ItemStack> entries = new LinkedHashMap<>();
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
+    Map<String, PlaytimeSortData> sortData = new HashMap<>();
 
     String selfKey = p.getUniqueId().toString();
     entries.put(selfKey, _createPlayerItem(p));
+    sortData.put(selfKey, _buildPlaytimeSortData(p));
     actions.put(selfKey, new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
@@ -54,6 +58,7 @@ public class PlayTimeGUI {
 
       String key = op.getUniqueId().toString();
       entries.put(key, _createPlayerItem(op));
+      sortData.put(key, _buildPlaytimeSortData(op));
       actions.put(key, new CustomGUI.ClickAction() {
         @Override
         public void onLeftClick(Player p) {
@@ -64,10 +69,23 @@ public class PlayTimeGUI {
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
-        entries, 3, null, null, EnumSet.of(CustomGUI.Option.SEARCH));
+        entries, 3, null, null, EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
+
+    gui.setSearchButtonSlot(_footerSearchSlot(3));
+
+    gui.setSortOptions(_createPlaytimeSortOptions(sortData));
+    gui.setSortButtonSlot(_footerSortSlot(3));
 
     gui.setClickActions(actions);
     gui.open(p);
+  }
+
+  private int _footerSearchSlot(int rows) {
+    return (rows * 9) - 9 + 7;
+  }
+
+  private int _footerSortSlot(int rows) {
+    return (rows * 9) - 9 + 6;
   }
 
   private void _sendPlaytimeMessage(Player viewer, OfflinePlayer target) {
@@ -122,5 +140,58 @@ public class PlayTimeGUI {
     }
 
     return item;
+  }
+
+  // ---------
+  // SORTING
+  // ---------
+
+  private PlaytimeSortData _buildPlaytimeSortData(OfflinePlayer op) {
+    int playTime = _timerManager.getPlayTime(op.getUniqueId());
+    int afkTime = _timerManager.getAFKTime(op.getUniqueId());
+    long totalTime = (long) playTime + afkTime;
+    String name = op.getName() != null ? op.getName() : "";
+    return new PlaytimeSortData(name, playTime, afkTime, totalTime);
+  }
+
+  private List<CustomGUI.SortOption> _createPlaytimeSortOptions(Map<String, PlaytimeSortData> sortData) {
+    Comparator<Map.Entry<String, ItemStack>> byTotalDesc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).totalTime())
+        .reversed();
+
+    Comparator<Map.Entry<String, ItemStack>> byTotalAsc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).totalTime());
+
+    Comparator<Map.Entry<String, ItemStack>> byPlayDesc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).playTime())
+        .reversed();
+
+    Comparator<Map.Entry<String, ItemStack>> byPlayAsc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).playTime());
+
+    Comparator<Map.Entry<String, ItemStack>> byAfkDesc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).afkTime())
+        .reversed();
+
+    Comparator<Map.Entry<String, ItemStack>> byAfkAsc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).afkTime());
+
+    Comparator<Map.Entry<String, ItemStack>> byNameAsc = Comparator.<Map.Entry<String, ItemStack>, String>comparing(
+        entry -> sortData.get(entry.getKey()).name().toLowerCase());
+
+    Comparator<Map.Entry<String, ItemStack>> byNameDesc = byNameAsc.reversed();
+
+    return List.of(
+        new CustomGUI.SortOption("Total ↑", byTotalDesc),
+        new CustomGUI.SortOption("Total ↓", byTotalAsc),
+        new CustomGUI.SortOption("Playtime ↑", byPlayDesc),
+        new CustomGUI.SortOption("Playtime ↓", byPlayAsc),
+        new CustomGUI.SortOption("AFK-Time ↑", byAfkDesc),
+        new CustomGUI.SortOption("AFK-Time ↓", byAfkAsc),
+        new CustomGUI.SortOption("Name ↑", byNameAsc),
+        new CustomGUI.SortOption("Name ↓", byNameDesc));
+  }
+
+  private record PlaytimeSortData(String name, long playTime, long afkTime, long totalTime) {
   }
 }

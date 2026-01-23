@@ -121,6 +121,15 @@ public class DeathPointsManager {
     return timestamp != 0 ? sdf.format(new Date(timestamp)) : "-";
   }
 
+  public long getDeathPointTimestamp(Player p, String pointUUID) {
+    return getDeathPointTimestamp(p.getUniqueId().toString(), pointUUID);
+  }
+
+  public long getDeathPointTimestamp(String ownerUUID, String pointUUID) {
+    String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
+    return _fileConfig.getLong(deathPointPath + ".timestamp", 0);
+  }
+
   public ItemStack[] getDeathPointItems(Player p, String pointUUID) {
     return getDeathPointItems(p.getUniqueId().toString(), pointUUID);
   }

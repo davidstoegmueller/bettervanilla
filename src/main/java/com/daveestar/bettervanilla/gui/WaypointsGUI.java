@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Comparator;
 import java.util.function.Consumer;
 
 import org.bukkit.Color;
@@ -116,7 +117,13 @@ public class WaypointsGUI {
 
     String waypointGUITitle = "Waypoints " + ChatColor.GRAY + "(" + filterMode.getColoredName() + ChatColor.GRAY + ")";
     CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null,
-        EnumSet.of(CustomGUI.Option.SEARCH));
+        EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
+
+    waypointsGUI.setSearchButtonSlot(_footerSearchSlot(MAIN_GUI_ROWS));
+
+    Map<String, WaypointSortData> sortData = _buildWaypointSortData(p, worldName, filteredWaypointIds);
+    waypointsGUI.setSortOptions(_createWaypointSortOptions(sortData));
+    waypointsGUI.setSortButtonSlot(_footerSortSlot(MAIN_GUI_ROWS));
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
     for (String waypointId : filteredWaypointIds) {
@@ -236,7 +243,9 @@ public class WaypointsGUI {
     }
 
     CustomGUI iconGUI = _createGUI(p, "Icon: " + waypointName, ICON_GUI_ROWS, entries, null, parentGUI,
-        EnumSet.of(CustomGUI.Option.SEARCH));
+        EnumSet.of(CustomGUI.Option.ENABLE_SEARCH));
+
+    iconGUI.setSearchButtonSlot(_footerSearchSlot(ICON_GUI_ROWS));
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
     iconLookup.forEach((key, material) -> actions.put(key, _clickAction(
@@ -323,14 +332,24 @@ public class WaypointsGUI {
   }
 
   private ItemStack _createFilterItem(WaypointFilter filterMode) {
+    List<Component> lore = new ArrayList<>();
+    lore.add(Component.text(""));
+
+    for (WaypointFilter option : WaypointFilter.values()) {
+      boolean isSelected = option == filterMode;
+      String name = ChatColor.stripColor(option.getColoredName());
+      ChatColor color = isSelected ? ChatColor.GREEN : ChatColor.YELLOW;
+      lore.add(Component.text(GUI_LORE_PREFIX + color + name));
+    }
+
+    lore.add(Component.text(""));
+    lore.add(Component.text(GUI_LORE_PREFIX + "Left-Click: Next option"));
+    lore.add(Component.text(GUI_LORE_PREFIX + "Right-Click: Previous option"));
+
     return _createItem(
         Material.HOPPER,
         Component.text(GUI_ITEM_PREFIX + "Filter"),
-        _createLore(
-            GUI_LORE_PREFIX + "Current mode: " + filterMode.getColoredName(),
-            "",
-            GUI_LORE_PREFIX + "Left-Click: Next filter",
-            GUI_LORE_PREFIX + "Right-Click: Previous filter"),
+        lore,
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
 
@@ -677,15 +696,23 @@ public class WaypointsGUI {
   }
 
   private int _footerAddWaypointSlot(int rows) {
-    return (rows * 9) - 9 + 4;
+    return (rows * 9) - 9;
   }
 
   private int _footerFilterSlot(int rows) {
+    return (rows * 9) - 9 + 5;
+  }
+
+  private int _footerSearchSlot(int rows) {
+    return (rows * 9) - 9 + 7;
+  }
+
+  private int _footerSortSlot(int rows) {
     return (rows * 9) - 9 + 6;
   }
 
   private int _footerCancelSlot(int rows) {
-    return (rows * 9) - 9;
+    return (rows * 9) - 8;
   }
 
   private boolean _canEditWaypointOptions(String worldName, String waypointId, Player p) {
@@ -772,6 +799,51 @@ public class WaypointsGUI {
 
   private WaypointFilter _getFilterMode(Player p) {
     return _playerFilterModes.getOrDefault(p.getUniqueId(), WaypointFilter.ALL);
+  }
+
+  // -------------
+  // SORT HELPER
+  // -------------
+
+  private Map<String, WaypointSortData> _buildWaypointSortData(Player p, String worldName, List<String> waypointIds) {
+    Map<String, WaypointSortData> sortData = new HashMap<>();
+    Location pLoc = p.getLocation().toBlockLocation();
+
+    for (String waypointId : waypointIds) {
+      String name = _waypointsManager.getWaypointDisplayName(worldName, waypointId);
+      Map<String, Integer> waypointData = _waypointsManager.getWaypointCoordinates(worldName, waypointId);
+      int x = waypointData.getOrDefault(KEY_COORD_X, 0);
+      int y = waypointData.getOrDefault(KEY_COORD_Y, 0);
+      int z = waypointData.getOrDefault(KEY_COORD_Z, 0);
+
+      Location waypointLocation = new Location(pLoc.getWorld(), x, y, z);
+      long distance = Math.round(pLoc.distance(waypointLocation));
+
+      sortData.put(_waypointKey(waypointId), new WaypointSortData(name, distance));
+    }
+
+    return sortData;
+  }
+
+  private List<CustomGUI.SortOption> _createWaypointSortOptions(Map<String, WaypointSortData> sortData) {
+    Comparator<Map.Entry<String, ItemStack>> byNameAsc = Comparator.<Map.Entry<String, ItemStack>, String>comparing(
+        entry -> sortData.get(entry.getKey()).name().toLowerCase());
+
+    Comparator<Map.Entry<String, ItemStack>> byNameDesc = byNameAsc.reversed();
+
+    Comparator<Map.Entry<String, ItemStack>> byDistanceAsc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).distance());
+
+    Comparator<Map.Entry<String, ItemStack>> byDistanceDesc = byDistanceAsc.reversed();
+
+    return List.of(
+        new CustomGUI.SortOption("Name ↑", byNameAsc),
+        new CustomGUI.SortOption("Name ↓", byNameDesc),
+        new CustomGUI.SortOption("Distance ↑", byDistanceAsc),
+        new CustomGUI.SortOption("Distance ↓", byDistanceDesc));
+  }
+
+  private record WaypointSortData(String name, long distance) {
   }
 
   // ----------
