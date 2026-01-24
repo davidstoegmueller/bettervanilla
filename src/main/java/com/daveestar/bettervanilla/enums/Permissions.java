@@ -25,7 +25,8 @@ public enum Permissions {
   DOUBLE_DOOR("bettervanilla.doubledoor", Category.PLAYER),
   VEINMINER("bettervanilla.veinminer", Category.PLAYER),
   VEINCHOPPER("bettervanilla.veinchopper", Category.PLAYER),
-  ITEM_RESTOCK("bettervanilla.itemrestock", Category.PLAYER);
+  ITEM_RESTOCK("bettervanilla.itemrestock", Category.PLAYER),
+  HERE("bettervanilla.here", Category.PLAYER);
 
   public enum Category {
     PLAYER,

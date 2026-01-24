@@ -77,3 +77,7 @@ commands:
     aliases: [r]
     description: Reply to the last private message.
     usage: /r
+  here:
+    aliases: [h, coords]
+    description: Send your current location to all other players.
+    usage: /here
