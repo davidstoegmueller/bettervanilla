@@ -225,6 +225,24 @@ public class SettingsManager {
     }
   }
 
+  public int getPlayersSleepingPercentage() {
+    return _fileConfig.getInt("global.playerssleepingpercentage", 100);
+  }
+
+  public void setPlayersSleepingPercentage(int value) {
+    int clamped = Math.max(0, Math.min(100, value));
+    _fileConfig.set("global.playerssleepingpercentage", clamped);
+    _config.save();
+  }
+
+  public void applyPlayersSleepingPercentageSetting() {
+    int percentage = getPlayersSleepingPercentage();
+
+    for (World world : Bukkit.getWorlds()) {
+      world.setGameRule(GameRules.PLAYERS_SLEEPING_PERCENTAGE, percentage);
+    }
+  }
+
   public boolean getActionBarTimerEnabled() {
     return _fileConfig.getBoolean("global.actionbartimer", true);
   }

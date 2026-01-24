@@ -61,32 +61,35 @@ public class AdminSettingsGUI {
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
-    // top row - core server controls
+    // top row
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("motd", _createMOTDItem());
     entries.put("sleepingrain", _createSleepingRainItem());
     entries.put("enablenether", _createEnableNetherItem());
     entries.put("enableend", _createEnableEndItem());
 
-    // second row - world safety toggles
+    // second row
     entries.put("creeperblockdamage", _createCreeperBlockDamageItem());
     entries.put("creeperentitydamage", _createCreeperEntityDamageItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
 
-    // third row - player protection & info
+    // third row
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
     entries.put("locatorbar", _createLocatorBarItem());
-    entries.put("actionbartimer", _createActionBarTimerItem());
     entries.put("deathchest", _createDeathChestItem());
     entries.put("itemrestock", _createItemRestockItem());
 
-    // fourth row - feature configuration
+    // fourth row
     entries.put("backpacksettings", _createBackpackSettingsItem());
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
     entries.put("craftingrecipes", _createCraftingRecipesItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
+
+    // fifth row
+    entries.put("actionbartimer", _createActionBarTimerItem());
+    entries.put("sleepingpercentage", _createSleepingPercentageItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // top row - slots 0 to 8
@@ -117,6 +120,7 @@ public class AdminSettingsGUI {
 
     // fifth row - slots 36 to 44
     customSlots.put("actionbartimer", 40);
+    customSlots.put("sleepingpercentage", 42);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -178,6 +182,13 @@ public class AdminSettingsGUI {
       public void onLeftClick(Player p) {
         _toggleSleepingRain(p);
         displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("sleepingpercentage", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _openSleepingPercentageDialog(p, parentMenu, backAction);
       }
     });
 
@@ -401,6 +412,26 @@ public class AdminSettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createSleepingPercentageItem() {
+    int percentage = _settingsManager.getPlayersSleepingPercentage();
+    ItemStack item = new ItemStack(Material.RED_BED);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Percentage"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the players sleeping percentage gamerule.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Value: " + ChatColor.YELLOW + percentage,
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set percentage")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -796,6 +827,23 @@ public class AdminSettingsGUI {
     p.showDialog(dialog);
   }
 
+  private void _openSleepingPercentageDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    int percentage = _settingsManager.getPlayersSleepingPercentage();
+
+    DialogInput inputPercentage = CustomDialog.createNumberInput("percentage",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Players Sleeping Percentage", 0, 100, 1, (float) percentage);
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Players Sleeping Percentage",
+        "Set the percentage of players required to sleep to skip the night.",
+        null,
+        List.of(inputPercentage),
+        (view, audience) -> _setSleepingPercentageDialogCB(view, audience, parentMenu, backAction),
+        null);
+
+    p.showDialog(dialog);
+  }
+
   // ----------------
   // DIALOG CALLBACKS
   // ----------------
@@ -838,6 +886,22 @@ public class AdminSettingsGUI {
 
     p.sendMessage(Component
         .text(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes"));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu, backAction);
+  }
+
+  private void _setSleepingPercentageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
+    Player p = (Player) audience;
+    int percentage = Math.round(view.getFloat("percentage"));
+    percentage = Math.max(0, Math.min(100, percentage));
+
+    _settingsManager.setPlayersSleepingPercentage(percentage);
+    _settingsManager.applyPlayersSleepingPercentageSetting();
+
+    p.sendMessage(
+        Component.text(Main.getPrefix() + "Players sleeping percentage set to: " + ChatColor.YELLOW + percentage));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);

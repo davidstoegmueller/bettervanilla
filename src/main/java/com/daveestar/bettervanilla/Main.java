@@ -182,6 +182,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new ModerationEvents(), this);
 
     _settingsManager.applyLocatorBarSetting();
+    _settingsManager.applyPlayersSleepingPercentageSetting();
   }
 
   @Override
