@@ -217,6 +217,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getRecipeSyncEnabled() {
+    return _fileConfig.getBoolean("global.recipesync", true);
+  }
+
+  public void setRecipeSyncEnabled(boolean value) {
+    _fileConfig.set("global.recipesync", value);
+    _config.save();
+  }
+
   public void applyLocatorBarSetting() {
     boolean enabled = getLocatorBarEnabled();
 

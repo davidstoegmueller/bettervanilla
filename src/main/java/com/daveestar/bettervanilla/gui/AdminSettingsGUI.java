@@ -88,6 +88,7 @@ public class AdminSettingsGUI {
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
 
     // fifth row
+    entries.put("recipesync", _createRecipeSyncItem());
     entries.put("actionbartimer", _createActionBarTimerItem());
     entries.put("sleepingpercentage", _createSleepingPercentageItem());
 
@@ -119,6 +120,7 @@ public class AdminSettingsGUI {
     customSlots.put("veinchoppersettings", 34);
 
     // fifth row - slots 36 to 44
+    customSlots.put("recipesync", 38);
     customSlots.put("actionbartimer", 40);
     customSlots.put("sleepingpercentage", 42);
 
@@ -220,6 +222,14 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleActionBarTimer(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("recipesync", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleRecipeSync(p);
         displayGUI(p, parentMenu, backAction);
       }
     });
@@ -492,6 +502,27 @@ public class AdminSettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Locator Bar"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle the locator bar gamerule for all worlds.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createRecipeSyncItem() {
+    boolean state = _settingsManager.getRecipeSyncEnabled();
+    ItemStack item = new ItemStack(Material.BOOK);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Recipe Sync"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sync custom and vanilla recipes to modded clients.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -986,6 +1017,13 @@ public class AdminSettingsGUI {
     _settingsManager.applyLocatorBarSetting();
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Locator bar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleRecipeSync(Player p) {
+    boolean newState = !_settingsManager.getRecipeSyncEnabled();
+    _settingsManager.setRecipeSyncEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Recipe sync is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleActionBarTimer(Player p) {

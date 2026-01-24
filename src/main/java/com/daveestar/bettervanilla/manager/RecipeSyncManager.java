@@ -50,6 +50,10 @@ public class RecipeSyncManager implements Listener {
 
   @EventHandler
   public void onJoin(PlayerJoinEvent e) {
+    if (!_plugin.getSettingsManager().getRecipeSyncEnabled()) {
+      return;
+    }
+
     final Player originalPlayer = e.getPlayer();
     final ServerPlayer p = ((CraftPlayer) originalPlayer).getHandle();
     final MinecraftServer server = p.level().getServer();
