@@ -500,9 +500,7 @@ public class SettingsGUI {
 
     if (_settingsManager.getPlayerToggleLocation(p.getUniqueId())) {
       _settingsManager.setPlayerToggleLocation(p.getUniqueId(), false);
-      if (!p.isSleeping()) {
-        _actionBar.removeActionBar(p);
-      }
+      _actionBar.removeActionBar(p);
       newState = false;
     } else {
       _navigationManager.stopNavigation(p);
@@ -515,9 +513,7 @@ public class SettingsGUI {
           + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + blockLoc.getBlockZ() + ChatColor.RED
           + ChatColor.BOLD + " » " + ChatColor.GRAY + biome.getKey();
 
-      if (!p.isSleeping()) {
-        _actionBar.sendActionBar(p, locationText);
-      }
+      _actionBar.sendActionBar(p, locationText);
       newState = true;
     }
 

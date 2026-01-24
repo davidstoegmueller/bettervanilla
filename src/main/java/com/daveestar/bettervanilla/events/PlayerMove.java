@@ -111,7 +111,7 @@ public class PlayerMove implements Listener {
   }
 
   private void _handleLocationPlayerMove(Player p) {
-    if (_settingsManager.getPlayerToggleLocation(p.getUniqueId()) && !p.isSleeping()) {
+    if (_settingsManager.getPlayerToggleLocation(p.getUniqueId())) {
       Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 
       String locationText = ChatColor.YELLOW + "X: "

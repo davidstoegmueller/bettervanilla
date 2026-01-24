@@ -74,7 +74,7 @@ public class BedSleepingMessage implements Listener {
 
   private void _clearPlayer(Player p) {
     _removeSleepingPlayer(p);
-    _actionBar.removeActionBar(p);
+    _actionBar.clearOverride(p);
   }
 
   private void _updateSleepingActionBar(World world) {
@@ -84,12 +84,12 @@ public class BedSleepingMessage implements Listener {
     int requiredPlayers = _calculateRequiredPlayers(totalPlayers, percentage);
 
     String message = ChatColor.GRAY + "Sleeping: " + ChatColor.YELLOW + sleepingPlayers + ChatColor.GRAY + " of "
-        + ChatColor.YELLOW + requiredPlayers + ChatColor.GRAY + " required";
+        + ChatColor.YELLOW + requiredPlayers + ChatColor.GRAY + " players required";
 
     for (UUID playerId : _getWorldSleepers(world)) {
       Player player = Bukkit.getPlayer(playerId);
       if (player != null && player.isSleeping()) {
-        _actionBar.sendActionBar(player, message);
+        _actionBar.startOverride(player, message, ActionBar.Priority.HIGH);
       }
     }
   }

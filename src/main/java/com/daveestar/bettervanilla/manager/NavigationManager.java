@@ -92,9 +92,7 @@ public class NavigationManager {
 
       // generate the navigation text
       String navigationText = _getNavigationText(targetName, targetLocation, playerLocation);
-      if (!p.isSleeping()) {
-        _actionBar.sendActionBar(p, navigationText);
-      }
+      _actionBar.sendActionBar(p, navigationText);
 
       ParticleNavigation particleNavigation = _activeParticleNavigations.get(p);
       particleNavigation.update(targetLocation, true, _settingsManager.getPlayerNavigationTrail(p.getUniqueId()));
@@ -115,9 +113,7 @@ public class NavigationManager {
     }
 
     // clear the action bar for the player
-    if (!p.isSleeping()) {
-      _actionBar.removeActionBar(p);
-    }
+    _actionBar.removeActionBar(p);
   }
 
   public NavigationData getActiveNavigation(Player p) {
