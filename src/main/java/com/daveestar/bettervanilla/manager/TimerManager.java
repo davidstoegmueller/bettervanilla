@@ -196,6 +196,9 @@ public class TimerManager {
       if (!_settingsManager.getPlayerActionBarTimer(p.getUniqueId())) {
         return;
       }
+      if (p.isSleeping()) {
+        return;
+      }
       if (!_settingsManager.getPlayerToggleLocation(p.getUniqueId()) && !_navigationManager.checkActiveNavigation(p)) {
         _actionBarManager.sendActionBarOnce(p, message);
       }

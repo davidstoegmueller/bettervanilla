@@ -28,6 +28,7 @@ import com.daveestar.bettervanilla.commands.VanishCommand;
 import com.daveestar.bettervanilla.commands.ModerationCommands;
 import com.daveestar.bettervanilla.commands.SitCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
+import com.daveestar.bettervanilla.events.BedSleepingMessage;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
 import com.daveestar.bettervanilla.events.PreventDimension;
@@ -171,6 +172,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new SittableStairs(), this);
     manager.registerEvents(new PreventDimension(), this);
     manager.registerEvents(new SleepingRain(), this);
+    manager.registerEvents(new BedSleepingMessage(), this);
     manager.registerEvents(new CropProtection(), this);
     manager.registerEvents(new RightClickCropHarvest(), this);
     manager.registerEvents(new DoubleDoorSync(), this);
