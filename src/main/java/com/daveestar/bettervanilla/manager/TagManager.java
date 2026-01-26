@@ -34,6 +34,6 @@ public class TagManager {
     if (tag == null)
       return "";
 
-    return ChatColor.GRAY + " [" + ChatColor.YELLOW + tag + ChatColor.GRAY + "]";
+    return ChatColor.GRAY + " [" + ChatColor.AQUA + tag + ChatColor.GRAY + "]";
   }
 }
