@@ -61,6 +61,7 @@ public class TimerCommand implements TabExecutor {
         sendUsageMessage(p);
         break;
     }
+
     return true;
   }
 

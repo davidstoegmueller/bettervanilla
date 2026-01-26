@@ -13,6 +13,8 @@ public enum Permissions {
   PLAYTIME("bettervanilla.playtime", Category.PLAYER),
   WAYPOINTS("bettervanilla.waypoints", Category.PLAYER),
   WAYPOINTS_ADMIN("bettervanilla.waypoints.admin", Category.MODERATOR),
+  TAG("bettervanilla.tag", Category.PLAYER),
+  TAG_ADMIN("bettervanilla.tag.admin", Category.MODERATOR),
   DEATHPOINTS("bettervanilla.deathpoints", Category.PLAYER),
   PING("bettervanilla.ping", Category.PLAYER),
   SIT("bettervanilla.sit", Category.PLAYER),

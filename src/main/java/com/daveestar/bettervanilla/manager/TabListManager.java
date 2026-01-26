@@ -29,6 +29,7 @@ public class TabListManager {
   private SettingsManager _settingsManager;
   private AFKManager _afkManager;
   private VanishManager _vanishManager;
+  private TagManager _tagManager;
 
   private ScheduledTask _task;
 
@@ -38,6 +39,7 @@ public class TabListManager {
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
     _vanishManager = _plugin.getVanishManager();
+    _tagManager = _plugin.getTagManager();
 
     _startTask();
   }
@@ -63,11 +65,29 @@ public class TabListManager {
       return;
     }
 
-    if (_vanishManager != null && _vanishManager.isVanished(p)) {
+    if (_vanishManager.isVanished(p)) {
       return;
     }
 
     p.playerListName(_buildPlayerListName(p));
+  }
+
+  public String buildPlayerListName(Player p) {
+    if (p == null) {
+      return "";
+    }
+
+    boolean isAfk = _afkManager.isPlayerMarkedAFK(p);
+    String tagSuffix = _tagManager.getFormattedTag(p);
+
+    String baseName = (isAfk
+        ? ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
+        : "")
+        + ChatColor.YELLOW + p.getName()
+        + tagSuffix;
+
+    int deaths = p.getStatistic(Statistic.DEATHS);
+    return baseName + ChatColor.GRAY + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.YELLOW + deaths;
   }
 
   private void _startTask() {
@@ -154,17 +174,7 @@ public class TabListManager {
   }
 
   private Component _buildPlayerListName(Player p) {
-    boolean isAfk = _afkManager != null && _afkManager.isPlayerMarkedAFK(p);
-    int deaths = p.getStatistic(Statistic.DEATHS);
-
-    Component playerNameComponent = isAfk
-        ? Component.text(ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
-            + ChatColor.YELLOW + p.getName() + ChatColor.GRAY + " | " + ChatColor.GRAY + "Deaths: "
-            + ChatColor.YELLOW + deaths)
-        : Component.text(ChatColor.YELLOW + p.getName() + ChatColor.GRAY + " | " + ChatColor.GRAY + "Deaths: "
-            + ChatColor.YELLOW + deaths);
-
-    return playerNameComponent;
+    return Component.text(buildPlayerListName(p));
   }
 
   private String _getTimeOfDayText(World world) {

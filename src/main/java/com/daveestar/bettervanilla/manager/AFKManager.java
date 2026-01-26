@@ -5,9 +5,6 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.scoreboard.Team;
 
 import com.daveestar.bettervanilla.Main;
 
@@ -22,9 +19,9 @@ public class AFKManager {
 
   private TimerManager _timerManager;
   private SettingsManager _settingsManager;
-  private Team _afkTeam;
   private TabListManager _tabListManager;
   private VanishManager _vanishManager;
+  private NameTagManager _nameTagManager;
 
   public AFKManager() {
     _plugin = Main.getInstance();
@@ -38,18 +35,8 @@ public class AFKManager {
     _settingsManager = _plugin.getSettingsManager();
     _tabListManager = _plugin.getTabListManager();
     _vanishManager = _plugin.getVanishManager();
+    _nameTagManager = _plugin.getNameTagManager();
 
-    // prepare scoreboard team used to disable collisions while AFK
-    ScoreboardManager manager = Bukkit.getScoreboardManager();
-    if (manager != null) {
-      Scoreboard board = manager.getMainScoreboard();
-      Team team = board.getTeam("bv_afk");
-      if (team == null) {
-        team = board.registerNewTeam("bv_afk");
-        team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
-      }
-      _afkTeam = team;
-    }
   }
 
   public void onPlayerJoined(Player p) {
@@ -59,11 +46,9 @@ public class AFKManager {
     // ensure normal state on join
     p.setInvulnerable(false);
     p.setCollidable(true);
-    if (_afkTeam != null) {
-      _afkTeam.removeEntry(p.getName());
-    }
 
     _tabListManager.refreshPlayerListEntry(p);
+    _nameTagManager.updateNameTag(p);
   }
 
   public void onPlayerLeft(Player p) {
@@ -73,9 +58,6 @@ public class AFKManager {
     // reset any invulnerability or collision changes
     p.setInvulnerable(false);
     p.setCollidable(true);
-    if (_afkTeam != null) {
-      _afkTeam.removeEntry(p.getName());
-    }
   }
 
   public void onPlayerMoved(Player p) {
@@ -104,11 +86,11 @@ public class AFKManager {
     }
 
     long visiblePlayers = Bukkit.getOnlinePlayers().stream()
-        .filter(player -> _vanishManager == null || !_vanishManager.isVanished(player))
+        .filter(player -> !_vanishManager.isVanished(player))
         .count();
 
     boolean allVisibleAFK = visiblePlayers > 0 && Bukkit.getOnlinePlayers().stream()
-        .filter(player -> _vanishManager == null || !_vanishManager.isVanished(player))
+        .filter(player -> !_vanishManager.isVanished(player))
         .allMatch(player -> _afkStates.getOrDefault(player, false));
 
     if (visiblePlayers == 0) {
@@ -147,9 +129,6 @@ public class AFKManager {
         if (_settingsManager.getAFKProtection()) {
           p.setInvulnerable(false);
           p.setCollidable(true);
-          if (_afkTeam != null) {
-            _afkTeam.removeEntry(p.getName());
-          }
         }
 
         announceAFKToOthers(p, false);
@@ -161,9 +140,6 @@ public class AFKManager {
         if (_settingsManager.getAFKProtection()) {
           p.setInvulnerable(true);
           p.setCollidable(false);
-          if (_afkTeam != null) {
-            _afkTeam.addEntry(p.getName());
-          }
         }
 
         announceAFKToOthers(p, true);
@@ -173,13 +149,14 @@ public class AFKManager {
       updated = true;
     }
 
-    if (updated && _tabListManager != null) {
+    if (updated) {
       _tabListManager.refreshPlayerListEntry(p);
+      _nameTagManager.updateNameTag(p);
     }
   }
 
   public void announceAFKToOthers(Player targetPlayer, boolean isAFK) {
-    if (_vanishManager != null && _vanishManager.isVanished(targetPlayer)) {
+    if (_vanishManager.isVanished(targetPlayer)) {
       return;
     }
 
@@ -202,17 +179,9 @@ public class AFKManager {
         if (enabled) {
           player.setInvulnerable(true);
           player.setCollidable(false);
-
-          if (_afkTeam != null) {
-            _afkTeam.addEntry(player.getName());
-          }
         } else {
           player.setInvulnerable(false);
           player.setCollidable(true);
-
-          if (_afkTeam != null) {
-            _afkTeam.removeEntry(player.getName());
-          }
         }
       }
     });
@@ -226,5 +195,4 @@ public class AFKManager {
     int afkTimeInMinutes = _settingsManager.getAFKTime();
     return 1000 * 60 * afkTimeInMinutes;
   }
-
 }

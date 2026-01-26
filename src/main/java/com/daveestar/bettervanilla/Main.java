@@ -27,6 +27,8 @@ import com.daveestar.bettervanilla.commands.ReplyCommand;
 import com.daveestar.bettervanilla.commands.VanishCommand;
 import com.daveestar.bettervanilla.commands.ModerationCommands;
 import com.daveestar.bettervanilla.commands.SitCommand;
+
+import com.daveestar.bettervanilla.commands.TagCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.BedSleepingMessage;
 import com.daveestar.bettervanilla.events.DeathChest;
@@ -55,12 +57,14 @@ import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.TagManager;
 import com.daveestar.bettervanilla.manager.SittingManager;
 import com.daveestar.bettervanilla.manager.RecipeSyncManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
+import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -81,6 +85,7 @@ public class Main extends JavaPlugin {
   private PermissionsManager _permissionsManager;
   private DeathPointsManager _deathPointManager;
   private WaypointsManager _waypointsManager;
+  private TagManager _tagManager;
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
   private BackpackManager _backpackManager;
@@ -90,6 +95,7 @@ public class Main extends JavaPlugin {
   private SittingManager _sittingManager;
   private TabListManager _tabListManager;
   private RecipeSyncManager _recipeSyncManager;
+  private NameTagManager _nameTagManager;
   private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
@@ -100,6 +106,7 @@ public class Main extends JavaPlugin {
     Config timerConfig = new Config("timer.yml", getDataFolder());
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
+    Config tagConfig = new Config("tags.yml", getDataFolder());
     Config backpackConfig = new Config("backpacks.yml", getDataFolder());
     Config moderationConfig = new Config("moderations.yml", getDataFolder());
 
@@ -109,6 +116,7 @@ public class Main extends JavaPlugin {
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
+    _tagManager = new TagManager(tagConfig);
     _backpackManager = new BackpackManager(backpackConfig);
     _moderationManager = new ModerationManager(moderationConfig);
 
@@ -123,13 +131,16 @@ public class Main extends JavaPlugin {
     _compassManager = new CompassManager();
     _tabListManager = new TabListManager();
     _recipeSyncManager = new RecipeSyncManager();
+    _nameTagManager = new NameTagManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
+    _nameTagManager.initManagers();
     _compassManager.initManagers();
     _maintenanceManager.initManagers();
     _navigationManager.initManagers();
     _timerManager.initManagers();
+    _vanishManager.initManagers();
 
     // crafting recipes
     _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
@@ -161,6 +172,7 @@ public class Main extends JavaPlugin {
     getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("here").setExecutor(new HereCommand());
+    getCommand("tag").setExecutor(new TagCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -196,6 +208,7 @@ public class Main extends JavaPlugin {
     _compassManager.destroy();
     _backpackManager.destroy();
     _tabListManager.destroy();
+    _sittingManager.destroy();
 
     if (_craftingRecipes != null) {
       _craftingRecipes.values().forEach(CustomCraftingRecipe::destroyRecipe);
@@ -203,10 +216,6 @@ public class Main extends JavaPlugin {
     }
 
     _LOGGER.info("BetterVanilla - DISABLED");
-
-    if (_sittingManager != null) {
-      _sittingManager.destroy();
-    }
   }
 
   private void _registerCraftingRecipe(CraftingRecipe recipe) {
@@ -283,6 +292,10 @@ public class Main extends JavaPlugin {
     return _waypointsManager;
   }
 
+  public TagManager getTagManager() {
+    return _tagManager;
+  }
+
   public TimerManager getTimerManager() {
     return _timerManager;
   }
@@ -317,6 +330,10 @@ public class Main extends JavaPlugin {
 
   public RecipeSyncManager getRecipeSyncManager() {
     return _recipeSyncManager;
+  }
+
+  public NameTagManager getNameTagManager() {
+    return _nameTagManager;
   }
 
   public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {

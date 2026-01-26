@@ -19,16 +19,18 @@ public class VanishManager {
   private final Main _plugin;
   private final Set<UUID> _vanishedPlayers = new HashSet<>();
   private TabListManager _tabListManager;
+  private NameTagManager _nameTagManager;
 
   public VanishManager() {
     _plugin = Main.getInstance();
   }
 
-  public void vanish(Player p) {
-    if (p == null) {
-      return;
-    }
+  public void initManagers() {
+    _tabListManager = _plugin.getTabListManager();
+    _nameTagManager = _plugin.getNameTagManager();
+  }
 
+  public void vanish(Player p) {
     UUID uuid = p.getUniqueId();
     if (_vanishedPlayers.contains(uuid)) {
       return;
@@ -38,7 +40,8 @@ public class VanishManager {
 
     _applyVanishState(p);
     _hideFromOthers(p);
-    _refreshTabList(p);
+    _nameTagManager.updateNameTag(p);
+    _tabListManager.refreshPlayer(p);
   }
 
   public void unvanish(Player p) {
@@ -54,7 +57,8 @@ public class VanishManager {
 
     _showToOthers(p);
     _applyVisibleState(p);
-    _refreshTabList(p);
+    _nameTagManager.updateNameTag(p);
+    _tabListManager.refreshPlayer(p);
   }
 
   public boolean handlePlayerJoin(Player p) {
@@ -69,7 +73,8 @@ public class VanishManager {
       // reapply vanish effects for returning player
       _applyVanishState(p);
       _hideFromOthers(p);
-      _refreshTabList(p);
+      _nameTagManager.updateNameTag(p);
+      _tabListManager.refreshPlayer(p);
     }
 
     // ensure the joining player cannot see currently vanished players
@@ -141,20 +146,5 @@ public class VanishManager {
         .map(Bukkit::getPlayer)
         .filter(Objects::nonNull)
         .filter(Player::isOnline);
-  }
-
-  private TabListManager _getTabListManager() {
-    if (_tabListManager == null) {
-      _tabListManager = _plugin.getTabListManager();
-    }
-
-    return _tabListManager;
-  }
-
-  private void _refreshTabList(Player p) {
-    TabListManager tabListManager = _getTabListManager();
-    if (tabListManager != null) {
-      tabListManager.refreshPlayer(p);
-    }
   }
 }

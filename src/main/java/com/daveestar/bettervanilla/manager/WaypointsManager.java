@@ -20,13 +20,13 @@ import com.daveestar.bettervanilla.enums.WaypointVisibility;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class WaypointsManager {
-  private final String KEY_NAME = "name";
-  private final String KEY_X = "x";
-  private final String KEY_Y = "y";
-  private final String KEY_Z = "z";
-  private final String KEY_OWNER = "owner";
-  private final String KEY_VISIBILITY = "visibility";
-  private final String KEY_ICON = "icon";
+  private final static String KEY_NAME = "name";
+  private final static String KEY_X = "x";
+  private final static String KEY_Y = "y";
+  private final static String KEY_Z = "z";
+  private final static String KEY_OWNER = "owner";
+  private final static String KEY_VISIBILITY = "visibility";
+  private final static String KEY_ICON = "icon";
   private final Config _config;
   private final FileConfiguration _fileConfig;
 
