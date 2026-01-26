@@ -28,7 +28,6 @@ import com.daveestar.bettervanilla.commands.VanishCommand;
 import com.daveestar.bettervanilla.commands.ModerationCommands;
 import com.daveestar.bettervanilla.commands.SitCommand;
 
-import com.daveestar.bettervanilla.commands.TagCommand;
 import com.daveestar.bettervanilla.events.ChatMessages;
 import com.daveestar.bettervanilla.events.BedSleepingMessage;
 import com.daveestar.bettervanilla.events.DeathChest;
@@ -106,7 +105,6 @@ public class Main extends JavaPlugin {
     Config timerConfig = new Config("timer.yml", getDataFolder());
     Config deathPointConfig = new Config("deathpoints.yml", getDataFolder());
     Config waypointsConfig = new Config("waypoints.yml", getDataFolder());
-    Config tagConfig = new Config("tags.yml", getDataFolder());
     Config backpackConfig = new Config("backpacks.yml", getDataFolder());
     Config moderationConfig = new Config("moderations.yml", getDataFolder());
 
@@ -116,7 +114,7 @@ public class Main extends JavaPlugin {
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
-    _tagManager = new TagManager(tagConfig);
+    _tagManager = new TagManager(_settingsManager);
     _backpackManager = new BackpackManager(backpackConfig);
     _moderationManager = new ModerationManager(moderationConfig);
 
@@ -172,7 +170,6 @@ public class Main extends JavaPlugin {
     getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("here").setExecutor(new HereCommand());
-    getCommand("tag").setExecutor(new TagCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();

@@ -81,7 +81,3 @@ commands:
     aliases: [h, coords]
     description: Send your current location to all other players.
     usage: /here
-  tag:
-    aliases: [t]
-    description: Set or clear your player tag.
-    usage: /tag

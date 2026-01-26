@@ -135,9 +135,42 @@ public class SettingsManager {
     _config.save();
   }
 
+  public String getPlayerTagName(UUID uuid) {
+    return _fileConfig.getString("players." + uuid + ".tag.name", null);
+  }
+
+  public void setPlayerTagName(UUID uuid, String value) {
+    _fileConfig.set("players." + uuid + ".tag.name", value);
+    _config.save();
+  }
+
+  public String getPlayerTagColor(UUID uuid) {
+    return _fileConfig.getString("players." + uuid + ".tag.color", "AQUA");
+  }
+
+  public void setPlayerTagColor(UUID uuid, String value) {
+    _fileConfig.set("players." + uuid + ".tag.color", value);
+    _config.save();
+  }
+
+  public void clearPlayerTag(UUID uuid) {
+    _fileConfig.set("players." + uuid + ".tag.name", null);
+    _fileConfig.set("players." + uuid + ".tag.color", null);
+    _config.save();
+  }
+
   // GLOBAL SETTINGS
   public boolean getMaintenanceState() {
     return _fileConfig.getBoolean("global.maintenance.enabled", false);
+  }
+
+  public boolean getTagsEnabled() {
+    return _fileConfig.getBoolean("global.tags.enabled", true);
+  }
+
+  public void setTagsEnabled(boolean value) {
+    _fileConfig.set("global.tags.enabled", value);
+    _config.save();
   }
 
   public String getMaintenanceMessage() {

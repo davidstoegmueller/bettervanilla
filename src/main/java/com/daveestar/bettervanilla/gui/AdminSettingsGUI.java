@@ -22,7 +22,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
+import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
@@ -39,6 +41,8 @@ public class AdminSettingsGUI {
   private final SettingsManager _settingsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
+  private final NameTagManager _nameTagManager;
+  private final TabListManager _tabListManager;
   private final BackpackSettingsGUI _backpackSettingsGUI;
   private final VeinMinerSettingsGUI _veinMinerSettingsGUI;
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
@@ -49,6 +53,8 @@ public class AdminSettingsGUI {
     _settingsManager = _plugin.getSettingsManager();
     _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _nameTagManager = _plugin.getNameTagManager();
+    _tabListManager = _plugin.getTabListManager();
     _backpackSettingsGUI = new BackpackSettingsGUI();
     _veinMinerSettingsGUI = new VeinMinerSettingsGUI();
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
@@ -91,6 +97,7 @@ public class AdminSettingsGUI {
     entries.put("recipesync", _createRecipeSyncItem());
     entries.put("actionbartimer", _createActionBarTimerItem());
     entries.put("sleepingpercentage", _createSleepingPercentageItem());
+    entries.put("playertag", _createTagsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // top row - slots 0 to 8
@@ -123,6 +130,7 @@ public class AdminSettingsGUI {
     customSlots.put("recipesync", 38);
     customSlots.put("actionbartimer", 40);
     customSlots.put("sleepingpercentage", 42);
+    customSlots.put("tags", 44);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -191,6 +199,14 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _openSleepingPercentageDialog(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("tags", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleTags(p);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -544,6 +560,27 @@ public class AdminSettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Timer"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable the timer in the actionbar.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createTagsItem() {
+    boolean state = _settingsManager.getTagsEnabled();
+    ItemStack item = new ItemStack(Material.NAME_TAG);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Player Tag"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable player tags in chat and tab.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -1031,6 +1068,18 @@ public class AdminSettingsGUI {
     _settingsManager.setActionBarTimerEnabled(newState);
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleTags(Player p) {
+    boolean newState = !_settingsManager.getTagsEnabled();
+    _settingsManager.setTagsEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Player tags are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+
+    for (Player online : p.getServer().getOnlinePlayers()) {
+      _nameTagManager.updateNameTag(online);
+      _tabListManager.refreshPlayerListEntry(online);
+    }
   }
 
   private void _toggleDeathChest(Player p) {

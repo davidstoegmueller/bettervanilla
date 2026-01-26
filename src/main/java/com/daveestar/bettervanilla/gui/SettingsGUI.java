@@ -3,8 +3,11 @@ package com.daveestar.bettervanilla.gui;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -18,21 +21,49 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.CompassManager;
+import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.TabListManager;
+import com.daveestar.bettervanilla.manager.TagManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
+import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
+import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.dialog.DialogResponseView;
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class SettingsGUI {
+  private static final List<TagColorOption> TAG_COLORS = List.of(
+      new TagColorOption("BLACK", ChatColor.BLACK),
+      new TagColorOption("DARK_BLUE", ChatColor.DARK_BLUE),
+      new TagColorOption("DARK_GREEN", ChatColor.DARK_GREEN),
+      new TagColorOption("DARK_AQUA", ChatColor.DARK_AQUA),
+      new TagColorOption("DARK_RED", ChatColor.DARK_RED),
+      new TagColorOption("DARK_PURPLE", ChatColor.DARK_PURPLE),
+      new TagColorOption("GOLD", ChatColor.GOLD),
+      new TagColorOption("GRAY", ChatColor.GRAY),
+      new TagColorOption("DARK_GRAY", ChatColor.DARK_GRAY),
+      new TagColorOption("BLUE", ChatColor.BLUE),
+      new TagColorOption("GREEN", ChatColor.GREEN),
+      new TagColorOption("AQUA", ChatColor.AQUA),
+      new TagColorOption("RED", ChatColor.RED),
+      new TagColorOption("LIGHT_PURPLE", ChatColor.LIGHT_PURPLE),
+      new TagColorOption("YELLOW", ChatColor.YELLOW),
+      new TagColorOption("WHITE", ChatColor.WHITE));
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final NavigationManager _navigationManager;
   private final CompassManager _compassManager;
   private final ActionBar _actionBar;
   private final AdminSettingsGUI _adminSettingsGUI;
+  private final TagManager _tagManager;
+  private final NameTagManager _nameTagManager;
+  private final TabListManager _tabListManager;
 
   public SettingsGUI() {
     _plugin = Main.getInstance();
@@ -41,6 +72,9 @@ public class SettingsGUI {
     _compassManager = _plugin.getCompassManager();
     _actionBar = _plugin.getActionBar();
     _adminSettingsGUI = new AdminSettingsGUI();
+    _tagManager = _plugin.getTagManager();
+    _nameTagManager = _plugin.getNameTagManager();
+    _tabListManager = _plugin.getTabListManager();
   }
 
   public void displayGUI(Player p) {
@@ -63,6 +97,7 @@ public class SettingsGUI {
 
     // third row
     entries.put("actionbartimer", _createActionBarTimerItem(p));
+    entries.put("playertag", _createPlayerTagItem(p));
 
     // fourth row
     if (showAdminSettings) {
@@ -84,6 +119,7 @@ public class SettingsGUI {
 
     // third row
     customSlots.put("actionbartimer", 21);
+    customSlots.put("playertag", 23);
 
     // fourth row
     if (showAdminSettings) {
@@ -146,6 +182,37 @@ public class SettingsGUI {
         }
 
         _toggleActionBarTimer(p);
+        displayGUI(p);
+      }
+    });
+
+    clickActions.put("playertag", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!p.hasPermission(Permissions.TAG.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.TAG));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        if (!_settingsManager.getTagsEnabled()) {
+          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Tags are globally disabled on the server.");
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _openPlayerTagDialog(p, gui, null);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!p.hasPermission(Permissions.TAG.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.TAG));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _clearPlayerTag(p);
         displayGUI(p);
       }
     });
@@ -298,6 +365,37 @@ public class SettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createPlayerTagItem(Player p) {
+    String tagName = _tagManager.getTag(p);
+    ChatColor tagColor = _tagManager.getTagColor(p);
+    boolean hasPermission = p.hasPermission(Permissions.TAG.getName());
+    boolean globalEnabled = _settingsManager.getTagsEnabled();
+
+    ItemStack item = new ItemStack(Material.NAME_TAG);
+    ItemMeta meta = item.getItemMeta();
+
+    String tagDisplay = (tagName == null || tagName.isEmpty())
+        ? ChatColor.RED + "None"
+        : (tagColor != null ? tagColor : ChatColor.AQUA) + tagName;
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Player Tag"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the tag displayed with your name.",
+          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TAG)
+              : !globalEnabled ? ChatColor.RED + "Tags are globally disabled on the server." : null),
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag: " + ChatColor.GRAY + "[" + tagDisplay + ChatColor.GRAY + "]",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set Tag",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Clear Tag")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -495,6 +593,113 @@ public class SettingsGUI {
     return item;
   }
 
+  private void _openPlayerTagDialog(Player p, CustomGUI parentMenu, String errorMessage) {
+    String currentName = Optional.ofNullable(_tagManager.getTag(p)).orElse("");
+    ChatColor currentColor = _tagManager.getTagColor(p);
+    String currentColorName = _getTagColorKey(currentColor);
+
+    DialogInput inputName = CustomDialog.createTextInput("tagname",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag Name",
+        currentName);
+
+    DialogInput inputColor = CustomDialog.createSelectInput("tagcolor",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag Color",
+        _buildTagColorOptions(),
+        currentColorName);
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Player Tag",
+        "Set your tag name and color.",
+        errorMessage,
+        List.of(inputName, inputColor),
+        (view, audience) -> _setPlayerTagDialogCB(view, audience, parentMenu),
+        null);
+
+    p.showDialog(dialog);
+  }
+
+  private void _setPlayerTagDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
+    Player p = (Player) audience;
+    String name = Optional.ofNullable(view.getText("tagname")).map(String::trim).orElse("");
+    String colorKey = Optional.ofNullable(view.getText("tagcolor")).map(String::trim).orElse("AQUA");
+
+    if (name.isEmpty()) {
+      _openPlayerTagDialog(p, parentMenu, "Tag name cannot be empty.");
+      return;
+    }
+
+    if (name.length() > 10) {
+      _openPlayerTagDialog(p, parentMenu, "Tag too long! Maximum length is 10 characters.");
+      return;
+    }
+
+    ChatColor color = _parseTagColor(colorKey);
+    _tagManager.setTag(p, name, color);
+    _nameTagManager.updateNameTag(p);
+    _tabListManager.refreshPlayerListEntry(p);
+
+    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag set to: " + ChatColor.GRAY + "[" + color + name
+        + ChatColor.GRAY + "]");
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p);
+  }
+
+  private void _clearPlayerTag(Player p) {
+    _tagManager.removeTag(p);
+    _nameTagManager.updateNameTag(p);
+    _tabListManager.refreshPlayerListEntry(p);
+
+    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag cleared.");
+  }
+
+  private Map<String, String> _buildTagColorOptions() {
+    Map<String, String> options = new LinkedHashMap<>();
+    for (TagColorOption option : TAG_COLORS) {
+      String name = _formatColorName(option.key());
+      options.put(option.key(), option.color() + name);
+    }
+
+    return options;
+  }
+
+  private ChatColor _parseTagColor(String colorKey) {
+    if (colorKey == null || colorKey.isBlank()) {
+      return ChatColor.AQUA;
+    }
+
+    for (TagColorOption option : TAG_COLORS) {
+      if (option.key().equalsIgnoreCase(colorKey)) {
+        return option.color();
+      }
+    }
+
+    return ChatColor.AQUA;
+  }
+
+  private String _formatColorName(String name) {
+    if (name == null || name.isBlank()) {
+      return "";
+    }
+
+    return Arrays.stream(name.split("_"))
+        .filter(part -> part != null && !part.isBlank())
+        .map(part -> part.substring(0, 1) + part.substring(1).toLowerCase())
+        .collect(Collectors.joining(" "));
+  }
+
+  private String _getTagColorKey(ChatColor color) {
+    if (color != null) {
+      for (TagColorOption option : TAG_COLORS) {
+        if (option.color().equals(color)) {
+          return option.key();
+        }
+      }
+    }
+
+    return "AQUA";
+  }
+
   private void _toggleLocation(Player p) {
     boolean newState;
 
@@ -592,5 +797,8 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Item restock is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private record TagColorOption(String key, ChatColor color) {
   }
 }
