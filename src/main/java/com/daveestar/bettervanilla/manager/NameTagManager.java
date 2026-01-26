@@ -8,6 +8,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.daveestar.bettervanilla.Main;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
@@ -52,6 +53,7 @@ public class NameTagManager {
       team = board.registerNewTeam(teamName);
     }
 
+    team.color(NamedTextColor.YELLOW);
     team.addEntry(p.getName());
     team.prefix(LegacyComponentSerializer.legacySection().deserialize(prefix));
     team.suffix(LegacyComponentSerializer.legacySection().deserialize(suffix));
