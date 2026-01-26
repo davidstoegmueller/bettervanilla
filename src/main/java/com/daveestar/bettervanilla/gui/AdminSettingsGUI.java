@@ -130,7 +130,7 @@ public class AdminSettingsGUI {
     customSlots.put("recipesync", 38);
     customSlots.put("actionbartimer", 40);
     customSlots.put("sleepingpercentage", 42);
-    customSlots.put("tags", 44);
+    customSlots.put("playertag", 44);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
@@ -202,7 +202,7 @@ public class AdminSettingsGUI {
       }
     });
 
-    actions.put("tags", new CustomGUI.ClickAction() {
+    actions.put("playertag", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         _toggleTags(p);
