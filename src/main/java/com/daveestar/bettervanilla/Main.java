@@ -67,6 +67,8 @@ import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 
+import org.bstats.bukkit.Metrics;
+
 import net.md_5.bungee.api.ChatColor;
 
 /*
@@ -75,6 +77,7 @@ import net.md_5.bungee.api.ChatColor;
 public class Main extends JavaPlugin {
   private static Main _mainInstance;
   private static final Logger _LOGGER = Logger.getLogger("bettervanilla");
+  private static final int BSTATS_PLUGIN_ID = 29110;
 
   private ActionBar _actionBar;
   private NavigationManager _navigationManager;
@@ -99,6 +102,7 @@ public class Main extends JavaPlugin {
 
   public void onEnable() {
     _mainInstance = this;
+    new Metrics(this, BSTATS_PLUGIN_ID);
 
     Config settingsConfig = new Config("settings.yml", getDataFolder());
     Config permissionsConfig = new Config("permissions.yml", getDataFolder());

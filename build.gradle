@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id('io.papermc.paperweight.userdev') version "${dependency_papermc_paperweight_user_dev}"
+    id 'com.gradleup.shadow' version '9.3.1'
 }
 
 group = 'com.daveestar'
@@ -16,6 +17,7 @@ repositories {
 dependencies {
     compileOnly "io.papermc.paper:paper-api:${dependency_papermc_api}"
     paperweight.paperDevBundle(dependency_papermc_paperweight)
+    implementation 'org.bstats:bstats-bukkit:3.0.2'
 }
 
 java {
@@ -25,6 +27,17 @@ java {
 }
 
 jar {
+    archiveClassifier.set('plain')
+    manifest {
+        attributes(
+            'Main-Class': 'com.daveestar.bettervanilla.Main'
+        )
+    }
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    relocate 'org.bstats', 'com.daveestar.bettervanilla.libs.bstats'
     manifest {
         attributes(
             'Main-Class': 'com.daveestar.bettervanilla.Main'
@@ -35,9 +48,9 @@ jar {
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 tasks.register('deploy', Copy) {
-    dependsOn tasks.named('jar')
+    dependsOn tasks.named('shadowJar')
     onlyIf { local_server_plugin_dir != null }
-    from tasks.named('jar').map { it.archiveFile }
+    from tasks.named('shadowJar').map { it.archiveFile }
     into local_server_plugin_dir
     doFirst {
         println "Copying plugin jar to ${local_server_plugin_dir}"
