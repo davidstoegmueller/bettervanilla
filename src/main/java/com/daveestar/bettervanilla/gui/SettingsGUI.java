@@ -78,26 +78,29 @@ public class SettingsGUI {
   }
 
   public void displayGUI(Player p) {
-    boolean showAdminSettings = p.hasPermission(Permissions.ADMINSETTINGS.getName());
-    // two entry rows for admins, one for normal players (plus navigation row)
+    displayGUI(p, p);
+  }
+
+  public void displayGUI(Player viewer, Player target) {
+    boolean showAdminSettings = target.hasPermission(Permissions.ADMINSETTINGS.getName());
     int rows = showAdminSettings ? 5 : 4;
 
     Map<String, ItemStack> entries = new HashMap<>();
     // first row
-    entries.put("togglelocation", _createToggleLocationItem(p));
-    entries.put("togglecompass", _createToggleCompassItem(p));
-    entries.put("navigationtrail", _createNavigationTrailItem(p));
-    entries.put("chestsort", _createChestSortItem(p));
+    entries.put("togglelocation", _createToggleLocationItem(viewer, target));
+    entries.put("togglecompass", _createToggleCompassItem(viewer, target));
+    entries.put("navigationtrail", _createNavigationTrailItem(target));
+    entries.put("chestsort", _createChestSortItem(viewer, target));
 
     // second row
-    entries.put("veinminer", _createVeinMinerItem(p));
-    entries.put("veinchopper", _createVeinChopperItem(p));
-    entries.put("doubledoor", _createDoubleDoorItem(p));
-    entries.put("itemrestock", _createItemRestockItem(p));
+    entries.put("veinminer", _createVeinMinerItem(viewer, target));
+    entries.put("veinchopper", _createVeinChopperItem(viewer, target));
+    entries.put("doubledoor", _createDoubleDoorItem(viewer, target));
+    entries.put("itemrestock", _createItemRestockItem(viewer, target));
 
     // third row
-    entries.put("actionbartimer", _createActionBarTimerItem(p));
-    entries.put("playertag", _createPlayerTagItem(p));
+    entries.put("actionbartimer", _createActionBarTimerItem(viewer, target));
+    entries.put("playertag", _createPlayerTagItem(viewer, target));
 
     // fourth row
     if (showAdminSettings) {
@@ -126,8 +129,8 @@ public class SettingsGUI {
       customSlots.put("adminsettings", rows * 9 - 10);
     }
 
-    CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Settings",
+    CustomGUI gui = new CustomGUI(_plugin, viewer,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Settings " + ChatColor.GRAY + "(" + target.getName() + ")",
         entries, rows, customSlots, null,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -135,21 +138,21 @@ public class SettingsGUI {
     clickActions.put("togglelocation", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.TOGGLELOCATION.getName())) {
+        if (!target.hasPermission(Permissions.TOGGLELOCATION.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.TOGGLELOCATION));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        _toggleLocation(p);
-        displayGUI(p);
+        _toggleLocation(target);
+        displayGUI(p, target);
       }
     });
 
     clickActions.put("itemrestock", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.ITEM_RESTOCK.getName())) {
+        if (!target.hasPermission(Permissions.ITEM_RESTOCK.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.ITEM_RESTOCK));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
@@ -161,15 +164,15 @@ public class SettingsGUI {
           return;
         }
 
-        _toggleItemRestock(p);
-        displayGUI(p);
+        _toggleItemRestock(target);
+        displayGUI(p, target);
       }
     });
 
     clickActions.put("actionbartimer", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.ACTIONBAR_TIMER.getName())) {
+        if (!target.hasPermission(Permissions.ACTIONBAR_TIMER.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.ACTIONBAR_TIMER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
@@ -181,15 +184,15 @@ public class SettingsGUI {
           return;
         }
 
-        _toggleActionBarTimer(p);
-        displayGUI(p);
+        _toggleActionBarTimer(target);
+        displayGUI(p, target);
       }
     });
 
     clickActions.put("playertag", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.TAG.getName())) {
+        if (!target.hasPermission(Permissions.TAG.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.TAG));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
@@ -201,33 +204,33 @@ public class SettingsGUI {
           return;
         }
 
-        _openPlayerTagDialog(p, gui, null);
+        _openPlayerTagDialog(p, gui, null, target);
       }
 
       @Override
       public void onRightClick(Player p) {
-        if (!p.hasPermission(Permissions.TAG.getName())) {
+        if (!target.hasPermission(Permissions.TAG.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.TAG));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        _clearPlayerTag(p);
-        displayGUI(p);
+        _clearPlayerTag(target);
+        displayGUI(p, target);
       }
     });
 
     clickActions.put("togglecompass", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.TOGGLECOMPASS.getName())) {
+        if (!target.hasPermission(Permissions.TOGGLECOMPASS.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.TOGGLECOMPASS));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        _toggleCompass(p);
-        displayGUI(p);
+        _toggleCompass(target);
+        displayGUI(p, target);
       }
     });
 
@@ -235,28 +238,28 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
 
-        if (!p.hasPermission(Permissions.CHESTSORT.getName())) {
+        if (!target.hasPermission(Permissions.CHESTSORT.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        _toggleChestSort(p);
-        displayGUI(p);
+        _toggleChestSort(target);
+        displayGUI(p, target);
       }
     });
     clickActions.put("navigationtrail", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleNavigationTrail(p);
-        displayGUI(p);
+        _toggleNavigationTrail(target);
+        displayGUI(p, target);
       }
     });
 
     clickActions.put("veinminer", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.VEINMINER.getName())) {
+        if (!target.hasPermission(Permissions.VEINMINER.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.VEINMINER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
@@ -269,15 +272,15 @@ public class SettingsGUI {
           return;
         }
 
-        _toggleVeinMiner(p);
-        displayGUI(p);
+        _toggleVeinMiner(target);
+        displayGUI(p, target);
       }
     });
 
     clickActions.put("veinchopper", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.VEINCHOPPER.getName())) {
+        if (!target.hasPermission(Permissions.VEINCHOPPER.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.VEINCHOPPER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
@@ -290,22 +293,22 @@ public class SettingsGUI {
           return;
         }
 
-        _toggleVeinChopper(p);
-        displayGUI(p);
+        _toggleVeinChopper(target);
+        displayGUI(p, target);
       }
     });
 
     clickActions.put("doubledoor", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        if (!p.hasPermission(Permissions.DOUBLE_DOOR.getName())) {
+        if (!target.hasPermission(Permissions.DOUBLE_DOOR.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.DOUBLE_DOOR));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
-        _toggleDoubleDoor(p);
-        displayGUI(p);
+        _toggleDoubleDoor(target);
+        displayGUI(p, target);
       }
     });
 
@@ -313,21 +316,21 @@ public class SettingsGUI {
       clickActions.put("adminsettings", new CustomGUI.ClickAction() {
         @Override
         public void onLeftClick(Player p) {
-          _adminSettingsGUI.displayGUI(p, gui, player -> displayGUI(player));
+          _adminSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, target));
         }
       });
     }
 
     gui.setClickActions(clickActions);
-    gui.open(p);
+    gui.open(viewer);
   }
 
-  private ItemStack _createToggleLocationItem(Player p) {
-    boolean state = _settingsManager.getPlayerToggleLocation(p.getUniqueId());
+  private ItemStack _createToggleLocationItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerToggleLocation(target.getUniqueId());
     ItemStack item = new ItemStack(Material.FILLED_MAP);
     ItemMeta meta = item.getItemMeta();
 
-    boolean hasPermission = p.hasPermission(Permissions.TOGGLELOCATION.getName());
+    boolean hasPermission = target.hasPermission(Permissions.TOGGLELOCATION.getName());
 
     if (meta != null) {
       meta.displayName(
@@ -346,13 +349,13 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createActionBarTimerItem(Player p) {
-    boolean state = _settingsManager.getPlayerActionBarTimer(p.getUniqueId());
+  private ItemStack _createActionBarTimerItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerActionBarTimer(target.getUniqueId());
     ItemStack item = new ItemStack(Material.CLOCK);
     ItemMeta meta = item.getItemMeta();
 
     boolean globalState = _settingsManager.getActionBarTimerEnabled();
-    boolean hasPermission = p.hasPermission(Permissions.ACTIONBAR_TIMER.getName());
+    boolean hasPermission = target.hasPermission(Permissions.ACTIONBAR_TIMER.getName());
 
     if (meta != null) {
       meta.displayName(
@@ -372,10 +375,10 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createPlayerTagItem(Player p) {
-    String tagName = _tagManager.getTag(p);
-    ChatColor tagColor = _tagManager.getTagColor(p);
-    boolean hasPermission = p.hasPermission(Permissions.TAG.getName());
+  private ItemStack _createPlayerTagItem(Player viewer, Player target) {
+    String tagName = _tagManager.getTag(target);
+    ChatColor tagColor = _tagManager.getTagColor(target);
+    boolean hasPermission = target.hasPermission(Permissions.TAG.getName());
     boolean globalEnabled = _settingsManager.getTagsEnabled();
 
     ItemStack item = new ItemStack(Material.NAME_TAG);
@@ -403,12 +406,12 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createToggleCompassItem(Player p) {
-    boolean state = _compassManager.checkPlayerActiveCompass(p);
+  private ItemStack _createToggleCompassItem(Player viewer, Player target) {
+    boolean state = _compassManager.checkPlayerActiveCompass(target);
     ItemStack item = new ItemStack(Material.COMPASS);
     ItemMeta meta = item.getItemMeta();
 
-    boolean hasPermission = p.hasPermission(Permissions.TOGGLECOMPASS.getName());
+    boolean hasPermission = target.hasPermission(Permissions.TOGGLECOMPASS.getName());
 
     if (meta != null) {
       meta.displayName(
@@ -427,12 +430,12 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createChestSortItem(Player p) {
-    boolean state = _settingsManager.getPlayerChestSort(p.getUniqueId());
+  private ItemStack _createChestSortItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerChestSort(target.getUniqueId());
     ItemStack item = new ItemStack(Material.CHEST);
     ItemMeta meta = item.getItemMeta();
 
-    boolean hasPermission = p.hasPermission(Permissions.CHESTSORT.getName());
+    boolean hasPermission = target.hasPermission(Permissions.CHESTSORT.getName());
 
     meta.displayName(
         Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
@@ -449,8 +452,8 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createNavigationTrailItem(Player p) {
-    boolean state = _settingsManager.getPlayerNavigationTrail(p.getUniqueId());
+  private ItemStack _createNavigationTrailItem(Player target) {
+    boolean state = _settingsManager.getPlayerNavigationTrail(target.getUniqueId());
     ItemStack item = new ItemStack(Material.BLAZE_POWDER);
     ItemMeta meta = item.getItemMeta();
 
@@ -470,13 +473,13 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createVeinMinerItem(Player p) {
-    boolean state = _settingsManager.getPlayerVeinMiner(p.getUniqueId());
+  private ItemStack _createVeinMinerItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerVeinMiner(target.getUniqueId());
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
     boolean globalState = _settingsManager.getVeinMinerEnabled();
-    boolean hasPermission = p.hasPermission(Permissions.VEINMINER.getName());
+    boolean hasPermission = target.hasPermission(Permissions.VEINMINER.getName());
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -498,13 +501,13 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createVeinChopperItem(Player p) {
-    boolean state = _settingsManager.getPlayerVeinChopper(p.getUniqueId());
+  private ItemStack _createVeinChopperItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerVeinChopper(target.getUniqueId());
     ItemStack item = new ItemStack(Material.DIAMOND_AXE);
     ItemMeta meta = item.getItemMeta();
 
     boolean globalState = _settingsManager.getVeinChopperEnabled();
-    boolean hasPermission = p.hasPermission(Permissions.VEINCHOPPER.getName());
+    boolean hasPermission = target.hasPermission(Permissions.VEINCHOPPER.getName());
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -525,13 +528,13 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createItemRestockItem(Player p) {
-    boolean state = _settingsManager.getPlayerItemRestock(p.getUniqueId());
+  private ItemStack _createItemRestockItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerItemRestock(target.getUniqueId());
     ItemStack item = new ItemStack(Material.HOPPER);
     ItemMeta meta = item.getItemMeta();
 
     boolean globalState = _settingsManager.getItemRestockEnabled();
-    boolean hasPermission = p.hasPermission(Permissions.ITEM_RESTOCK.getName());
+    boolean hasPermission = target.hasPermission(Permissions.ITEM_RESTOCK.getName());
 
     if (meta != null) {
       meta.displayName(
@@ -551,12 +554,12 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createDoubleDoorItem(Player p) {
-    boolean state = _settingsManager.getPlayerDoubleDoorSync(p.getUniqueId());
+  private ItemStack _createDoubleDoorItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerDoubleDoorSync(target.getUniqueId());
     ItemStack item = new ItemStack(Material.OAK_DOOR);
     ItemMeta meta = item.getItemMeta();
 
-    boolean hasPermission = p.hasPermission(Permissions.DOUBLE_DOOR.getName());
+    boolean hasPermission = target.hasPermission(Permissions.DOUBLE_DOOR.getName());
 
     if (meta != null) {
       meta.displayName(
@@ -593,9 +596,9 @@ public class SettingsGUI {
     return item;
   }
 
-  private void _openPlayerTagDialog(Player p, CustomGUI parentMenu, String errorMessage) {
-    String currentName = Optional.ofNullable(_tagManager.getTag(p)).orElse("");
-    ChatColor currentColor = _tagManager.getTagColor(p);
+  private void _openPlayerTagDialog(Player viewer, CustomGUI parentMenu, String errorMessage, Player target) {
+    String currentName = Optional.ofNullable(_tagManager.getTag(target)).orElse("");
+    ChatColor currentColor = _tagManager.getTagColor(target);
     String currentColorName = _getTagColorKey(currentColor);
 
     DialogInput inputName = CustomDialog.createTextInput("tagname",
@@ -612,45 +615,46 @@ public class SettingsGUI {
         "Set your tag name and color.",
         errorMessage,
         List.of(inputName, inputColor),
-        (view, audience) -> _setPlayerTagDialogCB(view, audience, parentMenu),
+        (view, audience) -> _setPlayerTagDialogCB(view, audience, parentMenu, target),
         null);
 
-    p.showDialog(dialog);
+    viewer.showDialog(dialog);
   }
 
-  private void _setPlayerTagDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu) {
-    Player p = (Player) audience;
+  private void _setPlayerTagDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Player target) {
+    Player viewer = (Player) audience;
     String name = Optional.ofNullable(view.getText("tagname")).map(String::trim).orElse("");
     String colorKey = Optional.ofNullable(view.getText("tagcolor")).map(String::trim).orElse("AQUA");
 
     if (name.isEmpty()) {
-      _openPlayerTagDialog(p, parentMenu, "Tag name cannot be empty.");
+      _openPlayerTagDialog(viewer, parentMenu, "Tag name cannot be empty.", target);
       return;
     }
 
     if (name.length() > 10) {
-      _openPlayerTagDialog(p, parentMenu, "Tag too long! Maximum length is 10 characters.");
+      _openPlayerTagDialog(viewer, parentMenu, "Tag too long! Maximum length is 10 characters.", target);
       return;
     }
 
     ChatColor color = _parseTagColor(colorKey);
-    _tagManager.setTag(p, name, color);
-    _nameTagManager.updateNameTag(p);
-    _tabListManager.refreshPlayerListEntry(p);
+    _tagManager.setTag(target, name, color);
+    _nameTagManager.updateNameTag(target);
+    _tabListManager.refreshPlayerListEntry(target);
 
-    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag set to: " + ChatColor.GRAY + "[" + color + name
+    target.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag set to: " + ChatColor.GRAY + "[" + color + name
         + ChatColor.GRAY + "]");
-    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+    target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    displayGUI(p);
+    displayGUI(viewer, target);
   }
 
-  private void _clearPlayerTag(Player p) {
-    _tagManager.removeTag(p);
-    _nameTagManager.updateNameTag(p);
-    _tabListManager.refreshPlayerListEntry(p);
+  private void _clearPlayerTag(Player target) {
+    _tagManager.removeTag(target);
+    _nameTagManager.updateNameTag(target);
+    _tabListManager.refreshPlayerListEntry(target);
 
-    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag cleared.");
+    target.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag cleared.");
   }
 
   private Map<String, String> _buildTagColorOptions() {
