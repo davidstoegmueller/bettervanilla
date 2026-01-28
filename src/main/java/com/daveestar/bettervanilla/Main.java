@@ -37,6 +37,7 @@ import com.daveestar.bettervanilla.events.ServerMOTD;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
 import com.daveestar.bettervanilla.events.VeinMiningChopping;
+import com.daveestar.bettervanilla.heads.HeadsManager;
 import com.daveestar.bettervanilla.events.RightClickCropHarvest;
 import com.daveestar.bettervanilla.events.DoubleDoorSync;
 import com.daveestar.bettervanilla.events.ChestSort;
@@ -98,6 +99,7 @@ public class Main extends JavaPlugin {
   private TabListManager _tabListManager;
   private RecipeSyncManager _recipeSyncManager;
   private NameTagManager _nameTagManager;
+  private HeadsManager _headsManager;
   private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
@@ -134,6 +136,7 @@ public class Main extends JavaPlugin {
     _tabListManager = new TabListManager();
     _recipeSyncManager = new RecipeSyncManager();
     _nameTagManager = new NameTagManager();
+    _headsManager = new HeadsManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
@@ -143,14 +146,13 @@ public class Main extends JavaPlugin {
     _navigationManager.initManagers();
     _timerManager.initManagers();
     _vanishManager.initManagers();
+    _headsManager.initManagers();
 
     // crafting recipes
     _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
     for (CraftingRecipe recipe : CraftingRecipe.values()) {
       _registerCraftingRecipe(recipe);
     }
-
-    _LOGGER.info("BetterVanilla - ENABLED");
 
     // register commands
     getCommand("help").setExecutor(new HelpCommands.HelpCommand());
@@ -198,6 +200,18 @@ public class Main extends JavaPlugin {
 
     _settingsManager.applyLocatorBarSetting();
     _settingsManager.applyPlayersSleepingPercentageSetting();
+
+    if (_settingsManager.getHeadsExplorerEnabled()) {
+      _headsManager.fetchHeadsData().thenAccept(success -> {
+        if (success) {
+          _LOGGER.info("Heads Explorer data refreshed.");
+        } else {
+          _LOGGER.warning("Heads Explorer data refresh failed.");
+        }
+      });
+    }
+
+    _LOGGER.info("BetterVanilla - ENABLED");
   }
 
   @Override
@@ -335,6 +349,10 @@ public class Main extends JavaPlugin {
 
   public NameTagManager getNameTagManager() {
     return _nameTagManager;
+  }
+
+  public HeadsManager getHeadsManager() {
+    return _headsManager;
   }
 
   public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {

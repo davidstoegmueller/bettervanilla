@@ -39,6 +39,7 @@ import net.md_5.bungee.api.ChatColor;
 public class AdminSettingsGUI {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
+  private final com.daveestar.bettervanilla.heads.HeadsManager _headsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
   private final NameTagManager _nameTagManager;
@@ -51,6 +52,7 @@ public class AdminSettingsGUI {
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
+    _headsManager = _plugin.getHeadsManager();
     _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
     _nameTagManager = _plugin.getNameTagManager();
@@ -98,6 +100,7 @@ public class AdminSettingsGUI {
     entries.put("actionbartimer", _createActionBarTimerItem());
     entries.put("sleepingpercentage", _createSleepingPercentageItem());
     entries.put("playertag", _createTagsItem());
+    entries.put("headsexplorer", _createHeadsExplorerItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // top row - slots 0 to 8
@@ -127,6 +130,7 @@ public class AdminSettingsGUI {
     customSlots.put("veinchoppersettings", 34);
 
     // fifth row - slots 36 to 44
+    customSlots.put("headsexplorer", 36);
     customSlots.put("recipesync", 38);
     customSlots.put("actionbartimer", 40);
     customSlots.put("sleepingpercentage", 42);
@@ -207,6 +211,24 @@ public class AdminSettingsGUI {
       public void onLeftClick(Player p) {
         _toggleTags(p);
         displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("headsexplorer", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleHeadsExplorer(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        _openHeadsExplorerApiKeyDialog(p, parentMenu, backAction);
+      }
+
+      @Override
+      public void onShiftLeftClick(Player p) {
+        _refreshHeadsExplorerData(p, parentMenu, backAction);
       }
     });
 
@@ -571,6 +593,38 @@ public class AdminSettingsGUI {
     return item;
   }
 
+  private ItemStack _createHeadsExplorerItem() {
+    boolean state = _settingsManager.getHeadsExplorerEnabled();
+    String apiKey = _settingsManager.getHeadsExplorerApiKey();
+    boolean hasApiKey = apiKey != null && !apiKey.trim().isEmpty();
+    ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Heads Explorer"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Browse custom heads from minecraft-heads.com.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Powered by minecraft-heads.com.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enables the /heads command.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API Key: "
+              + (hasApiKey ? ChatColor.GREEN + "SET" : ChatColor.RED + "NOT SET"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API key is optional; leave empty to use default limits.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "You can add or update it at any time.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set API key",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Refresh/Reload heads data")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createTagsItem() {
     boolean state = _settingsManager.getTagsEnabled();
     ItemStack item = new ItemStack(Material.NAME_TAG);
@@ -740,6 +794,7 @@ public class AdminSettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Settings"));
       List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enables the /backpack command.",
           ""));
       lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
           + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
@@ -912,6 +967,26 @@ public class AdminSettingsGUI {
     p.showDialog(dialog);
   }
 
+  private void _openHeadsExplorerApiKeyDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    String apiKey = _settingsManager.getHeadsExplorerApiKey();
+
+    DialogInput inputApiKey = DialogInput
+        .text("apikey", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Heads Explorer API Key"))
+        .initial(apiKey != null ? apiKey : "")
+        .maxLength(Integer.MAX_VALUE)
+        .build();
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Heads Explorer API Key",
+        "Optionally provide an API key for minecraft-heads.com (improves access/limits).",
+        null,
+        List.of(inputApiKey),
+        (view, audience) -> _setHeadsExplorerApiKeyDialogCB(view, audience, parentMenu, backAction),
+        null);
+
+    p.showDialog(dialog);
+  }
+
   // ----------------
   // DIALOG CALLBACKS
   // ----------------
@@ -971,6 +1046,45 @@ public class AdminSettingsGUI {
     p.sendMessage(
         Component.text(Main.getPrefix() + "Players sleeping percentage set to: " + ChatColor.YELLOW + percentage));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu, backAction);
+  }
+
+  private void _setHeadsExplorerApiKeyDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
+    Player p = (Player) audience;
+    String apiKey = Optional.ofNullable(view.getText("apikey")).map(String::trim).orElse("");
+
+    _settingsManager.setHeadsExplorerApiKey(apiKey);
+
+    p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer API key updated."));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    if (!apiKey.isEmpty()) {
+      _headsManager.fetchHeadsData().thenAccept(success -> {
+        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+          if (!p.isOnline()) {
+            return;
+          }
+
+          if (success) {
+            _plugin.getLogger().info("Heads Explorer data refreshed for API key update by " + p.getName() + ".");
+            p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+            p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+          } else {
+            _plugin.getLogger()
+                .warning("Heads Explorer data refresh failed for API key update by " + p.getName() + ".");
+            long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
+            String waitSuffix = remainingSeconds > 0
+                ? " Wait another " + remainingSeconds + " seconds."
+                : "";
+            p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
+                + "Heads Explorer refresh failed." + waitSuffix));
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          }
+        });
+      });
+    }
 
     displayGUI(p, parentMenu, backAction);
   }
@@ -1080,6 +1194,72 @@ public class AdminSettingsGUI {
       _nameTagManager.updateNameTag(online);
       _tabListManager.refreshPlayerListEntry(online);
     }
+  }
+
+  private void _toggleHeadsExplorer(Player p) {
+    boolean newState = !_settingsManager.getHeadsExplorerEnabled();
+    _settingsManager.setHeadsExplorerEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Heads explorer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+
+    if (newState) {
+      _headsManager.fetchHeadsData().thenAccept(success -> {
+        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+          if (!p.isOnline()) {
+            return;
+          }
+
+          if (success) {
+            _plugin.getLogger().info("Heads Explorer data refreshed after enabling by " + p.getName() + ".");
+            p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+            p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+          } else {
+            _plugin.getLogger().warning("Heads Explorer data refresh failed after enabling by " + p.getName() + ".");
+            long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
+            String waitSuffix = remainingSeconds > 0
+                ? " Wait another " + remainingSeconds + " seconds."
+                : "";
+            p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
+                + "Heads Explorer refresh failed." + waitSuffix));
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          }
+        });
+      });
+    }
+  }
+
+  private void _refreshHeadsExplorerData(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    if (!_settingsManager.getHeadsExplorerEnabled()) {
+      p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED + "Heads Explorer is disabled."));
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      displayGUI(p, parentMenu, backAction);
+      return;
+    }
+
+    _headsManager.fetchHeadsData().thenAccept(success -> {
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        if (!p.isOnline()) {
+          return;
+        }
+
+        if (success) {
+          _plugin.getLogger().info("Heads Explorer data refreshed via manual refresh by " + p.getName() + ".");
+          p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        } else {
+          _plugin.getLogger().warning("Heads Explorer data refresh failed via manual refresh by " + p.getName() + ".");
+          long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
+          String waitSuffix = remainingSeconds > 0
+              ? " Wait another " + remainingSeconds + " seconds."
+              : "";
+          p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
+              + "Heads Explorer refresh failed." + waitSuffix));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+        }
+      });
+    });
+
+    displayGUI(p, parentMenu, backAction);
   }
 
   private void _toggleDeathChest(Player p) {
