@@ -66,7 +66,8 @@ public class DeathPointsManager {
 
     if (deathChestEnabled) {
       _createDeathChest(loc);
-      _createDeathHologram(playerName, loc);
+      String deathPointDateTime = _formatTimestamp(timestamp);
+      _createDeathHologram(playerName, deathPointDateTime, loc);
     }
   }
 
@@ -117,8 +118,7 @@ public class DeathPointsManager {
     String deathPointPath = playerUUID + ".deathpoints." + pointUUID;
 
     long timestamp = _fileConfig.getLong(deathPointPath + ".timestamp", 0);
-    SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy » HH:mm:ss");
-    return timestamp != 0 ? sdf.format(new Date(timestamp)) : "-";
+    return _formatTimestamp(timestamp);
   }
 
   public long getDeathPointTimestamp(Player p, String pointUUID) {
@@ -188,13 +188,11 @@ public class DeathPointsManager {
     loc.getBlock().setType(Material.CHEST, false);
   }
 
-  private void _createDeathHologram(String playerName, Location loc) {
-    ArmorStand hologram = loc.getWorld().spawn(loc.clone().add(0.5, 0.5, 0.5), ArmorStand.class);
-    hologram.setInvisible(true);
-    hologram.setGravity(false);
-    hologram.setMarker(true);
-    hologram.customName(Component.text(ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Chest: " + playerName));
-    hologram.setCustomNameVisible(true);
+  private void _createDeathHologram(String playerName, String deathPointDateTime, Location loc) {
+    Location base = loc.clone().add(0.5, 0.35, 0.5);
+    _spawnHologramLine(base.clone().add(0, 0.5, 0), ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Chest");
+    _spawnHologramLine(base.clone().add(0, 0.25, 0), ChatColor.YELLOW + playerName);
+    _spawnHologramLine(base, ChatColor.GRAY + deathPointDateTime);
   }
 
   // -----------------------
@@ -209,7 +207,7 @@ public class DeathPointsManager {
 
   private void _removeDeathHologram(Location loc) {
     loc.getWorld().getEntitiesByClass(ArmorStand.class).forEach(stand -> {
-      if (stand.isMarker() && stand.getLocation().distance(loc.clone().add(0.5, 0.5, 0.5)) < 1.0) {
+      if (stand.isMarker() && stand.getLocation().distance(loc.clone().add(0.5, 0.5, 0.5)) < 1.5) {
         stand.remove();
       }
     });
@@ -225,6 +223,20 @@ public class DeathPointsManager {
     int y = _fileConfig.getInt(path + ".y", 0);
     int z = _fileConfig.getInt(path + ".z", 0);
     return new Location(Main.getInstance().getServer().getWorld(world), x, y, z);
+  }
+
+  private void _spawnHologramLine(Location loc, String text) {
+    ArmorStand hologram = loc.getWorld().spawn(loc, ArmorStand.class);
+    hologram.setInvisible(true);
+    hologram.setGravity(false);
+    hologram.setMarker(true);
+    hologram.customName(Component.text(text));
+    hologram.setCustomNameVisible(true);
+  }
+
+  private String _formatTimestamp(long timestamp) {
+    SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy » HH:mm:ss");
+    return timestamp != 0 ? sdf.format(new Date(timestamp)) : "-";
   }
 
   public static class DeathPointReference {

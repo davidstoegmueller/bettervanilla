@@ -231,7 +231,6 @@ public class DeathPointsGUI {
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Delete"));
       meta.lore(Arrays.asList(
-          "",
           ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.GRAY
               + "As you delete this death point, you will lose all items stored in it.",
           "",

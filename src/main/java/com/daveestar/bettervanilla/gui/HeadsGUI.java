@@ -96,7 +96,6 @@ public class HeadsGUI {
     }
 
     int categoryGUIRows = Math.min(6, ((int) Math.ceil(totalCategories / 9.0) + 1));
-    p.sendMessage("" + categoryGUIRows);
 
     CustomGUI categoriesGUI = new CustomGUI(_plugin, p,
         GUI_TITLE_PREFIX + "Categories" + ChatColor.GRAY + " (" + totalHeads + " heads)",
