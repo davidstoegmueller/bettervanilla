@@ -45,7 +45,7 @@ public class HeadsCommand implements CommandExecutor {
     }
 
     if (!_settingsManager.getHeadsExplorerEnabled()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Heads Explorer is disabled on this server.");
+      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Heads Explorer is disabled.");
       return true;
     }
 
