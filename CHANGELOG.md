@@ -2,7 +2,26 @@
 
 # Changelog
 
-## [1.11.0] - xx.xx.202x
+## [1.11.0] - 29.01.2026
+
+- 🧠 **Heads Explorer** - New `/heads` GUI with categories, search, and admin controls (API key, enable/disable, refresh).
+- 📍 **Here/Coords Command** - `/here` (alias `/coords`) broadcasts your current location to all players.
+- 🏷️ **Player Tags** - Custom name tags via the settings menu with color selection and a global admin toggle.
+- ⏲️ **Action-Bar Timer Toggle** - Player + admin setting to enable or disable the timer action bar overlay.
+- 🛌 **Sleeping Percentage Control** - Admin setting for `playersSleepingPercentage`, plus player sleep announcements.
+- 🌧️ **Sleeping Rain Fix** - Weather skip now applies globally across worlds.
+- 🧭 **GUI UX Enhancements** - Search dialog support for waypoints/waypoint icons/playtime, sort cycle items, and fixed double-click handling.
+- 🧰 **Admin Settings Access** - Admins can open player settings menus for other online players.
+- ⚰️ **Death Points Improvements** - Sorted GUI list, multi-world fixes, duplicate deathchest prevention, and 3-line holograms.
+- 🗺️ **Waypoint Data Update** - Allow duplicate private waypoint names by storing data per-UUID.
+- 💬 **Chat & HUD Updates** - Mention handling refinements, compass async fix, red AFK tags, and clearer AFK messages.
+- 🏷️ **Player Tags** - New tag system with configurable name + color via the settings menu.
+- ✍️ **Sign Colors** - Reworked sign color handling so signs remain editable.
+- ⛏️ **Vein Miner Update** - Added glowstone support.
+- 🫥 **Vanish Reliability** - Fixed vanish state resolution issues.
+- 📊 **Playtime GUI** - Shows each player’s online state.
+- 🧾 **Recipe Sync Overhaul** - Refactored sync pipeline with Fabric/NeoForge support and an admin toggle.
+- 📈 **Metrics & Build** - Added bStats and migrated build/CI tooling to Gradle with wrapper support.
 
 ## [1.10.2] - 31.10.2025
 

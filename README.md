@@ -1,6 +1,8 @@
 # BetterVanilla ✨ SMP All-in-One
 
-A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVanilla layers modern quality-of-life upgrades onto a vanilla Paper server-no client mods or loaders required. 👑 Core Feature: Configure every player and server toggle through the in-game `/settings` menu and [jump straight to the full settings guide](#settings) when you need the details.
+A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVanilla adds modern quality-of-life upgrades to a vanilla Paper server—no client mods or loaders required.
+
+👑 Core Feature: Configure every player and server toggle through the in-game `/settings` menu and [jump straight to the full settings guide](#settings) when you need the details.
 
 [![GitHub release](https://img.shields.io/github/v/release/davidstoegmueller/bettervanilla?style=flat-round)](https://github.com/davidstoegmueller/bettervanilla/releases)
 [![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-round)](LICENSE)
@@ -20,18 +22,20 @@ Tested on Paper 1.21.10 and newer.
 
 ## Why BetterVanilla?
 
-Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Minecraft feel while adding carefully scoped tools that reduce admin busywork and make day-to-day play smoother. Everything ships in one polished plugin you can drop in and go.
+Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Minecraft feel while adding carefully scoped tools that reduce admin busywork and smooth out day-to-day play. Everything ships in one polished plugin you can drop in and go.
 
 ## Highlights
 
 ### Player-Focused Features
 
-- 🧭 **Waypoints** - Add, share, and filter public or private waypoints with GUI navigation and particle trails.
+- 🧭 **Waypoints** - Add, share, and filter public or private waypoints with GUI navigation and optional particle trails.
 - 🎒 **Backpacks** - Carry expandable storage with configurable rows and pages.
 - ⛏️ **Vein Miner & Tree Chopper** - Sneak-break to harvest entire ore veins or tree trunks instantly.
 - 💀 **Death Points & Chests** - Track every death, teleport back, and safely reclaim your belongings.
+- 🧠 **Heads Explorer** - Browse decorative heads by category, search instantly, and preview icons in the GUI.
 - ✨ **Chest Sorting** - Right-click outside inventories to auto-organize loot.
 - 🔁 **Item Restock Automation** - Automatically refill empty hotbar slots with matching items using global and per-player toggles.
+- 🏷️ **Player Tags** - Set a custom name tag from the settings menu, including color selection.
 - 🧰 **Settings Menu** - Toggle personal QoL options in an in-game UI.
 - 🎨 **Colored Chat & Mentions** - Use `&` color codes and ping friends with `@name`.
 - 📬 **Private Messages** - Chat directly with `/msg` and reply quickly using `/r`.
@@ -40,7 +44,8 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - ⏱️ **Timer** - Global stopwatch with resume, pause, reset, and set commands.
 - 🕒 **Playtime** - View detailed play history with AFK tracking for yourself or other players.
 - 📶 **Ping** - Check personal or remote player latency.
-- 📊 **Dynamic Tab List** - Live header/footer surfaces world day, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
+- 📍 **Here/Coords Broadcast** - Share your current location with `/here` (alias `/coords`).
+- 📊 **Dynamic Tab List** - Live header/footer shows day/time, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
 - 📍 **Action-Bar Location** - Display live XYZ coordinates in your HUD.
 - 🧭 **Bossbar Compass** - Minimal directional overlay in the boss bar.
 - 🪑 **Sittable Stairs** - Sit on stairs with an empty hand.
@@ -61,10 +66,14 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🫥 **Vanish Mode** - Hide from players, tab lists, join/leave messages, the server list, and AFK timers with `/vanish`.
 - ⚰️ **Deathchest Toggle** - Switch global deathchests on or off without leaving the GUI.
 - 🔨 **Moderation Toolkit** - Kick, ban, mute, unmute, and unban directly in-game.
-- 🧩 **Crafting Recipe Manager** Manage predefined crafting recipes.
+- 🧩 **Crafting Recipe Manager** - Manage predefined crafting recipes.
+- 🧠 **Heads Explorer Controls** - Enable/disable the explorer, set the API key, and refresh cached data.
 - 📣 **Server MOTD** - Edit the server list message from the admin menu.
 - 🧭 **Locator Bar Gamerule** - Flip the `/gamerule locatorBar` setting across every world without leaving the GUI.
+- 🛌 **Sleeping Percentage** - Set the `playersSleepingPercentage` gamerule from the admin menu.
 - 🚧 **Maintenance Mode** - Toggle server access with custom messaging and bypass support.
+- 🧾 **Recipe Sync Toggle** - Control whether custom recipes are synced to players.
+- 🧰 **Remote Settings Access** - Admins can open player settings menus for other online players.
 
 ### Custom Crafting Recipes
 
@@ -112,11 +121,13 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 - `/waypoints` - Open the waypoint GUI. Use `player <name>` or `coords <x> <y> <z>` for direct navigation.
 - `/backpack` - Open your personal backpack storage.
 - `/deathpoints` - Manage recent death locations and teleport back via GUI.
+- `/heads` - Open the heads explorer GUI.
 - `/playtime [player]` - Show detailed playtime (AFK included) for you or another player.
 - `/ping [player]` - Check network latency for yourself or another player.
 - `/sit` - Sit on any solid block; sneak to stand up.
 - `/msg <player> <message>` - Send a private message. Alias: `/message`.
 - `/r <message>` - Reply to the last private message.
+- `/here` - Broadcast your current location. Aliases: `/coords`, `/h`.
 - `/help` - View all available commands pulled directly from `plugin.yml`.
 
 ### Admin & Moderation
@@ -145,6 +156,8 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 
 - 📍 Action-bar location HUD
 - 🧭 Bossbar compass overlay
+- 🏷️ Player tag (name tag color + text)
+- ⏲️ Action-bar timer overlay toggle
 - ✨ Navigation particles
 - 🧹 Chest sorting toggle
 - 🔁 Item restock automation toggle
@@ -159,9 +172,11 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 - 🔭 End travel toggle
 - 🔥 Nether travel toggle
 - 🌧️ Sleeping rain skip
+- 🛌 Players sleeping percentage gamerule
 - 📣 Server MOTD editor
 - 🧭 Locator bar gamerule toggle
 - 💤 AFK protection toggle and AFK timeout
+- 🏷️ Player tags global toggle
 - ⚰️ Deathchest toggle
 - 🔁 Item restock automation defaults and global toggle
 - 🌾 Crop protection
@@ -169,6 +184,15 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 - 🎒 Backpack availability, page count, and row count
 - ⛏️ Vein miner global options (limits, tools, blocks, sound)
 - 🪓 Vein chopper global options
+- 🧠 Heads explorer (enable, API key, refresh)
+- 🧾 Recipe sync toggle
+
+## Minecraft Heads Explorer
+
+This plugin now features a built-in Minecraft Heads Explorer, powered by
+[Minecraft-Heads](https://minecraft-heads.com/).
+
+![Minecraft-Heads Banner](https://cdn.modrinth.com/data/cached_images/6f3d37c903a07201acae849849b9e3c6d3d7490d_0.webp)
 
 ## Permissions
 
@@ -184,24 +208,29 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 | `bettervanilla.settings`           | player, moderator, admin |
 | `bettervanilla.playtime`           | player, moderator, admin |
 | `bettervanilla.waypoints`          | player, moderator, admin |
+| `bettervanilla.here`               | player, moderator, admin |
 | `bettervanilla.deathpoints`        | player, moderator, admin |
 | `bettervanilla.ping`               | player, moderator, admin |
 | `bettervanilla.sit`                | player, moderator, admin |
 | `bettervanilla.backpack`           | player, moderator, admin |
+| `bettervanilla.heads`              | player, moderator, admin |
 | `bettervanilla.msg`                | player, moderator, admin |
 | `bettervanilla.togglelocation`     | player, moderator, admin |
 | `bettervanilla.togglecompass`      | player, moderator, admin |
+| `bettervanilla.actionbartimer`     | player, moderator, admin |
 | `bettervanilla.chestsort`          | player, moderator, admin |
 | `bettervanilla.doubledoor`         | player, moderator, admin |
 | `bettervanilla.veinminer`          | player, moderator, admin |
 | `bettervanilla.veinchopper`        | player, moderator, admin |
 | `bettervanilla.itemrestock`        | player, moderator, admin |
+| `bettervanilla.tag`                | player, moderator, admin |
 | `bettervanilla.adminhelp`          | moderator, admin         |
 | `bettervanilla.vanish`             | moderator, admin         |
 | `bettervanilla.invsee`             | moderator, admin         |
 | `bettervanilla.moderation`         | moderator, admin         |
 | `bettervanilla.timer`              | moderator, admin         |
 | `bettervanilla.waypoints.admin`    | moderator, admin         |
+| `bettervanilla.tag.admin`          | moderator, admin         |
 | `bettervanilla.permissions`        | admin                    |
 | `bettervanilla.maintenance.bypass` | admin                    |
 | `bettervanilla.adminsettings`      | admin                    |
