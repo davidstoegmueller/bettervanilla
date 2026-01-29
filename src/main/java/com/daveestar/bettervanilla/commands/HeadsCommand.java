@@ -54,7 +54,7 @@ public class HeadsCommand implements CommandExecutor {
       return true;
     }
 
-    _headsGUI.displayCategoriesGUI(p);
+    _headsGUI.displayHeadsGUI(p);
     return true;
   }
 }
