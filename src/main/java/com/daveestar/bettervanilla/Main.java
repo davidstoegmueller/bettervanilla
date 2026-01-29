@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.daveestar.bettervanilla.commands.HelpCommands;
 import com.daveestar.bettervanilla.commands.HereCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
+import com.daveestar.bettervanilla.commands.HeadsCommand;
 import com.daveestar.bettervanilla.commands.DeathPointsCommand;
 import com.daveestar.bettervanilla.commands.PermissionsCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
@@ -50,6 +51,7 @@ import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
+import com.daveestar.bettervanilla.manager.HeadsManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.ModerationManager;
@@ -98,6 +100,7 @@ public class Main extends JavaPlugin {
   private TabListManager _tabListManager;
   private RecipeSyncManager _recipeSyncManager;
   private NameTagManager _nameTagManager;
+  private HeadsManager _headsManager;
   private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
@@ -134,6 +137,7 @@ public class Main extends JavaPlugin {
     _tabListManager = new TabListManager();
     _recipeSyncManager = new RecipeSyncManager();
     _nameTagManager = new NameTagManager();
+    _headsManager = new HeadsManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
@@ -143,14 +147,13 @@ public class Main extends JavaPlugin {
     _navigationManager.initManagers();
     _timerManager.initManagers();
     _vanishManager.initManagers();
+    _headsManager.initManagers();
 
     // crafting recipes
     _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
     for (CraftingRecipe recipe : CraftingRecipe.values()) {
       _registerCraftingRecipe(recipe);
     }
-
-    _LOGGER.info("BetterVanilla - ENABLED");
 
     // register commands
     getCommand("help").setExecutor(new HelpCommands.HelpCommand());
@@ -174,6 +177,7 @@ public class Main extends JavaPlugin {
     getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("here").setExecutor(new HereCommand());
+    getCommand("heads").setExecutor(new HeadsCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -198,6 +202,18 @@ public class Main extends JavaPlugin {
 
     _settingsManager.applyLocatorBarSetting();
     _settingsManager.applyPlayersSleepingPercentageSetting();
+
+    if (_settingsManager.getHeadsExplorerEnabled()) {
+      _headsManager.fetchHeadsData().thenAccept(success -> {
+        if (success) {
+          _LOGGER.info("Heads Explorer data refreshed.");
+        } else {
+          _LOGGER.warning("Heads Explorer data refresh failed.");
+        }
+      });
+    }
+
+    _LOGGER.info("BetterVanilla - ENABLED");
   }
 
   @Override
@@ -335,6 +351,10 @@ public class Main extends JavaPlugin {
 
   public NameTagManager getNameTagManager() {
     return _nameTagManager;
+  }
+
+  public HeadsManager getHeadsManager() {
+    return _headsManager;
   }
 
   public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {

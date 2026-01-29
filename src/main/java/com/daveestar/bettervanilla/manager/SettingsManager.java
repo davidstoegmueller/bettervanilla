@@ -259,6 +259,24 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getHeadsExplorerEnabled() {
+    return _fileConfig.getBoolean("global.headsexplorer.enabled", false);
+  }
+
+  public void setHeadsExplorerEnabled(boolean value) {
+    _fileConfig.set("global.headsexplorer.enabled", value);
+    _config.save();
+  }
+
+  public String getHeadsExplorerApiKey() {
+    return _fileConfig.getString("global.headsexplorer.apikey", "");
+  }
+
+  public void setHeadsExplorerApiKey(String value) {
+    _fileConfig.set("global.headsexplorer.apikey", value == null ? "" : value);
+    _config.save();
+  }
+
   public void applyLocatorBarSetting() {
     boolean enabled = getLocatorBarEnabled();
 

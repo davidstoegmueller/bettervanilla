@@ -81,3 +81,6 @@ commands:
     aliases: [h, coords]
     description: Send your current location to all other players.
     usage: /here
+  heads:
+    description: Open the heads explorer GUI.
+    usage: /heads
