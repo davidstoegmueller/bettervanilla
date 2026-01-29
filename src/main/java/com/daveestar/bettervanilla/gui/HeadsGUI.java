@@ -35,7 +35,6 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class HeadsGUI {
-  private static final int CATEGORY_GUI_ROWS = 6;
   private static final int HEADS_GUI_ROWS = 6;
 
   private static final String GUI_TITLE_PREFIX = ChatColor.YELLOW + "" + ChatColor.BOLD + "» ";
@@ -70,6 +69,7 @@ public class HeadsGUI {
   private CustomGUI _createCategoriesGUI(Player p) {
     JsonArray headsData = _headsManager.getCustomHeadsData();
     int totalHeads = _headsManager.getTotalCustomHeads();
+    int totalCategories = _headsManager.getTotalCustomHeadCategories();
 
     List<HeadCategory> categories = _buildCategories();
     if (categories.isEmpty()) {
@@ -93,13 +93,16 @@ public class HeadsGUI {
       sortData.put(key, new CategorySortData(category.name(), count));
     }
 
+    int categoryGUIRows = Math.min(6, ((int) Math.ceil(totalCategories / 9.0) + 1));
+    p.sendMessage("" + categoryGUIRows);
+
     CustomGUI categoriesGUI = new CustomGUI(_plugin, p,
         GUI_TITLE_PREFIX + "Categories" + ChatColor.GRAY + " (" + totalHeads + " heads)",
-        entries, CATEGORY_GUI_ROWS, null, null,
+        entries, categoryGUIRows, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
-    categoriesGUI.setSearchButtonSlot(_footerSearchSlot(CATEGORY_GUI_ROWS));
-    categoriesGUI.setSortButtonSlot(_footerSortSlot(CATEGORY_GUI_ROWS));
+    categoriesGUI.setSearchButtonSlot(_footerSearchSlot(categoryGUIRows));
+    categoriesGUI.setSortButtonSlot(_footerSortSlot(categoryGUIRows));
     categoriesGUI.setSortOptions(_createCategorySortOptions(sortData));
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
