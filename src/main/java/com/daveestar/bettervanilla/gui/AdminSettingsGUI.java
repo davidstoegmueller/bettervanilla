@@ -612,11 +612,11 @@ public class AdminSettingsGUI {
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "API Key: "
               + (hasApiKey ? ChatColor.GREEN + "SET" : ChatColor.RED + "NOT SET"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API key is optional; leave empty to use default limits.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API Key is optional; leave empty to use default limits.",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "You can add or update it at any time.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set API key",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set API Key",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Refresh/Reload heads data")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
