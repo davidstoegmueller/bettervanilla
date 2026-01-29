@@ -85,8 +85,10 @@ public class HeadsGUI {
 
     for (HeadCategory category : categories) {
       String key = KEY_CATEGORY_PREFIX + category.id();
-      int count = headsByCategory.getOrDefault(category, List.of()).size();
-      ItemStack categoryItem = _createCategoryItem(category, count);
+      List<Head> heads = headsByCategory.getOrDefault(category, List.of());
+      int count = heads.size();
+      Head iconHead = heads.isEmpty() ? null : heads.get(0);
+      ItemStack categoryItem = _createCategoryItem(category, count, iconHead);
 
       entries.put(key, categoryItem);
       categoryByKey.put(key, category);
@@ -221,9 +223,13 @@ public class HeadsGUI {
   // GUI ITEMS
   // ---------
 
-  private ItemStack _createCategoryItem(HeadCategory category, int count) {
-    ItemStack item = new ItemStack(Material.BOOK);
+  private ItemStack _createCategoryItem(HeadCategory category, int count, Head iconHead) {
+    ItemStack item = new ItemStack(iconHead != null ? Material.PLAYER_HEAD : Material.BOOK);
     ItemMeta meta = item.getItemMeta();
+
+    if (meta instanceof SkullMeta skullMeta && iconHead != null) {
+      _applyHeadTexture(iconHead, skullMeta);
+    }
 
     if (meta != null) {
       meta.displayName(Component.text(GUI_ITEM_PREFIX + category.name()));
