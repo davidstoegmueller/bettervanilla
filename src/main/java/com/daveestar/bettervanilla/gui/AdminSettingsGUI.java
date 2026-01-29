@@ -1060,31 +1060,29 @@ public class AdminSettingsGUI {
     p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer API key updated."));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    if (!apiKey.isEmpty()) {
-      _headsManager.fetchHeadsData().thenAccept(success -> {
-        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
-          if (!p.isOnline()) {
-            return;
-          }
+    _headsManager.fetchHeadsData().thenAccept(success -> {
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        if (!p.isOnline()) {
+          return;
+        }
 
-          if (success) {
-            _plugin.getLogger().info("Heads Explorer data refreshed for API key update by " + p.getName() + ".");
-            p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
-            p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
-          } else {
-            _plugin.getLogger()
-                .warning("Heads Explorer data refresh failed for API key update by " + p.getName() + ".");
-            long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
-            String waitSuffix = remainingSeconds > 0
-                ? " Wait another " + remainingSeconds + " seconds."
-                : "";
-            p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
-                + "Heads Explorer refresh failed." + waitSuffix));
-            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
-          }
-        });
+        if (success) {
+          _plugin.getLogger().info("Heads Explorer data refreshed for API key update by " + p.getName() + ".");
+          p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        } else {
+          _plugin.getLogger()
+              .warning("Heads Explorer data refresh failed for API key update by " + p.getName() + ".");
+          long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
+          String waitSuffix = remainingSeconds > 0
+              ? " Wait another " + remainingSeconds + " seconds."
+              : "";
+          p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
+              + "Heads Explorer refresh failed." + waitSuffix));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+        }
       });
-    }
+    });
 
     displayGUI(p, parentMenu, backAction);
   }
