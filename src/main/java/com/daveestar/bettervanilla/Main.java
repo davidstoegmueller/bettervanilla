@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.daveestar.bettervanilla.commands.HelpCommands;
 import com.daveestar.bettervanilla.commands.HereCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
+import com.daveestar.bettervanilla.commands.HeadsCommand;
 import com.daveestar.bettervanilla.commands.DeathPointsCommand;
 import com.daveestar.bettervanilla.commands.PermissionsCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
@@ -176,6 +177,7 @@ public class Main extends JavaPlugin {
     getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
     getCommand("here").setExecutor(new HereCommand());
+    getCommand("heads").setExecutor(new HeadsCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();

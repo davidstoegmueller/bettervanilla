@@ -19,6 +19,7 @@ public enum Permissions {
   PING("bettervanilla.ping", Category.PLAYER),
   SIT("bettervanilla.sit", Category.PLAYER),
   BACKPACK("bettervanilla.backpack", Category.PLAYER),
+  HEADS("bettervanilla.heads", Category.PLAYER),
   MSG("bettervanilla.msg", Category.PLAYER),
   TOGGLELOCATION("bettervanilla.togglelocation", Category.PLAYER),
   TOGGLECOMPASS("bettervanilla.togglecompass", Category.PLAYER),
