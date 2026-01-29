@@ -39,7 +39,7 @@ import net.md_5.bungee.api.ChatColor;
 public class AdminSettingsGUI {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
-  private final com.daveestar.bettervanilla.heads.HeadsManager _headsManager;
+  private final com.daveestar.bettervanilla.manager.HeadsManager _headsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
   private final NameTagManager _nameTagManager;

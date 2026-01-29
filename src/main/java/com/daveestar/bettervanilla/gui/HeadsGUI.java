@@ -25,7 +25,7 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.heads.HeadsManager;
+import com.daveestar.bettervanilla.manager.HeadsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

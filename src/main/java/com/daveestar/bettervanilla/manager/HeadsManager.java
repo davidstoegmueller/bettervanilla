@@ -1,4 +1,4 @@
-package com.daveestar.bettervanilla.heads;
+package com.daveestar.bettervanilla.manager;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 
 import com.daveestar.bettervanilla.Main;
-import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.HttpUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

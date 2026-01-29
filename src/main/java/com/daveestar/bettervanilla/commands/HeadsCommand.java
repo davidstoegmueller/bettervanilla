@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.HeadsGUI;
-import com.daveestar.bettervanilla.heads.HeadsManager;
+import com.daveestar.bettervanilla.manager.HeadsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.md_5.bungee.api.ChatColor;
