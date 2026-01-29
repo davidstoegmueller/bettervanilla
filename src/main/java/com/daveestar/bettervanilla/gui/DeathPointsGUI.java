@@ -4,13 +4,17 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Comparator;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,12 +45,17 @@ public class DeathPointsGUI {
 
   public void displayGUI(Player p) {
     String[] deathPointUUIDs = _deathPointsManager.getDeathPointUUIDs(p);
+    Map<String, DeathPointSortData> sortData = _buildDeathPointSortData(p, deathPointUUIDs);
 
     Map<String, ItemStack> deathPointEntries = Arrays.stream(deathPointUUIDs)
-        .collect(Collectors.toMap(pointUUID -> pointUUID, pointUUID -> _createDeathPointItem(p, pointUUID)));
+        .collect(Collectors.toMap(pointUUID -> pointUUID, pointUUID -> _createDeathPointItem(p, pointUUID), (a, b) -> a,
+            LinkedHashMap::new));
 
     String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Points";
-    CustomGUI deathPointsGUI = new CustomGUI(_plugin, p, title, deathPointEntries, 3, null, null, null);
+    CustomGUI deathPointsGUI = new CustomGUI(_plugin, p, title, deathPointEntries, 3, null, null,
+        EnumSet.of(CustomGUI.Option.ENABLE_SORT));
+    deathPointsGUI.setSortOptions(_createDeathPointSortOptions(sortData));
+    deathPointsGUI.setSortButtonSlot(_footerSortSlot(3));
     deathPointsGUI.open(p);
 
     Map<String, CustomGUI.ClickAction> clickActions = new HashMap<>();
@@ -64,6 +73,10 @@ public class DeathPointsGUI {
     }
 
     deathPointsGUI.setClickActions(clickActions);
+  }
+
+  private int _footerSortSlot(int rows) {
+    return (rows * 9) - 9 + 7;
   }
 
   // ---------------
@@ -157,7 +170,17 @@ public class DeathPointsGUI {
     String deathPointDateTime = _deathPointsManager.getDeathPointDateTime(p, pointUUID);
 
     Location playerLocation = p.getLocation().toBlockLocation();
-    long distance = Math.round(playerLocation.distance(deathPointLocation));
+    World deathPointWorld = deathPointLocation.getWorld();
+    String worldName = deathPointWorld != null ? deathPointWorld.getName() : "Unknown";
+
+    String distanceString = "";
+    if (deathPointWorld != null && deathPointWorld.equals(playerLocation.getWorld())) {
+      long distance = Math.round(playerLocation.distance(deathPointLocation));
+
+      distanceString = "" + distance + ChatColor.GRAY + " blocks";
+    } else {
+      distanceString = "Not Available";
+    }
 
     ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING);
     ItemMeta meta = item.getItemMeta();
@@ -167,15 +190,13 @@ public class DeathPointsGUI {
           + ChatColor.GRAY + " (" + deathPointDateTime + ")"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "World: " + ChatColor.YELLOW
-              + deathPointLocation.getWorld().getName(),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "World: " + ChatColor.YELLOW + worldName,
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + deathPointLocation.getBlockX(),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + deathPointLocation.getBlockY(),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + deathPointLocation.getBlockZ(),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distance + ChatColor.GRAY
-              + " blocks",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distanceString,
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options").stream()
@@ -210,7 +231,6 @@ public class DeathPointsGUI {
     if (meta != null) {
       meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Delete"));
       meta.lore(Arrays.asList(
-          "",
           ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.GRAY
               + "As you delete this death point, you will lose all items stored in it.",
           "",
@@ -220,5 +240,53 @@ public class DeathPointsGUI {
     }
 
     return item;
+  }
+
+  // ---------
+  // SORTING
+  // ---------
+
+  private Map<String, DeathPointSortData> _buildDeathPointSortData(Player p, String[] pointUUIDs) {
+    Map<String, DeathPointSortData> sortData = new HashMap<>();
+    String playerUUID = p.getUniqueId().toString();
+    Location playerLocation = p.getLocation().toBlockLocation();
+
+    for (String pointUUID : pointUUIDs) {
+      Location deathPointLocation = _deathPointsManager.getDeathPointLocation(playerUUID, pointUUID);
+      long timestamp = _deathPointsManager.getDeathPointTimestamp(playerUUID, pointUUID);
+
+      long distance = Long.MAX_VALUE;
+      if (deathPointLocation != null && deathPointLocation.getWorld() != null
+          && deathPointLocation.getWorld().equals(playerLocation.getWorld())) {
+        distance = Math.round(playerLocation.distance(deathPointLocation));
+      }
+
+      sortData.put(pointUUID, new DeathPointSortData(timestamp, distance));
+    }
+
+    return sortData;
+  }
+
+  private List<CustomGUI.SortOption> _createDeathPointSortOptions(Map<String, DeathPointSortData> sortData) {
+    Comparator<Map.Entry<String, ItemStack>> byNewest = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).timestamp())
+        .reversed();
+
+    Comparator<Map.Entry<String, ItemStack>> byOldest = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).timestamp());
+
+    Comparator<Map.Entry<String, ItemStack>> byNearest = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
+        entry -> sortData.get(entry.getKey()).distance());
+
+    Comparator<Map.Entry<String, ItemStack>> byFarthest = byNearest.reversed();
+
+    return List.of(
+        new CustomGUI.SortOption("Newest (New - Old)", byNewest),
+        new CustomGUI.SortOption("Oldest (Old - New", byOldest),
+        new CustomGUI.SortOption("Nearest (Near - Far)", byNearest),
+        new CustomGUI.SortOption("Farthest (Far - Near)", byFarthest));
+  }
+
+  private record DeathPointSortData(long timestamp, long distance) {
   }
 }

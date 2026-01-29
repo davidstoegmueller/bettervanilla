@@ -22,7 +22,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
+import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
@@ -37,8 +39,11 @@ import net.md_5.bungee.api.ChatColor;
 public class AdminSettingsGUI {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
+  private final com.daveestar.bettervanilla.manager.HeadsManager _headsManager;
   private final AFKManager _afkManager;
   private final MaintenanceManager _maintenanceManager;
+  private final NameTagManager _nameTagManager;
+  private final TabListManager _tabListManager;
   private final BackpackSettingsGUI _backpackSettingsGUI;
   private final VeinMinerSettingsGUI _veinMinerSettingsGUI;
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
@@ -47,8 +52,11 @@ public class AdminSettingsGUI {
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
+    _headsManager = _plugin.getHeadsManager();
     _afkManager = _plugin.getAFKManager();
     _maintenanceManager = _plugin.getMaintenanceManager();
+    _nameTagManager = _plugin.getNameTagManager();
+    _tabListManager = _plugin.getTabListManager();
     _backpackSettingsGUI = new BackpackSettingsGUI();
     _veinMinerSettingsGUI = new VeinMinerSettingsGUI();
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
@@ -61,31 +69,38 @@ public class AdminSettingsGUI {
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
-    // top row - core server controls
+    // top row
     entries.put("maintenance", _createMaintenanceItem());
     entries.put("motd", _createMOTDItem());
     entries.put("sleepingrain", _createSleepingRainItem());
     entries.put("enablenether", _createEnableNetherItem());
     entries.put("enableend", _createEnableEndItem());
 
-    // second row - world safety toggles
+    // second row
     entries.put("creeperblockdamage", _createCreeperBlockDamageItem());
     entries.put("creeperentitydamage", _createCreeperEntityDamageItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
 
-    // third row - player protection & info
+    // third row
     entries.put("afkprotection", _createAFKProtectionItem());
     entries.put("afktime", _createAFKTimeItem());
     entries.put("locatorbar", _createLocatorBarItem());
     entries.put("deathchest", _createDeathChestItem());
     entries.put("itemrestock", _createItemRestockItem());
 
-    // fourth row - feature configuration
+    // fourth row
     entries.put("backpacksettings", _createBackpackSettingsItem());
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
     entries.put("craftingrecipes", _createCraftingRecipesItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
+
+    // fifth row
+    entries.put("recipesync", _createRecipeSyncItem());
+    entries.put("actionbartimer", _createActionBarTimerItem());
+    entries.put("sleepingpercentage", _createSleepingPercentageItem());
+    entries.put("playertag", _createTagsItem());
+    entries.put("headsexplorer", _createHeadsExplorerItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // top row - slots 0 to 8
@@ -114,9 +129,16 @@ public class AdminSettingsGUI {
     customSlots.put("craftingrecipes", 32);
     customSlots.put("veinchoppersettings", 34);
 
+    // fifth row - slots 36 to 44
+    customSlots.put("headsexplorer", 36);
+    customSlots.put("recipesync", 38);
+    customSlots.put("actionbartimer", 40);
+    customSlots.put("sleepingpercentage", 42);
+    customSlots.put("playertag", 44);
+
     CustomGUI gui = new CustomGUI(_plugin, p,
         ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
-        entries, 5, customSlots, parentMenu,
+        entries, 6, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     if (backAction != null) {
@@ -177,6 +199,39 @@ public class AdminSettingsGUI {
       }
     });
 
+    actions.put("sleepingpercentage", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _openSleepingPercentageDialog(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("playertag", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleTags(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("headsexplorer", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleHeadsExplorer(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        _openHeadsExplorerApiKeyDialog(p, parentMenu, backAction);
+      }
+
+      @Override
+      public void onShiftLeftClick(Player p) {
+        _refreshHeadsExplorerData(p, parentMenu, backAction);
+      }
+    });
+
     actions.put("cropprotection", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
@@ -197,6 +252,22 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _toggleLocatorBar(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("actionbartimer", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleActionBarTimer(p);
+        displayGUI(p, parentMenu, backAction);
+      }
+    });
+
+    actions.put("recipesync", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleRecipeSync(p);
         displayGUI(p, parentMenu, backAction);
       }
     });
@@ -396,6 +467,26 @@ public class AdminSettingsGUI {
     return item;
   }
 
+  private ItemStack _createSleepingPercentageItem() {
+    int percentage = _settingsManager.getPlayersSleepingPercentage();
+    ItemStack item = new ItemStack(Material.RED_BED);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Percentage"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the players sleeping percentage gamerule.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Value: " + ChatColor.YELLOW + percentage,
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set percentage")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createCropProtectionItem() {
     boolean state = _settingsManager.getCropProtection();
     ItemStack item = new ItemStack(Material.WHEAT_SEEDS);
@@ -449,6 +540,101 @@ public class AdminSettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Locator Bar"));
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle the locator bar gamerule for all worlds.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createRecipeSyncItem() {
+    boolean state = _settingsManager.getRecipeSyncEnabled();
+    ItemStack item = new ItemStack(Material.BOOK);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Recipe Sync"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sync custom and vanilla recipes to modded clients.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createActionBarTimerItem() {
+    boolean state = _settingsManager.getActionBarTimerEnabled();
+    ItemStack item = new ItemStack(Material.CLOCK);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Timer"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable the timer in the actionbar.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createHeadsExplorerItem() {
+    boolean state = _settingsManager.getHeadsExplorerEnabled();
+    String apiKey = _settingsManager.getHeadsExplorerApiKey();
+    boolean hasApiKey = apiKey != null && !apiKey.trim().isEmpty();
+    ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Heads Explorer"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Browse custom heads from minecraft-heads.com.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Powered by minecraft-heads.com.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enables the /heads command.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API Key: "
+              + (hasApiKey ? ChatColor.GREEN + "SET" : ChatColor.RED + "NOT SET"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API Key is optional; leave empty to use default limits.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "You can add or update it at any time.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set API Key",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Refresh/Reload heads data")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createTagsItem() {
+    boolean state = _settingsManager.getTagsEnabled();
+    ItemStack item = new ItemStack(Material.NAME_TAG);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Player Tag"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable player tags in chat and tab.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
@@ -608,6 +794,7 @@ public class AdminSettingsGUI {
           Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Settings"));
       List<String> lore = new ArrayList<>(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enables the /backpack command.",
           ""));
       lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
           + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
@@ -763,6 +950,43 @@ public class AdminSettingsGUI {
     p.showDialog(dialog);
   }
 
+  private void _openSleepingPercentageDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    int percentage = _settingsManager.getPlayersSleepingPercentage();
+
+    DialogInput inputPercentage = CustomDialog.createNumberInput("percentage",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Players Sleeping Percentage", 0, 100, 1, (float) percentage);
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Players Sleeping Percentage",
+        "Set the percentage of players required to sleep to skip the night.",
+        null,
+        List.of(inputPercentage),
+        (view, audience) -> _setSleepingPercentageDialogCB(view, audience, parentMenu, backAction),
+        null);
+
+    p.showDialog(dialog);
+  }
+
+  private void _openHeadsExplorerApiKeyDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    String apiKey = _settingsManager.getHeadsExplorerApiKey();
+
+    DialogInput inputApiKey = DialogInput
+        .text("apikey", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Heads Explorer API Key"))
+        .initial(apiKey != null ? apiKey : "")
+        .maxLength(Integer.MAX_VALUE)
+        .build();
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Heads Explorer API Key",
+        "Optionally provide an API key for minecraft-heads.com (improves access/limits).",
+        null,
+        List.of(inputApiKey),
+        (view, audience) -> _setHeadsExplorerApiKeyDialogCB(view, audience, parentMenu, backAction),
+        null);
+
+    p.showDialog(dialog);
+  }
+
   // ----------------
   // DIALOG CALLBACKS
   // ----------------
@@ -806,6 +1030,59 @@ public class AdminSettingsGUI {
     p.sendMessage(Component
         .text(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes"));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu, backAction);
+  }
+
+  private void _setSleepingPercentageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
+    Player p = (Player) audience;
+    int percentage = Math.round(view.getFloat("percentage"));
+    percentage = Math.max(0, Math.min(100, percentage));
+
+    _settingsManager.setPlayersSleepingPercentage(percentage);
+    _settingsManager.applyPlayersSleepingPercentageSetting();
+
+    p.sendMessage(
+        Component.text(Main.getPrefix() + "Players sleeping percentage set to: " + ChatColor.YELLOW + percentage));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu, backAction);
+  }
+
+  private void _setHeadsExplorerApiKeyDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
+    Player p = (Player) audience;
+    String apiKey = Optional.ofNullable(view.getText("apikey")).map(String::trim).orElse("");
+
+    _settingsManager.setHeadsExplorerApiKey(apiKey);
+
+    p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer API key updated."));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    _headsManager.fetchHeadsData().thenAccept(success -> {
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        if (!p.isOnline()) {
+          return;
+        }
+
+        if (success) {
+          _plugin.getLogger().info("Heads Explorer data refreshed for API key update by " + p.getName() + ".");
+          p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        } else {
+          _plugin.getLogger()
+              .warning("Heads Explorer data refresh failed for API key update by " + p.getName() + ".");
+          long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
+          String waitSuffix = remainingSeconds > 0
+              ? " Wait another " + remainingSeconds + " seconds."
+              : "";
+          p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
+              + "Heads Explorer refresh failed." + waitSuffix));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+        }
+      });
+    });
 
     displayGUI(p, parentMenu, backAction);
   }
@@ -889,6 +1166,98 @@ public class AdminSettingsGUI {
     _settingsManager.applyLocatorBarSetting();
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Locator bar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleRecipeSync(Player p) {
+    boolean newState = !_settingsManager.getRecipeSyncEnabled();
+    _settingsManager.setRecipeSyncEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Recipe sync is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleActionBarTimer(Player p) {
+    boolean newState = !_settingsManager.getActionBarTimerEnabled();
+    _settingsManager.setActionBarTimerEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleTags(Player p) {
+    boolean newState = !_settingsManager.getTagsEnabled();
+    _settingsManager.setTagsEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Player tags are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+
+    for (Player online : p.getServer().getOnlinePlayers()) {
+      _nameTagManager.updateNameTag(online);
+      _tabListManager.refreshPlayerListEntry(online);
+    }
+  }
+
+  private void _toggleHeadsExplorer(Player p) {
+    boolean newState = !_settingsManager.getHeadsExplorerEnabled();
+    _settingsManager.setHeadsExplorerEnabled(newState);
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Heads explorer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+
+    if (newState) {
+      _headsManager.fetchHeadsData().thenAccept(success -> {
+        _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+          if (!p.isOnline()) {
+            return;
+          }
+
+          if (success) {
+            _plugin.getLogger().info("Heads Explorer data refreshed after enabling by " + p.getName() + ".");
+            p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+            p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+          } else {
+            _plugin.getLogger().warning("Heads Explorer data refresh failed after enabling by " + p.getName() + ".");
+            long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
+            String waitSuffix = remainingSeconds > 0
+                ? " Wait another " + remainingSeconds + " seconds."
+                : "";
+            p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
+                + "Heads Explorer refresh failed." + waitSuffix));
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          }
+        });
+      });
+    }
+  }
+
+  private void _refreshHeadsExplorerData(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    if (!_settingsManager.getHeadsExplorerEnabled()) {
+      p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED + "Heads Explorer is disabled."));
+      p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+      displayGUI(p, parentMenu, backAction);
+      return;
+    }
+
+    _headsManager.fetchHeadsData().thenAccept(success -> {
+      _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+        if (!p.isOnline()) {
+          return;
+        }
+
+        if (success) {
+          _plugin.getLogger().info("Heads Explorer data refreshed via manual refresh by " + p.getName() + ".");
+          p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+          p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        } else {
+          _plugin.getLogger().warning("Heads Explorer data refresh failed via manual refresh by " + p.getName() + ".");
+          long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
+          String waitSuffix = remainingSeconds > 0
+              ? " Wait another " + remainingSeconds + " seconds."
+              : "";
+          p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
+              + "Heads Explorer refresh failed." + waitSuffix));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+        }
+      });
+    });
+
+    displayGUI(p, parentMenu, backAction);
   }
 
   private void _toggleDeathChest(Player p) {

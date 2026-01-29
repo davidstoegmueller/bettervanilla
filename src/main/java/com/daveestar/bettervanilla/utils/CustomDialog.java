@@ -28,14 +28,11 @@ public class CustomDialog {
     DialogBody dialogBody2 = DialogBody
         .plainMessage(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + title));
     DialogBody dialogBody3 = DialogBody.plainMessage(Component.text(ChatColor.GRAY + message));
-    DialogBody dialogBody4 = DialogBody.plainMessage(Component.text(""));
     DialogBody dialogBodyError = DialogBody.plainMessage(Component.text(ChatColor.RED + errorMessage));
-    DialogBody dialogBodyErrorSpacer = DialogBody.plainMessage(Component.text(""));
 
-    List<DialogBody> body = new ArrayList<>(List.of(dialogBody1, dialogBody2, dialogBody3, dialogBody4));
+    List<DialogBody> body = new ArrayList<>(List.of(dialogBody1, dialogBody2, dialogBody3));
     if (hasError) {
       body.add(dialogBodyError);
-      body.add(dialogBodyErrorSpacer);
     }
 
     DialogBase dialogBase = DialogBase.builder(Component.text(""))

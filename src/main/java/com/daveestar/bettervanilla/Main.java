@@ -9,7 +9,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.daveestar.bettervanilla.commands.HelpCommands;
+import com.daveestar.bettervanilla.commands.HereCommand;
 import com.daveestar.bettervanilla.commands.InvseeCommand;
+import com.daveestar.bettervanilla.commands.HeadsCommand;
 import com.daveestar.bettervanilla.commands.DeathPointsCommand;
 import com.daveestar.bettervanilla.commands.PermissionsCommand;
 import com.daveestar.bettervanilla.commands.PingCommand;
@@ -26,7 +28,9 @@ import com.daveestar.bettervanilla.commands.ReplyCommand;
 import com.daveestar.bettervanilla.commands.VanishCommand;
 import com.daveestar.bettervanilla.commands.ModerationCommands;
 import com.daveestar.bettervanilla.commands.SitCommand;
+
 import com.daveestar.bettervanilla.events.ChatMessages;
+import com.daveestar.bettervanilla.events.BedSleepingMessage;
 import com.daveestar.bettervanilla.events.DeathChest;
 import com.daveestar.bettervanilla.events.PlayerMove;
 import com.daveestar.bettervanilla.events.PreventDimension;
@@ -47,19 +51,25 @@ import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
+import com.daveestar.bettervanilla.manager.HeadsManager;
 import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.manager.TagManager;
 import com.daveestar.bettervanilla.manager.SittingManager;
+import com.daveestar.bettervanilla.manager.RecipeSyncManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
+import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
+
+import org.bstats.bukkit.Metrics;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -69,6 +79,7 @@ import net.md_5.bungee.api.ChatColor;
 public class Main extends JavaPlugin {
   private static Main _mainInstance;
   private static final Logger _LOGGER = Logger.getLogger("bettervanilla");
+  private static final int BSTATS_PLUGIN_ID = 29110;
 
   private ActionBar _actionBar;
   private NavigationManager _navigationManager;
@@ -78,6 +89,7 @@ public class Main extends JavaPlugin {
   private PermissionsManager _permissionsManager;
   private DeathPointsManager _deathPointManager;
   private WaypointsManager _waypointsManager;
+  private TagManager _tagManager;
   private TimerManager _timerManager;
   private MaintenanceManager _maintenanceManager;
   private BackpackManager _backpackManager;
@@ -86,10 +98,14 @@ public class Main extends JavaPlugin {
   private ModerationManager _moderationManager;
   private SittingManager _sittingManager;
   private TabListManager _tabListManager;
+  private RecipeSyncManager _recipeSyncManager;
+  private NameTagManager _nameTagManager;
+  private HeadsManager _headsManager;
   private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
     _mainInstance = this;
+    new Metrics(this, BSTATS_PLUGIN_ID);
 
     Config settingsConfig = new Config("settings.yml", getDataFolder());
     Config permissionsConfig = new Config("permissions.yml", getDataFolder());
@@ -105,6 +121,7 @@ public class Main extends JavaPlugin {
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
     _waypointsManager = new WaypointsManager(waypointsConfig);
+    _tagManager = new TagManager(_settingsManager);
     _backpackManager = new BackpackManager(backpackConfig);
     _moderationManager = new ModerationManager(moderationConfig);
 
@@ -118,21 +135,25 @@ public class Main extends JavaPlugin {
     _afkManager = new AFKManager();
     _compassManager = new CompassManager();
     _tabListManager = new TabListManager();
+    _recipeSyncManager = new RecipeSyncManager();
+    _nameTagManager = new NameTagManager();
+    _headsManager = new HeadsManager();
 
     // initialize managers with dependencies
     _afkManager.initManagers();
+    _nameTagManager.initManagers();
     _compassManager.initManagers();
     _maintenanceManager.initManagers();
     _navigationManager.initManagers();
     _timerManager.initManagers();
+    _vanishManager.initManagers();
+    _headsManager.initManagers();
 
     // crafting recipes
     _craftingRecipes = new EnumMap<>(CraftingRecipe.class);
     for (CraftingRecipe recipe : CraftingRecipe.values()) {
       _registerCraftingRecipe(recipe);
     }
-
-    _LOGGER.info("BetterVanilla - ENABLED");
 
     // register commands
     getCommand("help").setExecutor(new HelpCommands.HelpCommand());
@@ -155,6 +176,8 @@ public class Main extends JavaPlugin {
     getCommand("backpack").setExecutor(new BackpackCommand());
     getCommand("message").setExecutor(new MessageCommand());
     getCommand("reply").setExecutor(new ReplyCommand());
+    getCommand("here").setExecutor(new HereCommand());
+    getCommand("heads").setExecutor(new HeadsCommand());
 
     // register events
     PluginManager manager = getServer().getPluginManager();
@@ -166,6 +189,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new SittableStairs(), this);
     manager.registerEvents(new PreventDimension(), this);
     manager.registerEvents(new SleepingRain(), this);
+    manager.registerEvents(new BedSleepingMessage(), this);
     manager.registerEvents(new CropProtection(), this);
     manager.registerEvents(new RightClickCropHarvest(), this);
     manager.registerEvents(new DoubleDoorSync(), this);
@@ -177,6 +201,19 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new ModerationEvents(), this);
 
     _settingsManager.applyLocatorBarSetting();
+    _settingsManager.applyPlayersSleepingPercentageSetting();
+
+    if (_settingsManager.getHeadsExplorerEnabled()) {
+      _headsManager.fetchHeadsData().thenAccept(success -> {
+        if (success) {
+          _LOGGER.info("Heads Explorer data refreshed.");
+        } else {
+          _LOGGER.warning("Heads Explorer data refresh failed.");
+        }
+      });
+    }
+
+    _LOGGER.info("BetterVanilla - ENABLED");
   }
 
   @Override
@@ -188,16 +225,14 @@ public class Main extends JavaPlugin {
     _compassManager.destroy();
     _backpackManager.destroy();
     _tabListManager.destroy();
+    _sittingManager.destroy();
+
     if (_craftingRecipes != null) {
       _craftingRecipes.values().forEach(CustomCraftingRecipe::destroyRecipe);
       _craftingRecipes.clear();
     }
 
     _LOGGER.info("BetterVanilla - DISABLED");
-
-    if (_sittingManager != null) {
-      _sittingManager.destroy();
-    }
   }
 
   private void _registerCraftingRecipe(CraftingRecipe recipe) {
@@ -274,6 +309,10 @@ public class Main extends JavaPlugin {
     return _waypointsManager;
   }
 
+  public TagManager getTagManager() {
+    return _tagManager;
+  }
+
   public TimerManager getTimerManager() {
     return _timerManager;
   }
@@ -304,6 +343,18 @@ public class Main extends JavaPlugin {
 
   public TabListManager getTabListManager() {
     return _tabListManager;
+  }
+
+  public RecipeSyncManager getRecipeSyncManager() {
+    return _recipeSyncManager;
+  }
+
+  public NameTagManager getNameTagManager() {
+    return _nameTagManager;
+  }
+
+  public HeadsManager getHeadsManager() {
+    return _headsManager;
   }
 
   public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {

@@ -13,18 +13,23 @@ public enum Permissions {
   PLAYTIME("bettervanilla.playtime", Category.PLAYER),
   WAYPOINTS("bettervanilla.waypoints", Category.PLAYER),
   WAYPOINTS_ADMIN("bettervanilla.waypoints.admin", Category.MODERATOR),
+  TAG("bettervanilla.tag", Category.PLAYER),
+  TAG_ADMIN("bettervanilla.tag.admin", Category.MODERATOR),
   DEATHPOINTS("bettervanilla.deathpoints", Category.PLAYER),
   PING("bettervanilla.ping", Category.PLAYER),
   SIT("bettervanilla.sit", Category.PLAYER),
   BACKPACK("bettervanilla.backpack", Category.PLAYER),
+  HEADS("bettervanilla.heads", Category.PLAYER),
   MSG("bettervanilla.msg", Category.PLAYER),
   TOGGLELOCATION("bettervanilla.togglelocation", Category.PLAYER),
   TOGGLECOMPASS("bettervanilla.togglecompass", Category.PLAYER),
+  ACTIONBAR_TIMER("bettervanilla.actionbartimer", Category.PLAYER),
   CHESTSORT("bettervanilla.chestsort", Category.PLAYER),
   DOUBLE_DOOR("bettervanilla.doubledoor", Category.PLAYER),
   VEINMINER("bettervanilla.veinminer", Category.PLAYER),
   VEINCHOPPER("bettervanilla.veinchopper", Category.PLAYER),
-  ITEM_RESTOCK("bettervanilla.itemrestock", Category.PLAYER);
+  ITEM_RESTOCK("bettervanilla.itemrestock", Category.PLAYER),
+  HERE("bettervanilla.here", Category.PLAYER);
 
   public enum Category {
     PLAYER,

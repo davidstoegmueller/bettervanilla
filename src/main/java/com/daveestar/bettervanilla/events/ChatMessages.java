@@ -1,5 +1,7 @@
 package com.daveestar.bettervanilla.events;
 
+import java.util.regex.Pattern;
+
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,6 +21,8 @@ import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.MessageManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
+import com.daveestar.bettervanilla.manager.TagManager;
+import com.daveestar.bettervanilla.manager.NameTagManager;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -38,6 +42,8 @@ public class ChatMessages implements Listener {
   private final MessageManager _messageManager;
   private final VanishManager _vanishManager;
   private final TabListManager _tabListManager;
+  private final TagManager _tagManager;
+  private final NameTagManager _nameTagManager;
 
   public ChatMessages() {
     _plugin = Main.getInstance();
@@ -51,6 +57,8 @@ public class ChatMessages implements Listener {
     _messageManager = _plugin.getMessageManager();
     _vanishManager = _plugin.getVanishManager();
     _tabListManager = _plugin.getTabListManager();
+    _tagManager = _plugin.getTagManager();
+    _nameTagManager = _plugin.getNameTagManager();
   }
 
   @EventHandler
@@ -70,15 +78,17 @@ public class ChatMessages implements Listener {
     if (wasVanished) {
       e.joinMessage(null);
     } else {
+      String tagSuffix = _tagManager.getFormattedTag(p);
       e.joinMessage(
           Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW
-              + p.getName()));
+              + p.getName() + tagSuffix));
     }
 
     _afkManager.onPlayerJoined(p);
     _timerManager.onPlayerJoined(p);
     _compassManager.onPlayerJoined(p);
     _tabListManager.refreshPlayer(p);
+    _nameTagManager.updateNameTag(p);
 
     _vanishManager.handlePlayerJoin(p);
   }
@@ -90,8 +100,10 @@ public class ChatMessages implements Listener {
     if (_vanishManager.isVanished(p)) {
       e.quitMessage(null);
     } else {
+      String tagSuffix = _tagManager.getFormattedTag(p);
       e.quitMessage(Component
-          .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()));
+          .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()
+              + tagSuffix));
     }
 
     _permissionsManager.onPlayerLeft(p);
@@ -100,6 +112,7 @@ public class ChatMessages implements Listener {
     _compassManager.onPlayerLeft(p);
     _backpackManager.onPlayerLeft(p);
     _messageManager.onPlayerLeft(p);
+    _nameTagManager.removeNameTag(p);
   }
 
   @EventHandler
@@ -112,6 +125,7 @@ public class ChatMessages implements Listener {
     _compassManager.onPlayerLeft(p);
     _backpackManager.onPlayerLeft(p);
     _messageManager.onPlayerLeft(p);
+    _nameTagManager.removeNameTag(p);
   }
 
   @EventHandler
@@ -128,16 +142,23 @@ public class ChatMessages implements Listener {
         Player chatViewer = (Player) viewer;
         String name = chatViewer.getName();
 
-        if (formatted.toLowerCase().contains("@" + name.toLowerCase())) {
-          formatted = formatted.replaceAll("(?i)@" + java.util.regex.Pattern.quote(name),
+        String lowerName = name.toLowerCase();
+
+        if (formatted.toLowerCase().contains(lowerName) || formatted.toLowerCase().contains("@" + lowerName)) {
+          formatted = formatted.replaceAll("(?i)@?" + Pattern.quote(name),
               ChatColor.YELLOW + "" + ChatColor.BOLD + name + ChatColor.GRAY);
 
           chatViewer.playSound(chatViewer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1);
         }
       }
 
+      String tagSuffix = "";
+      if (source instanceof Player sourcePlayer) {
+        tagSuffix = _tagManager.getFormattedTag(sourcePlayer);
+      }
+
       return Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + source.getName() + ChatColor.GRAY + "]"
-          + ChatColor.YELLOW + " » " + ChatColor.GRAY + formatted);
+          + tagSuffix + ChatColor.YELLOW + " » " + ChatColor.GRAY + formatted);
     });
   }
 }

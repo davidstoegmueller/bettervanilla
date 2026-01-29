@@ -63,6 +63,18 @@ public class DeathChest implements Listener {
 
     boolean deathChestEnabled = _settingsManager.getDeathChestEnabled();
 
+    if (deathChestEnabled) {
+      Location candidate = deathChestLocation.clone();
+      int maxY = candidate.getWorld().getMaxHeight() - 1;
+
+      while (candidate.getBlockY() < maxY
+          && _deathPointsManager.getDeathPointAtLocation(candidate.toBlockLocation()) != null) {
+        candidate.add(0, 1, 0);
+      }
+
+      deathChestLocation = candidate;
+    }
+
     _deathPointsManager.addDeathPoint(p, deathChestLocation, deathChestEnabled);
 
     if (deathChestEnabled) {
@@ -227,12 +239,12 @@ public class DeathChest implements Listener {
     e.blockList().removeIf(block -> _deathPointsManager.isDeathPointBlock(block));
   }
 
-  private boolean _protectDeathChestArmorStand(EntityDamageEvent event) {
-    if (!_isDeathChestArmorStand(event.getEntity())) {
+  private boolean _protectDeathChestArmorStand(EntityDamageEvent e) {
+    if (!_isDeathChestArmorStand(e.getEntity())) {
       return false;
     }
 
-    event.setCancelled(true);
+    e.setCancelled(true);
     return true;
   }
 

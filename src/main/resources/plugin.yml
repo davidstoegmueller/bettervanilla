@@ -1,6 +1,6 @@
 name: bettervanilla
 main: com.daveestar.bettervanilla.Main
-version: 1.10.2
+version: 1.11.0
 api-version: 1.21
 authors: ["daveestar"]
 commands:
@@ -77,3 +77,10 @@ commands:
     aliases: [r]
     description: Reply to the last private message.
     usage: /r
+  here:
+    aliases: [h, coords]
+    description: Send your current location to all other players.
+    usage: /here
+  heads:
+    description: Open the heads explorer GUI.
+    usage: /heads

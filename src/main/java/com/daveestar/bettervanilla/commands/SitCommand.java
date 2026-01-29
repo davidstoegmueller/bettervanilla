@@ -32,11 +32,6 @@ public class SitCommand implements CommandExecutor {
 
     SittingManager sittingManager = Main.getInstance().getSittingManager();
 
-    if (sittingManager == null) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Sitting is currently unavailable.");
-      return true;
-    }
-
     if (sittingManager.isSitting(p)) {
       sittingManager.unsitPlayer(p);
       p.sendMessage(Main.getPrefix() + "You stood up.");

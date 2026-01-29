@@ -73,7 +73,7 @@ public class PlayerMove implements Listener {
       Location playerLocation = p.getLocation().toBlockLocation();
 
       // handle world change and cancel navigation if different worlds
-      if (!targetLocation.getWorld().getName().equals(playerLocation.getWorld().getName())) {
+      if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
         _navigationManager.stopNavigation(p);
         p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
         return;
@@ -83,8 +83,9 @@ public class PlayerMove implements Listener {
       if (playerLocation.distance(targetLocation) <= 25) {
         _navigationManager.stopNavigation(p);
 
-        _actionBar.sendActionBarOnce(p, ChatColor.YELLOW + "" + ChatColor.BOLD + navigationData.getName() +
-            ChatColor.GRAY + " is within 25 blocks!");
+        p.sendMessage(Main.getPrefix() + "You've reached your destination. You're within " + ChatColor.YELLOW + "25"
+            + ChatColor.GRAY + " blocks of " + ChatColor.YELLOW
+            + navigationData.getName() + ChatColor.GRAY + ".");
         return;
       }
 

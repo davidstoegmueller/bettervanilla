@@ -43,10 +43,18 @@ public class NavigationManager {
     // stop any existing navigation for the player
     stopNavigation(p);
 
+    Location playerLocation = p.getLocation().toBlockLocation();
+    Location targetLocation = navigationData.getLocation().toBlockLocation();
+
+    if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
+      p.sendMessage(
+          Main.getPrefix() + ChatColor.RED + "Cannot start navigation because the target is in a different world!");
+      return;
+    }
+
     // store the new navigation data
     _activeNavigations.put(p, navigationData);
 
-    Location targetLocation = navigationData.getLocation().toBlockLocation();
     Color particleColor = navigationData.getColor();
 
     // create and display the particle navigation
@@ -73,6 +81,13 @@ public class NavigationManager {
 
       Location playerLocation = p.getLocation().toBlockLocation();
       Location targetLocation = navigationData.getLocation().toBlockLocation();
+
+      if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
+        this.stopNavigation(p);
+        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
+        return;
+      }
+
       String targetName = navigationData.getName();
 
       // generate the navigation text

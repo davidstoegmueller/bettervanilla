@@ -22,23 +22,23 @@ public class PreventDimension implements Listener {
   }
 
   @EventHandler
-  public void onPlayerPortal(PlayerPortalEvent event) {
+  public void onPlayerPortal(PlayerPortalEvent e) {
     // get the destination location of the portal
-    Location destination = event.getTo();
+    Location destination = e.getTo();
 
     if (destination != null && destination.getWorld() != null) {
       World.Environment destinationEnvironment = destination.getWorld().getEnvironment();
 
       if (destinationEnvironment == World.Environment.THE_END && !_settingsManager.getEnableEnd()) {
         // cancel the portal event
-        event.setCancelled(true);
-        event.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The End' yet!");
+        e.setCancelled(true);
+        e.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The End' yet!");
       }
 
       if (destinationEnvironment == World.Environment.NETHER && !_settingsManager.getEnableNether()) {
         // cancel the portal event
-        event.setCancelled(true);
-        event.getPlayer()
+        e.setCancelled(true);
+        e.getPlayer()
             .sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The Nether' yet!");
       }
     }

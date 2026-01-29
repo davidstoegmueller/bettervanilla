@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -32,7 +32,7 @@ public class SettingsManager {
       Material.NETHER_GOLD_ORE, Material.DEEPSLATE_COAL_ORE,
       Material.DEEPSLATE_IRON_ORE, Material.DEEPSLATE_GOLD_ORE,
       Material.DEEPSLATE_REDSTONE_ORE, Material.DEEPSLATE_LAPIS_ORE,
-      Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE);
+      Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE, Material.GLOWSTONE);
 
   public static final List<Material> VEIN_CHOPPER_TOOLS = Arrays.asList(
       Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE,
@@ -60,6 +60,15 @@ public class SettingsManager {
 
   public void setPlayerToggleLocation(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".togglelocation", value);
+    _config.save();
+  }
+
+  public boolean getPlayerActionBarTimer(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".actionbartimer", true);
+  }
+
+  public void setPlayerActionBarTimer(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".actionbartimer", value);
     _config.save();
   }
 
@@ -126,9 +135,42 @@ public class SettingsManager {
     _config.save();
   }
 
+  public String getPlayerTagName(UUID uuid) {
+    return _fileConfig.getString("players." + uuid + ".tag.name", null);
+  }
+
+  public void setPlayerTagName(UUID uuid, String value) {
+    _fileConfig.set("players." + uuid + ".tag.name", value);
+    _config.save();
+  }
+
+  public String getPlayerTagColor(UUID uuid) {
+    return _fileConfig.getString("players." + uuid + ".tag.color", "AQUA");
+  }
+
+  public void setPlayerTagColor(UUID uuid, String value) {
+    _fileConfig.set("players." + uuid + ".tag.color", value);
+    _config.save();
+  }
+
+  public void clearPlayerTag(UUID uuid) {
+    _fileConfig.set("players." + uuid + ".tag.name", null);
+    _fileConfig.set("players." + uuid + ".tag.color", null);
+    _config.save();
+  }
+
   // GLOBAL SETTINGS
   public boolean getMaintenanceState() {
     return _fileConfig.getBoolean("global.maintenance.enabled", false);
+  }
+
+  public boolean getTagsEnabled() {
+    return _fileConfig.getBoolean("global.tags.enabled", true);
+  }
+
+  public void setTagsEnabled(boolean value) {
+    _fileConfig.set("global.tags.enabled", value);
+    _config.save();
   }
 
   public String getMaintenanceMessage() {
@@ -208,11 +250,72 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getRecipeSyncEnabled() {
+    return _fileConfig.getBoolean("global.recipesync", true);
+  }
+
+  public void setRecipeSyncEnabled(boolean value) {
+    _fileConfig.set("global.recipesync", value);
+    _config.save();
+  }
+
+  public boolean getHeadsExplorerEnabled() {
+    return _fileConfig.getBoolean("global.headsexplorer.enabled", false);
+  }
+
+  public void setHeadsExplorerEnabled(boolean value) {
+    _fileConfig.set("global.headsexplorer.enabled", value);
+    _config.save();
+  }
+
+  public String getHeadsExplorerApiKey() {
+    return _fileConfig.getString("global.headsexplorer.apikey", "");
+  }
+
+  public void setHeadsExplorerApiKey(String value) {
+    _fileConfig.set("global.headsexplorer.apikey", value == null ? "" : value);
+    _config.save();
+  }
+
   public void applyLocatorBarSetting() {
     boolean enabled = getLocatorBarEnabled();
 
     for (World world : Bukkit.getWorlds()) {
-      world.setGameRule(GameRule.LOCATOR_BAR, enabled);
+      world.setGameRule(GameRules.LOCATOR_BAR, enabled);
+    }
+  }
+
+  public int getPlayersSleepingPercentage() {
+    return _fileConfig.getInt("global.playerssleepingpercentage", 100);
+  }
+
+  public void setPlayersSleepingPercentage(int value) {
+    int clamped = Math.max(0, Math.min(100, value));
+    _fileConfig.set("global.playerssleepingpercentage", clamped);
+    _config.save();
+  }
+
+  public void applyPlayersSleepingPercentageSetting() {
+    int percentage = getPlayersSleepingPercentage();
+
+    for (World world : Bukkit.getWorlds()) {
+      world.setGameRule(GameRules.PLAYERS_SLEEPING_PERCENTAGE, percentage);
+    }
+  }
+
+  public boolean getActionBarTimerEnabled() {
+    return _fileConfig.getBoolean("global.actionbartimer", true);
+  }
+
+  public void setActionBarTimerEnabled(boolean value) {
+    _fileConfig.set("global.actionbartimer", value);
+    _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setPlayerActionBarTimer(UUID.fromString(uuid), false);
+      }
     }
   }
 

@@ -186,9 +186,16 @@ public class TimerManager {
   }
 
   private void _displayTimerActionBar() {
+    if (!_settingsManager.getActionBarTimerEnabled()) {
+      return;
+    }
+
     String message = _generateTimerMessage();
 
     _plugin.getServer().getOnlinePlayers().forEach(p -> {
+      if (!_settingsManager.getPlayerActionBarTimer(p.getUniqueId())) {
+        return;
+      }
       if (!_settingsManager.getPlayerToggleLocation(p.getUniqueId()) && !_navigationManager.checkActiveNavigation(p)) {
         _actionBarManager.sendActionBarOnce(p, message);
       }
