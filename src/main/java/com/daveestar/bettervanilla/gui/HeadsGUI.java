@@ -318,10 +318,10 @@ public class HeadsGUI {
         entry -> sortData.get(entry.getKey()).count());
 
     return List.of(
-        new CustomGUI.SortOption("Name (A-Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z-A)", byNameDesc),
-        new CustomGUI.SortOption("Count (High-Low)", byCountDesc),
-        new CustomGUI.SortOption("Count (Low-High)", byCountAsc));
+        new CustomGUI.SortOption("Name (A - Z)", byNameAsc),
+        new CustomGUI.SortOption("Name (Z - A)", byNameDesc),
+        new CustomGUI.SortOption("Count (High - Low)", byCountDesc),
+        new CustomGUI.SortOption("Count (Low - High)", byCountAsc));
   }
 
   private List<CustomGUI.SortOption> _createHeadSortOptions(Map<String, HeadSortData> sortData) {
@@ -331,8 +331,8 @@ public class HeadsGUI {
     Comparator<Map.Entry<String, ItemStack>> byNameDesc = byNameAsc.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Name (A-Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z-A)", byNameDesc));
+        new CustomGUI.SortOption("Name (A - Z)", byNameAsc),
+        new CustomGUI.SortOption("Name (Z - A)", byNameDesc));
   }
 
   // ---------
