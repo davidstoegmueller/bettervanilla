@@ -69,6 +69,7 @@ public class HeadsGUI {
 
   private CustomGUI _createCategoriesGUI(Player p) {
     JsonArray headsData = _headsManager.getCustomHeadsData();
+    int totalHeads = _headsManager.getTotalCustomHeads();
 
     List<HeadCategory> categories = _buildCategories();
     if (categories.isEmpty()) {
@@ -93,7 +94,7 @@ public class HeadsGUI {
     }
 
     CustomGUI categoriesGUI = new CustomGUI(_plugin, p,
-        GUI_TITLE_PREFIX + "Heads Categories",
+        GUI_TITLE_PREFIX + "Categories" + ChatColor.GRAY + " (" + totalHeads + " heads)",
         entries, CATEGORY_GUI_ROWS, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
@@ -140,7 +141,8 @@ public class HeadsGUI {
       sortData.put(entryId, new HeadSortData(head.name()));
     }
 
-    String title = GUI_TITLE_PREFIX + "Heads" + ChatColor.GRAY + " (" + category.name() + ")";
+    String title = GUI_TITLE_PREFIX + "Heads" + ChatColor.GRAY + " (" + category.name() + " " + heads.size()
+        + " heads)";
     CustomGUI headsGUI = new CustomGUI(_plugin, p, title, entries, HEADS_GUI_ROWS, null, parentMenu,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
@@ -225,7 +227,7 @@ public class HeadsGUI {
 
       List<String> lore = new ArrayList<>();
       lore.add("");
-      lore.add(GUI_LORE_PREFIX + "Heads: " + ChatColor.YELLOW + count);
+      lore.add(GUI_LORE_PREFIX + "Total Heads: " + ChatColor.YELLOW + count);
 
       lore.add("");
       lore.add(GUI_LORE_PREFIX + "Left-Click: Open");
@@ -247,16 +249,14 @@ public class HeadsGUI {
       meta.displayName(Component.text(GUI_ITEM_PREFIX + head.name()));
 
       List<String> lore = new ArrayList<>();
-      lore.add("");
-      lore.add(GUI_LORE_PREFIX + "Category: " + ChatColor.YELLOW + category);
-
-      if (includeInstructions) {
+      if (includeInstructions && category != null) {
+        lore.add("");
+        lore.add(GUI_LORE_PREFIX + "Category: " + ChatColor.YELLOW + category.name());
         lore.add("");
         lore.add(GUI_LORE_PREFIX + "Left-Click: Give");
       }
 
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
-
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       item.setItemMeta(meta);
     }
