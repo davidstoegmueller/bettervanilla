@@ -101,6 +101,7 @@ public class SettingsGUI {
     // third row
     entries.put("actionbartimer", _createActionBarTimerItem(viewer, target));
     entries.put("playertag", _createPlayerTagItem(viewer, target));
+    entries.put("navigationautocancel", _createNavigationAutoCancelItem(target));
 
     // fourth row
     if (showAdminSettings) {
@@ -123,6 +124,7 @@ public class SettingsGUI {
     // third row
     customSlots.put("actionbartimer", 21);
     customSlots.put("playertag", 23);
+    customSlots.put("navigationautocancel", 19);
 
     // fourth row
     if (showAdminSettings) {
@@ -237,7 +239,6 @@ public class SettingsGUI {
     clickActions.put("chestsort", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-
         if (!target.hasPermission(Permissions.CHESTSORT.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -253,6 +254,31 @@ public class SettingsGUI {
       public void onLeftClick(Player p) {
         _toggleNavigationTrail(target);
         displayGUI(p, target);
+      }
+    });
+
+    clickActions.put("navigationautocancel", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!target.hasPermission(Permissions.WAYPOINTS.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleNavigationAutoCancel(target);
+        displayGUI(p, target);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.WAYPOINTS.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _openNavigationReachedRadiusDialog(p, gui, target);
       }
     });
 
@@ -473,6 +499,31 @@ public class SettingsGUI {
     return item;
   }
 
+  private ItemStack _createNavigationAutoCancelItem(Player target) {
+    boolean state = _settingsManager.getPlayerNavigationAutoCancel(target.getUniqueId());
+    int radius = _settingsManager.getPlayerNavigationReachedRadius(target.getUniqueId());
+    ItemStack item = new ItemStack(Material.REPEATER);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Navigation Auto Cancel"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Automatically stop navigation when you reach the destination.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Radius: " + ChatColor.YELLOW + radius + ChatColor.GRAY
+              + " blocks",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set radius")
+          .stream().filter(Objects::nonNull).map(Component::text).toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createVeinMinerItem(Player viewer, Player target) {
     boolean state = _settingsManager.getPlayerVeinMiner(target.getUniqueId());
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
@@ -621,6 +672,24 @@ public class SettingsGUI {
     viewer.showDialog(dialog);
   }
 
+  private void _openNavigationReachedRadiusDialog(Player viewer, CustomGUI parentMenu, Player target) {
+    int radius = _settingsManager.getPlayerNavigationReachedRadius(target.getUniqueId());
+
+    DialogInput inputRadius = CustomDialog.createNumberInput("radius",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Reached Radius (blocks)",
+        1, 200, 1, (float) radius);
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Waypoints Auto Cancel Radius",
+        "Set how close you must be for a destination to count as reached.",
+        null,
+        List.of(inputRadius),
+        (view, audience) -> _setNavigationReachedRadiusDialogCB(view, audience, parentMenu, target),
+        null);
+
+    viewer.showDialog(dialog);
+  }
+
   private void _setPlayerTagDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
       Player target) {
     Player viewer = (Player) audience;
@@ -644,6 +713,20 @@ public class SettingsGUI {
 
     target.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag set to: " + ChatColor.GRAY + "[" + color + name
         + ChatColor.GRAY + "]");
+    target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(viewer, target);
+  }
+
+  private void _setNavigationReachedRadiusDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Player target) {
+    Player viewer = (Player) audience;
+    int radius = Math.round(view.getFloat("radius"));
+
+    _settingsManager.setPlayerNavigationReachedRadius(target.getUniqueId(), radius);
+
+    target.sendMessage(Main.getPrefix() + "Navigation reach radius set to " + ChatColor.YELLOW + radius
+        + ChatColor.GRAY + " blocks.");
     target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(viewer, target);
@@ -768,6 +851,14 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Navigation particles are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNavigationAutoCancel(Player p) {
+    boolean newState = !_settingsManager.getPlayerNavigationAutoCancel(p.getUniqueId());
+    _settingsManager.setPlayerNavigationAutoCancel(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Navigation auto cancel is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleVeinMiner(Player p) {

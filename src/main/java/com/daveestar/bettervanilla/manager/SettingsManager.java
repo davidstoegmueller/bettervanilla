@@ -117,6 +117,25 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getPlayerNavigationAutoCancel(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".navigationautocancel", true);
+  }
+
+  public void setPlayerNavigationAutoCancel(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".navigationautocancel", value);
+    _config.save();
+  }
+
+  public int getPlayerNavigationReachedRadius(UUID uuid) {
+    return _fileConfig.getInt("players." + uuid + ".navigationreachedradius", 25);
+  }
+
+  public void setPlayerNavigationReachedRadius(UUID uuid, int value) {
+    int clamped = Math.max(1, Math.min(100, value));
+    _fileConfig.set("players." + uuid + ".navigationreachedradius", clamped);
+    _config.save();
+  }
+
   public boolean getPlayerVeinMiner(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".veinminer", false);
   }

@@ -79,14 +79,18 @@ public class PlayerMove implements Listener {
         return;
       }
 
-      // handle proximity to target location (25-block range)
-      if (playerLocation.distance(targetLocation) <= 25) {
-        _navigationManager.stopNavigation(p);
+      // handle proximity to target location (player-configurable)
+      if (_settingsManager.getPlayerNavigationAutoCancel(p.getUniqueId())) {
+        int radius = _settingsManager.getPlayerNavigationReachedRadius(p.getUniqueId());
 
-        p.sendMessage(Main.getPrefix() + "You've reached your destination. You're within " + ChatColor.YELLOW + "25"
-            + ChatColor.GRAY + " blocks of " + ChatColor.YELLOW
-            + navigationData.getName() + ChatColor.GRAY + ".");
-        return;
+        if (playerLocation.distance(targetLocation) <= radius) {
+          _navigationManager.stopNavigation(p);
+
+          p.sendMessage(Main.getPrefix() + "You've reached your destination. You're within " + ChatColor.YELLOW
+              + radius + ChatColor.GRAY + " blocks of " + ChatColor.YELLOW
+              + navigationData.getName() + ChatColor.GRAY + ".");
+          return;
+        }
       }
 
       // handle dynamic updates for player-based navigation
