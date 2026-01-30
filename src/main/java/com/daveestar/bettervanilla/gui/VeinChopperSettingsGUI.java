@@ -134,6 +134,7 @@ public class VeinChopperSettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -154,6 +155,7 @@ public class VeinChopperSettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the maximum size of veins that can be chopped.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + veinSize,
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -174,6 +176,7 @@ public class VeinChopperSettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);

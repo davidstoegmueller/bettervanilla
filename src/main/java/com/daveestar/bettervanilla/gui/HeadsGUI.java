@@ -236,10 +236,8 @@ public class HeadsGUI {
       List<String> lore = new ArrayList<>();
       lore.add("");
       lore.add(GUI_LORE_PREFIX + "Total Heads: " + ChatColor.YELLOW + count);
-
       lore.add("");
       lore.add(GUI_LORE_PREFIX + "Left-Click: Open");
-
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }

@@ -420,6 +420,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
@@ -446,6 +447,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -464,8 +466,8 @@ public class SettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     String tagDisplay = (tagName == null || tagName.isEmpty())
-        ? ChatColor.RED + "None"
-        : (tagColor != null ? tagColor : ChatColor.AQUA) + tagName;
+        ? ChatColor.RED + "NONE"
+        : (tagColor != null ? ChatColor.GRAY + "[" + tagColor : ChatColor.AQUA) + tagName + ChatColor.GRAY + "]";
 
     if (meta != null) {
       meta.displayName(
@@ -475,7 +477,8 @@ public class SettingsGUI {
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TAG)
               : !globalEnabled ? ChatColor.RED + "Tags are globally disabled on the server." : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag: " + ChatColor.GRAY + "[" + tagDisplay + ChatColor.GRAY + "]",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag: " + tagDisplay,
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set Tag",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Clear Tag")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
@@ -501,6 +504,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
@@ -531,6 +535,7 @@ public class SettingsGUI {
         + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
 
     lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
     for (InventorySortMode option : InventorySortMode.values()) {
       ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
       lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
@@ -571,6 +576,7 @@ public class SettingsGUI {
         + (includeHotbar ? ChatColor.GREEN + "INCLUDE" : ChatColor.RED + "NOT INCLUDE"));
 
     lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
     for (InventorySortMode option : InventorySortMode.values()) {
       ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
       lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
@@ -600,6 +606,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
@@ -624,6 +631,7 @@ public class SettingsGUI {
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Radius: " + ChatColor.YELLOW + radius + ChatColor.GRAY
               + " blocks",
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set radius")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
@@ -653,6 +661,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -680,6 +689,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -706,6 +716,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -730,6 +741,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
