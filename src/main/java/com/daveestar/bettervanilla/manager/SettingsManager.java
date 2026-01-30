@@ -90,6 +90,24 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getPlayerInventorySort(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".inventorysort", false);
+  }
+
+  public void setPlayerInventorySort(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".inventorysort", value);
+    _config.save();
+  }
+
+  public boolean getPlayerInventorySortIncludeHotbar(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".inventorysortincludehotbar", false);
+  }
+
+  public void setPlayerInventorySortIncludeHotbar(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".inventorysortincludehotbar", value);
+    _config.save();
+  }
+
   public boolean getPlayerDoubleDoorSync(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".doubledoor", false);
   }

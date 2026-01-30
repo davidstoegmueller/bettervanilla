@@ -5,17 +5,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.InventorySortUtils;
 
-public class ChestSort implements Listener {
+public class InventorySort implements Listener {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
 
-  public ChestSort() {
+  public InventorySort() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
   }
@@ -30,29 +31,28 @@ public class ChestSort implements Listener {
       return;
     }
 
-    Inventory topInv = e.getView().getTopInventory();
-    if (topInv == null || !_isSortable(topInv)) {
+    if (e.getView() == null || e.getView().getTopInventory() == null) {
+      return;
+    }
+
+    if (e.getView().getTopInventory().getType() != InventoryType.CRAFTING) {
       return;
     }
 
     Player p = (Player) e.getWhoClicked();
-
-    if (!_settingsManager.getPlayerChestSort(p.getUniqueId())) {
+    if (!_settingsManager.getPlayerInventorySort(p.getUniqueId())) {
       return;
     }
 
     e.setCancelled(true);
-    InventorySortUtils.sortInventory(topInv);
-  }
 
-  private boolean _isSortable(Inventory inv) {
-    InventoryType type = inv.getType();
+    boolean includeHotbar = _settingsManager.getPlayerInventorySortIncludeHotbar(p.getUniqueId());
+    int startIndex = includeHotbar ? 0 : 9;
+    int endIndex = 36;
 
-    if (inv.getHolder() == null) {
-      return false;
-    }
-
-    return type == InventoryType.CHEST || type == InventoryType.BARREL
-        || type == InventoryType.SHULKER_BOX || type == InventoryType.ENDER_CHEST;
+    PlayerInventory inv = p.getInventory();
+    ItemStack[] storage = inv.getStorageContents();
+    ItemStack[] sorted = InventorySortUtils.sortStorageContents(storage, startIndex, endIndex);
+    inv.setStorageContents(sorted);
   }
 }

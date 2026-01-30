@@ -90,18 +90,19 @@ public class SettingsGUI {
     entries.put("togglelocation", _createToggleLocationItem(viewer, target));
     entries.put("togglecompass", _createToggleCompassItem(viewer, target));
     entries.put("navigationtrail", _createNavigationTrailItem(target));
-    entries.put("chestsort", _createChestSortItem(viewer, target));
+    entries.put("navigationautocancel", _createNavigationAutoCancelItem(target));
 
     // second row
+    entries.put("itemrestock", _createItemRestockItem(viewer, target));
     entries.put("veinminer", _createVeinMinerItem(viewer, target));
     entries.put("veinchopper", _createVeinChopperItem(viewer, target));
     entries.put("doubledoor", _createDoubleDoorItem(viewer, target));
-    entries.put("itemrestock", _createItemRestockItem(viewer, target));
 
     // third row
+    entries.put("chestsort", _createChestSortItem(viewer, target));
+    entries.put("inventorysort", _createInventorySortItem(viewer, target));
     entries.put("actionbartimer", _createActionBarTimerItem(viewer, target));
     entries.put("playertag", _createPlayerTagItem(viewer, target));
-    entries.put("navigationautocancel", _createNavigationAutoCancelItem(target));
 
     // fourth row
     if (showAdminSettings) {
@@ -113,18 +114,19 @@ public class SettingsGUI {
     customSlots.put("togglelocation", 1);
     customSlots.put("togglecompass", 3);
     customSlots.put("navigationtrail", 5);
-    customSlots.put("chestsort", 7);
+    customSlots.put("navigationautocancel", 7);
 
     // second row
-    customSlots.put("veinminer", 11);
-    customSlots.put("veinchopper", 15);
-    customSlots.put("doubledoor", 13);
     customSlots.put("itemrestock", 9);
+    customSlots.put("veinminer", 11);
+    customSlots.put("veinchopper", 13);
+    customSlots.put("doubledoor", 15);
+    customSlots.put("actionbartimer", 17);
 
     // third row
-    customSlots.put("actionbartimer", 21);
-    customSlots.put("playertag", 23);
-    customSlots.put("navigationautocancel", 19);
+    customSlots.put("chestsort", 19);
+    customSlots.put("inventorysort", 21);
+    customSlots.put("playertag", 25);
 
     // fourth row
     if (showAdminSettings) {
@@ -246,6 +248,32 @@ public class SettingsGUI {
         }
 
         _toggleChestSort(target);
+        displayGUI(p, target);
+      }
+    });
+
+    clickActions.put("inventorysort", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleInventorySort(target);
+        displayGUI(p, target);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleInventorySortIncludeHotbar(target);
         displayGUI(p, target);
       }
     });
@@ -472,6 +500,32 @@ public class SettingsGUI {
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
             + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+        .stream().filter(Objects::nonNull).map(Component::text).toList());
+    item.setItemMeta(meta);
+
+    return item;
+  }
+
+  private ItemStack _createInventorySortItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerInventorySort(target.getUniqueId());
+    boolean includeHotbar = _settingsManager.getPlayerInventorySortIncludeHotbar(target.getUniqueId());
+    ItemStack item = new ItemStack(Material.BARREL);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean hasPermission = target.hasPermission(Permissions.INVENTORYSORT.getName());
+
+    meta.displayName(
+        Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Inventory Sorting"));
+    meta.lore(Arrays.asList(
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of your inventory to sort it!",
+        (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.INVENTORYSORT) : null),
+        "",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+            + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Include Hotbar: "
+            + (includeHotbar ? ChatColor.GREEN + "YES" : ChatColor.RED + "NO"),
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle hotbar")
         .stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
 
@@ -843,6 +897,23 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Chest sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleInventorySort(Player p) {
+    boolean newState = !_settingsManager.getPlayerInventorySort(p.getUniqueId());
+    _settingsManager.setPlayerInventorySort(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Inventory sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleInventorySortIncludeHotbar(Player p) {
+    boolean newState = !_settingsManager.getPlayerInventorySortIncludeHotbar(p.getUniqueId());
+    _settingsManager.setPlayerInventorySortIncludeHotbar(p.getUniqueId(), newState);
+
+    String stateText = newState ? "INCLUDED" : "EXCLUDED";
+    p.sendMessage(
+        Main.getPrefix() + "Inventory sorting hotbar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleNavigationTrail(Player p) {

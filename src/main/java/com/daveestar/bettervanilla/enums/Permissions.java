@@ -25,6 +25,7 @@ public enum Permissions {
   TOGGLECOMPASS("bettervanilla.togglecompass", Category.PLAYER),
   ACTIONBAR_TIMER("bettervanilla.actionbartimer", Category.PLAYER),
   CHESTSORT("bettervanilla.chestsort", Category.PLAYER),
+  INVENTORYSORT("bettervanilla.inventorysort", Category.PLAYER),
   DOUBLE_DOOR("bettervanilla.doubledoor", Category.PLAYER),
   VEINMINER("bettervanilla.veinminer", Category.PLAYER),
   VEINCHOPPER("bettervanilla.veinchopper", Category.PLAYER),
