@@ -275,17 +275,25 @@ public class WaypointsGUI {
   private ItemStack _createSetVisibilityItem(Player p, String waypointId) {
     String worldName = p.getWorld().getName();
     WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointId);
-    ChatColor visibilityColor = visibility == WaypointVisibility.PUBLIC ? ChatColor.GREEN : ChatColor.RED;
+
+    List<Component> lore = new ArrayList<>();
+    lore.add(Component.text(""));
+
+    for (WaypointVisibility option : WaypointVisibility.values()) {
+      boolean isSelected = option == visibility;
+      String name = option.getDisplayName();
+      ChatColor color = isSelected ? ChatColor.GREEN : ChatColor.YELLOW;
+      lore.add(Component.text(GUI_LORE_PREFIX + color + name));
+    }
+
+    lore.add(Component.text(""));
+    lore.add(Component.text(GUI_LORE_PREFIX + "Left-Click: Next visibility"));
+    lore.add(Component.text(GUI_LORE_PREFIX + "Right-Click: Previous visibility"));
 
     return _createItem(
         Material.SPYGLASS,
         Component.text(GUI_ITEM_PREFIX + "Visibility"),
-        _createLore(
-            "",
-            GUI_LORE_PREFIX + "Current: " + visibilityColor + visibility.getDisplayName() + ChatColor.GRAY,
-            "",
-            GUI_LORE_PREFIX + "Left-Click: Next visibility",
-            GUI_LORE_PREFIX + "Right-Click: Previous visibility"),
+        lore,
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
 
