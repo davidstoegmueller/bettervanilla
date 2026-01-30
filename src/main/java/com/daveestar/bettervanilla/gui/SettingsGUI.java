@@ -519,16 +519,28 @@ public class SettingsGUI {
 
     meta.displayName(
         Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
-    meta.lore(Arrays.asList(
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!",
-        (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.CHESTSORT) : null),
-        "",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-            + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Mode: " + ChatColor.YELLOW + mode.getLabel(),
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Change mode")
-        .stream().filter(Objects::nonNull).map(Component::text).toList());
+
+    List<String> lore = new java.util.ArrayList<>();
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!");
+    if (!hasPermission) {
+      lore.add(Main.getShortNoPermissionMessage(Permissions.CHESTSORT));
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+
+    lore.add("");
+    for (InventorySortMode option : InventorySortMode.values()) {
+      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
+      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
+
+    meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
 
     return item;
@@ -545,19 +557,31 @@ public class SettingsGUI {
 
     meta.displayName(
         Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Inventory Sorting"));
-    meta.lore(Arrays.asList(
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of your inventory to sort it!",
-        (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.INVENTORYSORT) : null),
-        "",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-            + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Mode: " + ChatColor.YELLOW + mode.getLabel(),
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Include Hotbar: "
-            + (includeHotbar ? ChatColor.GREEN + "INCLUDE" : ChatColor.RED + "NOT INCLUDE"),
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Change mode",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Toggle hotbar")
-        .stream().filter(Objects::nonNull).map(Component::text).toList());
+
+    List<String> lore = new java.util.ArrayList<>();
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of your inventory to sort it!");
+    if (!hasPermission) {
+      lore.add(Main.getShortNoPermissionMessage(Permissions.INVENTORYSORT));
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Include Hotbar: "
+        + (includeHotbar ? ChatColor.GREEN + "INCLUDE" : ChatColor.RED + "NOT INCLUDE"));
+
+    lore.add("");
+    for (InventorySortMode option : InventorySortMode.values()) {
+      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
+      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Toggle hotbar");
+
+    meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
 
     return item;
