@@ -108,6 +108,10 @@ public class DeathPointsManager {
     return uuids.toArray(new String[0]);
   }
 
+  public boolean hasActiveDeathPoints(Player p) {
+    return getDeathPointUUIDs(p).length > 0;
+  }
+
   public Location getDeathPointLocation(String ownerUUID, String pointUUID) {
     String deathPointPath = ownerUUID + ".deathpoints." + pointUUID;
     return _readLocation(deathPointPath);
