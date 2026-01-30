@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
@@ -250,6 +251,18 @@ public class SettingsGUI {
         _toggleChestSort(target);
         displayGUI(p, target);
       }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.CHESTSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _cycleChestSortMode(target);
+        displayGUI(p, target);
+      }
     });
 
     clickActions.put("inventorysort", new CustomGUI.ClickAction() {
@@ -267,6 +280,18 @@ public class SettingsGUI {
 
       @Override
       public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _cycleInventorySortMode(target);
+        displayGUI(p, target);
+      }
+
+      @Override
+      public void onShiftLeftClick(Player p) {
         if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -486,6 +511,7 @@ public class SettingsGUI {
 
   private ItemStack _createChestSortItem(Player viewer, Player target) {
     boolean state = _settingsManager.getPlayerChestSort(target.getUniqueId());
+    InventorySortMode mode = _settingsManager.getPlayerChestSortMode(target.getUniqueId());
     ItemStack item = new ItemStack(Material.CHEST);
     ItemMeta meta = item.getItemMeta();
 
@@ -499,7 +525,9 @@ public class SettingsGUI {
         "",
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
             + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Mode: " + ChatColor.YELLOW + mode.getLabel(),
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Change mode")
         .stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
 
@@ -509,6 +537,7 @@ public class SettingsGUI {
   private ItemStack _createInventorySortItem(Player viewer, Player target) {
     boolean state = _settingsManager.getPlayerInventorySort(target.getUniqueId());
     boolean includeHotbar = _settingsManager.getPlayerInventorySortIncludeHotbar(target.getUniqueId());
+    InventorySortMode mode = _settingsManager.getPlayerInventorySortMode(target.getUniqueId());
     ItemStack item = new ItemStack(Material.BARREL);
     ItemMeta meta = item.getItemMeta();
 
@@ -522,10 +551,12 @@ public class SettingsGUI {
         "",
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
             + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Mode: " + ChatColor.YELLOW + mode.getLabel(),
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "Include Hotbar: "
-            + (includeHotbar ? ChatColor.GREEN + "YES" : ChatColor.RED + "NO"),
+            + (includeHotbar ? ChatColor.GREEN + "INCLUDE" : ChatColor.RED + "NOT INCLUDE"),
         ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Toggle hotbar")
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Change mode",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Toggle hotbar")
         .stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
 
@@ -899,12 +930,28 @@ public class SettingsGUI {
     p.sendMessage(Main.getPrefix() + "Chest sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
+  private void _cycleChestSortMode(Player p) {
+    InventorySortMode current = _settingsManager.getPlayerChestSortMode(p.getUniqueId());
+    InventorySortMode next = current.next();
+    _settingsManager.setPlayerChestSortMode(p.getUniqueId(), next);
+
+    p.sendMessage(Main.getPrefix() + "Chest sort mode set to " + ChatColor.YELLOW + next.getLabel());
+  }
+
   private void _toggleInventorySort(Player p) {
     boolean newState = !_settingsManager.getPlayerInventorySort(p.getUniqueId());
     _settingsManager.setPlayerInventorySort(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Inventory sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _cycleInventorySortMode(Player p) {
+    InventorySortMode current = _settingsManager.getPlayerInventorySortMode(p.getUniqueId());
+    InventorySortMode next = current.next();
+    _settingsManager.setPlayerInventorySortMode(p.getUniqueId(), next);
+
+    p.sendMessage(Main.getPrefix() + "Inventory sort mode set to " + ChatColor.YELLOW + next.getLabel());
   }
 
   private void _toggleInventorySortIncludeHotbar(Player p) {

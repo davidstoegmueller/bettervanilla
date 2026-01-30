@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.InventorySortUtils;
 
@@ -42,7 +43,8 @@ public class ChestSort implements Listener {
     }
 
     e.setCancelled(true);
-    InventorySortUtils.sortInventory(topInv);
+    InventorySortMode mode = _settingsManager.getPlayerChestSortMode(p.getUniqueId());
+    InventorySortUtils.sortInventory(topInv, mode);
   }
 
   private boolean _isSortable(Inventory inv) {

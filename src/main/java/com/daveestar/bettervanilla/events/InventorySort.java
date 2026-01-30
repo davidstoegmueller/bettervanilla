@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.InventorySortUtils;
 
@@ -52,7 +53,8 @@ public class InventorySort implements Listener {
 
     PlayerInventory inv = p.getInventory();
     ItemStack[] storage = inv.getStorageContents();
-    ItemStack[] sorted = InventorySortUtils.sortStorageContents(storage, startIndex, endIndex);
+    InventorySortMode mode = _settingsManager.getPlayerInventorySortMode(p.getUniqueId());
+    ItemStack[] sorted = InventorySortUtils.sortStorageContents(storage, startIndex, endIndex, mode);
     inv.setStorageContents(sorted);
   }
 }

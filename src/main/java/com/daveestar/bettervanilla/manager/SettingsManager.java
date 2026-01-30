@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class SettingsManager {
@@ -90,12 +91,34 @@ public class SettingsManager {
     _config.save();
   }
 
+  public InventorySortMode getPlayerChestSortMode(UUID uuid) {
+    String mode = _fileConfig.getString("players." + uuid + ".chestsortmode", "ALPHABETICAL_ASC");
+    return InventorySortMode.fromString(mode);
+  }
+
+  public void setPlayerChestSortMode(UUID uuid, InventorySortMode mode) {
+    String value = mode == null ? InventorySortMode.ALPHABETICAL_ASC.name() : mode.name();
+    _fileConfig.set("players." + uuid + ".chestsortmode", value);
+    _config.save();
+  }
+
   public boolean getPlayerInventorySort(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".inventorysort", false);
   }
 
   public void setPlayerInventorySort(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".inventorysort", value);
+    _config.save();
+  }
+
+  public InventorySortMode getPlayerInventorySortMode(UUID uuid) {
+    String mode = _fileConfig.getString("players." + uuid + ".inventorysortmode", "ALPHABETICAL_ASC");
+    return InventorySortMode.fromString(mode);
+  }
+
+  public void setPlayerInventorySortMode(UUID uuid, InventorySortMode mode) {
+    String value = mode == null ? InventorySortMode.ALPHABETICAL_ASC.name() : mode.name();
+    _fileConfig.set("players." + uuid + ".inventorysortmode", value);
     _config.save();
   }
 

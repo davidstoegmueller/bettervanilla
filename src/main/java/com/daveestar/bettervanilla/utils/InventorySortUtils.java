@@ -9,18 +9,16 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.daveestar.bettervanilla.enums.InventorySortMode;
+
 public final class InventorySortUtils {
-  private static final Comparator<ItemStack> ITEM_COMPARATOR = Comparator
+  private static final Comparator<ItemStack> TYPE_META_COMPARATOR = Comparator
       .comparing((ItemStack item) -> item.getType().name())
-      .thenComparing(item -> item.hasItemMeta() ? item.getItemMeta().toString() : "")
-      .thenComparingInt(ItemStack::getAmount);
+      .thenComparing(item -> item.hasItemMeta() ? item.getItemMeta().toString() : "");
 
-  private InventorySortUtils() {
-  }
-
-  public static void sortInventory(Inventory inv) {
+  public static void sortInventory(Inventory inv, InventorySortMode mode) {
     List<ItemStack> items = collectStackedItems(Arrays.asList(inv.getContents()));
-    items.sort(ITEM_COMPARATOR);
+    items.sort(getComparator(mode));
     inv.clear();
 
     int slot = 0;
@@ -34,6 +32,11 @@ public final class InventorySortUtils {
   }
 
   public static ItemStack[] sortStorageContents(ItemStack[] contents, int startIndex, int endIndexExclusive) {
+    return sortStorageContents(contents, startIndex, endIndexExclusive, InventorySortMode.ALPHABETICAL_ASC);
+  }
+
+  public static ItemStack[] sortStorageContents(ItemStack[] contents, int startIndex, int endIndexExclusive,
+      InventorySortMode mode) {
     if (contents == null || contents.length == 0) {
       return contents;
     }
@@ -57,7 +60,7 @@ public final class InventorySortUtils {
     }
 
     List<ItemStack> stacked = collectStackedItems(items);
-    stacked.sort(ITEM_COMPARATOR);
+    stacked.sort(getComparator(mode));
 
     for (int i = start; i < end; i++) {
       result[i] = null;
@@ -73,6 +76,26 @@ public final class InventorySortUtils {
     }
 
     return result;
+  }
+
+  private static Comparator<ItemStack> getComparator(InventorySortMode mode) {
+    InventorySortMode safeMode = mode == null ? InventorySortMode.ALPHABETICAL_ASC : mode;
+
+    switch (safeMode) {
+      case ALPHABETICAL_DESC:
+        return TYPE_META_COMPARATOR
+            .thenComparingInt(ItemStack::getAmount)
+            .reversed();
+      case STACK_DESC:
+        return Comparator.comparingInt(ItemStack::getAmount).reversed()
+            .thenComparing(TYPE_META_COMPARATOR);
+      case STACK_ASC:
+        return Comparator.comparingInt(ItemStack::getAmount)
+            .thenComparing(TYPE_META_COMPARATOR);
+      case ALPHABETICAL_ASC:
+      default:
+        return TYPE_META_COMPARATOR.thenComparingInt(ItemStack::getAmount);
+    }
   }
 
   private static List<ItemStack> collectStackedItems(List<ItemStack> items) {
