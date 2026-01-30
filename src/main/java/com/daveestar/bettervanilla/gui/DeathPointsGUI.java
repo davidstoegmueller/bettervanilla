@@ -281,10 +281,10 @@ public class DeathPointsGUI {
     Comparator<Map.Entry<String, ItemStack>> byFarthest = byNearest.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Newest (New - Old)", byNewest),
-        new CustomGUI.SortOption("Oldest (Old - New", byOldest),
-        new CustomGUI.SortOption("Nearest (Near - Far)", byNearest),
-        new CustomGUI.SortOption("Farthest (Far - Near)", byFarthest));
+        new CustomGUI.SortOption("Date (New → Old)", byNewest),
+        new CustomGUI.SortOption("Date (Old → New", byOldest),
+        new CustomGUI.SortOption("Distance (Near → Far)", byNearest),
+        new CustomGUI.SortOption("Distance (Far → Near)", byFarthest));
   }
 
   private record DeathPointSortData(long timestamp, long distance) {

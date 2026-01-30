@@ -837,10 +837,10 @@ public class WaypointsGUI {
     Comparator<Map.Entry<String, ItemStack>> byDistanceDesc = byDistanceAsc.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Name (A - Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z - A)", byNameDesc),
-        new CustomGUI.SortOption("Distance (Low - High)", byDistanceAsc),
-        new CustomGUI.SortOption("Distance (High - Low)", byDistanceDesc));
+        new CustomGUI.SortOption("Name (A → Z)", byNameAsc),
+        new CustomGUI.SortOption("Name (Z → A)", byNameDesc),
+        new CustomGUI.SortOption("Distance (Low → High)", byDistanceAsc),
+        new CustomGUI.SortOption("Distance (High → Low)", byDistanceDesc));
   }
 
   private record WaypointSortData(String name, long distance) {
