@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id('io.papermc.paperweight.userdev') version "${dependency_papermc_paperweight_user_dev}"
-    id 'com.gradleup.shadow' version '9.3.1'
+    id 'com.gradleup.shadow' version "${dependency_gradle_shadow}"
 }
 
 group = 'com.daveestar'
@@ -17,7 +17,7 @@ repositories {
 dependencies {
     compileOnly "io.papermc.paper:paper-api:${dependency_papermc_api}"
     paperweight.paperDevBundle(dependency_papermc_paperweight)
-    implementation 'org.bstats:bstats-bukkit:3.0.2'
+    implementation "org.bstats:bstats-bukkit:${dependency_bstats}"
 }
 
 java {

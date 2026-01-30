@@ -343,7 +343,7 @@ public class SettingsManager {
     }
 
     return _fileConfig.getString("global.motd",
-        "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
+        "&7                  &e&lBetterVanilla\n&7                         &b&lSMP");
   }
 
   public String[] getServerMOTDRaw() {
@@ -353,7 +353,7 @@ public class SettingsManager {
 
     return new String[] {
         _fileConfig.getString("global.motd",
-            "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---")
+            "[&7                  &e&lBetterVanilla,&7                         &b&lSMP]")
     };
   }
 

@@ -2,6 +2,8 @@
 
 # Changelog
 
+## [1.12.0] - xx.xx.2026
+
 ## [1.11.0] - 29.01.2026
 
 - 🧠 **Heads Explorer** - New `/heads` GUI with categories, search, and admin controls (API key, enable/disable, refresh).

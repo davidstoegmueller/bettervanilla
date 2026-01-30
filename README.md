@@ -7,7 +7,7 @@ A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVan
 [![GitHub release](https://img.shields.io/github/v/release/davidstoegmueller/bettervanilla?style=flat-round)](https://github.com/davidstoegmueller/bettervanilla/releases)
 [![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-round)](LICENSE)
 
-Tested on Paper 1.21.10 and newer.
+Tested on Paper 1.21.11 and newer.
 
 ## Table of Contents
 
