@@ -106,7 +106,6 @@ public class Main extends JavaPlugin {
 
   public void onEnable() {
     _mainInstance = this;
-    new Metrics(this, BSTATS_PLUGIN_ID);
 
     Config settingsConfig = new Config("settings.yml", getDataFolder());
     Config permissionsConfig = new Config("permissions.yml", getDataFolder());
@@ -216,6 +215,9 @@ public class Main extends JavaPlugin {
     }
 
     _LOGGER.info("BetterVanilla - ENABLED");
+
+    // enable bStats metrics
+    new Metrics(this, BSTATS_PLUGIN_ID);
   }
 
   @Override
