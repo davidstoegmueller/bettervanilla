@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class SettingsManager {
@@ -90,6 +91,46 @@ public class SettingsManager {
     _config.save();
   }
 
+  public InventorySortMode getPlayerChestSortMode(UUID uuid) {
+    String mode = _fileConfig.getString("players." + uuid + ".chestsortmode", "ALPHABETICAL_ASC");
+    return InventorySortMode.fromString(mode);
+  }
+
+  public void setPlayerChestSortMode(UUID uuid, InventorySortMode mode) {
+    String value = mode == null ? InventorySortMode.ALPHABETICAL_ASC.name() : mode.name();
+    _fileConfig.set("players." + uuid + ".chestsortmode", value);
+    _config.save();
+  }
+
+  public boolean getPlayerInventorySort(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".inventorysort", false);
+  }
+
+  public void setPlayerInventorySort(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".inventorysort", value);
+    _config.save();
+  }
+
+  public InventorySortMode getPlayerInventorySortMode(UUID uuid) {
+    String mode = _fileConfig.getString("players." + uuid + ".inventorysortmode", "ALPHABETICAL_ASC");
+    return InventorySortMode.fromString(mode);
+  }
+
+  public void setPlayerInventorySortMode(UUID uuid, InventorySortMode mode) {
+    String value = mode == null ? InventorySortMode.ALPHABETICAL_ASC.name() : mode.name();
+    _fileConfig.set("players." + uuid + ".inventorysortmode", value);
+    _config.save();
+  }
+
+  public boolean getPlayerInventorySortIncludeHotbar(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".inventorysortincludehotbar", false);
+  }
+
+  public void setPlayerInventorySortIncludeHotbar(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".inventorysortincludehotbar", value);
+    _config.save();
+  }
+
   public boolean getPlayerDoubleDoorSync(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".doubledoor", false);
   }
@@ -114,6 +155,25 @@ public class SettingsManager {
 
   public void setPlayerNavigationTrail(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".navigationtrail", value);
+    _config.save();
+  }
+
+  public boolean getPlayerNavigationAutoCancel(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".navigationautocancel", true);
+  }
+
+  public void setPlayerNavigationAutoCancel(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".navigationautocancel", value);
+    _config.save();
+  }
+
+  public int getPlayerNavigationReachedRadius(UUID uuid) {
+    return _fileConfig.getInt("players." + uuid + ".navigationreachedradius", 25);
+  }
+
+  public void setPlayerNavigationReachedRadius(UUID uuid, int value) {
+    int clamped = Math.max(1, Math.min(100, value));
+    _fileConfig.set("players." + uuid + ".navigationreachedradius", clamped);
     _config.save();
   }
 
@@ -343,7 +403,7 @@ public class SettingsManager {
     }
 
     return _fileConfig.getString("global.motd",
-        "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---");
+        "&7                  &e&lBetterVanilla\n&7                         &b&lSMP");
   }
 
   public String[] getServerMOTDRaw() {
@@ -353,7 +413,7 @@ public class SettingsManager {
 
     return new String[] {
         _fileConfig.getString("global.motd",
-            "&e&k--- &d&lBetterVanilla &7>>> &b&lSMP &e&k---")
+            "[&7                  &e&lBetterVanilla,&7                         &b&lSMP]")
     };
   }
 

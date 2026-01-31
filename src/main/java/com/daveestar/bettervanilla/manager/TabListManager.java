@@ -109,6 +109,7 @@ public class TabListManager {
     long day = world.getFullTime() / 24000L;
     String timeStr = _formatWorldTime(world);
     String timTextStr = _getTimeOfDayText(world);
+    String moonPhaseText = _getMoonPhaseText(world);
     Environment env = world.getEnvironment();
 
     String weatherStr;
@@ -133,7 +134,8 @@ public class TabListManager {
             + ChatColor.GRAY + "Time: " + ChatColor.YELLOW + timeStr + ChatColor.GRAY + " (" + ChatColor.YELLOW
             + timTextStr
             + ChatColor.GRAY + ")",
-        Main.getShortPrefix() + ChatColor.GRAY + "Weather: " + ChatColor.YELLOW + weatherStr,
+        Main.getShortPrefix() + ChatColor.GRAY + "Weather: " + ChatColor.YELLOW + weatherStr
+            + ChatColor.GRAY + " | " + ChatColor.GRAY + "Moon: " + ChatColor.YELLOW + moonPhaseText,
         "");
 
     return Component.join(
@@ -192,6 +194,34 @@ public class TabListManager {
     } else {
       return "Night";
     }
+  }
+
+  private String _getMoonPhaseText(World world) {
+    if (world == null) {
+      return "Unknown";
+    }
+
+    Environment env = world.getEnvironment();
+    if (env == Environment.NETHER || env == Environment.THE_END) {
+      return "None";
+    }
+
+    long day = world.getFullTime() / 24000L;
+    int phase = (int) (day % 8L);
+
+    String name = switch (phase) {
+      case 0 -> "Full Moon";
+      case 1 -> "Waning Gibbous";
+      case 2 -> "Last Quarter";
+      case 3 -> "Waning Crescent";
+      case 4 -> "New Moon";
+      case 5 -> "Waxing Crescent";
+      case 6 -> "First Quarter";
+      case 7 -> "Waxing Gibbous";
+      default -> "Unknown";
+    };
+
+    return name + " #" + phase + "/8";
   }
 
   private String _formatWorldTime(World world) {

@@ -135,6 +135,7 @@ public class VeinMinerSettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -155,6 +156,7 @@ public class VeinMinerSettingsGUI {
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the maximum size of veins that can be mined.",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + veinSize,
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -175,6 +177,7 @@ public class VeinMinerSettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -193,8 +196,8 @@ public class VeinMinerSettingsGUI {
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open menu to manage allowed tools.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open").stream().filter(Objects::nonNull)
-          .map(Component::text).collect(Collectors.toList()));
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -211,8 +214,8 @@ public class VeinMinerSettingsGUI {
       meta.lore(Arrays.asList(
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open menu to manage allowed blocks.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open").stream().filter(Objects::nonNull)
-          .map(Component::text).collect(Collectors.toList()));
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
 
@@ -245,7 +248,8 @@ public class VeinMinerSettingsGUI {
   // DIALOG CALLBACKS
   // ----------------
 
-  private void _setVeinMinerMaxSizeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu, Consumer<Player> backAction) {
+  private void _setVeinMinerMaxSizeDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
     Player p = (Player) audience;
     int veinSize = Math.round(view.getFloat("size"));
 

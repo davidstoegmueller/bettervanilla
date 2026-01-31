@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
@@ -90,15 +91,17 @@ public class SettingsGUI {
     entries.put("togglelocation", _createToggleLocationItem(viewer, target));
     entries.put("togglecompass", _createToggleCompassItem(viewer, target));
     entries.put("navigationtrail", _createNavigationTrailItem(target));
-    entries.put("chestsort", _createChestSortItem(viewer, target));
+    entries.put("navigationautocancel", _createNavigationAutoCancelItem(target));
 
     // second row
+    entries.put("itemrestock", _createItemRestockItem(viewer, target));
     entries.put("veinminer", _createVeinMinerItem(viewer, target));
     entries.put("veinchopper", _createVeinChopperItem(viewer, target));
     entries.put("doubledoor", _createDoubleDoorItem(viewer, target));
-    entries.put("itemrestock", _createItemRestockItem(viewer, target));
 
     // third row
+    entries.put("chestsort", _createChestSortItem(viewer, target));
+    entries.put("inventorysort", _createInventorySortItem(viewer, target));
     entries.put("actionbartimer", _createActionBarTimerItem(viewer, target));
     entries.put("playertag", _createPlayerTagItem(viewer, target));
 
@@ -112,17 +115,19 @@ public class SettingsGUI {
     customSlots.put("togglelocation", 1);
     customSlots.put("togglecompass", 3);
     customSlots.put("navigationtrail", 5);
-    customSlots.put("chestsort", 7);
+    customSlots.put("navigationautocancel", 7);
 
     // second row
-    customSlots.put("veinminer", 11);
-    customSlots.put("veinchopper", 15);
-    customSlots.put("doubledoor", 13);
     customSlots.put("itemrestock", 9);
+    customSlots.put("veinminer", 11);
+    customSlots.put("veinchopper", 13);
+    customSlots.put("doubledoor", 15);
+    customSlots.put("actionbartimer", 17);
 
     // third row
-    customSlots.put("actionbartimer", 21);
-    customSlots.put("playertag", 23);
+    customSlots.put("chestsort", 19);
+    customSlots.put("inventorysort", 21);
+    customSlots.put("playertag", 25);
 
     // fourth row
     if (showAdminSettings) {
@@ -237,7 +242,6 @@ public class SettingsGUI {
     clickActions.put("chestsort", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-
         if (!target.hasPermission(Permissions.CHESTSORT.getName())) {
           p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
@@ -247,12 +251,87 @@ public class SettingsGUI {
         _toggleChestSort(target);
         displayGUI(p, target);
       }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.CHESTSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _cycleChestSortMode(target);
+        displayGUI(p, target);
+      }
+    });
+
+    clickActions.put("inventorysort", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleInventorySort(target);
+        displayGUI(p, target);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _cycleInventorySortMode(target);
+        displayGUI(p, target);
+      }
+
+      @Override
+      public void onShiftLeftClick(Player p) {
+        if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleInventorySortIncludeHotbar(target);
+        displayGUI(p, target);
+      }
     });
     clickActions.put("navigationtrail", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         _toggleNavigationTrail(target);
         displayGUI(p, target);
+      }
+    });
+
+    clickActions.put("navigationautocancel", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!target.hasPermission(Permissions.WAYPOINTS.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleNavigationAutoCancel(target);
+        displayGUI(p, target);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.WAYPOINTS.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _openNavigationReachedRadiusDialog(p, gui, target);
       }
     });
 
@@ -341,6 +420,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
@@ -367,6 +447,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -385,8 +466,8 @@ public class SettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     String tagDisplay = (tagName == null || tagName.isEmpty())
-        ? ChatColor.RED + "None"
-        : (tagColor != null ? tagColor : ChatColor.AQUA) + tagName;
+        ? ChatColor.RED + "NONE"
+        : (tagColor != null ? ChatColor.GRAY + "[" + tagColor : ChatColor.AQUA) + tagName + ChatColor.GRAY + "]";
 
     if (meta != null) {
       meta.displayName(
@@ -396,7 +477,8 @@ public class SettingsGUI {
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TAG)
               : !globalEnabled ? ChatColor.RED + "Tags are globally disabled on the server." : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag: " + ChatColor.GRAY + "[" + tagDisplay + ChatColor.GRAY + "]",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag: " + tagDisplay,
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set Tag",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Clear Tag")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
@@ -422,6 +504,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
@@ -432,6 +515,7 @@ public class SettingsGUI {
 
   private ItemStack _createChestSortItem(Player viewer, Player target) {
     boolean state = _settingsManager.getPlayerChestSort(target.getUniqueId());
+    InventorySortMode mode = _settingsManager.getPlayerChestSortMode(target.getUniqueId());
     ItemStack item = new ItemStack(Material.CHEST);
     ItemMeta meta = item.getItemMeta();
 
@@ -439,14 +523,71 @@ public class SettingsGUI {
 
     meta.displayName(
         Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
-    meta.lore(Arrays.asList(
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!",
-        (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.CHESTSORT) : null),
-        "",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-            + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
-        .stream().filter(Objects::nonNull).map(Component::text).toList());
+
+    List<String> lore = new java.util.ArrayList<>();
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!");
+    if (!hasPermission) {
+      lore.add(Main.getShortNoPermissionMessage(Permissions.CHESTSORT));
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
+    for (InventorySortMode option : InventorySortMode.values()) {
+      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
+      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
+
+    meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
+    item.setItemMeta(meta);
+
+    return item;
+  }
+
+  private ItemStack _createInventorySortItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerInventorySort(target.getUniqueId());
+    boolean includeHotbar = _settingsManager.getPlayerInventorySortIncludeHotbar(target.getUniqueId());
+    InventorySortMode mode = _settingsManager.getPlayerInventorySortMode(target.getUniqueId());
+    ItemStack item = new ItemStack(Material.BARREL);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean hasPermission = target.hasPermission(Permissions.INVENTORYSORT.getName());
+
+    meta.displayName(
+        Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Inventory Sorting"));
+
+    List<String> lore = new java.util.ArrayList<>();
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of your inventory to sort it!");
+    if (!hasPermission) {
+      lore.add(Main.getShortNoPermissionMessage(Permissions.INVENTORYSORT));
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Include Hotbar: "
+        + (includeHotbar ? ChatColor.GREEN + "INCLUDE" : ChatColor.RED + "NOT INCLUDE"));
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
+    for (InventorySortMode option : InventorySortMode.values()) {
+      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
+      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Toggle hotbar");
+
+    meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
 
     return item;
@@ -465,7 +606,34 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          .stream().filter(Objects::nonNull).map(Component::text).toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createNavigationAutoCancelItem(Player target) {
+    boolean state = _settingsManager.getPlayerNavigationAutoCancel(target.getUniqueId());
+    int radius = _settingsManager.getPlayerNavigationReachedRadius(target.getUniqueId());
+    ItemStack item = new ItemStack(Material.REPEATER);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Navigation Auto Cancel"));
+      meta.lore(Arrays.asList(
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Automatically stop navigation when you reach the destination.",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Radius: " + ChatColor.YELLOW + radius + ChatColor.GRAY
+              + " blocks",
+          "",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
+          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set radius")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -493,6 +661,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -520,6 +689,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -546,6 +716,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -570,6 +741,7 @@ public class SettingsGUI {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -621,6 +793,24 @@ public class SettingsGUI {
     viewer.showDialog(dialog);
   }
 
+  private void _openNavigationReachedRadiusDialog(Player viewer, CustomGUI parentMenu, Player target) {
+    int radius = _settingsManager.getPlayerNavigationReachedRadius(target.getUniqueId());
+
+    DialogInput inputRadius = CustomDialog.createNumberInput("radius",
+        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Reached Radius (blocks)",
+        1, 200, 1, (float) radius);
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        "Waypoints Auto Cancel Radius",
+        "Set how close you must be for a destination to count as reached.",
+        null,
+        List.of(inputRadius),
+        (view, audience) -> _setNavigationReachedRadiusDialogCB(view, audience, parentMenu, target),
+        null);
+
+    viewer.showDialog(dialog);
+  }
+
   private void _setPlayerTagDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
       Player target) {
     Player viewer = (Player) audience;
@@ -644,6 +834,20 @@ public class SettingsGUI {
 
     target.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag set to: " + ChatColor.GRAY + "[" + color + name
         + ChatColor.GRAY + "]");
+    target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(viewer, target);
+  }
+
+  private void _setNavigationReachedRadiusDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Player target) {
+    Player viewer = (Player) audience;
+    int radius = Math.round(view.getFloat("radius"));
+
+    _settingsManager.setPlayerNavigationReachedRadius(target.getUniqueId(), radius);
+
+    target.sendMessage(Main.getPrefix() + "Navigation reach radius set to " + ChatColor.YELLOW + radius
+        + ChatColor.GRAY + " blocks.");
     target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(viewer, target);
@@ -762,12 +966,53 @@ public class SettingsGUI {
     p.sendMessage(Main.getPrefix() + "Chest sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
+  private void _cycleChestSortMode(Player p) {
+    InventorySortMode current = _settingsManager.getPlayerChestSortMode(p.getUniqueId());
+    InventorySortMode next = current.next();
+    _settingsManager.setPlayerChestSortMode(p.getUniqueId(), next);
+
+    p.sendMessage(Main.getPrefix() + "Chest sort mode set to " + ChatColor.YELLOW + next.getLabel());
+  }
+
+  private void _toggleInventorySort(Player p) {
+    boolean newState = !_settingsManager.getPlayerInventorySort(p.getUniqueId());
+    _settingsManager.setPlayerInventorySort(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Inventory sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _cycleInventorySortMode(Player p) {
+    InventorySortMode current = _settingsManager.getPlayerInventorySortMode(p.getUniqueId());
+    InventorySortMode next = current.next();
+    _settingsManager.setPlayerInventorySortMode(p.getUniqueId(), next);
+
+    p.sendMessage(Main.getPrefix() + "Inventory sort mode set to " + ChatColor.YELLOW + next.getLabel());
+  }
+
+  private void _toggleInventorySortIncludeHotbar(Player p) {
+    boolean newState = !_settingsManager.getPlayerInventorySortIncludeHotbar(p.getUniqueId());
+    _settingsManager.setPlayerInventorySortIncludeHotbar(p.getUniqueId(), newState);
+
+    String stateText = newState ? "INCLUDED" : "EXCLUDED";
+    p.sendMessage(
+        Main.getPrefix() + "Inventory sorting hotbar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
   private void _toggleNavigationTrail(Player p) {
     boolean newState = !_settingsManager.getPlayerNavigationTrail(p.getUniqueId());
     _settingsManager.setPlayerNavigationTrail(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix() + "Navigation particles are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _toggleNavigationAutoCancel(Player p) {
+    boolean newState = !_settingsManager.getPlayerNavigationAutoCancel(p.getUniqueId());
+    _settingsManager.setPlayerNavigationAutoCancel(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Navigation auto cancel is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
   }
 
   private void _toggleVeinMiner(Player p) {

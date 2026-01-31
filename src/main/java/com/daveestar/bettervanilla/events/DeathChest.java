@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.DeathPointsManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager.DeathPointReference;
+import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 
 import net.kyori.adventure.text.Component;
@@ -41,16 +42,20 @@ public class DeathChest implements Listener {
   private final Main _plugin;
   private final DeathPointsManager _deathPointsManager;
   private final SettingsManager _settingsManager;
+  private final BackpackManager _backpackManager;
 
   public DeathChest() {
     _plugin = Main.getInstance();
     _deathPointsManager = _plugin.getDeathPointsManager();
     _settingsManager = _plugin.getSettingsManager();
+    _backpackManager = _plugin.getBackpackManager();
   }
 
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent e) {
     Player p = (Player) e.getEntity();
+
+    _backpackManager.closeBackpackOnDeath(p);
 
     Location blockLoc = p.getLocation().toBlockLocation();
     Boolean isEnd = blockLoc.getWorld().getEnvironment() == Environment.THE_END;

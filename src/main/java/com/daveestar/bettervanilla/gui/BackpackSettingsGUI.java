@@ -117,6 +117,7 @@ public class BackpackSettingsGUI implements Listener {
               + "Changing this can cause items in backpacks to be lost!",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + pages + ChatColor.GRAY + " pages",
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Page",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Page")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
@@ -138,6 +139,7 @@ public class BackpackSettingsGUI implements Listener {
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
               + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -159,6 +161,7 @@ public class BackpackSettingsGUI implements Listener {
               + "Changing this can cause items in backpacks to be lost!",
           "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + rows + ChatColor.GRAY + " rows",
+          "",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Row",
           ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Row")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));

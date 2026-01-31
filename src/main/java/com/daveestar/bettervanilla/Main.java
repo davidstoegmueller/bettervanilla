@@ -43,6 +43,7 @@ import com.daveestar.bettervanilla.events.DoubleDoorSync;
 import com.daveestar.bettervanilla.events.ChestSort;
 import com.daveestar.bettervanilla.events.CropProtection;
 import com.daveestar.bettervanilla.events.ItemRestock;
+import com.daveestar.bettervanilla.events.InventorySort;
 import com.daveestar.bettervanilla.events.SignColors;
 import com.daveestar.bettervanilla.events.VanishEvents;
 import com.daveestar.bettervanilla.events.ModerationEvents;
@@ -105,7 +106,6 @@ public class Main extends JavaPlugin {
 
   public void onEnable() {
     _mainInstance = this;
-    new Metrics(this, BSTATS_PLUGIN_ID);
 
     Config settingsConfig = new Config("settings.yml", getDataFolder());
     Config permissionsConfig = new Config("permissions.yml", getDataFolder());
@@ -194,6 +194,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new RightClickCropHarvest(), this);
     manager.registerEvents(new DoubleDoorSync(), this);
     manager.registerEvents(new ChestSort(), this);
+    manager.registerEvents(new InventorySort(), this);
     manager.registerEvents(new ItemRestock(), this);
     manager.registerEvents(new VeinMiningChopping(), this);
     manager.registerEvents(new SignColors(), this);
@@ -214,6 +215,9 @@ public class Main extends JavaPlugin {
     }
 
     _LOGGER.info("BetterVanilla - ENABLED");
+
+    // enable bStats metrics
+    new Metrics(this, BSTATS_PLUGIN_ID);
   }
 
   @Override

@@ -33,12 +33,12 @@ public class ParticleNavigation {
     _plugin = Main.getInstance();
 
     _player = p;
-    _location = location;
+    _location = location.toCenterLocation();
     _color = color;
   }
 
   public void update(Location newLocation, boolean showBeam, boolean showTrail) {
-    _location = newLocation;
+    _location = newLocation.toCenterLocation();
     _showBeam = showBeam;
     _showTrail = showTrail;
   }

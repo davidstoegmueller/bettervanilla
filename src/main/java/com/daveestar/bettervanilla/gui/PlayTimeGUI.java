@@ -182,14 +182,14 @@ public class PlayTimeGUI {
     Comparator<Map.Entry<String, ItemStack>> byNameDesc = byNameAsc.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Total (High - Low)", byTotalDesc),
-        new CustomGUI.SortOption("Total (Low - High)", byTotalAsc),
-        new CustomGUI.SortOption("Playtime (High - Low)", byPlayDesc),
-        new CustomGUI.SortOption("Playtime (Low - High)", byPlayAsc),
-        new CustomGUI.SortOption("AFK-Time (High - Low)", byAfkDesc),
-        new CustomGUI.SortOption("AFK-Time (Low - High)", byAfkAsc),
-        new CustomGUI.SortOption("Name (A - Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z - A)", byNameDesc));
+        new CustomGUI.SortOption("Total (High → Low)", byTotalDesc),
+        new CustomGUI.SortOption("Total (Low → High)", byTotalAsc),
+        new CustomGUI.SortOption("Playtime (High → Low)", byPlayDesc),
+        new CustomGUI.SortOption("Playtime (Low → High)", byPlayAsc),
+        new CustomGUI.SortOption("AFK-Time (High → Low)", byAfkDesc),
+        new CustomGUI.SortOption("AFK-Time (Low → High)", byAfkAsc),
+        new CustomGUI.SortOption("Name (A → Z)", byNameAsc),
+        new CustomGUI.SortOption("Name (Z → A)", byNameDesc));
   }
 
   private record PlaytimeSortData(String name, long playTime, long afkTime, long totalTime) {

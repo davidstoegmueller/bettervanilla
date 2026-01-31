@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [1.12.0] - 31.01.2026
+
+- 🧭 **Waypoint Visibility Cycle** - Added an in-GUI visibility cycle for public/private waypoint filtering.
+- 🧭 **Navigation QoL** - Player settings for auto-cancel and reach-radius navigation behavior.
+- 🧺 **Inventory Sort Modes** - New per-player inventory sort mode setting with multiple sorting styles.
+- 🎨 **GUI Styling Polish** - Streamlined option cycle and CustomGUI item styling.
+- 🌙 **Tab List Moon Phase** - Tab list now shows the current moon phase.
+- 🆘 **Help Command Redesign** - Refreshed `/help` and `/adminhelp` layouts and UX.
+- 🎒 **Backpack on Death** - Improved handling when backpacks are used during death events.
+- ✨ **Particle Navigation Accuracy** - Particle navigation now uses a centered location for better visuals.
+- 📣 **Default MOTD Update** - Updated the default server MOTD for 1.12.0.
+
 ## [1.11.0] - 29.01.2026
 
 - 🧠 **Heads Explorer** - New `/heads` GUI with categories, search, and admin controls (API key, enable/disable, refresh).

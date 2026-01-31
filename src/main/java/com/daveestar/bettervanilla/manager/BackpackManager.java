@@ -27,6 +27,7 @@ import net.md_5.bungee.api.ChatColor;
 public class BackpackManager implements Listener {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
+  private final DeathPointsManager _deathPointsManager;
   private final Config _config;
   private final FileConfiguration _fileConfig;
 
@@ -36,6 +37,7 @@ public class BackpackManager implements Listener {
   public BackpackManager(Config config) {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
+    _deathPointsManager = _plugin.getDeathPointsManager();
 
     _config = config;
     _fileConfig = config.getFileConfig();
@@ -46,6 +48,13 @@ public class BackpackManager implements Listener {
   public void openBackpack(Player p) {
     if (!_settingsManager.getBackpackEnabled()) {
       p.sendMessage(Main.getPrefix() + ChatColor.RED + "Backpacks are disabled.");
+      return;
+    }
+
+    if (_deathPointsManager.hasActiveDeathPoints(p)) {
+      p.sendMessage(Main.getPrefix() + ChatColor.RED
+          + "You have active death points. Claim them before using your backpack again. "
+          + ChatColor.YELLOW + "/deathpoints");
       return;
     }
 
@@ -80,6 +89,17 @@ public class BackpackManager implements Listener {
 
     gui.open(p);
     _openGUIs.put(p.getUniqueId(), gui);
+  }
+
+  public void closeBackpackOnDeath(Player p) {
+    UUID playerId = p.getUniqueId();
+    CustomGUI gui = _openGUIs.remove(playerId);
+    Map<Integer, ItemStack[]> backpack = _backpacks.remove(playerId);
+
+    if (gui != null && backpack != null) {
+      _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
+      p.closeInventory();
+    }
   }
 
   public void setEnabled(boolean value) {
