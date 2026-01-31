@@ -28,12 +28,12 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ### Player-Focused Features
 
-- 🧭 **Waypoints** - Add, share, and filter public or private waypoints with GUI navigation and optional particle trails.
+- 🧭 **Waypoints** - Add, share, and filter public or private waypoints with visibility cycling, GUI navigation, optional particle trails, plus auto-cancel and reach-radius controls.
 - 🎒 **Backpacks** - Carry expandable storage with configurable rows and pages.
 - ⛏️ **Vein Miner & Tree Chopper** - Sneak-break to harvest entire ore veins or tree trunks instantly.
 - 💀 **Death Points & Chests** - Track every death, teleport back, and safely reclaim your belongings.
 - 🧠 **Heads Explorer** - Browse decorative heads by category, search instantly, and preview icons in the GUI.
-- ✨ **Chest Sorting** - Right-click outside inventories to auto-organize loot.
+- ✨ **Chest Sorting** - Right-click outside inventories to auto-organize loot with selectable sort modes.
 - 🔁 **Item Restock Automation** - Automatically refill empty hotbar slots with matching items using global and per-player toggles.
 - 🏷️ **Player Tags** - Set a custom name tag from the settings menu, including color selection.
 - 🧰 **Settings Menu** - Toggle personal QoL options in an in-game UI.
@@ -45,7 +45,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🕒 **Playtime** - View detailed play history with AFK tracking for yourself or other players.
 - 📶 **Ping** - Check personal or remote player latency.
 - 📍 **Here/Coords Broadcast** - Share your current location with `/here` (alias `/coords`).
-- 📊 **Dynamic Tab List** - Live header/footer shows day/time, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
+- 📊 **Dynamic Tab List** - Live header/footer shows day/time, moon phase, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
 - 📍 **Action-Bar Location** - Display live XYZ coordinates in your HUD.
 - 🧭 **Bossbar Compass** - Minimal directional overlay in the boss bar.
 - 🪑 **Sittable Stairs** - Sit on stairs with an empty hand.
@@ -159,7 +159,11 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 - 🏷️ Player tag (name tag color + text)
 - ⏲️ Action-bar timer overlay toggle
 - ✨ Navigation particles
+- 🧭 Navigation auto-cancel
+- 📏 Navigation reach radius
 - 🧹 Chest sorting toggle
+- 🧺 Inventory sort mode
+- 👁️ Waypoint visibility filter
 - 🔁 Item restock automation toggle
 - 🚪 Double Door Sync
 - ⛏️ Vein miner toggle with per-player limits
