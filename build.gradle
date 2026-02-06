@@ -4,9 +4,6 @@ plugins {
     id 'com.gradleup.shadow' version "${dependency_gradle_shadow}"
 }
 
-group = 'com.daveestar'
-version = plugin_version
-
 repositories {
     mavenCentral()
     maven {
@@ -22,7 +19,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -30,17 +27,17 @@ jar {
     archiveClassifier.set('plain')
     manifest {
         attributes(
-            'Main-Class': 'com.daveestar.bettervanilla.Main'
+            'Main-Class': "${plugin_path}.Main"
         )
     }
 }
 
 shadowJar {
     archiveClassifier.set('')
-    relocate 'org.bstats', 'com.daveestar.bettervanilla.libs.bstats'
+    relocate 'org.bstats', "${plugin_path}.libs.bstats"
     manifest {
         attributes(
-            'Main-Class': 'com.daveestar.bettervanilla.Main'
+            'Main-Class': "${plugin_path}.Main"
         )
     }
 }
