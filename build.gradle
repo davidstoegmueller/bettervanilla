@@ -1,59 +1,61 @@
 plugins {
-    id 'java'
-    id('io.papermc.paperweight.userdev') version "${dependency_papermc_paperweight_user_dev}"
-    id 'com.gradleup.shadow' version "${dependency_gradle_shadow}"
+  id 'java'
+  id 'io.papermc.paperweight.userdev' version "${dependency_papermc_paperweight_user_dev}"
+  id 'com.gradleup.shadow' version "${dependency_gradle_shadow}"
 }
 
 repositories {
-    mavenCentral()
-    maven {
-        url = 'https://repo.papermc.io/repository/maven-public/'
-    }
+  mavenCentral()
+  maven { url = 'https://repo.papermc.io/repository/maven-public/' }
 }
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:${dependency_papermc_api}"
-    paperweight.paperDevBundle(dependency_papermc_paperweight)
-    implementation "org.bstats:bstats-bukkit:${dependency_bstats}"
+  compileOnly "io.papermc.paper:paper-api:${dependency_papermc_api}"
+  paperweight.paperDevBundle(dependency_papermc_paperweight)
+  implementation "org.bstats:bstats-bukkit:${dependency_bstats}"
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(25)
+  }
 }
 
-jar {
-    archiveClassifier.set('plain')
-    manifest {
-        attributes(
-            'Main-Class': "${plugin_path}.Main"
-        )
-    }
+paperweight {
+  reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 }
 
-shadowJar {
-    archiveClassifier.set('')
-    relocate 'org.bstats', "${plugin_path}.libs.bstats"
-    manifest {
-        attributes(
-            'Main-Class': "${plugin_path}.Main"
-        )
-    }
+tasks.withType(Jar).configureEach {
+  archiveVersion.set(plugin_version)
+
+  manifest {
+    attributes(
+      'Main-Class': "${plugin_path}.Main"
+    )
+  }
 }
 
-paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
+tasks.named('jar', Jar) {
+  archiveClassifier.set('plain')
+}
+
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+  archiveClassifier.set('')
+  relocate 'org.bstats', "${plugin_path}.libs.bstats"
+}
 
 tasks.register('deploy', Copy) {
-    dependsOn tasks.named('shadowJar')
-    onlyIf { local_server_plugin_dir != null }
-    from tasks.named('shadowJar').map { it.archiveFile }
-    into local_server_plugin_dir
-    doFirst {
-        println "Copying plugin jar to ${local_server_plugin_dir}"
-    }
+  dependsOn tasks.named('shadowJar')
+  onlyIf { local_server_plugin_dir != null }
+
+  from(tasks.named('shadowJar').flatMap { it.archiveFile })
+  into(local_server_plugin_dir)
+
+  doFirst {
+    println "Copying plugin jar to ${local_server_plugin_dir}"
+  }
 }
 
 tasks.named('build') {
-    dependsOn tasks.named('deploy')
+  dependsOn tasks.named('deploy')
 }
