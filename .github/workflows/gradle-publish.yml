@@ -1,0 +1,52 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: "25"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build jar
+        run: ./gradlew --no-daemon clean shadowJar
+
+      - name: Resolve plugin version
+        shell: bash
+        run: |
+          set -euo pipefail
+          plugin_version=$(./gradlew properties -q | awk -F': ' '$1=="plugin_version"{print $2; exit}')
+          if [ -z "${plugin_version}" ] || [ "${plugin_version}" = "unspecified" ]; then
+            echo "Could not determine plugin_version from Gradle properties." >&2
+            exit 1
+          fi
+          echo "plugin_version=${plugin_version}" >> "$GITHUB_ENV"
+          echo "timestamp=$(date +'%Y%m%d%H%M%S')" >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release + upload jar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.plugin_version }}-${{ env.timestamp }}
+          name: Release v${{ env.plugin_version }}-${{ env.timestamp }}
+          files: |
+            build/libs/*-${{ env.plugin_version }}.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
