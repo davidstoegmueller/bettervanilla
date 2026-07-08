@@ -2,7 +2,9 @@
 
 # Changelog
 
-## [1.13.0] - xx.xx.2026
+## [1.13.0] - 08.07.2026
+
+- **Minecraft Version 26.1.2** - Upgraded the plugin to minecraft version 26.1.2
 
 ## [1.12.0] - 31.01.2026
 

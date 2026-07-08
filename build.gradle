@@ -21,10 +21,6 @@ java {
   }
 }
 
-paperweight {
-  reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
-}
-
 tasks.withType(Jar).configureEach {
   archiveVersion.set(plugin_version)
 
