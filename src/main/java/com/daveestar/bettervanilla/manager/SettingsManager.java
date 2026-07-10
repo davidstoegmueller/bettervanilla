@@ -105,6 +105,26 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getPlayerBackpackSort(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".backpacksort", false);
+  }
+
+  public void setPlayerBackpackSort(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".backpacksort", value);
+    _config.save();
+  }
+
+  public InventorySortMode getPlayerBackpackSortMode(UUID uuid) {
+    String mode = _fileConfig.getString("players." + uuid + ".backpacksortmode", "ALPHABETICAL_ASC");
+    return InventorySortMode.fromString(mode);
+  }
+
+  public void setPlayerBackpackSortMode(UUID uuid, InventorySortMode mode) {
+    String value = mode == null ? InventorySortMode.ALPHABETICAL_ASC.name() : mode.name();
+    _fileConfig.set("players." + uuid + ".backpacksortmode", value);
+    _config.save();
+  }
+
   public boolean getPlayerInventorySort(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".inventorysort", false);
   }

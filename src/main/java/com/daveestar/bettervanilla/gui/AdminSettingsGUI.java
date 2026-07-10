@@ -28,6 +28,8 @@ import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 
@@ -804,7 +806,7 @@ public class AdminSettingsGUI {
     boolean enabled = _settingsManager.getBackpackEnabled();
     int pages = _settingsManager.getBackpackPages();
     int rows = _settingsManager.getBackpackRows();
-    ItemStack item = new ItemStack(Material.BARREL);
+    ItemStack item = new ItemStack(Material.BUNDLE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
@@ -822,6 +824,8 @@ public class AdminSettingsGUI {
       lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
+      item.setData(DataComponentTypes.TOOLTIP_DISPLAY,
+          TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.BUNDLE_CONTENTS));
     }
 
     return item;

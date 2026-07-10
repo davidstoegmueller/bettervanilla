@@ -31,6 +31,8 @@ import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
@@ -102,6 +104,7 @@ public class SettingsGUI {
     // third row
     entries.put("chestsort", _createChestSortItem(viewer, target));
     entries.put("inventorysort", _createInventorySortItem(viewer, target));
+    entries.put("backpacksort", _createBackpackSortItem(viewer, target));
     entries.put("actionbartimer", _createActionBarTimerItem(viewer, target));
     entries.put("playertag", _createPlayerTagItem(viewer, target));
 
@@ -127,6 +130,7 @@ public class SettingsGUI {
     // third row
     customSlots.put("chestsort", 19);
     customSlots.put("inventorysort", 21);
+    customSlots.put("backpacksort", 23);
     customSlots.put("playertag", 25);
 
     // fourth row
@@ -302,6 +306,33 @@ public class SettingsGUI {
         displayGUI(p, target);
       }
     });
+
+    clickActions.put("backpacksort", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!target.hasPermission(Permissions.BACKPACK.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.BACKPACK));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleBackpackSort(target);
+        displayGUI(p, target);
+      }
+
+      @Override
+      public void onRightClick(Player p) {
+        if (!target.hasPermission(Permissions.BACKPACK.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(Permissions.BACKPACK));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _cycleBackpackSortMode(target);
+        displayGUI(p, target);
+      }
+    });
+
     clickActions.put("navigationtrail", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
@@ -589,6 +620,46 @@ public class SettingsGUI {
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
+
+    return item;
+  }
+
+  private ItemStack _createBackpackSortItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerBackpackSort(target.getUniqueId());
+    InventorySortMode mode = _settingsManager.getPlayerBackpackSortMode(target.getUniqueId());
+    ItemStack item = new ItemStack(Material.BUNDLE);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean hasPermission = target.hasPermission(Permissions.BACKPACK.getName());
+
+    meta.displayName(
+        Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Sorting"));
+
+    List<String> lore = new java.util.ArrayList<>();
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a backpack to sort its current page!");
+    if (!hasPermission) {
+      lore.add(Main.getShortNoPermissionMessage(Permissions.BACKPACK));
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
+        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
+    for (InventorySortMode option : InventorySortMode.values()) {
+      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
+      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+    }
+
+    lore.add("");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
+    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
+
+    meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
+    item.setItemMeta(meta);
+    item.setData(DataComponentTypes.TOOLTIP_DISPLAY,
+        TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.BUNDLE_CONTENTS));
 
     return item;
   }
@@ -972,6 +1043,22 @@ public class SettingsGUI {
     _settingsManager.setPlayerChestSortMode(p.getUniqueId(), next);
 
     p.sendMessage(Main.getPrefix() + "Chest sort mode set to " + ChatColor.YELLOW + next.getLabel());
+  }
+
+  private void _toggleBackpackSort(Player p) {
+    boolean newState = !_settingsManager.getPlayerBackpackSort(p.getUniqueId());
+    _settingsManager.setPlayerBackpackSort(p.getUniqueId(), newState);
+
+    String stateText = newState ? "ENABLED" : "DISABLED";
+    p.sendMessage(Main.getPrefix() + "Backpack sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+  }
+
+  private void _cycleBackpackSortMode(Player p) {
+    InventorySortMode current = _settingsManager.getPlayerBackpackSortMode(p.getUniqueId());
+    InventorySortMode next = current.next();
+    _settingsManager.setPlayerBackpackSortMode(p.getUniqueId(), next);
+
+    p.sendMessage(Main.getPrefix() + "Backpack sort mode set to " + ChatColor.YELLOW + next.getLabel());
   }
 
   private void _toggleInventorySort(Player p) {

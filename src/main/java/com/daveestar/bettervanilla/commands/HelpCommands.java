@@ -67,8 +67,8 @@ public class HelpCommands {
           + " - A chest spawns on death; take items before closing/breaking to avoid drops.");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Heads Explorer" + ChatColor.GRAY
           + " - Browse decorative heads by category in a GUI.");
-      p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Chest Sorting" + ChatColor.GRAY
-          + " - Right-click outside inventories to auto-sort.");
+      p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Container Sorting" + ChatColor.GRAY
+          + " - Right-click outside chests or backpacks to auto-sort.");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Item Restock" + ChatColor.GRAY
           + " - Auto-refill empty hotbar slots with matching items.");
       p.sendMessage(Main.getShortPrefix() + ChatColor.YELLOW + "Player Tags" + ChatColor.GRAY

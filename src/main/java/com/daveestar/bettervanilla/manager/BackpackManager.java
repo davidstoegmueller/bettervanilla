@@ -13,13 +13,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.InventorySortUtils;
 import com.daveestar.bettervanilla.utils.ItemStackUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -196,6 +199,38 @@ public class BackpackManager implements Listener {
   private int _getPageSize() {
     int rows = _settingsManager.getBackpackRows();
     return (rows + 1) * 9 - 9;
+  }
+
+  @EventHandler
+  public void onInventoryClick(InventoryClickEvent e) {
+    if (!e.isRightClick() || e.getRawSlot() != -999) {
+      return;
+    }
+
+    Player p = (Player) e.getWhoClicked();
+    CustomGUI gui = _openGUIs.get(p.getUniqueId());
+    Map<Integer, ItemStack[]> backpack = _backpacks.get(p.getUniqueId());
+
+    if (gui == null || backpack == null || !e.getInventory().equals(gui.getInventory())) {
+      return;
+    }
+
+    if (!_settingsManager.getPlayerBackpackSort(p.getUniqueId())) {
+      return;
+    }
+
+    e.setCancelled(true);
+
+    Inventory inv = gui.getInventory();
+    int pageSize = _getPageSize();
+    InventorySortMode mode = _settingsManager.getPlayerBackpackSortMode(p.getUniqueId());
+    ItemStack[] sorted = InventorySortUtils.sortStorageContents(inv.getContents(), 0, pageSize, mode);
+
+    for (int i = 0; i < pageSize; i++) {
+      inv.setItem(i, sorted[i]);
+    }
+
+    _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
   }
 
   @EventHandler
