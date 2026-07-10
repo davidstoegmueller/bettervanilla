@@ -15,8 +15,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.MessageManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class MessageCommand implements TabExecutor {
   private final Main _plugin;
@@ -49,14 +48,14 @@ public class MessageCommand implements TabExecutor {
           String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
           _messageManager.sendPrivateMessage(p, target, message);
         } else {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-              + ChatColor.RED + " is currently not online!");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "The requested player " + Theme.highlight() + args[0]
+              + Theme.error() + " is currently not online!");
         }
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot send a message to yourself!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + "You cannot send a message to yourself!");
       }
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/msg <player> <message>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/msg <player> <message>");
     }
 
     return true;

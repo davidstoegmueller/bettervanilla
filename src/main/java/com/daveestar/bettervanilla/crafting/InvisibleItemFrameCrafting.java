@@ -23,9 +23,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.CraftingRecipe;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements Listener {
   private static final String ITEM_TAG_KEY = "invisible_item_frame";
@@ -60,12 +60,12 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
     }
 
     CraftingRecipe recipe = getRecipe();
-    meta.displayName(Component.text(ChatColor.YELLOW + recipe.getName()));
+    meta.displayName(Component.text(Theme.highlight() + recipe.getName()));
 
     List<Component> lore = Arrays
         .asList(
-            ChatColor.GRAY + recipe.getDescription(),
-            ChatColor.DARK_GRAY + "Crafted with BetterVanilla.")
+            Theme.primary() + recipe.getDescription(),
+            Theme.primary() + "Crafted with " + Theme.name() + ".")
         .stream()
         .filter(Objects::nonNull)
         .map(Component::text)

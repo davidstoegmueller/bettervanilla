@@ -24,8 +24,7 @@ import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.InventorySortUtils;
 import com.daveestar.bettervanilla.utils.ItemStackUtils;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class BackpackManager implements Listener {
   private final Main _plugin;
@@ -50,14 +49,14 @@ public class BackpackManager implements Listener {
 
   public void openBackpack(Player p) {
     if (!_settingsManager.getBackpackEnabled()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Backpacks are disabled.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Backpacks are disabled.");
       return;
     }
 
     if (_deathPointsManager.hasActiveDeathPoints(p)) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED
+      p.sendMessage(Main.getPrefix() + Theme.error()
           + "You have active death points. Claim them before using your backpack again. "
-          + ChatColor.YELLOW + "/deathpoints");
+          + Theme.highlight() + "/deathpoints");
       return;
     }
 
@@ -81,7 +80,7 @@ public class BackpackManager implements Listener {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Backpack",
+        Theme.titlePrefix() + "Backpack",
         entries, rows, null, null,
         EnumSet.of(CustomGUI.Option.ALLOW_ITEM_MOVEMENT));
 

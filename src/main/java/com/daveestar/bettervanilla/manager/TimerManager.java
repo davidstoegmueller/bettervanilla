@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.md_5.bungee.api.ChatColor;
@@ -205,9 +206,9 @@ public class TimerManager {
   private String _generateTimerMessage() {
     String formattedTime = formatTime(_globalTimer);
     return _running
-        ? ChatColor.YELLOW + "" + ChatColor.BOLD + formattedTime
-        : ChatColor.YELLOW + "" + ChatColor.BOLD + "Paused " + ChatColor.GRAY + "("
-            + ChatColor.RED + formattedTime + ChatColor.GRAY + ")";
+        ? Theme.highlight() + "" + ChatColor.BOLD + formattedTime
+        : Theme.highlight() + "" + ChatColor.BOLD + "Paused " + Theme.primary() + "("
+            + Theme.error() + formattedTime + Theme.primary() + ")";
   }
 
   private PlayerTimer _loadPlayerTimer(UUID playerId) {

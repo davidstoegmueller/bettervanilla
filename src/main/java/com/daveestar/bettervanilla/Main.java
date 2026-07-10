@@ -69,10 +69,9 @@ import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import org.bstats.bukkit.Metrics;
-
-import net.md_5.bungee.api.ChatColor;
 
 /*
  * Bettervanilla Java Plugin
@@ -254,27 +253,27 @@ public class Main extends JavaPlugin {
   }
 
   public static String getPrefix() {
-    return ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "]"
-        + ChatColor.YELLOW + " » "
-        + ChatColor.GRAY;
+    return Theme.primary() + "[" + Theme.highlight() + Theme.name() + Theme.primary() + "]"
+        + Theme.textSymbol() + " » "
+        + Theme.primary();
   }
 
   public static String getShortPrefix() {
-    return ChatColor.YELLOW + " » " + ChatColor.GRAY;
+    return Theme.textSymbol() + " » " + Theme.primary();
   }
 
   public static String getNoPermissionMessage(Permissions permission) {
-    return getPrefix() + ChatColor.RED + "Sorry! You do not have permission to use this. " + ChatColor.GRAY + "("
-        + ChatColor.RED + permission.getName() + ChatColor.GRAY + ")";
+    return getPrefix() + Theme.error() + "Sorry! You do not have permission to use this. " + Theme.primary() + "("
+        + Theme.error() + permission.getName() + Theme.primary() + ")";
   }
 
   public static String getShortNoPermissionMessage(Permissions permission) {
-    return ChatColor.RED + "You do not have permission to use this. " + ChatColor.GRAY + "("
-        + ChatColor.RED + permission.getName() + ChatColor.GRAY + ")";
+    return Theme.error() + "You do not have permission to use this. " + Theme.primary() + "("
+        + Theme.error() + permission.getName() + Theme.primary() + ")";
   }
 
   public static String getNoPlayerMessage() {
-    return getPrefix() + ChatColor.RED + "This command can only be run by a player.";
+    return getPrefix() + Theme.error() + "This command can only be run by a player.";
   }
 
   public static Main getInstance() {
@@ -367,6 +366,14 @@ public class Main extends JavaPlugin {
     }
 
     return _craftingRecipes.get(recipe);
+  }
+
+  public void refreshCraftingRecipes() {
+    if (_craftingRecipes == null) {
+      return;
+    }
+
+    _craftingRecipes.values().forEach(CustomCraftingRecipe::applyRecipe);
   }
 
   public Map<CraftingRecipe, CustomCraftingRecipe> getCraftingRecipes() {

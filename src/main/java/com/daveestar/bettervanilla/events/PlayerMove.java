@@ -14,6 +14,7 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -75,7 +76,7 @@ public class PlayerMove implements Listener {
       // handle world change and cancel navigation if different worlds
       if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
         _navigationManager.stopNavigation(p);
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + "Your navigation has been canceled due to world change!");
         return;
       }
 
@@ -86,9 +87,9 @@ public class PlayerMove implements Listener {
         if (playerLocation.distance(targetLocation) <= radius) {
           _navigationManager.stopNavigation(p);
 
-          p.sendMessage(Main.getPrefix() + "You've reached your destination. You're within " + ChatColor.YELLOW
-              + radius + ChatColor.GRAY + " blocks of " + ChatColor.YELLOW
-              + navigationData.getName() + ChatColor.GRAY + ".");
+          p.sendMessage(Main.getPrefix() + "You've reached your destination. You're within " + Theme.highlight()
+              + radius + Theme.primary() + " blocks of " + Theme.highlight()
+              + navigationData.getName() + Theme.primary() + ".");
           return;
         }
       }
@@ -100,7 +101,7 @@ public class PlayerMove implements Listener {
 
         if (targetPlayer == null || !targetPlayer.isOnline()) {
           _navigationManager.stopNavigation(p);
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Navigation canceled as the target player is offline!");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "Navigation canceled as the target player is offline!");
           return;
         }
 
@@ -118,13 +119,13 @@ public class PlayerMove implements Listener {
     if (_settingsManager.getPlayerToggleLocation(p.getUniqueId())) {
       Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 
-      String locationText = ChatColor.YELLOW + "X: "
-          + ChatColor.GRAY
-          + p.getLocation().toBlockLocation().getBlockX() + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockY() + ChatColor.YELLOW +
-          " Z: " + ChatColor.GRAY
-          + p.getLocation().toBlockLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
-          + ChatColor.GRAY + playerBiome.getKey();
+      String locationText = Theme.highlight() + "X: "
+          + Theme.primary()
+          + p.getLocation().toBlockLocation().getBlockX() + Theme.highlight()
+          + " Y: " + Theme.primary() + p.getLocation().toBlockLocation().getBlockY() + Theme.highlight() +
+          " Z: " + Theme.primary()
+          + p.getLocation().toBlockLocation().getBlockZ() + Theme.textSymbol() + ChatColor.BOLD + " » "
+          + Theme.primary() + playerBiome.getKey();
 
       _actionBar.sendActionBar(p, locationText);
     }

@@ -21,13 +21,13 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
-import net.md_5.bungee.api.ChatColor;
 
 public class VeinChopperSettingsGUI {
   private final Main _plugin;
@@ -73,7 +73,7 @@ public class VeinChopperSettingsGUI {
     customSlots.put("blocks", 8);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Vein Chopper Settings",
+        Theme.titlePrefix() + "Vein Chopper Settings",
         entries, 2, customSlots, parent,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -128,14 +128,14 @@ public class VeinChopperSettingsGUI {
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper"));
+      meta.displayName(Component.text(Theme.titlePrefix() + "Vein Chopper"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle global vein chopper state.",
+          Theme.textPrefix() + "Toggle global vein chopper state.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -150,13 +150,13 @@ public class VeinChopperSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Maximum Vein Size"));
+          Component.text(Theme.titlePrefix() + "Maximum Vein Size"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the maximum size of veins that can be chopped.",
+          Theme.textPrefix() + "Set the maximum size of veins that can be chopped.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + veinSize,
+          Theme.textPrefix() + "Current: " + Theme.highlight() + veinSize,
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
+          Theme.textPrefix() + "Left-Click: Set value")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -170,14 +170,14 @@ public class VeinChopperSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sound"));
+      meta.displayName(Component.text(Theme.titlePrefix() + "Sound"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle sound effects for vein chopper.",
+          Theme.textPrefix() + "Toggle sound effects for vein chopper.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -191,11 +191,11 @@ public class VeinChopperSettingsGUI {
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Allowed Tools"));
+      meta.displayName(Component.text(Theme.titlePrefix() + "Allowed Tools"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open menu to manage allowed tools.",
+          Theme.textPrefix() + "Open menu to manage allowed tools.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open").stream().filter(Objects::nonNull)
+          Theme.textPrefix() + "Left-Click: Open").stream().filter(Objects::nonNull)
           .map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -209,11 +209,11 @@ public class VeinChopperSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Allowed Blocks"));
+          Component.text(Theme.titlePrefix() + "Allowed Blocks"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Open menu to manage allowed blocks.",
+          Theme.textPrefix() + "Open menu to manage allowed blocks.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open").stream().filter(Objects::nonNull)
+          Theme.textPrefix() + "Left-Click: Open").stream().filter(Objects::nonNull)
           .map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -229,7 +229,7 @@ public class VeinChopperSettingsGUI {
     int size = _settingsManager.getVeinChopperMaxVeinSize();
 
     DialogInput inputSize = CustomDialog.createNumberInput("size",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Maximum Vein Chopper Size", 1, 1024, 1, (float) size);
+        Theme.textPrefix() + "Maximum Vein Chopper Size", 1, 1024, 1, (float) size);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
         "Set Maximum Vein Chopper Size",
@@ -253,7 +253,7 @@ public class VeinChopperSettingsGUI {
 
     _settingsManager.setVeinChopperMaxVeinSize(veinSize);
 
-    p.sendMessage(Main.getPrefix() + "Maximum vein chopper size set to: " + ChatColor.YELLOW + veinSize);
+    p.sendMessage(Main.getPrefix() + "Maximum vein chopper size set to: " + Theme.highlight() + veinSize);
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);

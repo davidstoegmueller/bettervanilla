@@ -30,10 +30,9 @@ import com.daveestar.bettervanilla.manager.DeathPointsManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager.DeathPointReference;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
-
 public class DeathChest implements Listener {
 
   private final HashMap<Player, Location> openedDeathChests = new HashMap<>();
@@ -91,13 +90,13 @@ public class DeathChest implements Listener {
     int chestZ = deathChestLocation.getBlockZ();
 
     p.sendMessage(Main.getPrefix() + "You died at: "
-        + ChatColor.YELLOW + "X: " + ChatColor.GRAY + chestX
-        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + chestY
-        + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + chestZ);
+        + Theme.highlight() + "X: " + Theme.primary() + chestX
+        + Theme.highlight() + " Y: " + Theme.primary() + chestY
+        + Theme.highlight() + " Z: " + Theme.primary() + chestZ);
 
     if (deathChestEnabled) {
       p.sendMessage(Main.getPrefix() + "All your items are stored in the death chest at this location.");
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
+      p.sendMessage(Main.getPrefix() + Theme.error() + "ATTENTION!" + Theme.primary()
           + " As soon as you close or break the chest all items will be dropped!");
     } else {
       p.sendMessage(Main.getPrefix() + "Your items were dropped on the ground.");
@@ -105,17 +104,17 @@ public class DeathChest implements Listener {
 
     if (fellIntoVoid) {
       if (deathChestEnabled) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+        p.sendMessage(Main.getPrefix() + Theme.error() + "Hint:" + Theme.primary()
             + " You fell into the void! Your deathchest will spawn at "
-            + ChatColor.YELLOW + "Y: " + ChatColor.GRAY + "100");
+            + Theme.highlight() + "Y: " + Theme.primary() + "100");
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
+        p.sendMessage(Main.getPrefix() + Theme.error() + "Hint:" + Theme.primary()
             + " You fell into the void while death chests are disabled. Items lost in the void cannot be recovered.");
       }
     }
 
     p.sendMessage(Main.getPrefix() + "If you want to list your deathpoints please use: "
-        + ChatColor.YELLOW + "/deathpoints");
+        + Theme.highlight() + "/deathpoints");
   }
 
   @EventHandler
@@ -133,7 +132,7 @@ public class DeathChest implements Listener {
           String playerName = Bukkit.getOfflinePlayer(UUID.fromString(ref.ownerUUID)).getName();
           ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
           Inventory inv = Bukkit.createInventory(null, 45,
-              Component.text(ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Chest: " + playerName));
+              Component.text(Theme.titlePrefix() + "Death Chest: " + playerName));
 
           inv.setContents(items);
           p.openInventory(inv);
@@ -212,7 +211,7 @@ public class DeathChest implements Listener {
           removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, items);
         } else {
           e.setCancelled(true);
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to break this death chest.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "You are not allowed to break this death chest.");
         }
       }
     }

@@ -21,6 +21,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.CraftingRecipe;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -62,7 +63,7 @@ public class CraftingRecipeSettingsGUI {
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     if (_recipeConfigs.isEmpty()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "No crafting recipes are currently registered.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "No crafting recipes are currently registered.");
       return;
     }
 
@@ -82,7 +83,7 @@ public class CraftingRecipeSettingsGUI {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Crafting Recipes",
+        Theme.titlePrefix() + "Crafting Recipes",
         entries, 2, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -118,18 +119,18 @@ public class CraftingRecipeSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + config.recipe().getName()));
+          Component.text(Theme.titlePrefix() + config.recipe().getName()));
 
       List<String> loreLines = new ArrayList<>();
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage this crafting recipe.");
+      loreLines.add(Theme.textPrefix() + "Manage this crafting recipe.");
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + config.recipe().getDescription());
+      loreLines.add(Theme.textPrefix() + config.recipe().getDescription());
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      loreLines.add(Theme.textPrefix() + "State: "
+          + (enabled ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"));
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Edit Recipe");
+      loreLines.add(Theme.textPrefix() + "Left-Click: Toggle");
+      loreLines.add(Theme.textPrefix() + "Right-Click: Edit Recipe");
 
       meta.lore(loreLines.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       icon.setItemMeta(meta);
@@ -145,9 +146,9 @@ public class CraftingRecipeSettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(Main.getPrefix()
-        + ChatColor.YELLOW + config.recipe().getName()
-        + ChatColor.GRAY + " recipe is now "
-        + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+        + Theme.highlight() + config.recipe().getName()
+        + Theme.primary() + " recipe is now "
+        + Theme.highlight() + ChatColor.BOLD + stateText);
     p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
   }
 

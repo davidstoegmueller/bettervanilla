@@ -27,19 +27,15 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.HeadsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class HeadsGUI {
   private static final int HEADS_GUI_ROWS = 6;
-
-  private static final String GUI_TITLE_PREFIX = ChatColor.YELLOW + "" + ChatColor.BOLD + "» ";
-  private static final String GUI_ITEM_PREFIX = ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW;
-  private static final String GUI_LORE_PREFIX = ChatColor.YELLOW + "» " + ChatColor.GRAY;
 
   private static final String KEY_CATEGORY_PREFIX = "category::";
   private static final String KEY_HEAD_PREFIX = "head::";
@@ -73,7 +69,7 @@ public class HeadsGUI {
 
     List<HeadCategory> categories = _buildCategories();
     if (categories.isEmpty()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "No head categories found.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "No head categories found.");
       return null;
     }
 
@@ -98,7 +94,7 @@ public class HeadsGUI {
     int categoryGUIRows = Math.min(6, ((int) Math.ceil(totalCategories / 9.0) + 1));
 
     CustomGUI categoriesGUI = new CustomGUI(_plugin, p,
-        GUI_TITLE_PREFIX + "Categories" + ChatColor.GRAY + " (" + totalHeads + " heads)",
+        Theme.titlePrefix() + "Categories" + Theme.primary() + " (" + totalHeads + " heads)",
         entries, categoryGUIRows, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
@@ -117,7 +113,7 @@ public class HeadsGUI {
           List<Head> heads = headsByCategory.getOrDefault(category, List.of());
 
           if (heads.isEmpty()) {
-            player.sendMessage(Main.getPrefix() + ChatColor.RED + "No heads available in this category.");
+            player.sendMessage(Main.getPrefix() + Theme.error() + "No heads available in this category.");
             player.playSound(player, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
             return;
           }
@@ -145,7 +141,7 @@ public class HeadsGUI {
       sortData.put(entryId, new HeadSortData(head.name()));
     }
 
-    String title = GUI_TITLE_PREFIX + "Heads" + ChatColor.GRAY + " (" + category.name() + " " + heads.size()
+    String title = Theme.titlePrefix() + "Heads" + Theme.primary() + " (" + category.name() + " " + heads.size()
         + " heads)";
     CustomGUI headsGUI = new CustomGUI(_plugin, p, title, entries, HEADS_GUI_ROWS, null, parentMenu,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
@@ -231,13 +227,13 @@ public class HeadsGUI {
     }
 
     if (meta != null) {
-      meta.displayName(Component.text(GUI_ITEM_PREFIX + category.name()));
+      meta.displayName(Component.text(Theme.titlePrefix() + category.name()));
 
       List<String> lore = new ArrayList<>();
       lore.add("");
-      lore.add(GUI_LORE_PREFIX + "Total Heads: " + ChatColor.YELLOW + count);
+      lore.add(Theme.textPrefix() + "Total Heads: " + Theme.highlight() + count);
       lore.add("");
-      lore.add(GUI_LORE_PREFIX + "Left-Click: Open");
+      lore.add(Theme.textPrefix() + "Left-Click: Open");
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -252,14 +248,14 @@ public class HeadsGUI {
     if (meta instanceof SkullMeta skullMeta) {
       _applyHeadTexture(head, skullMeta);
 
-      meta.displayName(Component.text(GUI_ITEM_PREFIX + head.name()));
+      meta.displayName(Component.text(Theme.titlePrefix() + head.name()));
 
       List<String> lore = new ArrayList<>();
       if (includeInstructions && category != null) {
         lore.add("");
-        lore.add(GUI_LORE_PREFIX + "Category: " + ChatColor.YELLOW + category.name());
+        lore.add(Theme.textPrefix() + "Category: " + Theme.highlight() + category.name());
         lore.add("");
-        lore.add(GUI_LORE_PREFIX + "Left-Click: Give");
+        lore.add(Theme.textPrefix() + "Left-Click: Give");
       }
 
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));

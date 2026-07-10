@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.MessageManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class ReplyCommand implements CommandExecutor {
   private final Main _plugin;
@@ -41,10 +40,10 @@ public class ReplyCommand implements CommandExecutor {
         String message = String.join(" ", args);
         _messageManager.sendPrivateMessage(p, target, message);
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no one to reply to.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + "You have no one to reply to.");
       }
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/r <message>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/r <message>");
     }
 
     return true;

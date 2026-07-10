@@ -23,6 +23,7 @@ import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TagManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -80,7 +81,8 @@ public class ChatMessages implements Listener {
     } else {
       String tagSuffix = _tagManager.getFormattedTag(p);
       e.joinMessage(
-          Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW
+          Component.text(Theme.primary() + "[" + Theme.highlight() + "+" + Theme.primary() + "] "
+              + Theme.highlight()
               + p.getName() + tagSuffix));
     }
 
@@ -102,7 +104,7 @@ public class ChatMessages implements Listener {
     } else {
       String tagSuffix = _tagManager.getFormattedTag(p);
       e.quitMessage(Component
-          .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()
+          .text(Theme.primary() + "[" + Theme.error() + "-" + Theme.primary() + "] " + Theme.error() + p.getName()
               + tagSuffix));
     }
 
@@ -146,7 +148,7 @@ public class ChatMessages implements Listener {
 
         if (formatted.toLowerCase().contains(lowerName) || formatted.toLowerCase().contains("@" + lowerName)) {
           formatted = formatted.replaceAll("(?i)@?" + Pattern.quote(name),
-              ChatColor.YELLOW + "" + ChatColor.BOLD + name + ChatColor.GRAY);
+              Theme.highlight() + "" + ChatColor.BOLD + name + Theme.primary());
 
           chatViewer.playSound(chatViewer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1);
         }
@@ -157,8 +159,8 @@ public class ChatMessages implements Listener {
         tagSuffix = _tagManager.getFormattedTag(sourcePlayer);
       }
 
-      return Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + source.getName() + ChatColor.GRAY + "]"
-          + tagSuffix + ChatColor.YELLOW + " » " + ChatColor.GRAY + formatted);
+      return Component.text(Theme.primary() + "[" + Theme.highlight() + source.getName() + Theme.primary() + "]"
+          + tagSuffix + " " + Theme.textPrefix() + formatted);
     });
   }
 }

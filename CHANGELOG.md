@@ -6,6 +6,7 @@
 
 - 📦 **Minecraft Version 26.2** - Upgraded the plugin to minecraft version 26.2
 - 🎒 **Backpack Sorting** - Added per-player backpack sorting with configurable sort modes.
+- 🎨 **Custom Themes** - Added admin-configurable Minecraft font colors, symbol colors, footer glass panes, and plugin branding.
 
 ## [1.13.0] - 08.07.2026
 

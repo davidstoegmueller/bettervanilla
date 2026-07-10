@@ -19,6 +19,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -47,7 +48,7 @@ public class BackpackSettingsGUI implements Listener {
     customSlots.put("enabled", 4);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Backpack Settings",
+        Theme.titlePrefix() + "Backpack Settings",
         entries, 2, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -110,16 +111,16 @@ public class BackpackSettingsGUI implements Listener {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Pages"));
+          Component.text(Theme.titlePrefix() + "Backpack Pages"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of pages.",
-          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + ChatColor.GRAY
+          Theme.textPrefix() + "Set number of pages.",
+          Theme.textPrefix() + Theme.error() + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + Theme.primary()
               + "Changing this can cause items in backpacks to be lost!",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + pages + ChatColor.GRAY + " pages",
+          Theme.textPrefix() + "Current: " + Theme.highlight() + pages + Theme.primary() + " pages",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Page",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Page")
+          Theme.textPrefix() + "Left-Click: +1 Page",
+          Theme.textPrefix() + "Right-Click: -1 Page")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -133,14 +134,14 @@ public class BackpackSettingsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpacks"));
+      meta.displayName(Component.text(Theme.titlePrefix() + "Backpacks"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enable player backpacks.",
+          Theme.textPrefix() + "Enable player backpacks.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -154,16 +155,16 @@ public class BackpackSettingsGUI implements Listener {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Rows"));
+      meta.displayName(Component.text(Theme.titlePrefix() + "Backpack Rows"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of rows per page.",
-          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + ChatColor.GRAY
+          Theme.textPrefix() + "Set number of rows per page.",
+          Theme.textPrefix() + Theme.error() + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + Theme.primary()
               + "Changing this can cause items in backpacks to be lost!",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + rows + ChatColor.GRAY + " rows",
+          Theme.textPrefix() + "Current: " + Theme.highlight() + rows + Theme.primary() + " rows",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Row",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Row")
+          Theme.textPrefix() + "Left-Click: +1 Row",
+          Theme.textPrefix() + "Right-Click: -1 Row")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -177,6 +178,6 @@ public class BackpackSettingsGUI implements Listener {
     _backpackManager.setEnabled(newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Backpacks are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Backpacks are now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 }

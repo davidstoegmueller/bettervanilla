@@ -1,9 +1,13 @@
 package com.daveestar.bettervanilla.enums;
 
+import java.util.function.Supplier;
+
+import com.daveestar.bettervanilla.utils.Theme;
+
 import net.md_5.bungee.api.ChatColor;
 
 public enum WaypointFilter {
-  ALL("All", ChatColor.GRAY) {
+  ALL("All", Theme::primary) {
     @Override
     public WaypointFilter next() {
       return PUBLIC;
@@ -19,7 +23,7 @@ public enum WaypointFilter {
       return true;
     }
   },
-  PUBLIC("Public", ChatColor.GREEN) {
+  PUBLIC("Public", Theme::highlight) {
     @Override
     public WaypointFilter next() {
       return PRIVATE;
@@ -35,7 +39,7 @@ public enum WaypointFilter {
       return visibility == WaypointVisibility.PUBLIC;
     }
   },
-  PRIVATE("Private", ChatColor.RED) {
+  PRIVATE("Private", Theme::error) {
     @Override
     public WaypointFilter next() {
       return ALL;
@@ -53,15 +57,15 @@ public enum WaypointFilter {
   };
 
   private final String _displayName;
-  private final ChatColor _color;
+  private final Supplier<ChatColor> _color;
 
-  WaypointFilter(String displayName, ChatColor color) {
+  WaypointFilter(String displayName, Supplier<ChatColor> color) {
     _displayName = displayName;
     _color = color;
   }
 
   public String getColoredName() {
-    return _color + _displayName + ChatColor.YELLOW;
+    return _color.get() + _displayName + Theme.highlight();
   }
 
   public abstract WaypointFilter next();

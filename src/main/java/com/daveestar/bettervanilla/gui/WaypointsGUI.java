@@ -32,6 +32,7 @@ import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.NavigationData;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
@@ -40,11 +41,6 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class WaypointsGUI {
-  private final String GUI_TITLE_PREFIX = ChatColor.YELLOW + "" + ChatColor.BOLD + "» ";
-  private final String GUI_ITEM_PREFIX = ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW;
-  private final String GUI_LORE_PREFIX = ChatColor.YELLOW + "» " + ChatColor.GRAY;
-  private final String GUI_DIALOG_INPUT_PREFIX = ChatColor.YELLOW + "» " + ChatColor.GRAY;
-
   private final String KEY_WAYPOINT_PREFIX = "waypoint::";
   private final String KEY_ICON_PREFIX = "icon::";
 
@@ -115,7 +111,7 @@ public class WaypointsGUI {
     String inputY = Integer.toString(pLoc.getBlockY());
     String inputZ = Integer.toString(pLoc.getBlockZ());
 
-    String waypointGUITitle = "Waypoints " + ChatColor.GRAY + "(" + filterMode.getColoredName() + ChatColor.GRAY + ")";
+    String waypointGUITitle = "Waypoints " + Theme.primary() + "(" + filterMode.getColoredName() + Theme.primary() + ")";
     CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
@@ -265,10 +261,10 @@ public class WaypointsGUI {
   private ItemStack _createRenameItem(String waypointName) {
     return _createItem(
         Material.NAME_TAG,
-        Component.text(GUI_ITEM_PREFIX + "Rename"),
+        Component.text(Theme.titlePrefix() + "Rename"),
         _createLore(
             "",
-            GUI_LORE_PREFIX + "Left-Click: Rename waypoint: " + ChatColor.YELLOW + waypointName),
+            Theme.textPrefix() + "Left-Click: Rename waypoint: " + Theme.highlight() + waypointName),
         null);
   }
 
@@ -282,17 +278,17 @@ public class WaypointsGUI {
     for (WaypointVisibility option : WaypointVisibility.values()) {
       boolean isSelected = option == visibility;
       String name = option.getDisplayName();
-      ChatColor color = isSelected ? ChatColor.GREEN : ChatColor.YELLOW;
-      lore.add(Component.text(GUI_LORE_PREFIX + color + name));
+      ChatColor color = isSelected ? Theme.highlight() : Theme.primary();
+      lore.add(Component.text(Theme.textPrefix() + color + name));
     }
 
     lore.add(Component.text(""));
-    lore.add(Component.text(GUI_LORE_PREFIX + "Left-Click: Next visibility"));
-    lore.add(Component.text(GUI_LORE_PREFIX + "Right-Click: Previous visibility"));
+    lore.add(Component.text(Theme.textPrefix() + "Left-Click: Next visibility"));
+    lore.add(Component.text(Theme.textPrefix() + "Right-Click: Previous visibility"));
 
     return _createItem(
         Material.SPYGLASS,
-        Component.text(GUI_ITEM_PREFIX + "Visibility"),
+        Component.text(Theme.titlePrefix() + "Visibility"),
         lore,
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
@@ -300,42 +296,42 @@ public class WaypointsGUI {
   private ItemStack _createDeleteItem(String waypointName) {
     return _createItem(
         Material.BARRIER,
-        Component.text(GUI_ITEM_PREFIX + "Delete"),
+        Component.text(Theme.titlePrefix() + "Delete"),
         _createLore(
             "",
-            GUI_LORE_PREFIX + "Left-Click: Delete waypoint: " + ChatColor.YELLOW + waypointName),
+            Theme.textPrefix() + "Left-Click: Delete waypoint: " + Theme.highlight() + waypointName),
         null);
   }
 
   private ItemStack _createSetIconItem(String waypointName) {
     return _createItem(
         Material.ENDER_EYE,
-        Component.text(GUI_ITEM_PREFIX + "Set Icon"),
+        Component.text(Theme.titlePrefix() + "Set Icon"),
         _createLore(
             "",
-            GUI_LORE_PREFIX + "Left-Click: Set custom icon for: " + ChatColor.YELLOW + waypointName),
+            Theme.textPrefix() + "Left-Click: Set custom icon for: " + Theme.highlight() + waypointName),
         null);
   }
 
   private ItemStack _createCancelNavigationItem() {
     return _createItem(
         Material.BARRIER,
-        Component.text(GUI_ITEM_PREFIX + "Cancel Navigation"),
+        Component.text(Theme.titlePrefix() + "Cancel Navigation"),
         _createLore(
-            GUI_LORE_PREFIX + "Cancel your current active navigation.",
+            Theme.textPrefix() + "Cancel your current active navigation.",
             "",
-            GUI_LORE_PREFIX + "Left-Click: Cancel navigation"),
+            Theme.textPrefix() + "Left-Click: Cancel navigation"),
         null);
   }
 
   private ItemStack _createAddWaypointItem() {
     return _createItem(
         Material.EMERALD,
-        Component.text(GUI_ITEM_PREFIX + "Add Waypoint"),
+        Component.text(Theme.titlePrefix() + "Add Waypoint"),
         _createLore(
-            GUI_LORE_PREFIX + "Create a new waypoint using custom coordinates or current location.",
+            Theme.textPrefix() + "Create a new waypoint using custom coordinates or current location.",
             "",
-            GUI_LORE_PREFIX + "Left-Click: Add waypoint"),
+            Theme.textPrefix() + "Left-Click: Add waypoint"),
         null);
   }
 
@@ -346,17 +342,17 @@ public class WaypointsGUI {
     for (WaypointFilter option : WaypointFilter.values()) {
       boolean isSelected = option == filterMode;
       String name = ChatColor.stripColor(option.getColoredName());
-      ChatColor color = isSelected ? ChatColor.GREEN : ChatColor.YELLOW;
-      lore.add(Component.text(GUI_LORE_PREFIX + color + name));
+      ChatColor color = isSelected ? Theme.highlight() : Theme.primary();
+      lore.add(Component.text(Theme.textPrefix() + color + name));
     }
 
     lore.add(Component.text(""));
-    lore.add(Component.text(GUI_LORE_PREFIX + "Left-Click: Next option"));
-    lore.add(Component.text(GUI_LORE_PREFIX + "Right-Click: Previous option"));
+    lore.add(Component.text(Theme.textPrefix() + "Left-Click: Next option"));
+    lore.add(Component.text(Theme.textPrefix() + "Right-Click: Previous option"));
 
     return _createItem(
         Material.HOPPER,
-        Component.text(GUI_ITEM_PREFIX + "Filter"),
+        Component.text(Theme.titlePrefix() + "Filter"),
         lore,
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
@@ -380,28 +376,28 @@ public class WaypointsGUI {
       WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointId);
       String visibilityString = "";
       if (visibility == WaypointVisibility.PRIVATE) {
-        visibilityString = ChatColor.GRAY + " (" + ChatColor.RED + visibility.getDisplayName() + ChatColor.GRAY + ")";
+        visibilityString = Theme.primary() + " (" + Theme.error() + visibility.getDisplayName() + Theme.primary() + ")";
       } else if (visibility == WaypointVisibility.PUBLIC) {
-        visibilityString = ChatColor.GRAY + " (" + ChatColor.GREEN + visibility.getDisplayName() + ChatColor.GRAY + ")";
+        visibilityString = Theme.primary() + " (" + Theme.highlight() + visibility.getDisplayName() + Theme.primary() + ")";
       }
 
       meta.displayName(
-          Component.text(GUI_ITEM_PREFIX + waypointName + visibilityString));
+          Component.text(Theme.titlePrefix() + waypointName + visibilityString));
       List<Component> lore = _createLore(
           "",
-          GUI_LORE_PREFIX + "X: " + ChatColor.YELLOW + x,
-          GUI_LORE_PREFIX + "Y: " + ChatColor.YELLOW + y,
-          GUI_LORE_PREFIX + "Z: " + ChatColor.YELLOW + z,
+          Theme.textPrefix() + "X: " + Theme.highlight() + x,
+          Theme.textPrefix() + "Y: " + Theme.highlight() + y,
+          Theme.textPrefix() + "Z: " + Theme.highlight() + z,
           "",
-          GUI_LORE_PREFIX + "Distance: " + ChatColor.YELLOW + distance + ChatColor.GRAY + " blocks",
+          Theme.textPrefix() + "Distance: " + Theme.highlight() + distance + Theme.primary() + " blocks",
           "",
-          GUI_LORE_PREFIX + "Owner: " + ChatColor.YELLOW
+          Theme.textPrefix() + "Owner: " + Theme.highlight()
               + _waypointsManager.getWaypointOwnerName(worldName, waypointId),
           "",
-          GUI_LORE_PREFIX + "Left-Click: Start navigation");
+          Theme.textPrefix() + "Left-Click: Start navigation");
 
       if (_canEditWaypointOptions(worldName, waypointId, p)) {
-        lore.add(Component.text(GUI_LORE_PREFIX + "Right-Click: Options"));
+        lore.add(Component.text(Theme.textPrefix() + "Right-Click: Options"));
       }
 
       meta.lore(lore);
@@ -414,10 +410,10 @@ public class WaypointsGUI {
   private ItemStack _createIconSelectionItem(Material material, String waypointName) {
     return _createItem(
         material,
-        Component.text(GUI_ITEM_PREFIX + material.name()),
+        Component.text(Theme.titlePrefix() + material.name()),
         _createLore(
             "",
-            GUI_LORE_PREFIX + "Click to set this as the icon for: " + ChatColor.YELLOW + waypointName),
+            Theme.textPrefix() + "Click to set this as the icon for: " + Theme.highlight() + waypointName),
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
 
   }
@@ -433,8 +429,8 @@ public class WaypointsGUI {
 
     _waypointsManager.setWaypointIcon(worldName, waypointId, icon);
 
-    p.sendMessage(Main.getPrefix() + "Custom icon set for waypoint " + ChatColor.YELLOW + waypointName
-        + ChatColor.GRAY + ".");
+    p.sendMessage(Main.getPrefix() + "Custom icon set for waypoint " + Theme.highlight() + waypointName
+        + Theme.primary() + ".");
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
@@ -453,17 +449,17 @@ public class WaypointsGUI {
 
     if (targetVisibility == WaypointVisibility.PUBLIC
         && !_waypointsManager.isPublicNameAvailable(worldName, waypointName, waypointId)) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "A public waypoint with that name already exists.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "A public waypoint with that name already exists.");
       _playErrorSound(p);
       return;
     }
 
     _waypointsManager.setWaypointVisibility(worldName, waypointId, targetVisibility);
 
-    ChatColor visibilityColor = targetVisibility == WaypointVisibility.PUBLIC ? ChatColor.GREEN : ChatColor.RED;
+    ChatColor visibilityColor = targetVisibility == WaypointVisibility.PUBLIC ? Theme.highlight() : Theme.error();
 
-    p.sendMessage(Main.getPrefix() + "Waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
-        + " visibility set to " + visibilityColor + targetVisibility.getDisplayName() + ChatColor.GRAY + ".");
+    p.sendMessage(Main.getPrefix() + "Waypoint " + Theme.highlight() + waypointName + Theme.primary()
+        + " visibility set to " + visibilityColor + targetVisibility.getDisplayName() + Theme.primary() + ".");
     _playSuccessSound(p);
 
     CustomGUI refreshedParentGUI = _createWaypointsGUI(p);
@@ -475,8 +471,8 @@ public class WaypointsGUI {
     String waypointName = _waypointsManager.getWaypointDisplayName(world, waypointId);
 
     if (!_waypointsManager.checkWaypointExists(world, waypointId)) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
-          + waypointName + ChatColor.RED + ". Please try an existing one!");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Could not find a waypoint called " + Theme.highlight()
+          + waypointName + Theme.error() + ". Please try an existing one!");
       return;
     }
 
@@ -489,10 +485,10 @@ public class WaypointsGUI {
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);
 
-    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to " + ChatColor.YELLOW + waypointName
-        + ChatColor.GRAY + " at " + ChatColor.YELLOW + "X: " + ChatColor.GRAY + coords.get(KEY_COORD_X)
-        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + coords.get(KEY_COORD_Y)
-        + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + coords.get(KEY_COORD_Z));
+    p.sendMessage(Main.getPrefix() + Theme.primary() + "Start navigation to " + Theme.highlight() + waypointName
+        + Theme.primary() + " at " + Theme.highlight() + "X: " + Theme.primary() + coords.get(KEY_COORD_X)
+        + Theme.highlight() + " Y: " + Theme.primary() + coords.get(KEY_COORD_Y)
+        + Theme.highlight() + " Z: " + Theme.primary() + coords.get(KEY_COORD_Z));
     _playSuccessSound(p);
 
     p.closeInventory();
@@ -505,7 +501,7 @@ public class WaypointsGUI {
       _playSuccessSound(p);
       p.closeInventory();
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "You have no current destination!");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "You have no current destination!");
       _playErrorSound(p);
       displayWaypointsGUI(p);
     }
@@ -519,11 +515,11 @@ public class WaypointsGUI {
       _waypointsManager.removeWaypoint(world, waypointId);
       _playSuccessSound(p);
 
-      p.sendMessage(Main.getPrefix() + "The waypoint " + ChatColor.YELLOW + waypointName + ChatColor.GRAY
+      p.sendMessage(Main.getPrefix() + "The waypoint " + Theme.highlight() + waypointName + Theme.primary()
           + " was successfully removed!");
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Could not find a waypoint called " + ChatColor.YELLOW
-          + waypointName + ChatColor.RED + ". Please try an existing one!");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Could not find a waypoint called " + Theme.highlight()
+          + waypointName + Theme.error() + ". Please try an existing one!");
     }
 
     displayWaypointsGUI(p);
@@ -543,15 +539,15 @@ public class WaypointsGUI {
         errorMessage,
         List.of(
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_NAME,
-                GUI_DIALOG_INPUT_PREFIX + "Waypoint Name", initialName),
+                Theme.textPrefix() + "Waypoint Name", initialName),
             CustomDialog.createSelectInput(WAYPOINT_ADD_DIALOG_VISIBILITY,
-                GUI_DIALOG_INPUT_PREFIX + "Visibility", visibilityOptions, initialVisibility),
+                Theme.textPrefix() + "Visibility", visibilityOptions, initialVisibility),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_X,
-                GUI_DIALOG_INPUT_PREFIX + "X Coordinate", initialX),
+                Theme.textPrefix() + "X Coordinate", initialX),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_Y,
-                GUI_DIALOG_INPUT_PREFIX + "Y Coordinate", initialY),
+                Theme.textPrefix() + "Y Coordinate", initialY),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_Z,
-                GUI_DIALOG_INPUT_PREFIX + "Z Coordinate", initialZ)),
+                Theme.textPrefix() + "Z Coordinate", initialZ)),
         (view, audience) -> _addWaypointDialogCB(view, audience),
         null);
 
@@ -565,7 +561,7 @@ public class WaypointsGUI {
         errorMessage,
         List.of(
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_NAME,
-                GUI_DIALOG_INPUT_PREFIX + "Rename Waypoint",
+                Theme.textPrefix() + "Rename Waypoint",
                 initialValue)),
         (view, audience) -> _renameWaypointDialogCB(view, audience, waypointId),
         null);
@@ -617,10 +613,10 @@ public class WaypointsGUI {
 
     _waypointsManager.addWaypoint(world, nameInput, p.getUniqueId(), visibility, x, y, z);
 
-    p.sendMessage(Main.getPrefix() + "The waypoint: " + ChatColor.YELLOW + nameInput + ChatColor.GRAY
+    p.sendMessage(Main.getPrefix() + "The waypoint: " + Theme.highlight() + nameInput + Theme.primary()
         + " was successfully added!");
-    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Coordinates: " + ChatColor.YELLOW + "X: " + ChatColor.GRAY + x
-        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + y + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + z);
+    p.sendMessage(Main.getPrefix() + Theme.primary() + "Coordinates: " + Theme.highlight() + "X: " + Theme.primary() + x
+        + Theme.highlight() + " Y: " + Theme.primary() + y + Theme.highlight() + " Z: " + Theme.primary() + z);
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
@@ -649,7 +645,7 @@ public class WaypointsGUI {
 
     _waypointsManager.renameWaypoint(world, waypointId, nameInput);
 
-    p.sendMessage(Component.text(Main.getPrefix() + "Waypoint name set to: " + ChatColor.YELLOW + nameInput));
+    p.sendMessage(Component.text(Main.getPrefix() + "Waypoint name set to: " + Theme.highlight() + nameInput));
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
@@ -860,7 +856,7 @@ public class WaypointsGUI {
 
   private CustomGUI _createGUI(Player p, String title, int rows, Map<String, ItemStack> entries,
       Map<String, Integer> customSlots, CustomGUI parentGUI, Set<CustomGUI.Option> options) {
-    CustomGUI gui = new CustomGUI(_plugin, p, GUI_TITLE_PREFIX + title, entries, rows, customSlots, parentGUI,
+    CustomGUI gui = new CustomGUI(_plugin, p, Theme.titlePrefix() + title, entries, rows, customSlots, parentGUI,
         options);
 
     return gui;

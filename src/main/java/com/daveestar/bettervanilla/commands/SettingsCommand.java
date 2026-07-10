@@ -9,8 +9,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.SettingsGUI;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class SettingsCommand implements CommandExecutor {
   private final SettingsGUI _settingsGUI;
@@ -44,11 +43,11 @@ public class SettingsCommand implements CommandExecutor {
 
       target = Bukkit.getPlayer(args[0]);
       if (target == null) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Player not found or not online.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + "Player not found or not online.");
         return true;
       }
     } else if (args.length > 1) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings [player]");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/settings [player]");
       return true;
     }
 

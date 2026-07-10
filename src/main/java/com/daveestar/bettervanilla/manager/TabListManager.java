@@ -12,6 +12,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -81,13 +82,13 @@ public class TabListManager {
     String tagSuffix = _tagManager.getFormattedTag(p);
 
     String baseName = (isAfk
-        ? ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
+        ? Theme.primary() + "[" + Theme.error() + "AFK" + Theme.primary() + "] "
         : "")
-        + ChatColor.YELLOW + p.getName()
+        + Theme.highlight() + p.getName()
         + tagSuffix;
 
     int deaths = p.getStatistic(Statistic.DEATHS);
-    return baseName + ChatColor.GRAY + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.YELLOW + deaths;
+    return baseName + Theme.primary() + " | Deaths: " + Theme.highlight() + deaths;
   }
 
   private void _startTask() {
@@ -127,15 +128,16 @@ public class TabListManager {
 
     List<String> lines = Arrays.asList(
         "",
-        placeholder + ChatColor.YELLOW + "" + ChatColor.BOLD + "BetterVanilla SMP" + ChatColor.RESET + placeholder,
-        isMaintenance ? Main.getShortPrefix() + ChatColor.RED + "" + ChatColor.BOLD + "Maintenance-Mode: ON" : null,
+        placeholder + Theme.highlight() + "" + ChatColor.BOLD + Theme.name() + " SMP" + ChatColor.RESET
+            + placeholder,
+        isMaintenance ? Main.getShortPrefix() + Theme.error() + "" + ChatColor.BOLD + "Maintenance-Mode: ON" : null,
         "",
-        Main.getShortPrefix() + ChatColor.GRAY + "Day: " + ChatColor.YELLOW + day + ChatColor.GRAY + " | "
-            + ChatColor.GRAY + "Time: " + ChatColor.YELLOW + timeStr + ChatColor.GRAY + " (" + ChatColor.YELLOW
+        Main.getShortPrefix() + Theme.primary() + "Day: " + Theme.highlight() + day + Theme.primary() + " | "
+            + "Time: " + Theme.highlight() + timeStr + Theme.primary() + " (" + Theme.highlight()
             + timTextStr
-            + ChatColor.GRAY + ")",
-        Main.getShortPrefix() + ChatColor.GRAY + "Weather: " + ChatColor.YELLOW + weatherStr
-            + ChatColor.GRAY + " | " + ChatColor.GRAY + "Moon: " + ChatColor.YELLOW + moonPhaseText,
+            + Theme.primary() + ")",
+        Main.getShortPrefix() + Theme.primary() + "Weather: " + Theme.highlight() + weatherStr
+            + Theme.primary() + " | Moon: " + Theme.highlight() + moonPhaseText,
         "");
 
     return Component.join(
@@ -153,18 +155,18 @@ public class TabListManager {
 
     List<String> lines = Arrays.asList(
         "",
-        Main.getShortPrefix() + ChatColor.GRAY + "Players: " + ChatColor.YELLOW + onlinePlayersCount + ChatColor.GRAY
-            + "/" + ChatColor.YELLOW
+        Main.getShortPrefix() + Theme.primary() + "Players: " + Theme.highlight() + onlinePlayersCount
+            + Theme.primary() + "/" + Theme.highlight()
             + maxPlayerCount,
-        Main.getShortPrefix() + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW
+        Main.getShortPrefix() + Theme.primary() + "Playtime: " + Theme.highlight()
             + _timerManager.formatTime(playTimeSeconds),
         "",
         "",
-        Main.getShortPrefix() + ChatColor.GRAY + "Ping: " + ChatColor.YELLOW + _formatPing(p) + ChatColor.GRAY
-            + " | TPS: " + ChatColor.YELLOW + _formatTps()
-            + ChatColor.GRAY + " | MSPT: " + ChatColor.YELLOW + _formatMspt(),
+        Main.getShortPrefix() + Theme.primary() + "Ping: " + Theme.highlight() + _formatPing(p) + Theme.primary()
+            + " | TPS: " + Theme.highlight() + _formatTps()
+            + Theme.primary() + " | MSPT: " + Theme.highlight() + _formatMspt(),
         "",
-        ChatColor.GRAY + "Need some help? " + ChatColor.YELLOW + "/help",
+        Theme.primary() + "Need some help? " + Theme.highlight() + "/help",
         "");
 
     return Component.join(

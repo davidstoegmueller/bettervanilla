@@ -1,5 +1,7 @@
 package com.daveestar.bettervanilla.manager;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -7,12 +9,10 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.ChatColor;
-
-import java.util.UUID;
 
 public class NameTagManager {
   private final Main _plugin;
@@ -53,7 +53,8 @@ public class NameTagManager {
       team = board.registerNewTeam(teamName);
     }
 
-    team.color(NamedTextColor.YELLOW);
+    NamedTextColor teamColor = NamedTextColor.NAMES.value(Theme.highlight().getName());
+    team.color(teamColor != null ? teamColor : NamedTextColor.YELLOW);
     team.addEntry(p.getName());
     team.prefix(LegacyComponentSerializer.legacySection().deserialize(prefix));
     team.suffix(LegacyComponentSerializer.legacySection().deserialize(suffix));
@@ -71,10 +72,10 @@ public class NameTagManager {
     boolean isAfk = _afkManager.isPlayerMarkedAFK(p);
 
     String afkPrefix = isAfk
-        ? ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
+        ? Theme.primary() + "[" + Theme.error() + "AFK" + Theme.primary() + "] "
         : "";
 
-    return afkPrefix + ChatColor.YELLOW;
+    return afkPrefix + Theme.highlight();
   }
 
   private String _buildSuffix(Player p) {

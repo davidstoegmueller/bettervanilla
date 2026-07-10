@@ -11,8 +11,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.DeathPointsGUI;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class DeathPointsCommand implements TabExecutor {
 
@@ -39,7 +38,7 @@ public class DeathPointsCommand implements TabExecutor {
     if (args.length == 0) {
       _deathPointsGUI.displayGUI(p);
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/deathpoints");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/deathpoints");
     }
 
     return true;

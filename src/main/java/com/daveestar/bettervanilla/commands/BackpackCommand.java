@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.BackpackManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class BackpackCommand implements CommandExecutor {
   private final BackpackManager _backpackManager;
@@ -33,7 +32,7 @@ public class BackpackCommand implements CommandExecutor {
     }
 
     if (args.length > 0) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/backpack");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/backpack");
       return true;
     }
 

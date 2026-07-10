@@ -12,14 +12,13 @@ import org.bukkit.util.BoundingBox;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.SittingManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class SitCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
     if (!(cs instanceof Player)) {
-      cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Only players can use this command.");
+      cs.sendMessage(Main.getPrefix() + Theme.error() + "Only players can use this command.");
       return true;
     }
 
@@ -39,7 +38,7 @@ public class SitCommand implements CommandExecutor {
     }
 
     if (p.isInsideVehicle()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Leave your current vehicle before using /sit.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Leave your current vehicle before using /sit.");
       return true;
     }
 
@@ -48,7 +47,7 @@ public class SitCommand implements CommandExecutor {
     Block supportBlock = blockAtFeet.isPassable() ? blockAtFeet.getRelative(BlockFace.DOWN) : blockAtFeet;
 
     if (supportBlock == null || supportBlock.isPassable()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "You need to stand on solid ground before sitting.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "You need to stand on solid ground before sitting.");
       return true;
     }
 
@@ -57,7 +56,7 @@ public class SitCommand implements CommandExecutor {
     double heightDelta = playerLocation.getY() - seatY;
 
     if (heightDelta > 0.1D) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "You need to stand on solid ground before sitting.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "You need to stand on solid ground before sitting.");
       return true;
     }
 

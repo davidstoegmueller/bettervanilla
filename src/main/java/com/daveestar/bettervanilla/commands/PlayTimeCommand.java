@@ -16,6 +16,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.gui.PlayTimeGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -51,8 +52,8 @@ public class PlayTimeCommand implements TabExecutor {
       OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(args[0]);
 
       if (!targetPlayer.hasPlayedBefore() && !targetPlayer.isOnline()) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-            + ChatColor.RED + " has never joined the server!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + "The requested player " + Theme.highlight() + args[0]
+            + Theme.error() + " has never joined the server!");
         return true;
       }
 
@@ -62,14 +63,14 @@ public class PlayTimeCommand implements TabExecutor {
       String playerName = targetPlayer.getName() != null ? targetPlayer.getName() : args[0];
 
       p.sendMessage(
-          Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
-              + " » " + ChatColor.GRAY + playerName);
+          Main.getPrefix() + Theme.highlight() + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET
+              + " " + Theme.textSymbol() + "» " + Theme.primary() + playerName);
       p.sendMessage(Main.getShortPrefix()
-          + "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
-      p.sendMessage(Main.getShortPrefix() + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime));
-      p.sendMessage(Main.getShortPrefix() + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime));
+          + "Totaltime: " + Theme.highlight() + _timerManager.formatTime(playTime + afkTime));
+      p.sendMessage(Main.getShortPrefix() + "Playtime: " + Theme.highlight() + _timerManager.formatTime(playTime));
+      p.sendMessage(Main.getShortPrefix() + "AFK: " + Theme.highlight() + _timerManager.formatTime(afkTime));
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/playtime [player]");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/playtime [player]");
     }
 
     return true;

@@ -7,6 +7,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.md_5.bungee.api.ChatColor;
@@ -18,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class CompassManager {
   private static final int _SCALE_LENGTH = 80;
   private static final int _ARROW_POSITION = _SCALE_LENGTH / 2;
-  private static final ChatColor _DIRECTION_COLOR = ChatColor.YELLOW; // static color for all directions
   private static final DirectionInfo[] _DIRECTIONS = {
       new DirectionInfo("N"), // N
       new DirectionInfo("NE"), // NE
@@ -147,7 +147,8 @@ public class CompassManager {
 
     // insert the arrow at the center
     StringBuilder finalCompass = new StringBuilder(visibleCompass);
-    finalCompass.replace(_ARROW_POSITION, _ARROW_POSITION + 1, ChatColor.RED + _ARROW_CHARACTER + ChatColor.RESET);
+    finalCompass.replace(_ARROW_POSITION, _ARROW_POSITION + 1,
+        Theme.textSymbol() + _ARROW_CHARACTER + ChatColor.RESET);
 
     // build the final string with colors applied
     StringBuilder coloredCompass = new StringBuilder();
@@ -156,8 +157,7 @@ public class CompassManager {
       boolean matched = false;
       for (DirectionInfo direction : _DIRECTIONS) {
         if (finalCompass.indexOf(direction._name, currentIndex) == currentIndex) {
-          // apply static color to the direction name
-          coloredCompass.append(_DIRECTION_COLOR).append(direction._name).append(ChatColor.RESET);
+          coloredCompass.append(Theme.highlight()).append(direction._name).append(ChatColor.RESET);
           currentIndex += direction._name.length();
           matched = true;
           break;

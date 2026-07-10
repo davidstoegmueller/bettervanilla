@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -31,17 +32,17 @@ public class ModerationEvents implements Listener {
     if (_modManager.isBanned(p)) {
       String reason = _modManager.getBanReason(p);
       long expires = _modManager.getBanExpiry(p);
-      String banMsg = ChatColor.YELLOW + "" + ChatColor.BOLD + "BANNED\n\n" + ChatColor.GRAY
+      String banMsg = Theme.highlight() + "" + ChatColor.BOLD + "BANNED\n\n" + Theme.primary()
           + "You were banned from the server.\n\n";
 
       if (!reason.isEmpty()) {
-        banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Reason: " + ChatColor.GRAY + reason + "\n";
+        banMsg += Theme.highlight() + "" + ChatColor.BOLD + "Reason: " + Theme.primary() + reason + "\n";
       }
 
       if (expires != -1) {
         long remaining = (expires - System.currentTimeMillis()) / 1000;
         String time = _timerManager.formatTime((int) remaining);
-        banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Expires in: " + ChatColor.GRAY + time;
+        banMsg += Theme.highlight() + "" + ChatColor.BOLD + "Expires in: " + Theme.primary() + time;
       }
 
       e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, Component.text(banMsg));
@@ -54,16 +55,16 @@ public class ModerationEvents implements Listener {
     if (_modManager.isMuted(p)) {
       String reason = _modManager.getMuteReason(p);
       long expires = _modManager.getMuteExpiry(p);
-      String msg = Main.getPrefix() + ChatColor.RED + "You are muted";
+      String msg = Main.getPrefix() + Theme.error() + "You are muted";
       if (expires != -1) {
         long remaining = (expires - System.currentTimeMillis()) / 1000;
         String time = _timerManager.formatTime((int) remaining);
-        msg += ChatColor.GRAY + " for " + ChatColor.YELLOW + time;
+        msg += Theme.primary() + " for " + Theme.highlight() + time;
       }
       if (reason != null && !reason.isEmpty()) {
-        msg += ChatColor.GRAY + ". Reason: " + ChatColor.YELLOW + reason;
+        msg += Theme.primary() + ". Reason: " + Theme.highlight() + reason;
       } else {
-        msg += ChatColor.GRAY + ". No reason given.";
+        msg += Theme.primary() + ". No reason given.";
       }
       p.sendMessage(msg);
       e.setCancelled(true);

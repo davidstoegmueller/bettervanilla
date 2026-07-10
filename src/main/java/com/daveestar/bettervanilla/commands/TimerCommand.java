@@ -12,8 +12,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.TimerManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class TimerCommand implements TabExecutor {
 
@@ -67,7 +66,7 @@ public class TimerCommand implements TabExecutor {
 
   private void handleResume(Player p, TimerManager timer) {
     if (timer.isRunning()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "The timer is already running.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "The timer is already running.");
     } else {
       timer.setRunning(true);
       timer.setRunningOverride(true);
@@ -77,7 +76,7 @@ public class TimerCommand implements TabExecutor {
 
   private void handlePause(Player p, TimerManager timer) {
     if (!timer.isRunning()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "No active timer to pause.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "No active timer to pause.");
     } else {
       timer.setRunning(false);
       timer.setRunningOverride(false);
@@ -87,7 +86,7 @@ public class TimerCommand implements TabExecutor {
 
   private void handleSet(Player p, TimerManager timer, String[] args) {
     if (args.length != 2) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/timer set <time>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/timer set <time>");
       return;
     }
 
@@ -96,10 +95,10 @@ public class TimerCommand implements TabExecutor {
       timer.setRunning(false);
       timer.setRunningOverride(false);
       timer.setGlobalTimer(time);
-      p.sendMessage(Main.getPrefix() + "Timer has been set to " + ChatColor.YELLOW + time
-          + ChatColor.GRAY + " seconds.");
+      p.sendMessage(Main.getPrefix() + "Timer has been set to " + Theme.highlight() + time
+          + Theme.primary() + " seconds.");
     } catch (NumberFormatException e) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Invalid number. Please provide a valid time in seconds.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + "Invalid number. Please provide a valid time in seconds.");
     }
   }
 
@@ -109,11 +108,11 @@ public class TimerCommand implements TabExecutor {
     timer.setGlobalTimer(0);
     timer.resetPlayerTimers();
     p.sendMessage(
-        Main.getPrefix() + "Timer has been reset to" + ChatColor.YELLOW + " 0 " + ChatColor.GRAY + "seconds.");
+        Main.getPrefix() + "Timer has been reset to" + Theme.highlight() + " 0 " + Theme.primary() + "seconds.");
   }
 
   private void sendUsageMessage(Player p) {
-    p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
+    p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
         + "/timer <resume | pause | reset | set> [time]");
   }
 

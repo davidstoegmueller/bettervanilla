@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class HereCommand implements CommandExecutor {
   @Override
@@ -31,11 +31,11 @@ public class HereCommand implements CommandExecutor {
     String worldName = loc.getWorld() != null ? loc.getWorld().getName() : "unknown";
 
     String messageText = Main.getPrefix()
-        + ChatColor.YELLOW + p.getName() + ChatColor.GRAY + "'s location: "
-        + ChatColor.GRAY + "World: " + ChatColor.YELLOW + worldName + ChatColor.GRAY + " | "
-        + ChatColor.GRAY + "X: " + ChatColor.YELLOW + loc.getBlockX() + ChatColor.GRAY + " | "
-        + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + loc.getBlockY() + ChatColor.GRAY + " | "
-        + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + loc.getBlockZ();
+        + Theme.highlight() + p.getName() + Theme.primary() + "'s location: "
+        + Theme.primary() + "World: " + Theme.highlight() + worldName + Theme.primary() + " | "
+        + Theme.primary() + "X: " + Theme.highlight() + loc.getBlockX() + Theme.primary() + " | "
+        + Theme.primary() + "Y: " + Theme.highlight() + loc.getBlockY() + Theme.primary() + " | "
+        + Theme.primary() + "Z: " + Theme.highlight() + loc.getBlockZ();
 
     Component message = Component.text(messageText);
     Main.getInstance().getServer().sendMessage(message);

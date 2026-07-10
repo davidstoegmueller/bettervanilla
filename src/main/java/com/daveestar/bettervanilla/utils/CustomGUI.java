@@ -161,31 +161,31 @@ public class CustomGUI implements Listener {
 
   private void _createSwitchPageButton() {
     _addItemToSlot(_POS_SWITCH_PAGE_BUTTON, Material.BOOK,
-        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Page",
+        Theme.titlePrefix() + "Page",
         Arrays.asList(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current Page: " + ChatColor.YELLOW + _currentPage
-                + ChatColor.GRAY + " of " + ChatColor.YELLOW + _maxPage,
+            Theme.textPrefix() + "Current Page: " + Theme.highlight() + _currentPage
+                + Theme.primary() + " of " + Theme.highlight() + _maxPage,
             "",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next Page",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous Page"));
+            Theme.textPrefix() + "Left-Click: Next Page",
+            Theme.textPrefix() + "Right-Click: Previous Page"));
   }
 
   private void _createBackButton() {
-    _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW, ChatColor.YELLOW + "Back", null);
+    _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW, Theme.highlight() + "Back", null);
   }
 
   private void _createSearchButton() {
     String term = _searchTerm != null && !_searchTerm.isEmpty()
-        ? ChatColor.YELLOW + _searchTerm
-        : ChatColor.RED + "None";
+        ? Theme.highlight() + _searchTerm
+        : Theme.error() + "None";
 
     _addItemToSlot(_POS_SEARCH_BUTTON, Material.NAME_TAG,
-        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Search",
+        Theme.titlePrefix() + "Search",
         Arrays.asList(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Search for: " + term,
+            Theme.textPrefix() + "Search for: " + term,
             "",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Search",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Reset"));
+            Theme.textPrefix() + "Left-Click: Search",
+            Theme.textPrefix() + "Right-Click: Reset"));
   }
 
   private void _createSortButton() {
@@ -199,17 +199,17 @@ public class CustomGUI implements Listener {
     for (int i = 0; i < _sortOptions.size(); i++) {
       SortOption option = _sortOptions.get(i);
       if (option != null && option.displayName() != null) {
-        ChatColor color = i == _currentSortIdx ? ChatColor.GREEN : ChatColor.YELLOW;
-        lore.add(ChatColor.YELLOW + "» " + color + option.displayName());
+        ChatColor color = i == _currentSortIdx ? Theme.highlight() : Theme.primary();
+        lore.add(Theme.textSymbol() + "» " + color + option.displayName());
       }
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next option");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous option");
+    lore.add(Theme.textPrefix() + "Left-Click: Next option");
+    lore.add(Theme.textPrefix() + "Right-Click: Previous option");
 
     _addItemToSlot(_POS_SORT_BUTTON, Material.COMPARATOR,
-        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sort", lore);
+        Theme.titlePrefix() + "Sort", lore);
   }
 
   private void _createPlaceholderButtons() {
@@ -218,7 +218,7 @@ public class CustomGUI implements Listener {
 
     for (int i = startIdx; i < endIdx; i++) {
       if (_gui.getItem(i) == null) {
-        _addItemToSlot(i, Material.YELLOW_STAINED_GLASS_PANE, ChatColor.YELLOW + "*", null);
+        _addItemToSlot(i, Theme.glassPaneMaterial(), Theme.highlight() + "*", null);
       }
     }
   }
@@ -474,7 +474,7 @@ public class CustomGUI implements Listener {
         "Enter text to filter items.",
         null,
         List.of(CustomDialog.createTextInput("search",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Search",
+            Theme.textPrefix() + "Search",
             _searchTerm)),
         (view, audience) -> {
           Player player = (Player) audience;

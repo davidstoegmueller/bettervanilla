@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import com.daveestar.bettervanilla.utils.Theme;
+
 import net.md_5.bungee.api.ChatColor;
 
 public class MessageManager {
@@ -12,16 +14,15 @@ public class MessageManager {
 
   public void sendPrivateMessage(Player sender, Player receiver, String message) {
     String translated = ChatColor.translateAlternateColorCodes('&', message);
-    String prefix = ChatColor.GRAY + "[" + ChatColor.YELLOW + "MSG" + ChatColor.GRAY + "] ";
+    String prefix = Theme.primary() + "[" + Theme.highlight() + "MSG" + Theme.primary() + "] ";
 
     sender.sendMessage(
-        prefix + "(" + ChatColor.YELLOW + "YOU" + ChatColor.GRAY + " » " + ChatColor.YELLOW + receiver.getName()
-            + ChatColor.GRAY + ")" + ChatColor.YELLOW + " » " + ChatColor.GRAY + translated);
+        prefix + "(" + Theme.highlight() + "YOU" + Theme.primary() + " " + Theme.textSymbol() + "» "
+            + Theme.highlight() + receiver.getName() + Theme.primary() + ") " + Theme.textPrefix() + translated);
     receiver
         .sendMessage(
-            prefix + "(" + ChatColor.YELLOW + sender.getName() + ChatColor.GRAY + " » " + ChatColor.YELLOW + "YOU"
-                + ChatColor.GRAY + ")" + ChatColor.YELLOW + " » " + ChatColor.GRAY
-                + translated);
+            prefix + "(" + Theme.highlight() + sender.getName() + Theme.primary() + " " + Theme.textSymbol()
+                + "» " + Theme.highlight() + "YOU" + Theme.primary() + ") " + Theme.textPrefix() + translated);
 
     _lastMessages.put(sender, receiver);
     _lastMessages.put(receiver, sender);

@@ -20,6 +20,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -38,19 +39,19 @@ public class ModerationCommands {
       }
 
       if (args.length < 1) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/kick <player> [reason]");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/kick <player> [reason]");
         return true;
       }
 
       Player target = Bukkit.getPlayer(args[0]);
       if (target == null) {
         cs.sendMessage(
-            Main.getPrefix() + ChatColor.RED + "Player " + ChatColor.YELLOW + args[0] + ChatColor.RED + " not found.");
+            Main.getPrefix() + Theme.error() + "Player " + Theme.highlight() + args[0] + Theme.error() + " not found.");
         return true;
       }
 
       if (cs instanceof Player && target.getUniqueId().equals(((Player) cs).getUniqueId())) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot kick yourself.");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "You cannot kick yourself.");
         return true;
       }
 
@@ -59,12 +60,12 @@ public class ModerationCommands {
         reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
       }
 
-      String kickMsg = ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "KICKED\n\n" + ChatColor.GRAY
+      String kickMsg = Theme.highlight().toString() + ChatColor.BOLD.toString() + "KICKED\n\n" + Theme.primary()
           + "You were kicked from the server.\n\n"
-          + (reason != null ? ChatColor.YELLOW + "" + ChatColor.BOLD + "Reason: " + ChatColor.GRAY + reason : "");
+          + (reason != null ? Theme.highlight() + "" + ChatColor.BOLD + "Reason: " + Theme.primary() + reason : "");
 
       target.kick(Component.text(kickMsg));
-      cs.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been kicked.");
+      cs.sendMessage(Main.getPrefix() + Theme.highlight() + target.getName() + Theme.primary() + " has been kicked.");
 
       return true;
     }
@@ -109,16 +110,16 @@ public class ModerationCommands {
       }
 
       if (args.length < 1) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
             + "/ban <player> [duration] [reason]");
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Example: " + ChatColor.YELLOW
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "Example: " + Theme.highlight()
             + "/ban playername 1d2h15m30s Inappropriate behavior");
         return true;
       }
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
       if (cs instanceof Player && target.getUniqueId().equals(((Player) cs).getUniqueId())) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot ban yourself.");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "You cannot ban yourself.");
         return true;
       }
 
@@ -146,16 +147,16 @@ public class ModerationCommands {
       }
 
       if (target.isOnline()) {
-        String banMsg = ChatColor.YELLOW + "" + ChatColor.BOLD + "BANNED\n\n" + ChatColor.GRAY
+        String banMsg = Theme.highlight() + "" + ChatColor.BOLD + "BANNED\n\n" + Theme.primary()
             + "You were banned from the server.\n\n";
 
         if (reason != null && !reason.isEmpty()) {
-          banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Reason: " + ChatColor.GRAY + reason + "\n";
+          banMsg += Theme.highlight() + "" + ChatColor.BOLD + "Reason: " + Theme.primary() + reason + "\n";
         }
 
         if (durationSeconds > 0) {
           String time = _timerManager.formatTime((int) durationSeconds);
-          banMsg += ChatColor.YELLOW + "" + ChatColor.BOLD + "Expires in: " + ChatColor.GRAY + time;
+          banMsg += Theme.highlight() + "" + ChatColor.BOLD + "Expires in: " + Theme.primary() + time;
         }
 
         target.getPlayer().kick(Component.text(banMsg));
@@ -163,20 +164,20 @@ public class ModerationCommands {
 
       if (durationSeconds > 0) {
         String time = _timerManager.formatTime((int) durationSeconds);
-        String confirm = Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
-            + " has been temp-banned for " + ChatColor.YELLOW + time + ChatColor.GRAY + ".";
+        String confirm = Main.getPrefix() + Theme.highlight() + target.getName() + Theme.primary()
+            + " has been temp-banned for " + Theme.highlight() + time + Theme.primary() + ".";
 
         if (reason != null && !reason.isEmpty()) {
-          confirm += " Reason: " + ChatColor.YELLOW + reason;
+          confirm += " Reason: " + Theme.highlight() + reason;
         }
 
         cs.sendMessage(confirm);
       } else {
-        String confirm = Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY
+        String confirm = Main.getPrefix() + Theme.highlight() + target.getName() + Theme.primary()
             + " has been banned.";
 
         if (reason != null && !reason.isEmpty()) {
-          confirm += " Reason: " + ChatColor.YELLOW + reason;
+          confirm += " Reason: " + Theme.highlight() + reason;
         }
 
         cs.sendMessage(confirm);
@@ -222,19 +223,19 @@ public class ModerationCommands {
       }
 
       if (args.length < 1) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/unban <player>");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/unban <player>");
         return true;
       }
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
       if (!_moderationManager.isBanned(target)) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " is not banned.");
+        cs.sendMessage(Main.getPrefix() + Theme.highlight() + target.getName() + Theme.primary() + " is not banned.");
         return true;
       }
 
       _moderationManager.unbanPlayer(target);
       cs.sendMessage(
-          Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been unbanned.");
+          Main.getPrefix() + Theme.highlight() + target.getName() + Theme.primary() + " has been unbanned.");
 
       return true;
     }
@@ -275,13 +276,13 @@ public class ModerationCommands {
 
       if (args.length < 1) {
         cs.sendMessage(
-            Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/mute <player> [duration] [reason]");
+            Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/mute <player> [duration] [reason]");
         return true;
       }
 
       OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
       if (cs instanceof Player && target.getUniqueId().equals(((Player) cs).getUniqueId())) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot mute yourself.");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "You cannot mute yourself.");
         return true;
       }
 
@@ -309,16 +310,16 @@ public class ModerationCommands {
       }
 
       if (target.isOnline()) {
-        String msg = Main.getPrefix() + ChatColor.RED + "You have been muted";
+        String msg = Main.getPrefix() + Theme.error() + "You have been muted";
 
         if (durationSeconds > 0) {
           String time = _timerManager.formatTime((int) durationSeconds);
-          msg += " for " + ChatColor.YELLOW + time;
+          msg += " for " + Theme.highlight() + time;
         }
 
-        msg += ChatColor.RED + ".";
+        msg += Theme.error() + ".";
         if (reason != null && !reason.isEmpty()) {
-          msg += " Reason: " + ChatColor.YELLOW + reason;
+          msg += " Reason: " + Theme.highlight() + reason;
         } else {
           msg += " No reason given.";
         }
@@ -326,17 +327,17 @@ public class ModerationCommands {
         target.getPlayer().sendMessage(msg);
       }
 
-      String confirm = Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been ";
+      String confirm = Main.getPrefix() + Theme.highlight() + target.getName() + Theme.primary() + " has been ";
       if (durationSeconds > 0) {
         String time = _timerManager.formatTime((int) durationSeconds);
-        confirm += "muted for " + ChatColor.YELLOW + time + ChatColor.GRAY;
+        confirm += "muted for " + Theme.highlight() + time + Theme.primary();
       } else {
         confirm += "muted";
       }
 
       confirm += ".";
       if (reason != null && !reason.isEmpty()) {
-        confirm += " Reason: " + ChatColor.YELLOW + reason;
+        confirm += " Reason: " + Theme.highlight() + reason;
       }
 
       cs.sendMessage(confirm);
@@ -382,7 +383,7 @@ public class ModerationCommands {
       }
 
       if (args.length < 1) {
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/unmute <player>");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/unmute <player>");
         return true;
       }
 
@@ -390,11 +391,11 @@ public class ModerationCommands {
       _moderationManager.unmutePlayer(target);
 
       if (target.isOnline()) {
-        target.getPlayer().sendMessage(Main.getPrefix() + ChatColor.GRAY + "You have been unmuted.");
+        target.getPlayer().sendMessage(Main.getPrefix() + Theme.primary() + "You have been unmuted.");
       }
 
       cs.sendMessage(
-          Main.getPrefix() + ChatColor.YELLOW + target.getName() + ChatColor.GRAY + " has been unmuted.");
+          Main.getPrefix() + Theme.highlight() + target.getName() + Theme.primary() + " has been unmuted.");
 
       return true;
     }

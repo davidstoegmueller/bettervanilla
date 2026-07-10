@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -68,7 +69,7 @@ public class PlayTimeGUI {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
+        Theme.titlePrefix() + "Playtime",
         entries, 3, null, null, EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
     gui.setSearchButtonSlot(_footerSearchSlot(3));
@@ -93,12 +94,12 @@ public class PlayTimeGUI {
     int afkTime = _timerManager.getAFKTime(target.getUniqueId());
 
     viewer.sendMessage(
-        Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
-            + " » " + ChatColor.GRAY + (target.getName() != null ? target.getName() : "Unknown"));
+        Main.getPrefix() + Theme.highlight() + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + Theme.textSymbol()
+            + " » " + Theme.primary() + (target.getName() != null ? target.getName() : "Unknown"));
     viewer.sendMessage(
-        Main.getShortPrefix() + "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
-    viewer.sendMessage(Main.getShortPrefix() + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime));
-    viewer.sendMessage(Main.getShortPrefix() + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime));
+        Main.getShortPrefix() + "Totaltime: " + Theme.highlight() + _timerManager.formatTime(playTime + afkTime));
+    viewer.sendMessage(Main.getShortPrefix() + "Playtime: " + Theme.highlight() + _timerManager.formatTime(playTime));
+    viewer.sendMessage(Main.getShortPrefix() + "AFK: " + Theme.highlight() + _timerManager.formatTime(afkTime));
   }
 
   private ItemStack _createPlayerItem(OfflinePlayer op) {
@@ -112,26 +113,26 @@ public class PlayTimeGUI {
       skullMeta.setOwningPlayer(op);
 
       String status = op.isOnline()
-          ? ChatColor.GRAY + " (" + ChatColor.GREEN + "online" + ChatColor.GRAY + ")"
-          : ChatColor.GRAY + " (" + ChatColor.RED + "offline" + ChatColor.GRAY + ")";
+          ? Theme.primary() + " (" + Theme.highlight() + "online" + Theme.primary() + ")"
+          : Theme.primary() + " (" + Theme.error() + "offline" + Theme.primary() + ")";
 
       skullMeta.displayName(
           Component.text(
-              ChatColor.RED + "" + ChatColor.BOLD + "» "
-                  + ChatColor.YELLOW + op.getName()
+              Theme.titlePrefix()
+                  + op.getName()
                   + status));
 
       skullMeta.lore(
           Arrays.asList(
               "",
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW
+              Theme.textPrefix() + "Total: " + Theme.highlight()
                   + _timerManager.formatTime(playTime + afkTime),
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW
+              Theme.textPrefix() + "Playtime: " + Theme.highlight()
                   + _timerManager.formatTime(playTime),
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK: " + ChatColor.YELLOW
+              Theme.textPrefix() + "AFK: " + Theme.highlight()
                   + _timerManager.formatTime(afkTime),
               "",
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Show Message").stream()
+              Theme.textPrefix() + "Left-Click: Show Message").stream()
               .filter(Objects::nonNull)
               .map(Component::text)
               .collect(Collectors.toList()));

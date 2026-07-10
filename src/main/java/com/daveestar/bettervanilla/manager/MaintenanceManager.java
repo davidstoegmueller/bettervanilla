@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -34,10 +35,10 @@ public class MaintenanceManager {
       if (!p.hasPermission(Permissions.MAINTENANCE_BYPASS.getName())) {
         String message = _settingsManager.getMaintenanceMessage();
 
-        String maintenanceMsg = ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "MAINTENANCE\n\n"
-            + ChatColor.GRAY
+        String maintenanceMsg = Theme.highlight() + "" + ChatColor.BOLD + "MAINTENANCE\n\n"
+            + Theme.primary()
             + "The server is currently in maintenance mode.\nCheck back later or notify the admin of the server.\n\n"
-            + (message != null ? ChatColor.YELLOW + "" + ChatColor.BOLD + "Message: " + ChatColor.GRAY + message
+            + (message != null ? Theme.highlight() + "" + ChatColor.BOLD + "Message: " + Theme.primary() + message
                 : "");
         p.kick(Component.text(maintenanceMsg));
         return false;

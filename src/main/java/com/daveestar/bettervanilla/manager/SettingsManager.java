@@ -16,11 +16,9 @@ import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class SettingsManager {
-  private static final String DEFAULT_MOTD_LINE_1 = "&7                  &e&lBetterVanilla";
-  private static final String DEFAULT_MOTD_LINE_2 = "&7                         &b&lSMP";
-
   private Config _config;
   private FileConfiguration _fileConfig;
 
@@ -243,6 +241,67 @@ public class SettingsManager {
   }
 
   // GLOBAL SETTINGS
+  public String getPrimaryFontColor() {
+    return _fileConfig.getString("global.theme.primaryFontColor", Theme.DEFAULT_PRIMARY_FONT_COLOR);
+  }
+
+  public void setPrimaryFontColor(String value) {
+    _setThemeValue("primaryFontColor", value);
+  }
+
+  public String getHighlightFontColor() {
+    return _fileConfig.getString("global.theme.highlightFontColor", Theme.DEFAULT_HIGHLIGHT_FONT_COLOR);
+  }
+
+  public void setHighlightFontColor(String value) {
+    _setThemeValue("highlightFontColor", value);
+  }
+
+  public String getErrorFontColor() {
+    return _fileConfig.getString("global.theme.errorFontColor", Theme.DEFAULT_ERROR_FONT_COLOR);
+  }
+
+  public void setErrorFontColor(String value) {
+    _setThemeValue("errorFontColor", value);
+  }
+
+  public String getTitleSymbolColor() {
+    return _fileConfig.getString("global.theme.titleSymbolColor", Theme.DEFAULT_TITLE_SYMBOL_COLOR);
+  }
+
+  public void setTitleSymbolColor(String value) {
+    _setThemeValue("titleSymbolColor", value);
+  }
+
+  public String getTextSymbolColor() {
+    return _fileConfig.getString("global.theme.textSymbolColor", Theme.DEFAULT_TEXT_SYMBOL_COLOR);
+  }
+
+  public void setTextSymbolColor(String value) {
+    _setThemeValue("textSymbolColor", value);
+  }
+
+  public String getGlassPaneColor() {
+    return _fileConfig.getString("global.theme.glassPaneColor", Theme.DEFAULT_GLASS_PANE_COLOR);
+  }
+
+  public void setGlassPaneColor(String value) {
+    _setThemeValue("glassPaneColor", value);
+  }
+
+  public String getThemeName() {
+    return _fileConfig.getString("global.theme.name", Theme.DEFAULT_NAME);
+  }
+
+  public void setThemeName(String value) {
+    _setThemeValue("name", value);
+  }
+
+  private void _setThemeValue(String key, String value) {
+    _fileConfig.set("global.theme." + key, value);
+    _config.save();
+  }
+
   public boolean getMaintenanceState() {
     return _fileConfig.getBoolean("global.maintenance.enabled", false);
   }
@@ -436,11 +495,19 @@ public class SettingsManager {
     } else {
       String motd = _fileConfig.getString("global.motd");
       lines = motd == null
-          ? Arrays.asList(DEFAULT_MOTD_LINE_1, DEFAULT_MOTD_LINE_2)
+          ? _getDefaultServerMOTDLines()
           : Arrays.asList(motd.split("\\R", 2));
     }
 
     return lines;
+  }
+
+  private List<String> _getDefaultServerMOTDLines() {
+    String primary = Theme.asAmpersandCode(Theme.primary());
+    String highlight = Theme.asAmpersandCode(Theme.highlight());
+    return Arrays.asList(
+        primary + "                  " + highlight + "&l" + Theme.name(),
+        primary + "                         " + highlight + "&lSMP");
   }
 
   public void setServerMOTD(String line1, String line2) {

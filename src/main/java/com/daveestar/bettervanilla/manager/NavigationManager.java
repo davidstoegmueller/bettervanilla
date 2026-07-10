@@ -4,6 +4,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
 import com.daveestar.bettervanilla.utils.ParticleNavigation;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -48,7 +49,7 @@ public class NavigationManager {
 
     if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
       p.sendMessage(
-          Main.getPrefix() + ChatColor.RED + "Cannot start navigation because the target is in a different world!");
+          Main.getPrefix() + Theme.error() + "Cannot start navigation because the target is in a different world!");
       return;
     }
 
@@ -84,7 +85,7 @@ public class NavigationManager {
 
       if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
         this.stopNavigation(p);
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + "Your navigation has been canceled due to world change!");
         return;
       }
 
@@ -123,31 +124,31 @@ public class NavigationManager {
 
   private String _getNavigationText(String name, Location targetLocation, Location playerLocation) {
     // format the target location details
-    String targetLocationText = ChatColor.YELLOW + "" + ChatColor.BOLD + name.toUpperCase() + ": "
+    String targetLocationText = Theme.highlight() + "" + ChatColor.BOLD + name.toUpperCase() + ": "
         + ChatColor.RESET
-        + ChatColor.YELLOW
-        + "X: " + ChatColor.GRAY
-        + targetLocation.getBlockX() + ChatColor.YELLOW
-        + " Y: " + ChatColor.GRAY + targetLocation.getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
+        + Theme.highlight()
+        + "X: " + Theme.primary()
+        + targetLocation.getBlockX() + Theme.highlight()
+        + " Y: " + Theme.primary() + targetLocation.getBlockY() + Theme.highlight() + " Z: " + Theme.primary()
         + targetLocation.getBlockZ();
 
     // format the player's current location details
-    String playerLocationText = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW
+    String playerLocationText = Theme.textSymbol() + "" + ChatColor.BOLD + " » " + Theme.highlight()
         + ChatColor.BOLD
-        + "CURRENT: " + ChatColor.RESET + ChatColor.YELLOW + "X: "
-        + ChatColor.GRAY
-        + playerLocation.getBlockX() + ChatColor.YELLOW
-        + " Y: " + ChatColor.GRAY + playerLocation.getBlockY() + ChatColor.YELLOW + " Z: " + ChatColor.GRAY
+        + "CURRENT: " + ChatColor.RESET + Theme.highlight() + "X: "
+        + Theme.primary()
+        + playerLocation.getBlockX() + Theme.highlight()
+        + " Y: " + Theme.primary() + playerLocation.getBlockY() + Theme.highlight() + " Z: " + Theme.primary()
         + playerLocation.getBlockZ();
 
     // calculate and format the distance to the target location
-    String distanceText = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
+    String distanceText = Theme.textSymbol() + "" + ChatColor.BOLD + " » " + Theme.highlight() + ChatColor.BOLD
         + "DISTANCE: "
-        + ChatColor.RESET + ChatColor.GRAY + Math.round(playerLocation.distance(targetLocation));
+        + ChatColor.RESET + Theme.primary() + Math.round(playerLocation.distance(targetLocation));
 
     // calculate the direction to the target location
-    String directionText = ChatColor.RED + "" + ChatColor.BOLD + " » " + ChatColor.YELLOW + ChatColor.BOLD
-        + "DIRECTION: " + ChatColor.RESET + ChatColor.GRAY + _getDirection(playerLocation, targetLocation);
+    String directionText = Theme.textSymbol() + "" + ChatColor.BOLD + " » " + Theme.highlight() + ChatColor.BOLD
+        + "DIRECTION: " + ChatColor.RESET + Theme.primary() + _getDirection(playerLocation, targetLocation);
 
     // combine all parts into the final navigation string
     return targetLocationText + playerLocationText + distanceText + directionText;

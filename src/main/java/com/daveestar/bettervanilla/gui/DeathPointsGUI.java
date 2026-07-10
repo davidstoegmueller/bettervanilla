@@ -26,6 +26,7 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.NavigationData;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -51,7 +52,7 @@ public class DeathPointsGUI {
         .collect(Collectors.toMap(pointUUID -> pointUUID, pointUUID -> _createDeathPointItem(p, pointUUID), (a, b) -> a,
             LinkedHashMap::new));
 
-    String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Points";
+    String title = Theme.titlePrefix() + "Death Points";
     CustomGUI deathPointsGUI = new CustomGUI(_plugin, p, title, deathPointEntries, 3, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SORT));
     deathPointsGUI.setSortOptions(_createDeathPointSortOptions(sortData));
@@ -84,7 +85,7 @@ public class DeathPointsGUI {
   // ---------------
 
   private void _displayOptionsGUI(Player p, String pointUUID, CustomGUI parentMenu) {
-    String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Deathpoint Options";
+    String title = Theme.titlePrefix() + "Deathpoint Options";
 
     // create a new GUI for the options-menu
     Map<String, ItemStack> optionPageEntries = new HashMap<>();
@@ -146,7 +147,7 @@ public class DeathPointsGUI {
   }
 
   private void _displayItemsGUI(Player p, String pointUUID, CustomGUI parentMenu) {
-    String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Deathpoint Items";
+    String title = Theme.titlePrefix() + "Deathpoint Items";
 
     ItemStack[] deathPointItems = _deathPointsManager.getDeathPointItems(p, pointUUID);
 
@@ -177,7 +178,7 @@ public class DeathPointsGUI {
     if (deathPointWorld != null && deathPointWorld.equals(playerLocation.getWorld())) {
       long distance = Math.round(playerLocation.distance(deathPointLocation));
 
-      distanceString = "" + distance + ChatColor.GRAY + " blocks";
+      distanceString = "" + distance + Theme.primary() + " blocks";
     } else {
       distanceString = "Not Available";
     }
@@ -186,20 +187,20 @@ public class DeathPointsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Death Point"
-          + ChatColor.GRAY + " (" + deathPointDateTime + ")"));
+      meta.displayName(Component.text(Theme.titlePrefix() + "Death Point"
+          + Theme.primary() + " (" + deathPointDateTime + ")"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "World: " + ChatColor.YELLOW + worldName,
+          Theme.textPrefix() + "World: " + Theme.highlight() + worldName,
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + deathPointLocation.getBlockX(),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + deathPointLocation.getBlockY(),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + deathPointLocation.getBlockZ(),
+          Theme.textPrefix() + "X: " + Theme.highlight() + deathPointLocation.getBlockX(),
+          Theme.textPrefix() + "Y: " + Theme.highlight() + deathPointLocation.getBlockY(),
+          Theme.textPrefix() + "Z: " + Theme.highlight() + deathPointLocation.getBlockZ(),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distanceString,
+          Theme.textPrefix() + "Distance: " + Theme.highlight() + distanceString,
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options").stream()
+          Theme.textPrefix() + "Left-Click: Start navigation",
+          Theme.textPrefix() + "Right-Click: Options").stream()
           .map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -213,10 +214,10 @@ public class DeathPointsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Show Inventory"));
+          Component.text(Theme.titlePrefix() + "Show Inventory"));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: View inventory")
+          Theme.textPrefix() + "Left-Click: View inventory")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -229,12 +230,12 @@ public class DeathPointsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Delete"));
+      meta.displayName(Component.text(Theme.titlePrefix() + "Delete"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.GRAY
+          Theme.textPrefix() + Theme.error() + ChatColor.BOLD + "ATTENTION: " + Theme.primary()
               + "As you delete this death point, you will lose all items stored in it.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Delete death point")
+          Theme.textPrefix() + "Left-Click: Delete death point")
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }

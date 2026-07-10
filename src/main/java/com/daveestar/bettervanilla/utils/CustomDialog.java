@@ -16,8 +16,6 @@ import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput.Optio
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback.Options;
-import net.md_5.bungee.api.ChatColor;
-
 public class CustomDialog {
   public static Dialog createConfirmationDialog(String title, String message, String errorMessage,
       List<DialogInput> inputs,
@@ -26,9 +24,10 @@ public class CustomDialog {
 
     DialogBody dialogBody1 = DialogBody.plainMessage(Component.text(""));
     DialogBody dialogBody2 = DialogBody
-        .plainMessage(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + title));
-    DialogBody dialogBody3 = DialogBody.plainMessage(Component.text(ChatColor.GRAY + message));
-    DialogBody dialogBodyError = DialogBody.plainMessage(Component.text(ChatColor.RED + errorMessage));
+        .plainMessage(Component.text(Theme.titlePrefix() + title));
+    DialogBody dialogBody3 = DialogBody.plainMessage(Component.text(Theme.primary() + message));
+    DialogBody dialogBodyError = DialogBody
+        .plainMessage(Component.text(hasError ? Theme.error() + errorMessage : ""));
 
     List<DialogBody> body = new ArrayList<>(List.of(dialogBody1, dialogBody2, dialogBody3));
     if (hasError) {

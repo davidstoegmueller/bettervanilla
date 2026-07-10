@@ -7,8 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class AFKManager {
 
@@ -165,10 +164,11 @@ public class AFKManager {
         .forEach(player -> {
           if (isAFK) {
             player.sendMessage(
-                Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is now AFK.");
+                Main.getPrefix() + Theme.highlight() + targetPlayer.getName() + Theme.primary() + " is now AFK.");
           } else {
             player.sendMessage(
-                Main.getPrefix() + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is no longer AFK.");
+                Main.getPrefix() + Theme.highlight() + targetPlayer.getName() + Theme.primary()
+                    + " is no longer AFK.");
           }
         });
   }

@@ -30,6 +30,7 @@ import com.daveestar.bettervanilla.manager.TagManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
@@ -41,23 +42,6 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 public class SettingsGUI {
-  private static final List<TagColorOption> TAG_COLORS = List.of(
-      new TagColorOption("BLACK", ChatColor.BLACK),
-      new TagColorOption("DARK_BLUE", ChatColor.DARK_BLUE),
-      new TagColorOption("DARK_GREEN", ChatColor.DARK_GREEN),
-      new TagColorOption("DARK_AQUA", ChatColor.DARK_AQUA),
-      new TagColorOption("DARK_RED", ChatColor.DARK_RED),
-      new TagColorOption("DARK_PURPLE", ChatColor.DARK_PURPLE),
-      new TagColorOption("GOLD", ChatColor.GOLD),
-      new TagColorOption("GRAY", ChatColor.GRAY),
-      new TagColorOption("DARK_GRAY", ChatColor.DARK_GRAY),
-      new TagColorOption("BLUE", ChatColor.BLUE),
-      new TagColorOption("GREEN", ChatColor.GREEN),
-      new TagColorOption("AQUA", ChatColor.AQUA),
-      new TagColorOption("RED", ChatColor.RED),
-      new TagColorOption("LIGHT_PURPLE", ChatColor.LIGHT_PURPLE),
-      new TagColorOption("YELLOW", ChatColor.YELLOW),
-      new TagColorOption("WHITE", ChatColor.WHITE));
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final NavigationManager _navigationManager;
@@ -139,7 +123,7 @@ public class SettingsGUI {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, viewer,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Settings " + ChatColor.GRAY + "(" + target.getName() + ")",
+        Theme.titlePrefix() + "Settings " + Theme.primary() + "(" + target.getName() + ")",
         entries, rows, customSlots, null,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -168,7 +152,7 @@ public class SettingsGUI {
         }
 
         if (!_settingsManager.getItemRestockEnabled()) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Item Restock is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "Item Restock is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -188,7 +172,7 @@ public class SettingsGUI {
         }
 
         if (!_settingsManager.getActionBarTimerEnabled()) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Action-Bar timer is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "Action-Bar timer is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -208,7 +192,7 @@ public class SettingsGUI {
         }
 
         if (!_settingsManager.getTagsEnabled()) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Tags are globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "Tags are globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -377,7 +361,7 @@ public class SettingsGUI {
 
         boolean globalState = _settingsManager.getVeinMinerEnabled();
         if (!globalState) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vein Miner is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "Vein Miner is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -398,7 +382,7 @@ public class SettingsGUI {
 
         boolean globalState = _settingsManager.getVeinChopperEnabled();
         if (!globalState) {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Vein Chopper is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + "Vein Chopper is globally disabled on the server.");
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -444,15 +428,15 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Location"));
+          Component.text(Theme.titlePrefix() + "Action-Bar Location"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Show your current location in the actionbar.",
+          Theme.textPrefix() + "Show your current location in the actionbar.",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TOGGLELOCATION) : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -470,16 +454,16 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Timer"));
+          Component.text(Theme.titlePrefix() + "Action-Bar Timer"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Show the server timer in the actionbar.",
+          Theme.textPrefix() + "Show the server timer in the actionbar.",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.ACTIONBAR_TIMER)
-              : !globalState ? ChatColor.RED + "Action-Bar timer is globally disabled on the server." : null),
+              : !globalState ? Theme.error() + "Action-Bar timer is globally disabled on the server." : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -497,21 +481,21 @@ public class SettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     String tagDisplay = (tagName == null || tagName.isEmpty())
-        ? ChatColor.RED + "NONE"
-        : (tagColor != null ? ChatColor.GRAY + "[" + tagColor : ChatColor.AQUA) + tagName + ChatColor.GRAY + "]";
+        ? Theme.error() + "NONE"
+        : (tagColor != null ? Theme.primary() + "[" + tagColor : ChatColor.AQUA) + tagName + Theme.primary() + "]";
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Player Tag"));
+          Component.text(Theme.titlePrefix() + "Player Tag"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the tag displayed with your name.",
+          Theme.textPrefix() + "Set the tag displayed with your name.",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TAG)
-              : !globalEnabled ? ChatColor.RED + "Tags are globally disabled on the server." : null),
+              : !globalEnabled ? Theme.error() + "Tags are globally disabled on the server." : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag: " + tagDisplay,
+          Theme.textPrefix() + "Tag: " + tagDisplay,
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set Tag",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Clear Tag")
+          Theme.textPrefix() + "Left-Click: Set Tag",
+          Theme.textPrefix() + "Right-Click: Clear Tag")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -528,15 +512,15 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Bossbar Compass"));
+          Component.text(Theme.titlePrefix() + "Bossbar Compass"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shows a compass in the bossbar",
+          Theme.textPrefix() + "Shows a compass in the bossbar",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TOGGLECOMPASS) : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -553,28 +537,28 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.CHESTSORT.getName());
 
     meta.displayName(
-        Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Chest Sorting"));
+        Component.text(Theme.titlePrefix() + "Chest Sorting"));
 
     List<String> lore = new java.util.ArrayList<>();
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a chest inventory to sort it!");
+    lore.add(Theme.textPrefix() + "Right-Click outside of a chest inventory to sort it!");
     if (!hasPermission) {
       lore.add(Main.getShortNoPermissionMessage(Permissions.CHESTSORT));
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+    lore.add(Theme.textPrefix() + "State: "
+        + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"));
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
+    lore.add(Theme.textPrefix() + "Sorting Mode:");
     for (InventorySortMode option : InventorySortMode.values()) {
-      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
-      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+      ChatColor color = option == mode ? Theme.highlight() : Theme.primary();
+      lore.add(Theme.textPrefix() + color + option.getLabel());
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
+    lore.add(Theme.textPrefix() + "Left-Click: Toggle");
+    lore.add(Theme.textPrefix() + "Right-Click: Next mode");
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
@@ -592,31 +576,31 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.INVENTORYSORT.getName());
 
     meta.displayName(
-        Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Inventory Sorting"));
+        Component.text(Theme.titlePrefix() + "Inventory Sorting"));
 
     List<String> lore = new java.util.ArrayList<>();
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of your inventory to sort it!");
+    lore.add(Theme.textPrefix() + "Right-Click outside of your inventory to sort it!");
     if (!hasPermission) {
       lore.add(Main.getShortNoPermissionMessage(Permissions.INVENTORYSORT));
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Include Hotbar: "
-        + (includeHotbar ? ChatColor.GREEN + "INCLUDE" : ChatColor.RED + "NOT INCLUDE"));
+    lore.add(Theme.textPrefix() + "State: "
+        + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"));
+    lore.add(Theme.textPrefix() + "Include Hotbar: "
+        + (includeHotbar ? Theme.highlight() + "INCLUDE" : Theme.error() + "NOT INCLUDE"));
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
+    lore.add(Theme.textPrefix() + "Sorting Mode:");
     for (InventorySortMode option : InventorySortMode.values()) {
-      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
-      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+      ChatColor color = option == mode ? Theme.highlight() : Theme.primary();
+      lore.add(Theme.textPrefix() + color + option.getLabel());
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Toggle hotbar");
+    lore.add(Theme.textPrefix() + "Left-Click: Toggle");
+    lore.add(Theme.textPrefix() + "Right-Click: Next mode");
+    lore.add(Theme.textPrefix() + "Shift-Left-Click: Toggle hotbar");
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
@@ -633,28 +617,28 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.BACKPACK.getName());
 
     meta.displayName(
-        Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Sorting"));
+        Component.text(Theme.titlePrefix() + "Backpack Sorting"));
 
     List<String> lore = new java.util.ArrayList<>();
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click outside of a backpack to sort its current page!");
+    lore.add(Theme.textPrefix() + "Right-Click outside of a backpack to sort its current page!");
     if (!hasPermission) {
       lore.add(Main.getShortNoPermissionMessage(Permissions.BACKPACK));
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-        + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+    lore.add(Theme.textPrefix() + "State: "
+        + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"));
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sorting Mode:");
+    lore.add(Theme.textPrefix() + "Sorting Mode:");
     for (InventorySortMode option : InventorySortMode.values()) {
-      ChatColor color = option == mode ? ChatColor.GREEN : ChatColor.YELLOW;
-      lore.add(ChatColor.YELLOW + "» " + color + option.getLabel());
+      ChatColor color = option == mode ? Theme.highlight() : Theme.primary();
+      lore.add(Theme.textPrefix() + color + option.getLabel());
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Next mode");
+    lore.add(Theme.textPrefix() + "Left-Click: Toggle");
+    lore.add(Theme.textPrefix() + "Right-Click: Next mode");
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
@@ -671,14 +655,14 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Navigation Particles"));
+          Component.text(Theme.titlePrefix() + "Navigation Particles"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Show particle trails when navigating to a location.",
+          Theme.textPrefix() + "Show particle trails when navigating to a location.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -694,17 +678,17 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Navigation Auto Cancel"));
+          Component.text(Theme.titlePrefix() + "Navigation Auto Cancel"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Automatically stop navigation when you reach the destination.",
+          Theme.textPrefix() + "Automatically stop navigation when you reach the destination.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Radius: " + ChatColor.YELLOW + radius + ChatColor.GRAY
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + "Radius: " + Theme.highlight() + radius + Theme.primary()
               + " blocks",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set radius")
+          Theme.textPrefix() + "Left-Click: Toggle",
+          Theme.textPrefix() + "Right-Click: Set radius")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -723,17 +707,17 @@ public class SettingsGUI {
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner"));
+          Component.text(Theme.titlePrefix() + "Vein Miner"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY
+          Theme.textPrefix()
               + "While sneaking, mine all ores of the same type if using a pickaxe.",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.VEINMINER)
-              : !globalState ? ChatColor.RED + "Vein Miner is globally disabled on the server." : null),
+              : !globalState ? Theme.error() + "Vein Miner is globally disabled on the server." : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -752,16 +736,16 @@ public class SettingsGUI {
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper"));
+          Component.text(Theme.titlePrefix() + "Vein Chopper"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "While sneaking, chop all logs of the same type if using an axe.",
+          Theme.textPrefix() + "While sneaking, chop all logs of the same type if using an axe.",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.VEINCHOPPER)
-              : !globalState ? ChatColor.RED + "Vein Chopper is globally disabled on the server." : null),
+              : !globalState ? Theme.error() + "Vein Chopper is globally disabled on the server." : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -779,16 +763,16 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Item Restock"));
+          Component.text(Theme.titlePrefix() + "Item Restock"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Refill your hotbar slot with matching items automatically.",
+          Theme.textPrefix() + "Refill your hotbar slot with matching items automatically.",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.ITEM_RESTOCK)
-              : !globalState ? ChatColor.RED + "Item Restock is globally disabled on the server." : null),
+              : !globalState ? Theme.error() + "Item Restock is globally disabled on the server." : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -805,15 +789,15 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Double Door Sync"));
+          Component.text(Theme.titlePrefix() + "Double Door Sync"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Interact with one door to toggle the paired door.",
+          Theme.textPrefix() + "Interact with one door to toggle the paired door.",
           (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.DOUBLE_DOOR) : null),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + "State: "
+              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + "Left-Click: Toggle")
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -827,11 +811,11 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Admin Settings"));
+          Component.text(Theme.titlePrefix() + "Admin Settings"));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage admin and server settings.",
+          Theme.textPrefix() + "Manage admin and server settings.",
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
+          Theme.textPrefix() + "Left-Click: Open")
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -841,15 +825,14 @@ public class SettingsGUI {
 
   private void _openPlayerTagDialog(Player viewer, CustomGUI parentMenu, String errorMessage, Player target) {
     String currentName = Optional.ofNullable(_tagManager.getTag(target)).orElse("");
-    ChatColor currentColor = _tagManager.getTagColor(target);
-    String currentColorName = _getTagColorKey(currentColor);
+    String currentColorName = _settingsManager.getPlayerTagColor(target.getUniqueId());
 
     DialogInput inputName = CustomDialog.createTextInput("tagname",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag Name",
+        Theme.textPrefix() + "Tag Name",
         currentName);
 
     DialogInput inputColor = CustomDialog.createSelectInput("tagcolor",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tag Color",
+        Theme.textPrefix() + "Tag Color",
         _buildTagColorOptions(),
         currentColorName);
 
@@ -868,7 +851,7 @@ public class SettingsGUI {
     int radius = _settingsManager.getPlayerNavigationReachedRadius(target.getUniqueId());
 
     DialogInput inputRadius = CustomDialog.createNumberInput("radius",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Reached Radius (blocks)",
+        Theme.textPrefix() + "Reached Radius (blocks)",
         1, 200, 1, (float) radius);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
@@ -898,13 +881,13 @@ public class SettingsGUI {
       return;
     }
 
-    ChatColor color = _parseTagColor(colorKey);
-    _tagManager.setTag(target, name, color);
+    ChatColor color = Theme.minecraftColors().get(colorKey);
+    _tagManager.setTag(target, name, colorKey);
     _nameTagManager.updateNameTag(target);
     _tabListManager.refreshPlayerListEntry(target);
 
-    target.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag set to: " + ChatColor.GRAY + "[" + color + name
-        + ChatColor.GRAY + "]");
+    target.sendMessage(Main.getPrefix() + Theme.primary() + "Tag set to: " + Theme.primary() + "[" + color + name
+        + Theme.primary() + "]");
     target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(viewer, target);
@@ -917,8 +900,8 @@ public class SettingsGUI {
 
     _settingsManager.setPlayerNavigationReachedRadius(target.getUniqueId(), radius);
 
-    target.sendMessage(Main.getPrefix() + "Navigation reach radius set to " + ChatColor.YELLOW + radius
-        + ChatColor.GRAY + " blocks.");
+    target.sendMessage(Main.getPrefix() + "Navigation reach radius set to " + Theme.highlight() + radius
+        + Theme.primary() + " blocks.");
     target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(viewer, target);
@@ -929,31 +912,17 @@ public class SettingsGUI {
     _nameTagManager.updateNameTag(target);
     _tabListManager.refreshPlayerListEntry(target);
 
-    target.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Tag cleared.");
+    target.sendMessage(Main.getPrefix() + Theme.primary() + "Tag cleared.");
   }
 
   private Map<String, String> _buildTagColorOptions() {
     Map<String, String> options = new LinkedHashMap<>();
-    for (TagColorOption option : TAG_COLORS) {
-      String name = _formatColorName(option.key());
-      options.put(option.key(), option.color() + name);
+    for (Map.Entry<String, ChatColor> entry : Theme.minecraftColors().entrySet()) {
+      String name = _formatColorName(entry.getKey());
+      options.put(entry.getKey(), entry.getValue() + name);
     }
 
     return options;
-  }
-
-  private ChatColor _parseTagColor(String colorKey) {
-    if (colorKey == null || colorKey.isBlank()) {
-      return ChatColor.AQUA;
-    }
-
-    for (TagColorOption option : TAG_COLORS) {
-      if (option.key().equalsIgnoreCase(colorKey)) {
-        return option.color();
-      }
-    }
-
-    return ChatColor.AQUA;
   }
 
   private String _formatColorName(String name) {
@@ -967,17 +936,6 @@ public class SettingsGUI {
         .collect(Collectors.joining(" "));
   }
 
-  private String _getTagColorKey(ChatColor color) {
-    if (color != null) {
-      for (TagColorOption option : TAG_COLORS) {
-        if (option.color().equals(color)) {
-          return option.key();
-        }
-      }
-    }
-
-    return "AQUA";
-  }
 
   private void _toggleLocation(Player p) {
     boolean newState;
@@ -992,17 +950,17 @@ public class SettingsGUI {
 
       var blockLoc = p.getLocation().toBlockLocation();
       Biome biome = p.getWorld().getBiome(blockLoc);
-      String locationText = ChatColor.YELLOW + "X: " + ChatColor.GRAY + blockLoc.getBlockX()
-          + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + blockLoc.getBlockY()
-          + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + blockLoc.getBlockZ() + ChatColor.RED
-          + ChatColor.BOLD + " » " + ChatColor.GRAY + biome.getKey();
+      String locationText = Theme.highlight() + "X: " + Theme.primary() + blockLoc.getBlockX()
+          + Theme.highlight() + " Y: " + Theme.primary() + blockLoc.getBlockY()
+          + Theme.highlight() + " Z: " + Theme.primary() + blockLoc.getBlockZ() + Theme.textSymbol()
+          + ChatColor.BOLD + " » " + Theme.primary() + biome.getKey();
 
       _actionBar.sendActionBar(p, locationText);
       newState = true;
     }
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Action-Bar location is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Action-Bar location is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleActionBarTimer(Player p) {
@@ -1010,7 +968,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerActionBarTimer(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleCompass(Player p) {
@@ -1026,7 +984,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerToggleCompass(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleChestSort(Player p) {
@@ -1034,7 +992,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerChestSort(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Chest sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Chest sorting is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _cycleChestSortMode(Player p) {
@@ -1042,7 +1000,7 @@ public class SettingsGUI {
     InventorySortMode next = current.next();
     _settingsManager.setPlayerChestSortMode(p.getUniqueId(), next);
 
-    p.sendMessage(Main.getPrefix() + "Chest sort mode set to " + ChatColor.YELLOW + next.getLabel());
+    p.sendMessage(Main.getPrefix() + "Chest sort mode set to " + Theme.highlight() + next.getLabel());
   }
 
   private void _toggleBackpackSort(Player p) {
@@ -1050,7 +1008,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerBackpackSort(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Backpack sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Backpack sorting is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _cycleBackpackSortMode(Player p) {
@@ -1058,7 +1016,7 @@ public class SettingsGUI {
     InventorySortMode next = current.next();
     _settingsManager.setPlayerBackpackSortMode(p.getUniqueId(), next);
 
-    p.sendMessage(Main.getPrefix() + "Backpack sort mode set to " + ChatColor.YELLOW + next.getLabel());
+    p.sendMessage(Main.getPrefix() + "Backpack sort mode set to " + Theme.highlight() + next.getLabel());
   }
 
   private void _toggleInventorySort(Player p) {
@@ -1066,7 +1024,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerInventorySort(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Inventory sorting is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Inventory sorting is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _cycleInventorySortMode(Player p) {
@@ -1074,7 +1032,7 @@ public class SettingsGUI {
     InventorySortMode next = current.next();
     _settingsManager.setPlayerInventorySortMode(p.getUniqueId(), next);
 
-    p.sendMessage(Main.getPrefix() + "Inventory sort mode set to " + ChatColor.YELLOW + next.getLabel());
+    p.sendMessage(Main.getPrefix() + "Inventory sort mode set to " + Theme.highlight() + next.getLabel());
   }
 
   private void _toggleInventorySortIncludeHotbar(Player p) {
@@ -1083,7 +1041,7 @@ public class SettingsGUI {
 
     String stateText = newState ? "INCLUDED" : "EXCLUDED";
     p.sendMessage(
-        Main.getPrefix() + "Inventory sorting hotbar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+        Main.getPrefix() + "Inventory sorting hotbar is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleNavigationTrail(Player p) {
@@ -1091,7 +1049,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerNavigationTrail(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Navigation particles are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Navigation particles are now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleNavigationAutoCancel(Player p) {
@@ -1099,7 +1057,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerNavigationAutoCancel(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Navigation auto cancel is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Navigation auto cancel is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleVeinMiner(Player p) {
@@ -1107,7 +1065,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerVeinMiner(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vein Miner is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Vein Miner is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleVeinChopper(Player p) {
@@ -1115,7 +1073,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerVeinChopper(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vein Chopper is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Vein Chopper is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleDoubleDoor(Player p) {
@@ -1124,7 +1082,7 @@ public class SettingsGUI {
 
     String stateText = newState ? "ENABLED" : "DISABLED";
     p.sendMessage(
-        Main.getPrefix() + "Double door sync is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+        Main.getPrefix() + "Double door sync is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
   private void _toggleItemRestock(Player p) {
@@ -1132,9 +1090,7 @@ public class SettingsGUI {
     _settingsManager.setPlayerItemRestock(p.getUniqueId(), newState);
 
     String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Item restock is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + "Item restock is now " + Theme.highlight() + ChatColor.BOLD + stateText);
   }
 
-  private record TagColorOption(String key, ChatColor color) {
-  }
 }

@@ -20,9 +20,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class MaterialToggleGUI implements Listener {
   private final Main _plugin;
@@ -52,12 +52,12 @@ public class MaterialToggleGUI implements Listener {
 
       if (meta != null) {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + mat.name()));
+        meta.displayName(Component.text(Theme.titlePrefix() + mat.name()));
         meta.lore(Arrays.asList(
             "",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-                + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+            Theme.textPrefix() + "State: "
+                + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+            Theme.textPrefix() + "Left-Click: Toggle")
             .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
         item.setItemMeta(meta);
       }
@@ -67,7 +67,7 @@ public class MaterialToggleGUI implements Listener {
 
     int rows = Math.max(1, (int) Math.ceil(entries.size() / 9.0)) + 1;
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» " + _title,
+        Theme.titlePrefix() + _title,
         entries, rows, null, parent,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
