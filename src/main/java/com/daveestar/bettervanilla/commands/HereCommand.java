@@ -11,6 +11,9 @@ import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class HereCommand implements CommandExecutor {
   @Override
@@ -35,9 +38,13 @@ public class HereCommand implements CommandExecutor {
         + Theme.primary() + "World: " + Theme.highlight() + worldName + Theme.primary() + " | "
         + Theme.primary() + "X: " + Theme.highlight() + loc.getBlockX() + Theme.primary() + " | "
         + Theme.primary() + "Y: " + Theme.highlight() + loc.getBlockY() + Theme.primary() + " | "
-        + Theme.primary() + "Z: " + Theme.highlight() + loc.getBlockZ();
+        + Theme.primary() + "Z: " + Theme.highlight() + loc.getBlockZ()
+        + Theme.primary() + " " + Theme.highlight() + "(Click here to navigate)";
 
-    Component message = Component.text(messageText);
+    String navigationCommand = "/waypoints coords " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+    Component message = LegacyComponentSerializer.legacySection().deserialize(messageText)
+        .clickEvent(ClickEvent.runCommand(navigationCommand))
+        .hoverEvent(HoverEvent.showText(Component.text("Click to start navigation")));
     Main.getInstance().getServer().sendMessage(message);
 
     return true;
