@@ -7,6 +7,8 @@
 - 📦 **Minecraft Version 26.2** - Upgraded the plugin to minecraft version 26.2
 - 🎒 **Backpack Sorting** - Added per-player backpack sorting with configurable sort modes.
 - 🎨 **Custom Themes** - Added admin-configurable Minecraft font colors, symbol colors, footer glass panes, and plugin branding.
+- 📍 **Clickable Here Messages** - Made shared `/here` coordinates clickable so players can start waypoint navigation directly.
+- ⚰️ **Deathchest Placement** - Improved deathchest spawning to find the nearest available air or fluid block without overwriting terrain.
 
 ## [1.13.0] - 08.07.2026
 
