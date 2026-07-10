@@ -18,6 +18,9 @@ import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.utils.Config;
 
 public class SettingsManager {
+  private static final String DEFAULT_MOTD_LINE_1 = "&7                  &e&lBetterVanilla";
+  private static final String DEFAULT_MOTD_LINE_2 = "&7                         &b&lSMP";
+
   private Config _config;
   private FileConfiguration _fileConfig;
 
@@ -398,23 +401,26 @@ public class SettingsManager {
   }
 
   public String getServerMOTD() {
-    if (_fileConfig.isList("global.motd")) {
-      return String.join("\n", _fileConfig.getStringList("global.motd"));
-    }
-
-    return _fileConfig.getString("global.motd",
-        "&7                  &e&lBetterVanilla\n&7                         &b&lSMP");
+    return String.join("\n", _getServerMOTDLines());
   }
 
   public String[] getServerMOTDRaw() {
+    return _getServerMOTDLines().toArray(new String[0]);
+  }
+
+  private List<String> _getServerMOTDLines() {
+    List<String> lines;
+
     if (_fileConfig.isList("global.motd")) {
-      return _fileConfig.getStringList("global.motd").toArray(new String[0]);
+      lines = _fileConfig.getStringList("global.motd");
+    } else {
+      String motd = _fileConfig.getString("global.motd");
+      lines = motd == null
+          ? Arrays.asList(DEFAULT_MOTD_LINE_1, DEFAULT_MOTD_LINE_2)
+          : Arrays.asList(motd.split("\\R", 2));
     }
 
-    return new String[] {
-        _fileConfig.getString("global.motd",
-            "[&7                  &e&lBetterVanilla,&7                         &b&lSMP]")
-    };
+    return lines;
   }
 
   public void setServerMOTD(String line1, String line2) {
