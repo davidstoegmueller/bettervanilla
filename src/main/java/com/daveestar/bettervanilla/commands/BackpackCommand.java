@@ -27,12 +27,12 @@ public class BackpackCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.BACKPACK.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.BACKPACK));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.BACKPACK));
       return true;
     }
 
     if (args.length > 0) {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/backpack");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-backpack-usage"));
       return true;
     }
 

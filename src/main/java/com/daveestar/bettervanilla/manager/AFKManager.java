@@ -121,7 +121,7 @@ public class AFKManager {
       boolean wasAFK = _afkStates.get(p);
 
       if (wasAFK && !nowAFK) {
-        p.sendMessage(Main.getPrefix() + "You are no longer AFK!");
+        p.sendMessage(Main.getPrefix() + Main.tr(p, "afk-player-returned"));
         _afkStates.put(p, false);
         updated = true;
 
@@ -132,7 +132,7 @@ public class AFKManager {
 
         announceAFKToOthers(p, false);
       } else if (!wasAFK && nowAFK) {
-        p.sendMessage(Main.getPrefix() + "You are now AFK!");
+        p.sendMessage(Main.getPrefix() + Main.tr(p, "afk-player-started"));
         _afkStates.put(p, true);
         updated = true;
 
@@ -163,12 +163,11 @@ public class AFKManager {
         .filter(player -> !player.equals(targetPlayer))
         .forEach(player -> {
           if (isAFK) {
-            player.sendMessage(
-                Main.getPrefix() + Theme.highlight() + targetPlayer.getName() + Theme.primary() + " is now AFK.");
+            player.sendMessage(Main.getPrefix() + Main.tr(player, "afk-player-started-announcement",
+                "player", Theme.highlight() + targetPlayer.getName() + Theme.primary()));
           } else {
-            player.sendMessage(
-                Main.getPrefix() + Theme.highlight() + targetPlayer.getName() + Theme.primary()
-                    + " is no longer AFK.");
+            player.sendMessage(Main.getPrefix() + Main.tr(player, "afk-player-returned-announcement",
+                "player", Theme.highlight() + targetPlayer.getName() + Theme.primary()));
           }
         });
   }

@@ -37,14 +37,13 @@ public class PermissionsCommand implements TabExecutor {
     if (cs instanceof Player) {
       Player p = (Player) cs;
       if (!p.hasPermission(Permissions.PERMISSIONS.getName())) {
-        p.sendMessage(Main.getNoPermissionMessage(Permissions.PERMISSIONS));
+        p.sendMessage(Main.getNoPermissionMessage(p, Permissions.PERMISSIONS));
         return true;
       }
     }
 
     if (args.length < 1) {
-      cs.sendMessage(Main.getPrefix() + Theme.error() + "Usage: "
-          + Theme.highlight() + "/permissions <group | user | assignments | default | list | reload>");
+      cs.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(cs, "command-permissions-usage"));
       return true;
     }
 
@@ -69,8 +68,7 @@ public class PermissionsCommand implements TabExecutor {
         handleReloadCommand(cs, args);
         break;
       default:
-        cs.sendMessage(Main.getPrefix() + Theme.error() + "Usage: "
-            + Theme.highlight() + "/permissions <group | user | assignments | default | list | reload>");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(cs, "command-permissions-usage"));
         break;
     }
 
@@ -83,8 +81,7 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleGroupCommand(CommandSender sender, String[] args) {
     if (args.length < 3) {
-      sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-          + "/permissions group <addperm | removeperm | delete> <group> [<permission>]");
+      sender.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(sender, "command-permissions-group-usage"));
       return;
     }
 
@@ -96,80 +93,85 @@ public class PermissionsCommand implements TabExecutor {
       case "addperm":
         // syntax: /permissions group addperm <group> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-              + " /permissions group addperm <group> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-add-permission-usage"));
           return;
         }
 
         if (!permissionsManager.hasGroupPermission(group, permission)) {
           permissionsManager.addPermissionToGroup(group, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + Theme.highlight() + permission + Theme.primary()
-              + " added to group " + Theme.highlight() + group);
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-group-add-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(
-              Main.getPrefix() + Theme.error() + "Permission " + Theme.highlight() + permission + Theme.error()
-                  + " has already been added to group " + Theme.highlight() + group);
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-add-permission-error-already-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       case "removeperm":
         // syntax: /permissions group removeperm <group> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-              + "/permissions group removeperm <group> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-remove-permission-usage"));
           return;
         }
 
         if (permissionsManager.hasGroupPermission(group, permission)) {
           permissionsManager.removePermissionFromGroup(group, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + Theme.highlight() + permission + Theme.primary()
-              + " removed from group " + Theme.highlight() + group);
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-group-remove-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Permission " + Theme.highlight() + permission
-              + Theme.error() + " is not assigned to group " + Theme.highlight() + group);
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-remove-permission-error-not-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       case "delete":
         // syntax: /permissions group delete <group>
         if (args.length != 3) {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-              + "/permissions group delete <group>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-delete-usage"));
           return;
         }
 
         if (permissionsManager.getAllGroupNames().contains(group)) {
           if (group.equalsIgnoreCase(permissionsManager.getDefaultGroupName())) {
-            sender.sendMessage(Main.getPrefix() + Theme.error() + "You cannot delete the default group.");
+            sender.sendMessage(Main.getPrefix() + Theme.error()
+                + Main.tr(sender, "command-permissions-group-delete-error-default-group"));
             return;
           }
 
           permissionsManager.removeGroup(group);
-          sender.sendMessage(Main.getPrefix() + "Group " + Theme.highlight() + group + Theme.primary()
-              + " has been deleted.");
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-group-delete-success",
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Group " + Theme.highlight() + group
-              + Theme.error() + " does not exist.");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-delete-error-not-found",
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       default:
-        sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-            + " /permissions group <addperm | removeperm | delete> <group> [<permission>]");
+        sender.sendMessage(Main.getPrefix() + Theme.error()
+            + Main.tr(sender, "command-permissions-group-usage"));
         break;
     }
   }
 
   private void handleDefaultGroupCommand(CommandSender sender, String[] args) {
     if (args.length == 1) {
-      sender.sendMessage(
-          Main.getPrefix() + Theme.primary() + "Current default group: " + Theme.highlight()
-              + permissionsManager.getDefaultGroupName());
-      sender.sendMessage(Main.getShortPrefix() + Theme.primary()
-          + "Set another group with " + Theme.highlight() + "/permissions default <group>");
+      sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-default-group-current",
+          "group", Theme.highlight() + permissionsManager.getDefaultGroupName() + Theme.primary()));
+      sender.sendMessage(Main.getShortPrefix() + Main.tr(sender, "command-permissions-default-group-change-hint"));
       return;
     }
 
     if (args.length != 2) {
-      sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-          + "/permissions default <group>");
+      sender.sendMessage(Main.getPrefix() + Theme.error()
+          + Main.tr(sender, "command-permissions-default-group-usage"));
       return;
     }
 
@@ -177,13 +179,12 @@ public class PermissionsCommand implements TabExecutor {
     boolean groupExists = permissionsManager.groupExists(groupName);
 
     permissionsManager.setDefaultGroup(groupName);
-    sender.sendMessage(Main.getPrefix() + Theme.primary() + "Default group set to " + Theme.highlight() + groupName
-        + Theme.primary() + ".");
+    sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-default-group-set-success",
+        "group", Theme.highlight() + groupName + Theme.primary()));
 
     if (!groupExists) {
-      sender.sendMessage(Main.getShortPrefix() + Theme.primary() + "Created new group " + Theme.highlight() + groupName
-          + Theme.primary() + ". Add permissions with " + Theme.highlight()
-          + "/permissions group addperm " + groupName + " <permission>");
+      sender.sendMessage(Main.getShortPrefix() + Main.tr(sender, "command-permissions-default-group-created-hint",
+          "group", Theme.highlight() + groupName + Theme.primary()));
     }
   }
 
@@ -193,13 +194,13 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleUserCommand(CommandSender sender, String[] args) {
     if (args.length != 4) {
-      sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-          + "/permissions user <addperm | removeperm | setgroup> <username> <permission | group>");
+      sender.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(sender, "command-permissions-user-usage"));
       return;
     }
 
     String action = args[1].toLowerCase();
     OfflinePlayer p = Bukkit.getOfflinePlayer(args[2]);
+    String playerName = p.getName() != null ? p.getName() : args[2];
     String permission = args[3];
     String group = args[3];
 
@@ -207,57 +208,66 @@ public class PermissionsCommand implements TabExecutor {
       case "addperm":
         // syntax: /permissions user addperm <username> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-              + "/permissions user addperm <username> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-add-permission-usage"));
           return;
         }
 
         if (!permissionsManager.hasUserPermission(p, permission)) {
           permissionsManager.addPermissionToUser(p, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + Theme.highlight() + permission + Theme.primary()
-              + " added to user " + Theme.highlight() + p.getName());
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-user-add-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "player", Theme.highlight() + playerName + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Permission " + Theme.highlight() + permission
-              + Theme.error() + " has already been added to user " + Theme.highlight() + p.getName());
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-add-permission-error-already-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "player", Theme.highlight() + playerName + Theme.error()));
         }
         break;
       case "removeperm":
         // syntax: /permissions user removeperm <username> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-              + "/permissions user removeperm <username> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-remove-permission-usage"));
           return;
         }
 
         if (permissionsManager.hasUserPermission(p, permission)) {
           permissionsManager.removePermissionFromUser(p, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + Theme.highlight() + permission + Theme.primary()
-              + " removed from user " + Theme.highlight() + p.getName());
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-user-remove-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "player", Theme.highlight() + playerName + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Permission " + Theme.highlight() + permission
-              + Theme.error() + " is not assigned to user " + Theme.highlight() + p.getName());
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-remove-permission-error-not-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "player", Theme.highlight() + playerName + Theme.error()));
         }
         break;
       case "setgroup":
         // syntax: /permissions user setgroup <username> <group>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-              + "/permissions user setgroup <username> <group>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-set-group-usage"));
           return;
         }
 
         if (!permissionsManager.getUserGroup(p).equalsIgnoreCase(group)) {
           permissionsManager.assignUserToGroup(p, group);
-          sender.sendMessage(Main.getPrefix() + "User " + Theme.highlight() + p.getName() + Theme.primary()
-              + " assigned to group " + Theme.highlight() + group);
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-user-set-group-success",
+              "player", Theme.highlight() + playerName + Theme.primary(),
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + Theme.error() + "User " + Theme.highlight() + p.getName() + Theme.error()
-              + " is already assigned to group " + Theme.highlight() + group);
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-set-group-error-already-assigned",
+                  "player", Theme.highlight() + playerName + Theme.error(),
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       default:
-        sender.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight()
-            + "/permissions user <addperm | removeperm | setgroup> <username> <permission | group>");
+        sender.sendMessage(Main.getPrefix() + Theme.error()
+            + Main.tr(sender, "command-permissions-user-usage"));
         break;
     }
   }
@@ -268,7 +278,7 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleAssignmentsCommand(CommandSender sender) {
     if (!(sender instanceof Player)) {
-      sender.sendMessage(Main.getPrefix() + Theme.error() + "You must be a player to use this command.");
+      sender.sendMessage(Main.getNoPlayerMessage());
       return;
     }
 
@@ -276,33 +286,38 @@ public class PermissionsCommand implements TabExecutor {
     Set<String> groupNames = permissionsManager.getAllGroupNames();
     Set<String> userNames = permissionsManager.getAllUserIds();
 
-    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD + "PERMISSIONS: Group Assignments");
-    p.sendMessage(Main.getShortPrefix() + Theme.primary() + "Current default group: " + Theme.highlight()
-        + permissionsManager.getDefaultGroupName());
+    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+        + Main.tr(p, "command-permissions-assignments-groups-title"));
+    p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-permissions-default-group-current",
+        "group", Theme.highlight() + permissionsManager.getDefaultGroupName() + Theme.primary()));
     p.sendMessage("");
 
     for (String group : groupNames) {
       List<String> groupPerms = permissionsManager.getGroupPermissions(group);
 
-      p.sendMessage(" " + Theme.textPrefix() + "Group: " + group);
-      p.sendMessage("     " + Theme.textPrefix() + "Permissions: " + groupPerms);
+      p.sendMessage(" " + Theme.textPrefix() + Main.tr(p, "command-permissions-assignments-group-entry",
+          "group", group));
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-permissions-entry", "permissions", groupPerms));
 
       List<String> usersInGroup = new ArrayList<>();
       for (String uid : userNames) {
         OfflinePlayer user = Bukkit.getOfflinePlayer(UUID.fromString(uid));
 
         if (permissionsManager.getUserGroup(user).equals(group)) {
-          usersInGroup.add(user.getName());
+          usersInGroup.add(user.getName() != null ? user.getName() : uid);
         }
       }
 
-      p.sendMessage("     " + Theme.textPrefix() + "Users: " + usersInGroup);
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-users-entry", "players", usersInGroup));
       p.sendMessage("");
     }
 
     p.sendMessage("");
 
-    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD + "PERMISSIONS: User Assignments");
+    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+        + Main.tr(p, "command-permissions-assignments-players-title"));
 
     for (String uid : userNames) {
       OfflinePlayer user = Bukkit.getOfflinePlayer(UUID.fromString(uid));
@@ -310,9 +325,13 @@ public class PermissionsCommand implements TabExecutor {
       String userGroup = permissionsManager.getUserGroup(user);
       List<String> userPerms = permissionsManager.getUserPermissions(user);
 
-      p.sendMessage(" " + Theme.textPrefix() + "User: " + user.getName());
-      p.sendMessage("     " + Theme.textPrefix() + "Group: " + userGroup);
-      p.sendMessage("     " + Theme.textPrefix() + "Permissions: " + userPerms);
+      String playerName = user.getName() != null ? user.getName() : uid;
+      p.sendMessage(" " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-player-entry", "player", playerName));
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-group-entry", "group", userGroup));
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-permissions-entry", "permissions", userPerms));
       p.sendMessage("");
     }
   }
@@ -323,13 +342,14 @@ public class PermissionsCommand implements TabExecutor {
 
   public void handleListCommand(CommandSender sender) {
     if (!(sender instanceof Player)) {
-      sender.sendMessage(Main.getPrefix() + Theme.error() + "You must be a player to use this command.");
+      sender.sendMessage(Main.getNoPlayerMessage());
       return;
     }
 
     Player p = (Player) sender;
 
-    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD + "PERMISSIONS: List of Permissions");
+    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+        + Main.tr(p, "command-permissions-list-title"));
     for (Permissions permission : Permissions.values()) {
       p.sendMessage(Main.getShortPrefix() + permission.getName());
     }
@@ -341,7 +361,7 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleReloadCommand(CommandSender sender, String[] args) {
     permissionsManager.reloadPermissions();
-    sender.sendMessage(Main.getPrefix() + "Permissions reloaded successfully.");
+    sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-reload-success"));
   }
 
   // --------------

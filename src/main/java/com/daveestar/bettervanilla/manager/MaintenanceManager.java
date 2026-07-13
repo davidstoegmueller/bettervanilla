@@ -35,15 +35,17 @@ public class MaintenanceManager {
       if (!p.hasPermission(Permissions.MAINTENANCE_BYPASS.getName())) {
         String message = _settingsManager.getMaintenanceMessage();
 
-        String maintenanceMsg = Theme.highlight() + "" + ChatColor.BOLD + "MAINTENANCE\n\n"
-            + Theme.primary()
-            + "The server is currently in maintenance mode.\nCheck back later or notify the admin of the server.\n\n"
-            + (message != null ? Theme.highlight() + "" + ChatColor.BOLD + "Message: " + Theme.primary() + message
+        String maintenanceMsg = Theme.highlight() + "" + ChatColor.BOLD
+            + Main.tr(p, "maintenance-kick-title") + "\n\n"
+            + Theme.primary() + Main.tr(p, "maintenance-kick-description") + "\n\n"
+            + (message != null && !message.isBlank()
+                ? Theme.highlight() + "" + ChatColor.BOLD + Main.tr(p, "maintenance-kick-custom-message",
+                    "message", Theme.primary() + message)
                 : "");
         p.kick(Component.text(maintenanceMsg));
         return false;
       } else {
-        p.sendMessage(Main.getPrefix() + "You bypassed maintenance mode.");
+        p.sendMessage(Main.getPrefix() + Main.tr(p, "maintenance-bypass-message"));
         return true;
       }
     }

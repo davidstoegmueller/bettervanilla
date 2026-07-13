@@ -1,0 +1,729 @@
+dialog-button-apply: Übernehmen
+dialog-button-cancel: Abbrechen
+settings-gui-title: "Einstellungen {primary}({player})"
+settings-language-item-title: Sprache
+settings-language-item-description: Wähle die Sprache für deine Benutzeroberfläche.
+settings-language-item-current: "Aktuell: {highlight}{language}"
+settings-language-item-action: "Linksklick: Auswählen"
+settings-language-dialog-title: Sprache
+settings-language-dialog-description: Wähle deine bevorzugte Sprache.
+settings-language-dialog-input-label: Sprache
+settings-language-changed-message: Deine Benutzeroberfläche wird jetzt auf {highlight}{language}{primary} angezeigt.
+admin-settings-gui-title: Admin-Einstellungen
+admin-language-item-title: Serversprache
+admin-language-item-description: Wähle die Standardsprache des Servers.
+admin-language-item-current: "Aktuell: {highlight}{language}"
+admin-language-item-action: "Linksklick: Auswählen"
+admin-language-dialog-title: Serversprache
+admin-language-dialog-description: Wähle die Standardsprache für Spieler ohne eigene Auswahl.
+admin-language-dialog-input-label: Sprache
+admin-language-changed-message: Die Serversprache ist jetzt {highlight}{language}{primary}.
+common-error-no-permission: "Dafür hast du keine Berechtigung. {primary}({error}{permission}{primary})"
+common-error-no-permission-short: "Keine Berechtigung. {primary}({error}{permission}{primary})"
+common-error-player-only: Dieser Befehl kann nur von einem Spieler ausgeführt werden.
+common-error-player-offline: Spieler {player} ist derzeit nicht online.
+common-error-player-not-found: Der Spieler wurde nicht gefunden oder ist offline.
+common-error-heads-disabled: Der Köpfe-Explorer ist deaktiviert.
+common-error-heads-unavailable: Die Kopfdaten sind noch nicht verfügbar. Versuche es später erneut.
+command-timer-error-already-running: Der Timer läuft bereits.
+command-timer-error-not-running: Es gibt keinen aktiven Timer zum Pausieren.
+command-timer-error-invalid-number: Ungültige Zeitangabe. Gib die Zeit in Sekunden an.
+command-timer-resumed: Der Timer läuft weiter.
+command-timer-paused: Der Timer wurde angehalten.
+command-timer-set-success: Der Timer wurde auf {time} Sekunden gesetzt.
+command-timer-reset: Der Timer wurde auf 0 Sekunden zurückgesetzt.
+command-timer-set-usage: "Verwendung: {highlight}/timer set <Zeit>"
+command-timer-usage: "Verwendung: {highlight}/timer <resume | pause | reset | set> [Zeit]"
+command-ping-self: Dein Ping beträgt {ping} ms.
+command-ping-other: Der Ping von {player} beträgt {ping} ms.
+command-ping-usage: "Verwendung: {highlight}/ping [Name]"
+command-backpack-usage: "Verwendung: {highlight}/backpack"
+command-deathpoints-usage: "Verwendung: {highlight}/deathpoints"
+command-heads-usage: "Verwendung: {highlight}/heads"
+command-settings-usage: "Verwendung: {highlight}/settings [Spieler]"
+command-sit-stood-up: Du bist aufgestanden.
+command-sit-error-in-vehicle: Verlasse dein aktuelles Fahrzeug, bevor du /sit verwendest.
+command-sit-error-solid-ground: Du musst auf festem Boden stehen, bevor du dich hinsetzt.
+command-sit-sat-down: Du sitzt jetzt. Drücke die Umschalttaste, um aufzustehen.
+command-playtime-error-never-joined: Spieler {player} war noch nie auf dem Server.
+command-playtime-usage: "Verwendung: {highlight}/playtime [Spieler]"
+playtime-total: "Gesamtzeit: {time}"
+playtime-active: "Spielzeit: {time}"
+playtime-afk: "AFK: {time}"
+command-vanish-visible: Du bist jetzt sichtbar.
+command-vanish-hidden: Du bist jetzt unsichtbar.
+command-invsee-usage: "Verwendung: {highlight}/invsee <Name>"
+command-message-error-self: Du kannst dir nicht selbst eine Nachricht senden!
+command-message-usage: "Verwendung: {highlight}/msg <Spieler> <Nachricht>"
+command-reply-error-no-target: Es gibt keine Nachricht, auf die du antworten kannst.
+command-reply-usage: "Verwendung: {highlight}/r <Nachricht>"
+common-world-unknown: unbekannt
+command-here-broadcast: "Position von {player}: Welt: {world} | X: {x} | Y: {y} | Z: {z} {highlight}(Hier klicken, um zu navigieren)"
+command-here-hover: Klicke, um die Navigation zu starten
+command-waypoints-error-unknown: Unbekannter Unterbefehl. Hilfe findest du mit /waypoints help.
+command-waypoints-coordinates-usage: "Verwendung: {highlight}/waypoints coords <x> <y> <z>"
+command-waypoints-player-usage: "Verwendung: {highlight}/waypoints player <Spieler>"
+command-waypoints-error-invalid-coordinates: "Ungültige Koordinaten. Verwende Zahlen für <x>, <y>, <z>."
+command-waypoints-error-player-unavailable: Der Spieler {player} ist nicht online oder existiert nicht.
+command-waypoints-help-title: "WEGPUNKTE-HILFE:"
+command-waypoints-help-open: "{highlight}/waypoints{primary} - Öffnet das Wegpunkt-Menü."
+command-waypoints-help-player: "{highlight}/waypoints player <Spieler>{primary} - Navigiert zur Position eines anderen Spielers."
+command-waypoints-help-coordinates: "{highlight}/waypoints coords <x> <y> <z>{primary} - Navigiert zu bestimmten Koordinaten."
+navigation-coordinates-name: Koordinaten
+help-player-title: "{bold}{plugin}-HILFE"
+help-player-tip: "Tipp: Die meisten Funktionen kannst du unter {highlight}/settings{primary} ein- oder ausschalten."
+help-player-section-commands: "{highlight}Spielerbefehle"
+help-player-command-settings: "{highlight}/settings{primary} - Öffnet deine persönlichen Einstellungen."
+help-player-command-help: "{highlight}/help{primary} - Zeigt diese Hilfeseite."
+help-player-command-waypoints: "{highlight}/waypoints{primary} - Öffnet das Wegpunkt-Menü; Navigation mit {highlight}player <Name>{primary} oder {highlight}coords <x> <y> <z>{primary}."
+help-player-command-backpack: "{highlight}/backpack{primary} - Öffnet deinen Rucksack."
+help-player-command-deathpoints: "{highlight}/deathpoints{primary} - Öffnet das Todespunkt-Menü."
+help-player-command-heads: "{highlight}/heads{primary} - Öffnet den Köpfe-Explorer."
+help-player-command-playtime: "{highlight}/playtime [Spieler]{primary} - Zeigt Spielzeit einschließlich AFK-Zeit."
+help-player-command-ping: "{highlight}/ping [Spieler]{primary} - Prüft die Latenz."
+help-player-command-sit: "{highlight}/sit{primary} - Setzt dich an Ort und Stelle hin; zum Aufstehen schleichen."
+help-player-command-message: "{highlight}/msg <Spieler> <Nachricht>{primary} - Sendet eine private Nachricht."
+help-player-command-reply: "{highlight}/r <Nachricht>{primary} - Antwortet auf die letzte Nachricht."
+help-player-command-here: "{highlight}/here{primary} - Teilt deine aktuelle Position."
+help-player-section-gameplay: "{highlight}Spielfunktionen & Bedienung"
+help-player-feature-vein-miner: "{highlight}Aderabbau{primary} - Schleiche beim Erzabbau, um eine ganze Ader auf einmal abzubauen."
+help-player-feature-tree-chopper: "{highlight}Baumfäller{primary} - Schleiche beim Fällen, um einen ganzen Stamm auf einmal abzubauen."
+help-player-feature-backpacks: "{highlight}Rucksäcke{primary} - Zusätzlicher, erweiterbarer Speicher über /backpack."
+help-player-feature-waypoints: "{highlight}Wegpunkte{primary} - Erstelle, teile und filtere Ziele über das Wegpunkt-Menü."
+help-player-feature-waypoint-navigation: "{highlight}Wegpunktnavigation{primary} - Zeigt optional eine Partikelspur oder einen Zielstrahl."
+help-player-feature-death-points: "{highlight}Todespunkte{primary} - Zeigt deine Todesorte und führt dich zu ihnen zurück."
+help-player-feature-death-chest: "{highlight}Todestruhe{primary} - Bewahrt deine Gegenstände nach dem Tod sicher auf."
+help-player-feature-heads: "{highlight}Köpfe-Explorer{primary} - Durchsuche dekorative Köpfe nach Kategorien."
+help-player-feature-container-sorting: "{highlight}Behältersortierung{primary} - Rechtsklicke auf eine freie Stelle, um den Behälter zu sortieren."
+help-player-feature-item-restock: "{highlight}Automatisches Auffüllen{primary} - Füllt leere Plätze in der Schnellleiste wieder auf."
+help-player-feature-tags: "{highlight}Spielertags{primary} - Tag und Farbe unter /settings festlegen."
+help-player-feature-action-bar: "{highlight}Aktionsleistenanzeige{primary} - Blendet Koordinaten und Timer ein."
+help-player-feature-compass: "{highlight}Bossleisten-Kompass{primary} - Zeigt deine Blickrichtung in der Bossleiste."
+help-player-feature-chat: "{highlight}Farbiger Chat & Erwähnungen{primary} - Farbcodes und @Name verwenden."
+help-player-feature-sign-colors: "{highlight}Schildfarben{primary} - Farbcodes auf Schilder anwenden."
+help-player-feature-sittable-stairs: "{highlight}Sitzbare Treppen{primary} - Rechtsklicke mit leerer Hand auf eine Treppe."
+help-player-feature-sit: "{highlight}Überall sitzen{primary} - /sit verwenden und zum Aufstehen schleichen."
+help-player-feature-sleep-rain: "{highlight}Regen wegschlafen{primary} - Schlafen bei Regen lässt das Wetter aufklaren."
+help-player-feature-crop-protection: "{highlight}Ackerbodenschutz{primary} - Verhindert das Zertrampeln von Ackerboden."
+help-player-feature-right-click-harvest: "{highlight}Rechtsklick-Ernte{primary} - Ernten und Neupflanzen mit einem Klick."
+help-player-feature-double-door: "{highlight}Doppeltür-Synchronisierung{primary} - Öffnet gekoppelte Türen gemeinsam."
+help-player-section-server: "{highlight}Server- & Weltfunktionen"
+help-player-server-tab-list: "{highlight}Dynamische Spielerliste{primary} - Zeigt Server- und Spielerstatus."
+help-player-server-action-bar: "{highlight}Aktionsleisten-Position{primary} - Zeigt aktuelle Koordinaten."
+help-player-server-timer: "{highlight}Timer{primary} - Eine globale, vom Team gesteuerte Stoppuhr."
+help-player-server-afk: "{highlight}AFK-System{primary} - AFK-Erkennung, Schutz und Anzeigen."
+help-player-server-recipe-sync: "{highlight}Rezeptsynchronisierung{primary} - Synchronisiert benutzerdefinierte Rezepte."
+help-player-server-invisible-light: "{highlight}Unsichtbares Licht{primary} - Eine herstellbare unsichtbare Lichtquelle."
+help-player-server-invisible-item-frame: "{highlight}Unsichtbarer Gegenstandsrahmen{primary} - Herstellbare unsichtbare Gegenstandsrahmen."
+help-player-admin-hint: "Teamwerkzeuge findest du unter {highlight}/adminhelp{primary} (Berechtigung erforderlich)."
+help-admin-title: "{bold}{plugin}-ADMIN-HILFE"
+help-admin-tip: "Tipp: Die meisten Serveroptionen befinden sich in den Admin-Einstellungen."
+help-admin-section-moderation: "{highlight}Moderationswerkzeuge"
+help-admin-command-kick: "{highlight}/kick <Spieler> [Grund]{primary} - Entfernt einen Spieler vom Server."
+help-admin-command-ban: "{highlight}/ban <Spieler> [Dauer] [Grund]{primary} - Sperrt einen Spieler."
+help-admin-command-unban: "{highlight}/unban <Spieler>{primary} - Hebt eine Sperre auf."
+help-admin-command-mute: "{highlight}/mute <Spieler> [Dauer] [Grund]{primary} - Schaltet einen Spieler stumm."
+help-admin-command-unmute: "{highlight}/unmute <Spieler>{primary} - Hebt die Stummschaltung auf."
+help-admin-section-utilities: "{highlight}Teamwerkzeuge"
+help-admin-command-vanish: "{highlight}/vanish{primary} - Schaltet den Unsichtbarkeitsmodus um."
+help-admin-command-invsee: "{highlight}/invsee <Spieler>{primary} - Öffnet das Inventar eines Spielers."
+help-admin-command-timer: "{highlight}/timer resume|pause|reset|set <Zeit>{primary} - Steuert den globalen Timer."
+help-admin-command-settings: "{highlight}/settings{primary} - Öffnet die Admin-Einstellungen."
+help-admin-section-permissions: "{highlight}Berechtigungsverwaltung"
+help-admin-permissions-group: "{highlight}/permissions group ...{primary} - Verwaltet Gruppenberechtigungen."
+help-admin-permissions-user: "{highlight}/permissions user ...{primary} - Verwaltet Spielerberechtigungen."
+help-admin-permissions-set-group: "{highlight}/permissions user setgroup <Spieler> <Gruppe>{primary} - Weist eine Gruppe zu."
+help-admin-permissions-assignments: "{highlight}/permissions assignments{primary} - Listet Zuweisungen auf."
+help-admin-permissions-list: "{highlight}/permissions list{primary} - Zeigt Berechtigungsknoten."
+help-admin-permissions-reload: "{highlight}/permissions reload{primary} - Lädt Berechtigungen neu."
+help-admin-section-settings: "{highlight}Wichtige Admin-Einstellungen"
+help-admin-settings-summary: Konfiguriert Wartung, MOTD, AFK, Welten, Rezepte, Schutz, Rucksäcke, Abbau, Köpfe und mehr.
+event-dimension-end-disabled: Du darfst das Ende noch nicht betreten!
+event-dimension-nether-disabled: Du darfst den Nether noch nicht betreten!
+event-sleep-rain-cleared: Das Wetter ist aufgeklart und du hast die Nacht durchgeschlafen.
+event-stairs-error-too-far: Du bist zu weit von dieser Treppe entfernt.
+event-stairs-error-bottom-only: Du kannst nur auf unteren Treppenstufen sitzen.
+event-stairs-sat-down: Ruh dich aus. Verwende die Umschalttaste, um aufzustehen.
+maintenance-bypass-message: Du darfst den Server trotz Wartungsmodus betreten.
+afk-player-returned: Du bist nicht mehr AFK!
+afk-player-started: Du bist jetzt AFK!
+gui-common-search-title: Suche
+gui-common-search-current: "Suche nach: {term}"
+gui-common-action-search: "Linksklick: Suchen"
+gui-common-action-reset: "Rechtsklick: Zurücksetzen"
+gui-common-action-next-option: "Linksklick: Nächste Option"
+gui-common-action-previous-option: "Rechtsklick: Vorherige Option"
+gui-common-sort-title: Sortierung
+gui-common-search-dialog-title: Suche
+gui-common-search-dialog-description: Gib Text ein, um Einträge zu filtern.
+gui-common-search-dialog-input: Suche
+navigation-canceled-world-change: Deine Navigation wurde wegen eines Weltwechsels abgebrochen.
+navigation-destination-reached: Du hast {highlight}{destination}{primary} erreicht und bist höchstens {highlight}{radius}{primary} Blöcke entfernt.
+navigation-canceled-player-offline: Die Navigation wurde abgebrochen, weil der Zielspieler offline ist.
+common-state-enabled: AKTIVIERT
+common-state-disabled: DEAKTIVIERT
+common-state-included: EINBEZOGEN
+common-state-excluded: AUSGESCHLOSSEN
+common-value-none: NICHT VORHANDEN
+gui-common-state: "Status: {state}"
+gui-common-action-toggle: "Linksklick: Umschalten"
+gui-common-action-open: "Linksklick: Öffnen"
+settings-error-item-restock-disabled: Automatisches Auffüllen ist auf dem Server deaktiviert.
+settings-error-action-bar-timer-disabled: Der Aktionsleisten-Timer ist auf dem Server deaktiviert.
+settings-error-tags-disabled: Tags sind auf dem Server deaktiviert.
+settings-error-vein-miner-disabled: Der Aderabbau ist auf dem Server deaktiviert.
+settings-error-vein-chopper-disabled: Der Baumfäller ist auf dem Server deaktiviert.
+settings-location-title: Aktionsleisten-Position
+settings-location-description: Zeigt deine aktuelle Position in der Aktionsleiste.
+settings-action-bar-timer-title: Aktionsleisten-Timer
+settings-action-bar-timer-description: Zeigt den Server-Timer in der Aktionsleiste.
+settings-player-tag-title: Spielertag
+settings-player-tag-description: Lege den Tag fest, der bei deinem Namen angezeigt wird.
+settings-player-tag-current: "Tag: {tag}"
+settings-player-tag-action-set: "Linksklick: Tag festlegen"
+settings-player-tag-action-clear: "Rechtsklick: Tag löschen"
+settings-compass-title: Bossleisten-Kompass
+settings-compass-description: Zeigt einen Kompass in der Bossleiste.
+settings-chest-sorting-title: Truhensortierung
+settings-chest-sorting-description: Rechtsklicke außerhalb einer Truhe, um sie zu sortieren.
+settings-inventory-sorting-title: Inventarsortierung
+settings-inventory-sorting-description: Rechtsklicke außerhalb deines Inventars, um es zu sortieren.
+settings-inventory-sorting-hotbar: "Schnellleiste: {state}"
+settings-inventory-sorting-action-hotbar: "Umschalt-Linksklick: Schnellleiste umschalten"
+settings-backpack-sorting-title: Rucksacksortierung
+settings-backpack-sorting-description: Rechtsklicke außerhalb eines Rucksacks, um die Seite zu sortieren.
+settings-sorting-mode-label: "Sortiermodus:"
+settings-sorting-action-next-mode: "Rechtsklick: Nächster Modus"
+settings-navigation-particles-title: Navigationspartikel
+settings-navigation-particles-description: Zeigt beim Navigieren eine Partikelspur.
+settings-navigation-auto-cancel-title: Automatisches Navigationsende
+settings-navigation-auto-cancel-description: Beendet die Navigation automatisch am Ziel.
+settings-navigation-radius: "Radius: {highlight}{radius}{primary} Blöcke"
+settings-navigation-action-set-radius: "Rechtsklick: Radius festlegen"
+settings-vein-miner-title: Aderabbau
+settings-vein-miner-description: Schleiche, während du mit einer Spitzhacke verbundene Erze desselben Typs abbaust.
+settings-vein-chopper-title: Baumfäller
+settings-vein-chopper-description: Schleiche, während du mit einer Axt verbundene Stämme desselben Typs fällst.
+settings-item-restock-title: Automatisches Auffüllen
+settings-item-restock-description: Füllt Schnellleistenslots automatisch mit passenden Gegenständen auf.
+settings-double-door-title: Doppeltür-Synchronisierung
+settings-double-door-description: Öffne oder schließe eine Tür, damit die verbundene Tür ebenfalls reagiert.
+settings-admin-title: Admin-Einstellungen
+settings-admin-description: Verwaltet Admin- und Servereinstellungen.
+settings-tag-dialog-name-label: Tag-Name
+settings-tag-dialog-color-label: Tag-Farbe
+settings-tag-dialog-title: Spielertag
+settings-tag-dialog-description: Lege Name und Farbe deines Tags fest.
+settings-tag-error-empty: Der Tag-Name darf nicht leer sein.
+settings-tag-error-too-long: Der Tag ist zu lang. Die maximale Länge beträgt 10 Zeichen.
+settings-tag-set-message: "Tag festgelegt: {tag}"
+settings-tag-cleared-message: Tag gelöscht.
+settings-navigation-dialog-radius-label: Zielradius (Blöcke)
+settings-navigation-dialog-title: Zielradius der Navigation
+settings-navigation-dialog-description: Lege fest, ab welcher Entfernung ein Ziel als erreicht gilt.
+settings-navigation-radius-set-message: Der Zielradius wurde auf {highlight}{radius}{primary} Blöcke gesetzt.
+settings-location-toggle-message: Aktionsleisten-Position ist jetzt {state}{primary}.
+settings-action-bar-timer-toggle-message: Aktionsleisten-Timer ist jetzt {state}{primary}.
+settings-compass-toggle-message: Bossleisten-Kompass ist jetzt {state}{primary}.
+settings-chest-sorting-toggle-message: Truhensortierung ist jetzt {state}{primary}.
+settings-chest-sorting-mode-message: Truhensortiermodus auf {highlight}{mode}{primary} gesetzt.
+settings-backpack-sorting-toggle-message: Rucksacksortierung ist jetzt {state}{primary}.
+settings-backpack-sorting-mode-message: Rucksacksortiermodus auf {highlight}{mode}{primary} gesetzt.
+settings-inventory-sorting-toggle-message: Inventarsortierung ist jetzt {state}{primary}.
+settings-inventory-sorting-mode-message: Inventarsortiermodus auf {highlight}{mode}{primary} gesetzt.
+settings-inventory-sorting-hotbar-message: Die Schnellleiste ist jetzt {highlight}{bold}{state}{primary}.
+settings-navigation-particles-toggle-message: Navigationspartikel sind jetzt {state}{primary}.
+settings-navigation-auto-cancel-toggle-message: Automatisches Navigationsende ist jetzt {state}{primary}.
+settings-vein-miner-toggle-message: Der Aderabbau ist jetzt {state}{primary}.
+settings-vein-chopper-toggle-message: Der Baumfäller ist jetzt {state}{primary}.
+settings-double-door-toggle-message: Doppeltür-Synchronisierung ist jetzt {state}{primary}.
+settings-item-restock-toggle-message: Automatisches Auffüllen ist jetzt {state}{primary}.
+admin-maintenance-toggle-message: Der Wartungsmodus ist jetzt {state}{primary}.
+admin-maintenance-current-message: "Nachricht: {highlight}{message}"
+admin-creeper-block-damage-toggle-message: Blockschaden durch Creeper ist jetzt {state}{primary}.
+admin-creeper-entity-damage-toggle-message: Schaden an Entitäten durch Creeper ist jetzt {state}{primary}.
+admin-end-toggle-message: Das Ende ist jetzt {state}{primary}.
+admin-nether-toggle-message: Der Nether ist jetzt {state}{primary}.
+admin-sleeping-rain-toggle-message: "Regen wegschlafen: {state}{primary}."
+admin-crop-protection-toggle-message: Ackerbodenschutz ist jetzt {state}{primary}.
+admin-right-click-harvest-toggle-message: Rechtsklick-Ernte ist jetzt {state}{primary}.
+admin-locator-bar-toggle-message: Ortungsleiste ist jetzt {state}{primary}.
+admin-recipe-sync-toggle-message: Rezeptsynchronisierung ist jetzt {state}{primary}.
+admin-action-bar-timer-toggle-message: Aktionsleisten-Timer ist jetzt {state}{primary}.
+admin-tags-toggle-message: Spielertags sind jetzt {state}{primary}.
+admin-heads-toggle-message: Köpfe-Explorer ist jetzt {state}{primary}.
+admin-death-chest-toggle-message: Das Erstellen von Todestruhen ist jetzt {state}{primary}.
+admin-afk-protection-toggle-message: AFK-Schutz ist jetzt {state}{primary}.
+admin-item-restock-toggle-message: Automatisches Auffüllen ist jetzt {state}{primary}.
+admin-motd-dialog-line-one: MOTD-Zeile 1
+admin-motd-dialog-line-two: MOTD-Zeile 2
+admin-motd-dialog-title: Server-MOTD
+admin-motd-dialog-description: Lege die Nachricht fest, die in der Serverliste angezeigt wird.
+admin-maintenance-dialog-input: Wartungsnachricht
+admin-maintenance-dialog-title: Wartungsnachricht
+admin-maintenance-dialog-description: Lege die Nachricht fest, die beim Trennen aufgrund des Wartungsmodus angezeigt wird.
+admin-afk-time-dialog-input: AFK-Zeit (Minuten)
+admin-afk-time-dialog-title: AFK-Zeit
+admin-afk-time-dialog-description: Lege das AFK-Zeitlimit in Minuten fest.
+admin-sleep-percentage-dialog-input: Benötigter Schlafanteil
+admin-sleep-percentage-dialog-title: Benötigter Schlafanteil
+admin-sleep-percentage-dialog-description: Lege fest, wie viel Prozent der Spieler schlafen müssen, um die Nacht zu überspringen.
+admin-heads-api-dialog-input: Köpfe-Explorer-API-Schlüssel
+admin-heads-api-dialog-title: Köpfe-Explorer-API-Schlüssel
+admin-heads-api-dialog-description: Hinterlege optional einen API-Schlüssel von minecraft-heads.com, um höhere Abfragelimits zu erhalten.
+admin-motd-set-message: 'Server-MOTD gesetzt:\nZeile 1: {line1}\n{primary}Zeile 2: {line2}'
+admin-maintenance-set-message: "Wartungsnachricht gesetzt: {highlight}{message}"
+admin-afk-time-set-message: AFK-Zeit auf {highlight}{minutes}{primary} Minuten gesetzt.
+admin-sleep-percentage-set-message: Der benötigte Schlafanteil wurde auf {highlight}{percentage}{primary} % gesetzt.
+admin-heads-api-updated-message: Köpfe-Explorer-API-Schlüssel aktualisiert.
+admin-heads-refresh-success: Die Kopfdaten wurden aktualisiert.
+admin-heads-refresh-failed: Die Kopfdaten konnten nicht aktualisiert werden.
+admin-heads-refresh-failed-wait: Die Kopfdaten konnten nicht aktualisiert werden. Warte noch {seconds} Sekunden.
+gui-common-value: "Wert: {highlight}{value}"
+admin-maintenance-title: Wartungsmodus
+admin-maintenance-description: Verhindert den Beitritt von Spielern ohne Berechtigung.
+admin-maintenance-message: "Nachricht: {message}"
+admin-maintenance-action-message: "Rechtsklick: Nachricht festlegen"
+admin-creeper-block-damage-title: Blockschaden durch Creeper
+admin-creeper-block-damage-description: Steuert, ob Creeper-Explosionen Blöcke zerstören.
+admin-creeper-entity-damage-title: Entitätsschaden durch Creeper
+admin-creeper-entity-damage-description: Steuert, ob Creeper-Explosionen anderen Entitäten Schaden zufügen.
+admin-end-title: Das Ende aktivieren
+admin-end-description: Steuert den Zugang zur End-Dimension.
+admin-nether-title: Den Nether aktivieren
+admin-nether-description: Steuert den Zugang zur Nether-Dimension.
+admin-sleeping-rain-title: Regen überschlafen
+admin-sleeping-rain-description: Erlaubt Spielern, Regen durch Schlafen zu beenden.
+admin-sleep-percentage-title: Benötigter Schlafanteil
+admin-sleep-percentage-description: Legt fest, wie viele Spieler zum Überspringen der Nacht schlafen müssen.
+admin-sleep-percentage-action: "Linksklick: Prozentwert festlegen"
+admin-crop-protection-title: Ackerbodenschutz
+admin-crop-protection-description: Verhindert, dass Ackerboden zertrampelt wird.
+admin-right-click-harvest-title: Rechtsklick-Ernte
+admin-right-click-harvest-description: Erlaubt das Ernten von Pflanzen per Rechtsklick.
+admin-locator-bar-title: Ortungsleiste
+admin-locator-bar-description: Schaltet die Ortungsleisten-Spielregel in allen Welten um.
+common-state-set: GESETZT
+common-state-not-set: NICHT GESETZT
+gui-common-action-set-value: "Linksklick: Wert festlegen"
+gui-common-current: "Aktuell:"
+gui-common-current-value: "Aktuell: {highlight}{value}"
+admin-recipe-sync-title: Rezeptsynchronisierung
+admin-recipe-sync-description: Synchronisiert benutzerdefinierte und Vanilla-Rezepte mit unterstützten Mod-Clients.
+admin-action-bar-timer-title: Aktionsleisten-Timer
+admin-action-bar-timer-description: Aktiviert den Timer global in der Aktionsleiste.
+admin-heads-title: Köpfe-Explorer
+admin-heads-description: Durchsuche benutzerdefinierte Köpfe von minecraft-heads.com.
+admin-heads-command-description: Aktiviert den Befehl /heads.
+admin-heads-api-state: "API-Schlüssel: {state}"
+admin-heads-api-optional: Ohne API-Schlüssel gelten die Standardlimits.
+admin-heads-api-update-hint: Er kann jederzeit hinzugefügt oder aktualisiert werden.
+admin-heads-action-api-key: "Rechtsklick: API-Schlüssel festlegen"
+admin-heads-action-refresh: "Umschalt-Linksklick: Kopfdaten aktualisieren"
+admin-tags-title: Spielertags
+admin-tags-description: Aktiviert Spielertags global im Chat und in der Spielerliste.
+admin-death-chest-title: Todestruhe
+admin-death-chest-description: Steuert, ob beim Tod eine Todestruhe erscheint.
+admin-death-chest-disabled-description: Wenn deaktiviert, fallen Gegenstände wie gewohnt auf den Boden.
+admin-item-restock-title: Automatisches Auffüllen
+admin-item-restock-description: Aktiviert das automatische Auffüllen der Schnellleiste global.
+admin-crafting-recipes-title: Rezepte
+admin-crafting-recipes-description: Konfiguriert benutzerdefinierte Rezepte.
+admin-theme-title: Erscheinungsbild
+admin-theme-description: Passt Farben und den angezeigten Plugin-Namen an.
+admin-afk-protection-title: AFK-Schutz
+admin-afk-protection-description: Macht Spieler unverwundbar, während sie AFK sind.
+admin-afk-time-title: AFK-Zeit
+admin-afk-time-description: Legt das AFK-Zeitlimit in Minuten fest.
+admin-afk-time-current: "Aktuell: {highlight}{minutes}{primary} Minuten"
+admin-motd-title: Server-MOTD
+admin-motd-description: Legt die Nachricht in der Serverliste fest.
+admin-backpack-settings-title: Rucksackeinstellungen
+admin-backpack-settings-description: Verwaltet globale Rucksackeinstellungen.
+admin-backpack-settings-command-description: Aktiviert den Befehl /backpack.
+admin-backpack-settings-pages: "Seiten: {highlight}{pages}"
+admin-backpack-settings-rows: "Zeilen pro Seite: {highlight}{rows}"
+admin-vein-miner-settings-title: Aderabbau-Einstellungen
+admin-vein-miner-settings-description: Verwaltet globale Aderabbau-Einstellungen.
+admin-vein-chopper-settings-title: Baumfäller-Einstellungen
+admin-vein-chopper-settings-description: Verwaltet globale Baumfäller-Einstellungen.
+admin-vein-settings-max-size: "Maximale Größe: {highlight}{size}"
+admin-vein-settings-sound: "Geräusche: {state}"
+admin-vein-settings-tools: "Werkzeuge: {highlight}{selected}{primary}/{highlight}{total}"
+admin-vein-settings-blocks: "Blöcke: {highlight}{selected}{primary}/{highlight}{total}"
+gui-common-warning-label: "ACHTUNG:"
+gui-common-world: "Welt: {world}"
+gui-common-coordinate-x: "X: {x}"
+gui-common-coordinate-y: "Y: {y}"
+gui-common-coordinate-z: "Z: {z}"
+gui-common-distance: "Entfernung: {distance}"
+gui-common-distance-blocks: "{distance}{primary} Blöcke"
+gui-common-value-not-available: "Nicht verfügbar"
+gui-common-owner: "Besitzer: {owner}"
+gui-common-action-start-navigation: "Linksklick: Navigation starten"
+gui-common-action-open-options: "Rechtsklick: Optionen"
+gui-common-sort-name-ascending: "Name (A → Z)"
+gui-common-sort-name-descending: "Name (Z → A)"
+gui-common-sort-count-descending: "Anzahl (absteigend)"
+gui-common-sort-count-ascending: "Anzahl (aufsteigend)"
+gui-common-sort-distance-nearest-first: "Entfernung (nah → fern)"
+gui-common-sort-distance-farthest-first: "Entfernung (fern → nah)"
+gui-backpack-settings-title: "Rucksackeinstellungen"
+gui-backpack-settings-pages-title: "Rucksackseiten"
+gui-backpack-settings-pages-description: "Lege die Anzahl der Seiten fest."
+gui-backpack-settings-storage-warning: "Diese Änderung kann dazu führen, dass Gegenstände in Rucksäcken verloren gehen!"
+gui-backpack-settings-pages-current: "Aktuell: {pages} Seiten"
+gui-backpack-settings-pages-action-increase: "Linksklick: +1 Seite"
+gui-backpack-settings-pages-action-decrease: "Rechtsklick: -1 Seite"
+gui-backpack-settings-enabled-title: "Rucksäcke"
+gui-backpack-settings-enabled-description: "Aktiviere Rucksäcke für Spieler."
+gui-backpack-settings-rows-title: "Rucksackzeilen"
+gui-backpack-settings-rows-description: "Lege die Anzahl der Reihen pro Seite fest."
+gui-backpack-settings-rows-current: "Aktuell: {rows} Reihen"
+gui-backpack-settings-rows-action-increase: "Linksklick: +1 Reihe"
+gui-backpack-settings-rows-action-decrease: "Rechtsklick: -1 Reihe"
+gui-backpack-settings-enabled-changed: "Rucksäcke sind jetzt {state}{primary}."
+gui-crafting-recipes-error-none-registered: "Derzeit sind keine Rezepte registriert."
+gui-crafting-recipes-title: "Rezepte"
+gui-crafting-recipes-item-description: "Verwalte dieses Rezept."
+gui-crafting-recipes-action-edit: "Rechtsklick: Rezept bearbeiten"
+gui-crafting-recipes-state-changed: "Das Rezept {recipe} ist jetzt {state}{primary}."
+gui-crafting-recipe-editor-instructions: "Lege die Zutaten in das Handwerksfeld und klicke zum Speichern auf das Ergebnis."
+gui-crafting-recipe-editor-error-no-ingredients: "Füge vor dem Speichern mindestens eine Zutat hinzu."
+gui-crafting-recipe-editor-saved: "Das Rezept für {recipe} wurde gespeichert."
+gui-crafting-recipe-editor-action-save: "Linksklick: Rezept speichern"
+gui-death-points-title: "Todespunkte"
+gui-death-points-options-title: "Todespunktoptionen"
+gui-death-points-items-title: "Gegenstände am Todespunkt"
+gui-death-points-navigation-destination-name: "Todespunkt"
+gui-death-points-removed-message: "Dein Todespunkt wurde entfernt."
+gui-death-points-item-title: "Todespunkt {details}"
+gui-death-points-inventory-item-title: "Inventar anzeigen"
+gui-death-points-action-view-inventory: "Linksklick: Inventar ansehen"
+gui-death-points-delete-item-title: "Löschen"
+gui-death-points-delete-warning: "Beim Löschen dieses Todespunkts werden alle darin gespeicherten Gegenstände zerstört."
+gui-death-points-action-delete: "Linksklick: Todespunkt löschen"
+gui-death-points-sort-newest-first: "Datum (Neu → Alt)"
+gui-death-points-sort-oldest-first: "Datum (Alt → Neu)"
+gui-heads-error-no-categories: "Es wurden keine Kopfkategorien gefunden."
+gui-heads-error-category-empty: "In dieser Kategorie sind keine Köpfe verfügbar."
+gui-heads-categories-title: "Kategorien{primary} ({count} Köpfe)"
+gui-heads-category-title: "Köpfe{primary} ({category}{primary}: {count}{primary})"
+gui-heads-category-item-count: "Köpfe insgesamt: {count}"
+gui-heads-head-item-category: "Kategorie: {category}"
+gui-heads-action-give: "Linksklick: Kopf erhalten"
+gui-playtime-title: "Spielzeit"
+gui-playtime-summary-title: "SPIELZEIT{reset}{text-symbol} » {primary}{player}"
+gui-playtime-status-format: "({status})"
+gui-playtime-status-online: "online"
+gui-playtime-status-offline: "offline"
+gui-playtime-action-show-summary: "Linksklick: Details anzeigen"
+gui-playtime-sort-total-descending: "Gesamtzeit (absteigend)"
+gui-playtime-sort-total-ascending: "Gesamtzeit (aufsteigend)"
+gui-playtime-sort-active-descending: "Spielzeit (absteigend)"
+gui-playtime-sort-active-ascending: "Spielzeit (aufsteigend)"
+gui-playtime-sort-afk-descending: "AFK-Zeit (absteigend)"
+gui-playtime-sort-afk-ascending: "AFK-Zeit (aufsteigend)"
+gui-theme-title: "Erscheinungsbild"
+gui-theme-primary-font-color-title: "Primäre Textfarbe"
+gui-theme-primary-font-color-description: "Die Farbe für normalen Text."
+gui-theme-highlight-font-color-title: "Hervorhebungsfarbe"
+gui-theme-highlight-font-color-description: "Die Farbe für hervorgehobenen Text und Werte."
+gui-theme-error-font-color-title: "Fehlerfarbe"
+gui-theme-error-font-color-description: "Die Farbe für Fehler und Warnungen."
+gui-theme-title-symbol-color-title: "Farbe des Titelsymbols"
+gui-theme-title-symbol-color-description: "Die Farbe für Symbole vor Titeln."
+gui-theme-text-symbol-color-title: "Farbe des Textsymbols"
+gui-theme-text-symbol-color-description: "Die Farbe für Symbole vor normalem Text."
+gui-theme-glass-pane-color-title: "Glasscheibenfarbe"
+gui-theme-glass-pane-color-description: "Die Farbe der Glasscheiben in der letzten Menüzeile."
+gui-theme-name-title: "Name"
+gui-theme-name-description: "Der Name, der in Plugin-Nachrichten angezeigt wird."
+gui-theme-color-preview: "Vorschau: {sample}"
+gui-theme-color-preview-sample: "Beispieltext"
+gui-theme-color-dialog-description: "Wähle eine Minecraft-Farbe aus."
+gui-theme-error-invalid-color: "Die ausgewählte Farbe ist ungültig."
+gui-theme-color-changed-message: "{setting} wurde auf {color} gesetzt."
+gui-theme-name-dialog-input: "Name"
+gui-theme-name-dialog-title: "Plugin-Name"
+gui-theme-name-dialog-description: "Lege den Namen fest, der in Plugin-Nachrichten angezeigt wird."
+gui-theme-name-error-empty: "Der Name darf nicht leer sein."
+gui-theme-name-error-too-long: "Der Name ist zu lang. Die maximale Länge beträgt {max} Zeichen."
+gui-theme-name-error-invalid-characters: "Der Name darf keine Farbcodes oder Zeilenumbrüche enthalten."
+gui-theme-name-changed-message: "Der Plugin-Name wurde auf {name} gesetzt."
+gui-vein-miner-settings-title: "Aderabbau-Einstellungen"
+gui-vein-miner-tools-title: "Aderabbau-Werkzeuge"
+gui-vein-miner-blocks-title: "Aderabbau-Blöcke"
+gui-vein-miner-enabled-title: "Aderabbau"
+gui-vein-miner-enabled-description: "Schalte den Aderabbau serverweit ein oder aus."
+gui-vein-miner-max-size-title: "Maximale Adergröße"
+gui-vein-miner-max-size-description: "Lege die maximale Größe abbaubarer Adern fest."
+gui-vein-miner-sound-title: "Geräusche"
+gui-vein-miner-sound-description: "Schalte die Geräusche beim Aderabbau ein oder aus."
+gui-vein-miner-tools-item-title: "Zugelassene Werkzeuge"
+gui-vein-miner-tools-description: "Öffne das Menü, um zugelassene Werkzeuge zu verwalten."
+gui-vein-miner-blocks-item-title: "Zugelassene Blöcke"
+gui-vein-miner-blocks-description: "Öffne das Menü, um zugelassene Blöcke zu verwalten."
+gui-vein-miner-max-size-dialog-input: "Maximale Adergröße"
+gui-vein-miner-max-size-dialog-title: "Maximale Adergröße festlegen"
+gui-vein-miner-max-size-dialog-description: "Lege die maximale Größe abbaubarer Adern fest."
+gui-vein-miner-max-size-changed: "Die maximale Adergröße wurde auf {size}{primary} gesetzt."
+gui-vein-chopper-settings-title: "Baumfäller-Einstellungen"
+gui-vein-chopper-tools-title: "Baumfäller-Werkzeuge"
+gui-vein-chopper-blocks-title: "Baumfäller-Blöcke"
+gui-vein-chopper-enabled-title: "Baumfäller"
+gui-vein-chopper-enabled-description: "Schalte den Baumfäller serverweit ein oder aus."
+gui-vein-chopper-max-size-title: "Maximale Stammgröße"
+gui-vein-chopper-max-size-description: "Lege fest, wie viele zusammenhängende Stammblöcke höchstens gefällt werden."
+gui-vein-chopper-sound-title: "Geräusche"
+gui-vein-chopper-sound-description: "Schalte die Geräusche beim Baumfällen ein oder aus."
+gui-vein-chopper-tools-item-title: "Zugelassene Werkzeuge"
+gui-vein-chopper-tools-description: "Öffne das Menü, um zugelassene Werkzeuge zu verwalten."
+gui-vein-chopper-blocks-item-title: "Zugelassene Blöcke"
+gui-vein-chopper-blocks-description: "Öffne das Menü, um zugelassene Blöcke zu verwalten."
+gui-vein-chopper-max-size-dialog-input: "Maximale Stammgröße"
+gui-vein-chopper-max-size-dialog-title: "Maximale Stammgröße festlegen"
+gui-vein-chopper-max-size-dialog-description: "Lege fest, wie viele zusammenhängende Stammblöcke höchstens gefällt werden."
+gui-vein-chopper-max-size-changed: "Die maximale Stammgröße wurde auf {size}{primary} gesetzt."
+gui-waypoints-title: "Wegpunkte {primary}({filter}{primary})"
+gui-waypoints-options-title: "Optionen: {waypoint}"
+gui-waypoints-icon-selection-title: "Symbol: {waypoint}"
+gui-waypoints-rename-item-title: "Umbenennen"
+gui-waypoints-action-rename: "Linksklick: {waypoint} umbenennen"
+gui-waypoints-visibility-item-title: "Sichtbarkeit"
+gui-waypoints-action-next-visibility: "Linksklick: Nächste Sichtbarkeit"
+gui-waypoints-action-previous-visibility: "Rechtsklick: Vorherige Sichtbarkeit"
+gui-waypoints-delete-item-title: "Löschen"
+gui-waypoints-action-delete: "Linksklick: {waypoint} löschen"
+gui-waypoints-set-icon-item-title: "Symbol festlegen"
+gui-waypoints-action-open-icon-selection: "Linksklick: Symbol für {waypoint} auswählen"
+gui-waypoints-cancel-navigation-item-title: "Navigation abbrechen"
+gui-waypoints-cancel-navigation-description: "Brich deine aktive Navigation ab."
+gui-waypoints-action-cancel-navigation: "Linksklick: Navigation abbrechen"
+gui-waypoints-add-item-title: "Wegpunkt hinzufügen"
+gui-waypoints-add-item-description: "Erstelle einen Wegpunkt an frei gewählten Koordinaten oder deiner aktuellen Position."
+gui-waypoints-action-add: "Linksklick: Wegpunkt hinzufügen"
+gui-waypoints-filter-item-title: "Filter"
+gui-waypoints-action-set-icon: "Klicke, um dieses Symbol für {waypoint} zu verwenden"
+gui-waypoints-icon-changed-message: "Das Symbol für {waypoint} wurde geändert."
+gui-waypoints-error-public-name-conflict: "Ein öffentlicher Wegpunkt mit diesem Namen existiert bereits."
+gui-waypoints-visibility-changed-message: "Die Sichtbarkeit von {waypoint} wurde auf {visibility} gesetzt."
+gui-waypoints-error-not-found: "Der Wegpunkt {waypoint} wurde nicht gefunden. Bitte wähle einen vorhandenen Wegpunkt."
+gui-waypoints-navigation-started-message: "Navigation zu {waypoint} bei {highlight}X: {primary}{x}, {highlight}Y: {primary}{y}, {highlight}Z: {primary}{z} wurde gestartet."
+gui-waypoints-navigation-canceled-message: "Deine aktive Navigation wurde abgebrochen."
+gui-waypoints-error-no-active-navigation: "Du hast keine aktive Navigation."
+gui-waypoints-removed-message: "Der Wegpunkt {waypoint} wurde entfernt."
+gui-waypoints-add-dialog-title: "Wegpunkt hinzufügen"
+gui-waypoints-add-dialog-description: "Lege Name, Sichtbarkeit und Koordinaten des neuen Wegpunkts fest."
+gui-waypoints-add-dialog-name-input: "Wegpunktname"
+gui-waypoints-add-dialog-visibility-input: "Sichtbarkeit"
+gui-waypoints-add-dialog-x-input: "X-Koordinate"
+gui-waypoints-add-dialog-y-input: "Y-Koordinate"
+gui-waypoints-add-dialog-z-input: "Z-Koordinate"
+gui-waypoints-rename-dialog-title: "Wegpunktname"
+gui-waypoints-rename-dialog-description: "Lege den neuen Namen des Wegpunkts fest."
+gui-waypoints-rename-dialog-name-input: "Wegpunkt umbenennen"
+gui-waypoints-error-name-required: "Bitte gib einen Wegpunktnamen ein."
+gui-waypoints-error-invalid-coordinates: "Bitte gib gültige ganzzahlige Koordinaten ein."
+gui-waypoints-added-message: "Der Wegpunkt {waypoint} wurde hinzugefügt."
+gui-waypoints-added-coordinates-message: "Koordinaten: {highlight}X: {primary}{x}, {highlight}Y: {primary}{y}, {highlight}Z: {primary}{z}."
+gui-waypoints-renamed-message: "Der Wegpunktname wurde auf {waypoint}{primary} gesetzt."
+language-option-english: "Englisch"
+language-option-german: "Deutsch"
+enum-inventory-sort-mode-alphabetical-ascending: "Name (A → Z)"
+enum-inventory-sort-mode-alphabetical-descending: "Name (Z → A)"
+enum-inventory-sort-mode-stack-descending: "Stapelgröße (absteigend)"
+enum-inventory-sort-mode-stack-ascending: "Stapelgröße (aufsteigend)"
+enum-waypoint-filter-all: "Alle"
+enum-waypoint-filter-public: "Öffentlich"
+enum-waypoint-filter-private: "Privat"
+enum-waypoint-visibility-public: "Öffentlich"
+enum-waypoint-visibility-private: "Privat"
+common-status-afk-short: "AFK"
+common-value-unknown: "Unbekannt"
+crafting-recipe-invisible-item-frame-name: "Unsichtbarer Gegenstandsrahmen"
+crafting-recipe-invisible-item-frame-description: "Ein Gegenstandsrahmen, der unsichtbar wird, sobald er einen Gegenstand enthält."
+crafting-recipe-invisible-light-name: "Unsichtbares Licht"
+crafting-recipe-invisible-light-description: "Ein unsichtbarer Block mit Lichtstärke 15."
+crafting-item-lore-crafted-with: "Mit {plugin} hergestellt."
+backpack-gui-title: "Rucksack"
+backpack-error-disabled: "Rucksäcke sind deaktiviert."
+backpack-error-active-death-points: "Du hast noch Todespunkte mit gelagerten Gegenständen. Hole sie ab, bevor du deinen Rucksack wieder verwendest. {command}"
+private-message-label: "PN"
+private-message-you: "DU"
+private-message-outgoing-format: "({you} {text-symbol}» {recipient}{primary}) {message}"
+private-message-incoming-format: "({sender} {text-symbol}» {you}{primary}) {message}"
+event-player-joined: "{player} hat den Server betreten."
+event-player-left: "{player} hat den Server verlassen."
+chat-message-format: "{sender}{tag} {message}"
+event-sleeping-progress-actionbar: "Schlafende Spieler: {sleeping}/{required}"
+event-death-location: "Du bist bei {highlight}X: {primary}{x} {highlight}Y: {primary}{y} {highlight}Z: {primary}{z} gestorben."
+event-death-chest-items-stored: "Alle deine Gegenstände befinden sich an diesem Ort in der Todestruhe."
+event-death-chest-drop-warning: "ACHTUNG!{primary} Sobald du die Truhe schließt oder abbaust, fallen alle Gegenstände auf den Boden!"
+event-death-chest-no-safe-location: "In der Nähe wurde kein sicherer Platz für eine Todestruhe gefunden. Deine Gegenstände liegen an deinem Todesort."
+event-death-items-dropped: "Deine Gegenstände liegen auf dem Boden."
+event-death-void-chest-relocated: "Hinweis:{primary} Du bist in die Leere gefallen! Deine Todestruhe erscheint bei {highlight}Y: {primary}{y}."
+event-death-void-chest-disabled: "Hinweis:{primary} Du bist in die Leere gefallen, während Todestruhen deaktiviert waren. In der Leere verlorene Gegenstände können nicht wiederhergestellt werden."
+event-death-void-items-lost: "Hinweis:{primary} Gegenstände, die in die Leere fallen, können nicht wiederhergestellt werden."
+event-deathpoints-list-hint: "Verwende diesen Befehl, um deine Todespunkte aufzulisten: {command}"
+event-death-chest-owner-unknown: "Unbekannt"
+event-death-chest-inventory-title: "Todestruhe: {player}"
+event-death-chest-claimed: "Du hast den Inhalt deiner Todestruhe abgeholt. Der Todespunkt wurde entfernt."
+event-death-chest-break-denied: "Du darfst diese Todestruhe nicht abbauen."
+death-chest-hologram-title: "Todestruhe"
+maintenance-kick-title: "WARTUNGSARBEITEN"
+maintenance-kick-description: "Der Server befindet sich derzeit im Wartungsmodus.\nSchau später noch einmal vorbei oder wende dich an das Serverteam."
+maintenance-kick-custom-message: "Nachricht: {message}"
+afk-player-started-announcement: "{player} ist jetzt AFK."
+afk-player-returned-announcement: "{player} ist nicht mehr AFK."
+moderation-ban-screen-title: "GESPERRT"
+moderation-ban-screen-description: "Du wurdest vom Server gesperrt."
+moderation-ban-screen-reason: "Grund: {reason}"
+moderation-ban-screen-expires: "Verbleibende Sperrzeit: {time}"
+moderation-mute-message-temporary-with-reason: "Du bist{primary} für {time} stummgeschaltet. Grund: {reason}"
+moderation-mute-message-temporary-without-reason: "Du bist{primary} für {time} stummgeschaltet. Es wurde kein Grund angegeben."
+moderation-mute-message-permanent-with-reason: "Du bist stummgeschaltet{primary}. Grund: {reason}"
+moderation-mute-message-permanent-without-reason: "Du bist stummgeschaltet{primary}. Es wurde kein Grund angegeben."
+navigation-error-target-different-world: "Die Navigation kann nicht gestartet werden, weil sich das Ziel in einer anderen Welt befindet!"
+navigation-actionbar-format: "{target}: X: {target_x} Y: {target_y} Z: {target_z}{separator}AKTUELL: X: {current_x} Y: {current_y} Z: {current_z}{separator}ENTFERNUNG: {distance}{separator}RICHTUNG: {direction}"
+location-actionbar-format: "X: {x} Y: {y} Z: {z}{separator}{biome}"
+compass-direction-north-short: "N"
+compass-direction-northeast-short: "NO"
+compass-direction-east-short: "O"
+compass-direction-southeast-short: "SO"
+compass-direction-south-short: "S"
+compass-direction-southwest-short: "SW"
+compass-direction-west-short: "W"
+compass-direction-northwest-short: "NW"
+time-duration-days-short: "{value} T"
+time-duration-hours-short: "{value} Std."
+time-duration-minutes-short: "{value} Min."
+time-duration-seconds-short: "{value} Sek."
+timer-actionbar-running: "{time}"
+timer-actionbar-paused: "Pausiert {primary}({time}{primary})"
+tab-list-player-deaths: " | Tode: {deaths}"
+tab-list-header-server-name: "{server} SMP"
+tab-list-header-maintenance-enabled: "Wartungsmodus: AN"
+tab-list-header-day-time: "Tag: {day} | Zeit: {time} ({period})"
+tab-list-header-weather-moon: "Wetter: {weather} | Mond: {moon}"
+tab-list-footer-player-count: "Spieler: {online}/{maximum}"
+tab-list-footer-playtime: "Spielzeit: {time}"
+tab-list-footer-server-performance: "Ping: {ping} | TPS: {tps} | MSPT: {mspt}"
+tab-list-footer-help: "Brauchst du Hilfe? {command}"
+time-period-morning: "Morgen"
+time-period-midday: "Mittag"
+time-period-afternoon: "Nachmittag"
+time-period-evening: "Abend"
+time-period-night: "Nacht"
+weather-thunder: "Gewitter"
+weather-raining: "Regen"
+weather-storm: "Sturm"
+weather-clear: "Heiter"
+weather-none: "Kein Wetter"
+moon-phase-none: "Keine Mondphase"
+moon-phase-full-moon: "Vollmond"
+moon-phase-waning-gibbous: "Abnehmender Dreiviertelmond"
+moon-phase-last-quarter: "Abnehmender Halbmond"
+moon-phase-waning-crescent: "Abnehmende Sichel"
+moon-phase-new-moon: "Neumond"
+moon-phase-waxing-crescent: "Zunehmende Sichel"
+moon-phase-first-quarter: "Zunehmender Halbmond"
+moon-phase-waxing-gibbous: "Zunehmender Dreiviertelmond"
+moon-phase-with-index: "{phase} #{index}/8"
+coordinate-label-x: "X:"
+coordinate-label-y: "Y:"
+coordinate-label-z: "Z:"
+gui-common-page-status: "Aktuelle Seite: {highlight}{current}{primary} von {highlight}{total}"
+gui-common-action-next-page: "Linksklick: Nächste Seite"
+gui-common-action-previous-page: "Rechtsklick: Vorherige Seite"
+gui-common-page-title: Seite
+gui-common-back-title: Zurück
+command-kick-usage: "Verwendung: {highlight}/kick <Spieler> [Grund]"
+command-kick-error-player-not-found: "Spieler {player} wurde nicht gefunden oder ist nicht online."
+command-kick-error-self: "Du kannst dich nicht selbst vom Server entfernen."
+command-kick-disconnect-title: "VOM SERVER ENTFERNT"
+command-kick-disconnect-message: "Du wurdest vom Server entfernt."
+command-kick-disconnect-reason: "Grund: {reason}"
+command-kick-success: "{player} wurde vom Server entfernt."
+command-ban-usage: "Verwendung: {highlight}/ban <Spieler> [Dauer] [Grund]"
+command-ban-example: "Beispiel: {highlight}/ban Spielername 1d2h15m30s Unangemessenes Verhalten"
+command-ban-error-self: "Du kannst dich nicht selbst sperren."
+command-ban-disconnect-title: "GESPERRT"
+command-ban-disconnect-message: "Du wurdest vom Server gesperrt."
+command-ban-disconnect-reason: "Grund: {reason}"
+command-ban-disconnect-expiry: "Verbleibende Sperrzeit: {duration}"
+command-ban-success-temporary: "{player} wurde für {duration} gesperrt."
+command-ban-success-temporary-with-reason: "{player} wurde für {duration} gesperrt. Grund: {reason}"
+command-ban-success-permanent: "{player} wurde dauerhaft gesperrt."
+command-ban-success-permanent-with-reason: "{player} wurde dauerhaft gesperrt. Grund: {reason}"
+command-unban-usage: "Verwendung: {highlight}/unban <Spieler>"
+command-unban-error-not-banned: "{player} ist nicht gesperrt."
+command-unban-success: "Die Sperre von {player} wurde aufgehoben."
+command-mute-usage: "Verwendung: {highlight}/mute <Spieler> [Dauer] [Grund]"
+command-mute-error-self: "Du kannst dich nicht selbst stummschalten."
+command-mute-notification-temporary: "Du wurdest für {duration} stummgeschaltet."
+command-mute-notification-temporary-with-reason: "Du wurdest für {duration} stummgeschaltet. Grund: {reason}"
+command-mute-notification-permanent: "Du wurdest dauerhaft stummgeschaltet."
+command-mute-notification-permanent-with-reason: "Du wurdest dauerhaft stummgeschaltet. Grund: {reason}"
+command-mute-success-temporary: "{player} wurde für {duration} stummgeschaltet."
+command-mute-success-temporary-with-reason: "{player} wurde für {duration} stummgeschaltet. Grund: {reason}"
+command-mute-success-permanent: "{player} wurde dauerhaft stummgeschaltet."
+command-mute-success-permanent-with-reason: "{player} wurde dauerhaft stummgeschaltet. Grund: {reason}"
+command-unmute-usage: "Verwendung: {highlight}/unmute <Spieler>"
+command-unmute-notification: "Du bist nicht mehr stummgeschaltet."
+command-unmute-success: "Die Stummschaltung von {player} wurde aufgehoben."
+command-permissions-usage: "Verwendung: {highlight}/permissions <group | user | assignments | default | list | reload>"
+command-permissions-group-usage: "Verwendung: {highlight}/permissions group <addperm | removeperm | delete> <Gruppe> [<Berechtigung>]"
+command-permissions-group-add-permission-usage: "Verwendung: {highlight}/permissions group addperm <Gruppe> <Berechtigung>"
+command-permissions-group-add-permission-success: "Die Berechtigung {permission} wurde der Gruppe {group} hinzugefügt."
+command-permissions-group-add-permission-error-already-assigned: "Die Berechtigung {permission} ist der Gruppe {group} bereits zugewiesen."
+command-permissions-group-remove-permission-usage: "Verwendung: {highlight}/permissions group removeperm <Gruppe> <Berechtigung>"
+command-permissions-group-remove-permission-success: "Die Berechtigung {permission} wurde aus der Gruppe {group} entfernt."
+command-permissions-group-remove-permission-error-not-assigned: "Die Berechtigung {permission} ist der Gruppe {group} nicht zugewiesen."
+command-permissions-group-delete-usage: "Verwendung: {highlight}/permissions group delete <Gruppe>"
+command-permissions-group-delete-error-default-group: "Du kannst die Standardgruppe nicht löschen."
+command-permissions-group-delete-success: "Die Gruppe {group} wurde gelöscht."
+command-permissions-group-delete-error-not-found: "Die Gruppe {group} existiert nicht."
+command-permissions-default-group-current: "Aktuelle Standardgruppe: {group}"
+command-permissions-default-group-change-hint: "Lege mit {highlight}/permissions default <Gruppe>{primary} eine andere Gruppe fest."
+command-permissions-default-group-usage: "Verwendung: {highlight}/permissions default <Gruppe>"
+command-permissions-default-group-set-success: "Die Standardgruppe wurde auf {group} gesetzt."
+command-permissions-default-group-created-hint: "Die neue Gruppe {group} wurde erstellt. Füge ihr mit {highlight}/permissions group addperm {group}{highlight} <Berechtigung>{primary} Berechtigungen hinzu."
+command-permissions-user-usage: "Verwendung: {highlight}/permissions user <addperm | removeperm | setgroup> <Spielername> <Berechtigung | Gruppe>"
+command-permissions-user-add-permission-usage: "Verwendung: {highlight}/permissions user addperm <Spielername> <Berechtigung>"
+command-permissions-user-add-permission-success: "Die Berechtigung {permission} wurde dem Spieler {player} hinzugefügt."
+command-permissions-user-add-permission-error-already-assigned: "Die Berechtigung {permission} ist dem Spieler {player} bereits zugewiesen."
+command-permissions-user-remove-permission-usage: "Verwendung: {highlight}/permissions user removeperm <Spielername> <Berechtigung>"
+command-permissions-user-remove-permission-success: "Die Berechtigung {permission} wurde dem Spieler {player} entzogen."
+command-permissions-user-remove-permission-error-not-assigned: "Die Berechtigung {permission} ist dem Spieler {player} nicht zugewiesen."
+command-permissions-user-set-group-usage: "Verwendung: {highlight}/permissions user setgroup <Spielername> <Gruppe>"
+command-permissions-user-set-group-success: "Der Spieler {player} wurde der Gruppe {group} zugewiesen."
+command-permissions-user-set-group-error-already-assigned: "Der Spieler {player} ist der Gruppe {group} bereits zugewiesen."
+command-permissions-assignments-groups-title: "BERECHTIGUNGEN: Gruppenzuweisungen"
+command-permissions-assignments-players-title: "BERECHTIGUNGEN: Spielerzuweisungen"
+command-permissions-assignments-group-entry: "Gruppe: {group}"
+command-permissions-assignments-permissions-entry: "Berechtigungen: {permissions}"
+command-permissions-assignments-player-entry: "Spieler: {player}"
+command-permissions-assignments-users-entry: "Spieler: {players}"
+command-permissions-list-title: "BERECHTIGUNGEN: Berechtigungsliste"
+command-permissions-reload-success: "Die Berechtigungen wurden neu geladen."
+command-playtime-summary-title: "SPIELZEIT{reset}{text-symbol} » {primary}{player}"
+command-waypoints-coordinates-navigation-started: "Navigation zu {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z} wurde gestartet."
+command-waypoints-player-navigation-started: "Navigation zu {player} bei {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z} wurde gestartet."
+death-point-date-format: "dd.MM.yyyy » HH:mm:ss"
+enum-chat-color-black: Schwarz
+enum-chat-color-dark-blue: Dunkelblau
+enum-chat-color-dark-green: Dunkelgrün
+enum-chat-color-dark-aqua: Dunkeltürkis
+enum-chat-color-dark-red: Dunkelrot
+enum-chat-color-dark-purple: Dunkelviolett
+enum-chat-color-gold: Gold
+enum-chat-color-gray: Grau
+enum-chat-color-dark-gray: Dunkelgrau
+enum-chat-color-blue: Blau
+enum-chat-color-green: Grün
+enum-chat-color-aqua: Türkis
+enum-chat-color-red: Rot
+enum-chat-color-light-purple: Hellviolett
+enum-chat-color-yellow: Gelb
+enum-chat-color-white: Weiß

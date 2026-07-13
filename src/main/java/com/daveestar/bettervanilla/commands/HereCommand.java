@@ -26,26 +26,28 @@ public class HereCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.HERE.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.HERE));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.HERE));
       return true;
     }
 
     Location loc = p.getLocation();
-    String worldName = loc.getWorld() != null ? loc.getWorld().getName() : "unknown";
-
-    String messageText = Main.getPrefix()
-        + Theme.highlight() + p.getName() + Theme.primary() + "'s location: "
-        + Theme.primary() + "World: " + Theme.highlight() + worldName + Theme.primary() + " | "
-        + Theme.primary() + "X: " + Theme.highlight() + loc.getBlockX() + Theme.primary() + " | "
-        + Theme.primary() + "Y: " + Theme.highlight() + loc.getBlockY() + Theme.primary() + " | "
-        + Theme.primary() + "Z: " + Theme.highlight() + loc.getBlockZ()
-        + Theme.primary() + " " + Theme.highlight() + "(Click here to navigate)";
-
     String navigationCommand = "/waypoints coords " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-    Component message = LegacyComponentSerializer.legacySection().deserialize(messageText)
-        .clickEvent(ClickEvent.runCommand(navigationCommand))
-        .hoverEvent(HoverEvent.showText(Component.text("Click to start navigation")));
-    Main.getInstance().getServer().sendMessage(message);
+
+    for (Player recipient : Main.getInstance().getServer().getOnlinePlayers()) {
+      String worldName = loc.getWorld() != null
+          ? loc.getWorld().getName()
+          : Main.tr(recipient, "common-world-unknown");
+      String messageText = Main.getPrefix() + Main.tr(recipient, "command-here-broadcast",
+          "player", Theme.highlight() + p.getName() + Theme.primary(),
+          "world", Theme.highlight() + worldName + Theme.primary(),
+          "x", Theme.highlight().toString() + loc.getBlockX() + Theme.primary(),
+          "y", Theme.highlight().toString() + loc.getBlockY() + Theme.primary(),
+          "z", Theme.highlight().toString() + loc.getBlockZ() + Theme.primary());
+      Component message = LegacyComponentSerializer.legacySection().deserialize(messageText)
+          .clickEvent(ClickEvent.runCommand(navigationCommand))
+          .hoverEvent(HoverEvent.showText(Component.text(Main.tr(recipient, "command-here-hover"))));
+      recipient.sendMessage(message);
+    }
 
     return true;
   }

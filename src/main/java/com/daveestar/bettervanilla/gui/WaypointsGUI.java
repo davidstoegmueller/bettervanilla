@@ -111,14 +111,15 @@ public class WaypointsGUI {
     String inputY = Integer.toString(pLoc.getBlockY());
     String inputZ = Integer.toString(pLoc.getBlockZ());
 
-    String waypointGUITitle = "Waypoints " + Theme.primary() + "(" + filterMode.getColoredName() + Theme.primary() + ")";
+    String waypointGUITitle = Main.tr(p, "gui-waypoints-title",
+        "filter", filterMode.getColoredName(p) + Theme.primary());
     CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
     waypointsGUI.setSearchButtonSlot(_footerSearchSlot(MAIN_GUI_ROWS));
 
     Map<String, WaypointSortData> sortData = _buildWaypointSortData(p, worldName, filteredWaypointIds);
-    waypointsGUI.setSortOptions(_createWaypointSortOptions(sortData));
+    waypointsGUI.setSortOptions(_createWaypointSortOptions(p, sortData));
     waypointsGUI.setSortButtonSlot(_footerSortSlot(MAIN_GUI_ROWS));
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
@@ -158,9 +159,9 @@ public class WaypointsGUI {
         null,
         null));
 
-    waypointsGUI.addFooterEntry(KEY_CANCEL_BTN, _createCancelNavigationItem(), _footerCancelSlot(MAIN_GUI_ROWS));
-    waypointsGUI.addFooterEntry(KEY_ADD_BTN, _createAddWaypointItem(), _footerAddWaypointSlot(MAIN_GUI_ROWS));
-    waypointsGUI.addFooterEntry(KEY_FILTER_BTN, _createFilterItem(filterMode), _footerFilterSlot(MAIN_GUI_ROWS));
+    waypointsGUI.addFooterEntry(KEY_CANCEL_BTN, _createCancelNavigationItem(p), _footerCancelSlot(MAIN_GUI_ROWS));
+    waypointsGUI.addFooterEntry(KEY_ADD_BTN, _createAddWaypointItem(p), _footerAddWaypointSlot(MAIN_GUI_ROWS));
+    waypointsGUI.addFooterEntry(KEY_FILTER_BTN, _createFilterItem(p, filterMode), _footerFilterSlot(MAIN_GUI_ROWS));
 
     waypointsGUI.setClickActions(actions);
     return waypointsGUI;
@@ -170,10 +171,10 @@ public class WaypointsGUI {
     String worldName = p.getWorld().getName();
     String waypointName = _waypointsManager.getWaypointDisplayName(worldName, waypointId);
     Map<String, ItemStack> entries = new LinkedHashMap<>();
-    entries.put(KEY_OPTION_RENAME, _createRenameItem(waypointName));
+    entries.put(KEY_OPTION_RENAME, _createRenameItem(p, waypointName));
     entries.put(KEY_OPTION_SET_VISIBILITY, _createSetVisibilityItem(p, waypointId));
-    entries.put(KEY_OPTION_SET_ICON, _createSetIconItem(waypointName));
-    entries.put(KEY_OPTION_DELETE, _createDeleteItem(waypointName));
+    entries.put(KEY_OPTION_SET_ICON, _createSetIconItem(p, waypointName));
+    entries.put(KEY_OPTION_DELETE, _createDeleteItem(p, waypointName));
 
     Map<String, Integer> customSlots = new LinkedHashMap<>();
     customSlots.put(KEY_OPTION_RENAME, 1);
@@ -181,8 +182,9 @@ public class WaypointsGUI {
     customSlots.put(KEY_OPTION_SET_ICON, 5);
     customSlots.put(KEY_OPTION_DELETE, 7);
 
-    CustomGUI optionsGUI = _createGUI(p, "Options: " + waypointName, OPTIONS_GUI_ROWS, entries, customSlots,
-        parentGUI, OPTIONS_GUI_FLAGS);
+    CustomGUI optionsGUI = _createGUI(p, Main.tr(p, "gui-waypoints-options-title",
+        "waypoint", Theme.highlight() + waypointName), OPTIONS_GUI_ROWS, entries, customSlots, parentGUI,
+        OPTIONS_GUI_FLAGS);
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
     actions.put(KEY_OPTION_RENAME, _clickAction(
@@ -225,7 +227,7 @@ public class WaypointsGUI {
       }
 
       try {
-        ItemStack iconOption = _createIconSelectionItem(material, waypointName);
+        ItemStack iconOption = _createIconSelectionItem(p, material, waypointName);
         if (iconOption == null) {
           continue;
         }
@@ -238,7 +240,8 @@ public class WaypointsGUI {
       }
     }
 
-    CustomGUI iconGUI = _createGUI(p, "Icon: " + waypointName, ICON_GUI_ROWS, entries, null, parentGUI,
+    CustomGUI iconGUI = _createGUI(p, Main.tr(p, "gui-waypoints-icon-selection-title",
+        "waypoint", Theme.highlight() + waypointName), ICON_GUI_ROWS, entries, null, parentGUI,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH));
 
     iconGUI.setSearchButtonSlot(_footerSearchSlot(ICON_GUI_ROWS));
@@ -258,13 +261,14 @@ public class WaypointsGUI {
   // CREATE GUI ITEMS
   // ----------------
 
-  private ItemStack _createRenameItem(String waypointName) {
+  private ItemStack _createRenameItem(Player viewer, String waypointName) {
     return _createItem(
         Material.NAME_TAG,
-        Component.text(Theme.titlePrefix() + "Rename"),
+        Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-rename-item-title")),
         _createLore(
             "",
-            Theme.textPrefix() + "Left-Click: Rename waypoint: " + Theme.highlight() + waypointName),
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-rename",
+                "waypoint", Theme.highlight() + waypointName)),
         null);
   }
 
@@ -277,82 +281,84 @@ public class WaypointsGUI {
 
     for (WaypointVisibility option : WaypointVisibility.values()) {
       boolean isSelected = option == visibility;
-      String name = option.getDisplayName();
+      String name = option.getDisplayName(p);
       ChatColor color = isSelected ? Theme.highlight() : Theme.primary();
       lore.add(Component.text(Theme.textPrefix() + color + name));
     }
 
     lore.add(Component.text(""));
-    lore.add(Component.text(Theme.textPrefix() + "Left-Click: Next visibility"));
-    lore.add(Component.text(Theme.textPrefix() + "Right-Click: Previous visibility"));
+    lore.add(Component.text(Theme.textPrefix() + Main.tr(p, "gui-waypoints-action-next-visibility")));
+    lore.add(Component.text(Theme.textPrefix() + Main.tr(p, "gui-waypoints-action-previous-visibility")));
 
     return _createItem(
         Material.SPYGLASS,
-        Component.text(Theme.titlePrefix() + "Visibility"),
+        Component.text(Theme.titlePrefix() + Main.tr(p, "gui-waypoints-visibility-item-title")),
         lore,
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
 
-  private ItemStack _createDeleteItem(String waypointName) {
+  private ItemStack _createDeleteItem(Player viewer, String waypointName) {
     return _createItem(
         Material.BARRIER,
-        Component.text(Theme.titlePrefix() + "Delete"),
+        Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-delete-item-title")),
         _createLore(
             "",
-            Theme.textPrefix() + "Left-Click: Delete waypoint: " + Theme.highlight() + waypointName),
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-delete",
+                "waypoint", Theme.highlight() + waypointName)),
         null);
   }
 
-  private ItemStack _createSetIconItem(String waypointName) {
+  private ItemStack _createSetIconItem(Player viewer, String waypointName) {
     return _createItem(
         Material.ENDER_EYE,
-        Component.text(Theme.titlePrefix() + "Set Icon"),
+        Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-set-icon-item-title")),
         _createLore(
             "",
-            Theme.textPrefix() + "Left-Click: Set custom icon for: " + Theme.highlight() + waypointName),
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-open-icon-selection",
+                "waypoint", Theme.highlight() + waypointName)),
         null);
   }
 
-  private ItemStack _createCancelNavigationItem() {
+  private ItemStack _createCancelNavigationItem(Player viewer) {
     return _createItem(
         Material.BARRIER,
-        Component.text(Theme.titlePrefix() + "Cancel Navigation"),
+        Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-cancel-navigation-item-title")),
         _createLore(
-            Theme.textPrefix() + "Cancel your current active navigation.",
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-cancel-navigation-description"),
             "",
-            Theme.textPrefix() + "Left-Click: Cancel navigation"),
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-cancel-navigation")),
         null);
   }
 
-  private ItemStack _createAddWaypointItem() {
+  private ItemStack _createAddWaypointItem(Player viewer) {
     return _createItem(
         Material.EMERALD,
-        Component.text(Theme.titlePrefix() + "Add Waypoint"),
+        Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-add-item-title")),
         _createLore(
-            Theme.textPrefix() + "Create a new waypoint using custom coordinates or current location.",
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-add-item-description"),
             "",
-            Theme.textPrefix() + "Left-Click: Add waypoint"),
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-add")),
         null);
   }
 
-  private ItemStack _createFilterItem(WaypointFilter filterMode) {
+  private ItemStack _createFilterItem(Player viewer, WaypointFilter filterMode) {
     List<Component> lore = new ArrayList<>();
     lore.add(Component.text(""));
 
     for (WaypointFilter option : WaypointFilter.values()) {
       boolean isSelected = option == filterMode;
-      String name = ChatColor.stripColor(option.getColoredName());
+      String name = ChatColor.stripColor(option.getColoredName(viewer));
       ChatColor color = isSelected ? Theme.highlight() : Theme.primary();
       lore.add(Component.text(Theme.textPrefix() + color + name));
     }
 
     lore.add(Component.text(""));
-    lore.add(Component.text(Theme.textPrefix() + "Left-Click: Next option"));
-    lore.add(Component.text(Theme.textPrefix() + "Right-Click: Previous option"));
+    lore.add(Component.text(Theme.textPrefix() + Main.tr(viewer, "gui-common-action-next-option")));
+    lore.add(Component.text(Theme.textPrefix() + Main.tr(viewer, "gui-common-action-previous-option")));
 
     return _createItem(
         Material.HOPPER,
-        Component.text(Theme.titlePrefix() + "Filter"),
+        Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-filter-item-title")),
         lore,
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
   }
@@ -376,28 +382,35 @@ public class WaypointsGUI {
       WaypointVisibility visibility = _waypointsManager.getWaypointVisibility(worldName, waypointId);
       String visibilityString = "";
       if (visibility == WaypointVisibility.PRIVATE) {
-        visibilityString = Theme.primary() + " (" + Theme.error() + visibility.getDisplayName() + Theme.primary() + ")";
+        visibilityString = Theme.primary() + " (" + Theme.error() + visibility.getDisplayName(p)
+            + Theme.primary() + ")";
       } else if (visibility == WaypointVisibility.PUBLIC) {
-        visibilityString = Theme.primary() + " (" + Theme.highlight() + visibility.getDisplayName() + Theme.primary() + ")";
+        visibilityString = Theme.primary() + " (" + Theme.highlight() + visibility.getDisplayName(p)
+            + Theme.primary() + ")";
       }
 
       meta.displayName(
           Component.text(Theme.titlePrefix() + waypointName + visibilityString));
       List<Component> lore = _createLore(
           "",
-          Theme.textPrefix() + "X: " + Theme.highlight() + x,
-          Theme.textPrefix() + "Y: " + Theme.highlight() + y,
-          Theme.textPrefix() + "Z: " + Theme.highlight() + z,
+          Theme.textPrefix() + Main.tr(p, "gui-common-coordinate-x",
+              "x", Theme.highlight() + Integer.toString(x)),
+          Theme.textPrefix() + Main.tr(p, "gui-common-coordinate-y",
+              "y", Theme.highlight() + Integer.toString(y)),
+          Theme.textPrefix() + Main.tr(p, "gui-common-coordinate-z",
+              "z", Theme.highlight() + Integer.toString(z)),
           "",
-          Theme.textPrefix() + "Distance: " + Theme.highlight() + distance + Theme.primary() + " blocks",
+          Theme.textPrefix() + Main.tr(p, "gui-common-distance",
+              "distance", Theme.highlight() + Main.tr(p, "gui-common-distance-blocks",
+                  "distance", Long.toString(distance))),
           "",
-          Theme.textPrefix() + "Owner: " + Theme.highlight()
-              + _waypointsManager.getWaypointOwnerName(worldName, waypointId),
+          Theme.textPrefix() + Main.tr(p, "gui-common-owner",
+              "owner", Theme.highlight() + _waypointsManager.getWaypointOwnerName(p, worldName, waypointId)),
           "",
-          Theme.textPrefix() + "Left-Click: Start navigation");
+          Theme.textPrefix() + Main.tr(p, "gui-common-action-start-navigation"));
 
       if (_canEditWaypointOptions(worldName, waypointId, p)) {
-        lore.add(Component.text(Theme.textPrefix() + "Right-Click: Options"));
+        lore.add(Component.text(Theme.textPrefix() + Main.tr(p, "gui-common-action-open-options")));
       }
 
       meta.lore(lore);
@@ -407,13 +420,14 @@ public class WaypointsGUI {
     return item;
   }
 
-  private ItemStack _createIconSelectionItem(Material material, String waypointName) {
+  private ItemStack _createIconSelectionItem(Player viewer, Material material, String waypointName) {
     return _createItem(
         material,
-        Component.text(Theme.titlePrefix() + material.name()),
+        Component.text(Theme.titlePrefix()).append(Component.translatable(material.translationKey())),
         _createLore(
             "",
-            Theme.textPrefix() + "Click to set this as the icon for: " + Theme.highlight() + waypointName),
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-set-icon",
+                "waypoint", Theme.highlight() + waypointName)),
         meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
 
   }
@@ -429,8 +443,8 @@ public class WaypointsGUI {
 
     _waypointsManager.setWaypointIcon(worldName, waypointId, icon);
 
-    p.sendMessage(Main.getPrefix() + "Custom icon set for waypoint " + Theme.highlight() + waypointName
-        + Theme.primary() + ".");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-waypoints-icon-changed-message",
+        "waypoint", Theme.highlight() + waypointName + Theme.primary()));
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
@@ -449,7 +463,8 @@ public class WaypointsGUI {
 
     if (targetVisibility == WaypointVisibility.PUBLIC
         && !_waypointsManager.isPublicNameAvailable(worldName, waypointName, waypointId)) {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "A public waypoint with that name already exists.");
+      p.sendMessage(Main.getPrefix() + Theme.error()
+          + Main.tr(p, "gui-waypoints-error-public-name-conflict"));
       _playErrorSound(p);
       return;
     }
@@ -458,8 +473,9 @@ public class WaypointsGUI {
 
     ChatColor visibilityColor = targetVisibility == WaypointVisibility.PUBLIC ? Theme.highlight() : Theme.error();
 
-    p.sendMessage(Main.getPrefix() + "Waypoint " + Theme.highlight() + waypointName + Theme.primary()
-        + " visibility set to " + visibilityColor + targetVisibility.getDisplayName() + Theme.primary() + ".");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-waypoints-visibility-changed-message",
+        "waypoint", Theme.highlight() + waypointName + Theme.primary(),
+        "visibility", visibilityColor + targetVisibility.getDisplayName(p) + Theme.primary()));
     _playSuccessSound(p);
 
     CustomGUI refreshedParentGUI = _createWaypointsGUI(p);
@@ -471,8 +487,8 @@ public class WaypointsGUI {
     String waypointName = _waypointsManager.getWaypointDisplayName(world, waypointId);
 
     if (!_waypointsManager.checkWaypointExists(world, waypointId)) {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "Could not find a waypoint called " + Theme.highlight()
-          + waypointName + Theme.error() + ". Please try an existing one!");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "gui-waypoints-error-not-found",
+          "waypoint", Theme.highlight() + waypointName + Theme.error()));
       return;
     }
 
@@ -485,10 +501,11 @@ public class WaypointsGUI {
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);
 
-    p.sendMessage(Main.getPrefix() + Theme.primary() + "Start navigation to " + Theme.highlight() + waypointName
-        + Theme.primary() + " at " + Theme.highlight() + "X: " + Theme.primary() + coords.get(KEY_COORD_X)
-        + Theme.highlight() + " Y: " + Theme.primary() + coords.get(KEY_COORD_Y)
-        + Theme.highlight() + " Z: " + Theme.primary() + coords.get(KEY_COORD_Z));
+    p.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(p, "gui-waypoints-navigation-started-message",
+        "waypoint", Theme.highlight() + waypointName + Theme.primary(),
+        "x", coords.get(KEY_COORD_X),
+        "y", coords.get(KEY_COORD_Y),
+        "z", coords.get(KEY_COORD_Z)));
     _playSuccessSound(p);
 
     p.closeInventory();
@@ -497,11 +514,12 @@ public class WaypointsGUI {
   private void _handleCancelNavigation(Player p) {
     if (_navigationManager.checkActiveNavigation(p)) {
       _navigationManager.stopNavigation(p);
-      p.sendMessage(Main.getPrefix() + "You've canceled your active navigation!");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-waypoints-navigation-canceled-message"));
       _playSuccessSound(p);
       p.closeInventory();
     } else {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "You have no current destination!");
+      p.sendMessage(Main.getPrefix() + Theme.error()
+          + Main.tr(p, "gui-waypoints-error-no-active-navigation"));
       _playErrorSound(p);
       displayWaypointsGUI(p);
     }
@@ -515,11 +533,11 @@ public class WaypointsGUI {
       _waypointsManager.removeWaypoint(world, waypointId);
       _playSuccessSound(p);
 
-      p.sendMessage(Main.getPrefix() + "The waypoint " + Theme.highlight() + waypointName + Theme.primary()
-          + " was successfully removed!");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-waypoints-removed-message",
+          "waypoint", Theme.highlight() + waypointName + Theme.primary()));
     } else {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "Could not find a waypoint called " + Theme.highlight()
-          + waypointName + Theme.error() + ". Please try an existing one!");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "gui-waypoints-error-not-found",
+          "waypoint", Theme.highlight() + waypointName + Theme.error()));
     }
 
     displayWaypointsGUI(p);
@@ -531,40 +549,43 @@ public class WaypointsGUI {
 
   private void _openAddWaypointDialog(Player p, String errorMessage, String initialName,
       String initialVisibility, String initialX, String initialY, String initialZ) {
-    Map<String, String> visibilityOptions = WaypointVisibility.toMap();
+    Map<String, String> visibilityOptions = WaypointVisibility.toMap(p);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Add Waypoint",
-        "Set the name and coordinates for the new waypoint.",
+        Main.tr(p, "gui-waypoints-add-dialog-title"),
+        Main.tr(p, "gui-waypoints-add-dialog-description"),
         errorMessage,
         List.of(
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_NAME,
-                Theme.textPrefix() + "Waypoint Name", initialName),
+                Theme.textPrefix() + Main.tr(p, "gui-waypoints-add-dialog-name-input"), initialName),
             CustomDialog.createSelectInput(WAYPOINT_ADD_DIALOG_VISIBILITY,
-                Theme.textPrefix() + "Visibility", visibilityOptions, initialVisibility),
+                Theme.textPrefix() + Main.tr(p, "gui-waypoints-add-dialog-visibility-input"),
+                visibilityOptions, initialVisibility),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_X,
-                Theme.textPrefix() + "X Coordinate", initialX),
+                Theme.textPrefix() + Main.tr(p, "gui-waypoints-add-dialog-x-input"), initialX),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_Y,
-                Theme.textPrefix() + "Y Coordinate", initialY),
+                Theme.textPrefix() + Main.tr(p, "gui-waypoints-add-dialog-y-input"), initialY),
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_Z,
-                Theme.textPrefix() + "Z Coordinate", initialZ)),
+                Theme.textPrefix() + Main.tr(p, "gui-waypoints-add-dialog-z-input"), initialZ)),
         (view, audience) -> _addWaypointDialogCB(view, audience),
-        null);
+        null,
+        Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
 
   private void _openWaypointRenameDialog(Player p, String waypointId, String errorMessage, String initialValue) {
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Waypoint Name",
-        "Set the new name for the waypoint.",
+        Main.tr(p, "gui-waypoints-rename-dialog-title"),
+        Main.tr(p, "gui-waypoints-rename-dialog-description"),
         errorMessage,
         List.of(
             CustomDialog.createTextInput(WAYPOINT_ADD_DIALOG_FIELD_NAME,
-                Theme.textPrefix() + "Rename Waypoint",
+                Theme.textPrefix() + Main.tr(p, "gui-waypoints-rename-dialog-name-input"),
                 initialValue)),
         (view, audience) -> _renameWaypointDialogCB(view, audience, waypointId),
-        null);
+        null,
+        Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -584,7 +605,8 @@ public class WaypointsGUI {
     String zInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_FIELD_Z)).map(String::trim).orElse("");
 
     if (nameInput.isEmpty()) {
-      _openAddWaypointDialog(p, "Please provide a waypoint name.", nameInput, visibilityInput, xInput, yInput, zInput);
+      _openAddWaypointDialog(p, Main.tr(p, "gui-waypoints-error-name-required"), nameInput, visibilityInput,
+          xInput, yInput, zInput);
       _playErrorSound(p);
       return;
     }
@@ -595,8 +617,8 @@ public class WaypointsGUI {
       y = Integer.parseInt(yInput);
       z = Integer.parseInt(zInput);
     } catch (NumberFormatException ex) {
-      _openAddWaypointDialog(p, "Please provide valid integer coordinates.", nameInput, visibilityInput, xInput, yInput,
-          zInput);
+      _openAddWaypointDialog(p, Main.tr(p, "gui-waypoints-error-invalid-coordinates"), nameInput,
+          visibilityInput, xInput, yInput, zInput);
       _playErrorSound(p);
       return;
     }
@@ -605,18 +627,18 @@ public class WaypointsGUI {
     WaypointVisibility visibility = WaypointVisibility.fromString(visibilityInput).orElse(WaypointVisibility.PUBLIC);
     if (visibility == WaypointVisibility.PUBLIC
         && !_waypointsManager.isPublicNameAvailable(world, nameInput, null)) {
-      _openAddWaypointDialog(p, "A public waypoint with that name already exists.", nameInput, visibilityInput, xInput,
-          yInput, zInput);
+      _openAddWaypointDialog(p, Main.tr(p, "gui-waypoints-error-public-name-conflict"), nameInput,
+          visibilityInput, xInput, yInput, zInput);
       _playErrorSound(p);
       return;
     }
 
     _waypointsManager.addWaypoint(world, nameInput, p.getUniqueId(), visibility, x, y, z);
 
-    p.sendMessage(Main.getPrefix() + "The waypoint: " + Theme.highlight() + nameInput + Theme.primary()
-        + " was successfully added!");
-    p.sendMessage(Main.getPrefix() + Theme.primary() + "Coordinates: " + Theme.highlight() + "X: " + Theme.primary() + x
-        + Theme.highlight() + " Y: " + Theme.primary() + y + Theme.highlight() + " Z: " + Theme.primary() + z);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-waypoints-added-message",
+        "waypoint", Theme.highlight() + nameInput + Theme.primary()));
+    p.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(p, "gui-waypoints-added-coordinates-message",
+        "x", x, "y", y, "z", z));
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
@@ -628,7 +650,7 @@ public class WaypointsGUI {
     String nameInput = Optional.ofNullable(view.getText(WAYPOINT_ADD_DIALOG_FIELD_NAME)).map(String::trim).orElse("");
 
     if (nameInput.isEmpty()) {
-      _openWaypointRenameDialog(p, waypointId, "Please provide a waypoint name.", nameInput);
+      _openWaypointRenameDialog(p, waypointId, Main.tr(p, "gui-waypoints-error-name-required"), nameInput);
       _playErrorSound(p);
       return;
     }
@@ -638,14 +660,15 @@ public class WaypointsGUI {
 
     if (visibility == WaypointVisibility.PUBLIC
         && !_waypointsManager.isPublicNameAvailable(world, nameInput, waypointId)) {
-      _openWaypointRenameDialog(p, waypointId, "A public waypoint with that name already exists.", nameInput);
+      _openWaypointRenameDialog(p, waypointId, Main.tr(p, "gui-waypoints-error-public-name-conflict"), nameInput);
       _playErrorSound(p);
       return;
     }
 
     _waypointsManager.renameWaypoint(world, waypointId, nameInput);
 
-    p.sendMessage(Component.text(Main.getPrefix() + "Waypoint name set to: " + Theme.highlight() + nameInput));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "gui-waypoints-renamed-message",
+        "waypoint", Theme.highlight() + nameInput)));
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
@@ -829,7 +852,8 @@ public class WaypointsGUI {
     return sortData;
   }
 
-  private List<CustomGUI.SortOption> _createWaypointSortOptions(Map<String, WaypointSortData> sortData) {
+  private List<CustomGUI.SortOption> _createWaypointSortOptions(Player viewer,
+      Map<String, WaypointSortData> sortData) {
     Comparator<Map.Entry<String, ItemStack>> byNameAsc = Comparator.<Map.Entry<String, ItemStack>, String>comparing(
         entry -> sortData.get(entry.getKey()).name().toLowerCase());
 
@@ -841,10 +865,10 @@ public class WaypointsGUI {
     Comparator<Map.Entry<String, ItemStack>> byDistanceDesc = byDistanceAsc.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Name (A → Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z → A)", byNameDesc),
-        new CustomGUI.SortOption("Distance (Low → High)", byDistanceAsc),
-        new CustomGUI.SortOption("Distance (High → Low)", byDistanceDesc));
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-ascending"), byNameAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-descending"), byNameDesc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-distance-nearest-first"), byDistanceAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-distance-farthest-first"), byDistanceDesc));
   }
 
   private record WaypointSortData(String name, long distance) {

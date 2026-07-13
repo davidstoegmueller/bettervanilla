@@ -1,19 +1,27 @@
 package com.daveestar.bettervanilla.enums;
 
+import org.bukkit.command.CommandSender;
+
+import com.daveestar.bettervanilla.Main;
+
 public enum InventorySortMode {
-  ALPHABETICAL_ASC("Name (A → Z)"),
-  ALPHABETICAL_DESC("Name (Z → A)"),
-  STACK_DESC("Stack (High → Low)"),
-  STACK_ASC("Stack (Low → High)");
+  ALPHABETICAL_ASC("enum-inventory-sort-mode-alphabetical-ascending"),
+  ALPHABETICAL_DESC("enum-inventory-sort-mode-alphabetical-descending"),
+  STACK_DESC("enum-inventory-sort-mode-stack-descending"),
+  STACK_ASC("enum-inventory-sort-mode-stack-ascending");
 
-  private final String _label;
+  private final String _translationKey;
 
-  InventorySortMode(String label) {
-    _label = label;
+  InventorySortMode(String translationKey) {
+    _translationKey = translationKey;
   }
 
   public String getLabel() {
-    return _label;
+    return getLabel(null);
+  }
+
+  public String getLabel(CommandSender viewer) {
+    return Main.tr(viewer, _translationKey);
   }
 
   public InventorySortMode next() {

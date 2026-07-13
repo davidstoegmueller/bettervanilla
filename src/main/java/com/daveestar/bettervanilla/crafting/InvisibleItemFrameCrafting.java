@@ -65,7 +65,8 @@ public class InvisibleItemFrameCrafting extends CustomCraftingRecipe implements 
     List<Component> lore = Arrays
         .asList(
             Theme.primary() + recipe.getDescription(),
-            Theme.primary() + "Crafted with " + Theme.name() + ".")
+            Theme.primary() + Main.tr(null, "crafting-item-lore-crafted-with",
+                "plugin", Theme.highlight() + Theme.name() + Theme.primary()))
         .stream()
         .filter(Objects::nonNull)
         .map(Component::text)

@@ -6,16 +6,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.bukkit.command.CommandSender;
+
+import com.daveestar.bettervanilla.Main;
+
 public enum WaypointVisibility {
-  PUBLIC("Public"),
-  PRIVATE("Private");
+  PUBLIC("enum-waypoint-visibility-public"),
+  PRIVATE("enum-waypoint-visibility-private");
 
   public static final EnumSet<WaypointVisibility> ALL = EnumSet.allOf(WaypointVisibility.class);
 
-  private final String displayName;
+  private final String translationKey;
 
-  WaypointVisibility(String displayName) {
-    this.displayName = displayName;
+  WaypointVisibility(String translationKey) {
+    this.translationKey = translationKey;
   }
 
   public String getName() {
@@ -23,7 +27,11 @@ public enum WaypointVisibility {
   }
 
   public String getDisplayName() {
-    return displayName;
+    return getDisplayName(null);
+  }
+
+  public String getDisplayName(CommandSender viewer) {
+    return Main.tr(viewer, translationKey);
   }
 
   private static final WaypointVisibility[] VALUES = values();
@@ -37,7 +45,12 @@ public enum WaypointVisibility {
   }
 
   public static Map<String, String> toMap() {
-    return ALL.stream().collect(Collectors.toMap(WaypointVisibility::getName, WaypointVisibility::getDisplayName));
+    return toMap(null);
+  }
+
+  public static Map<String, String> toMap(CommandSender viewer) {
+    return ALL.stream().collect(Collectors.toMap(WaypointVisibility::getName,
+        visibility -> visibility.getDisplayName(viewer)));
   }
 
   public static Optional<WaypointVisibility> fromString(String value) {

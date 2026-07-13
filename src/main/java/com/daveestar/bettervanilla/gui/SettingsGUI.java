@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.InventorySortMode;
+import com.daveestar.bettervanilla.enums.Language;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.CompassManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
@@ -27,6 +28,7 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TagManager;
+import com.daveestar.bettervanilla.manager.TranslationManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
@@ -51,6 +53,7 @@ public class SettingsGUI {
   private final TagManager _tagManager;
   private final NameTagManager _nameTagManager;
   private final TabListManager _tabListManager;
+  private final TranslationManager _translations;
 
   public SettingsGUI() {
     _plugin = Main.getInstance();
@@ -62,6 +65,7 @@ public class SettingsGUI {
     _tagManager = _plugin.getTagManager();
     _nameTagManager = _plugin.getNameTagManager();
     _tabListManager = _plugin.getTabListManager();
+    _translations = _plugin.getTranslationManager();
   }
 
   public void displayGUI(Player p) {
@@ -76,8 +80,8 @@ public class SettingsGUI {
     // first row
     entries.put("togglelocation", _createToggleLocationItem(viewer, target));
     entries.put("togglecompass", _createToggleCompassItem(viewer, target));
-    entries.put("navigationtrail", _createNavigationTrailItem(target));
-    entries.put("navigationautocancel", _createNavigationAutoCancelItem(target));
+    entries.put("navigationtrail", _createNavigationTrailItem(viewer, target));
+    entries.put("navigationautocancel", _createNavigationAutoCancelItem(viewer, target));
 
     // second row
     entries.put("itemrestock", _createItemRestockItem(viewer, target));
@@ -91,10 +95,11 @@ public class SettingsGUI {
     entries.put("backpacksort", _createBackpackSortItem(viewer, target));
     entries.put("actionbartimer", _createActionBarTimerItem(viewer, target));
     entries.put("playertag", _createPlayerTagItem(viewer, target));
+    entries.put("language", _createLanguageItem(viewer, target));
 
     // fourth row
     if (showAdminSettings) {
-      entries.put("adminsettings", _createAdminSettingsItem());
+      entries.put("adminsettings", _createAdminSettingsItem(viewer));
     }
 
     Map<String, Integer> customSlots = new HashMap<>();
@@ -116,6 +121,7 @@ public class SettingsGUI {
     customSlots.put("inventorysort", 21);
     customSlots.put("backpacksort", 23);
     customSlots.put("playertag", 25);
+    customSlots.put("language", 31);
 
     // fourth row
     if (showAdminSettings) {
@@ -123,16 +129,22 @@ public class SettingsGUI {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, viewer,
-        Theme.titlePrefix() + "Settings " + Theme.primary() + "(" + target.getName() + ")",
+        Theme.titlePrefix() + _translations.translate(viewer, "settings-gui-title", "player", target.getName()),
         entries, rows, customSlots, null,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
     Map<String, CustomGUI.ClickAction> clickActions = new HashMap<>();
+    clickActions.put("language", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _openLanguageDialog(p, target);
+      }
+    });
     clickActions.put("togglelocation", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.TOGGLELOCATION.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.TOGGLELOCATION));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.TOGGLELOCATION));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -146,13 +158,13 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.ITEM_RESTOCK.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.ITEM_RESTOCK));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.ITEM_RESTOCK));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
         if (!_settingsManager.getItemRestockEnabled()) {
-          p.sendMessage(Main.getPrefix() + Theme.error() + "Item Restock is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "settings-error-item-restock-disabled"));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -166,13 +178,13 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.ACTIONBAR_TIMER.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.ACTIONBAR_TIMER));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.ACTIONBAR_TIMER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
         if (!_settingsManager.getActionBarTimerEnabled()) {
-          p.sendMessage(Main.getPrefix() + Theme.error() + "Action-Bar timer is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "settings-error-action-bar-timer-disabled"));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -186,13 +198,13 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.TAG.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.TAG));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.TAG));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
         if (!_settingsManager.getTagsEnabled()) {
-          p.sendMessage(Main.getPrefix() + Theme.error() + "Tags are globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "settings-error-tags-disabled"));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -203,7 +215,7 @@ public class SettingsGUI {
       @Override
       public void onRightClick(Player p) {
         if (!target.hasPermission(Permissions.TAG.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.TAG));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.TAG));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -217,7 +229,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.TOGGLECOMPASS.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.TOGGLECOMPASS));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.TOGGLECOMPASS));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -231,7 +243,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.CHESTSORT.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.CHESTSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -243,7 +255,7 @@ public class SettingsGUI {
       @Override
       public void onRightClick(Player p) {
         if (!target.hasPermission(Permissions.CHESTSORT.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.CHESTSORT));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.CHESTSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -257,7 +269,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.INVENTORYSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -269,7 +281,7 @@ public class SettingsGUI {
       @Override
       public void onRightClick(Player p) {
         if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.INVENTORYSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -281,7 +293,7 @@ public class SettingsGUI {
       @Override
       public void onShiftLeftClick(Player p) {
         if (!target.hasPermission(Permissions.INVENTORYSORT.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.INVENTORYSORT));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.INVENTORYSORT));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -295,7 +307,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.BACKPACK.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.BACKPACK));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.BACKPACK));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -307,7 +319,7 @@ public class SettingsGUI {
       @Override
       public void onRightClick(Player p) {
         if (!target.hasPermission(Permissions.BACKPACK.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.BACKPACK));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.BACKPACK));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -329,7 +341,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.WAYPOINTS.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.WAYPOINTS));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -341,7 +353,7 @@ public class SettingsGUI {
       @Override
       public void onRightClick(Player p) {
         if (!target.hasPermission(Permissions.WAYPOINTS.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.WAYPOINTS));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -354,14 +366,14 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.VEINMINER.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.VEINMINER));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.VEINMINER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
         boolean globalState = _settingsManager.getVeinMinerEnabled();
         if (!globalState) {
-          p.sendMessage(Main.getPrefix() + Theme.error() + "Vein Miner is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "settings-error-vein-miner-disabled"));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -375,14 +387,14 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.VEINCHOPPER.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.VEINCHOPPER));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.VEINCHOPPER));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
 
         boolean globalState = _settingsManager.getVeinChopperEnabled();
         if (!globalState) {
-          p.sendMessage(Main.getPrefix() + Theme.error() + "Vein Chopper is globally disabled on the server.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "settings-error-vein-chopper-disabled"));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -396,7 +408,7 @@ public class SettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         if (!target.hasPermission(Permissions.DOUBLE_DOOR.getName())) {
-          p.sendMessage(Main.getNoPermissionMessage(Permissions.DOUBLE_DOOR));
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.DOUBLE_DOOR));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           return;
         }
@@ -419,6 +431,48 @@ public class SettingsGUI {
     gui.open(viewer);
   }
 
+  private ItemStack _createLanguageItem(Player viewer, Player target) {
+    String code = _settingsManager.getPlayerLanguage(target.getUniqueId());
+    String language = Language.fromCode(code).getDisplayName(viewer);
+    ItemStack item = new ItemStack(Material.WRITABLE_BOOK);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(Component.text(Theme.titlePrefix()
+          + _translations.translate(viewer, "settings-language-item-title")));
+      meta.lore(List.of(
+          Component.text(Theme.textPrefix() + _translations.translate(viewer,
+              "settings-language-item-description")),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _translations.translate(viewer,
+              "settings-language-item-current", "language", language)),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _translations.translate(viewer,
+              "settings-language-item-action"))));
+      item.setItemMeta(meta);
+    }
+    return item;
+  }
+
+  private void _openLanguageDialog(Player viewer, Player target) {
+    DialogInput input = CustomDialog.createSelectInput("language",
+        Theme.textPrefix() + _translations.translate(viewer, "settings-language-dialog-input-label"),
+        _translations.getLanguageOptions(viewer), _settingsManager.getPlayerLanguage(target.getUniqueId()));
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        _translations.translate(viewer, "settings-language-dialog-title"),
+        _translations.translate(viewer, "settings-language-dialog-description"),
+        null, List.of(input), (view, audience) -> {
+          Language selectedLanguage = Language.fromCode(view.getText("language"));
+          String code = selectedLanguage.getCode();
+          _settingsManager.setPlayerLanguage(target.getUniqueId(), code);
+          String name = selectedLanguage.getDisplayName(target);
+          target.sendMessage(Main.getPrefix() + _translations.translate(target,
+              "settings-language-changed-message", "language", name));
+          displayGUI((Player) audience, target);
+        }, null, _translations.translate(viewer, "dialog-button-apply"),
+        _translations.translate(viewer, "dialog-button-cancel"));
+    viewer.showDialog(dialog);
+  }
+
   private ItemStack _createToggleLocationItem(Player viewer, Player target) {
     boolean state = _settingsManager.getPlayerToggleLocation(target.getUniqueId());
     ItemStack item = new ItemStack(Material.FILLED_MAP);
@@ -428,15 +482,14 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Action-Bar Location"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-location-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Show your current location in the actionbar.",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TOGGLELOCATION) : null),
+          Theme.textPrefix() + _t(viewer, "settings-location-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.TOGGLELOCATION) : null),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -454,16 +507,15 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Action-Bar Timer"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-action-bar-timer-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Show the server timer in the actionbar.",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.ACTIONBAR_TIMER)
-              : !globalState ? Theme.error() + "Action-Bar timer is globally disabled on the server." : null),
+          Theme.textPrefix() + _t(viewer, "settings-action-bar-timer-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.ACTIONBAR_TIMER)
+              : !globalState ? Theme.error() + _t(viewer, "settings-error-action-bar-timer-disabled") : null),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -481,21 +533,21 @@ public class SettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     String tagDisplay = (tagName == null || tagName.isEmpty())
-        ? Theme.error() + "NONE"
+        ? Theme.error() + _t(viewer, "common-value-none")
         : (tagColor != null ? Theme.primary() + "[" + tagColor : ChatColor.AQUA) + tagName + Theme.primary() + "]";
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Player Tag"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-player-tag-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Set the tag displayed with your name.",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TAG)
-              : !globalEnabled ? Theme.error() + "Tags are globally disabled on the server." : null),
+          Theme.textPrefix() + _t(viewer, "settings-player-tag-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.TAG)
+              : !globalEnabled ? Theme.error() + _t(viewer, "settings-error-tags-disabled") : null),
           "",
-          Theme.textPrefix() + "Tag: " + tagDisplay,
+          Theme.textPrefix() + _t(viewer, "settings-player-tag-current", "tag", tagDisplay),
           "",
-          Theme.textPrefix() + "Left-Click: Set Tag",
-          Theme.textPrefix() + "Right-Click: Clear Tag")
+          Theme.textPrefix() + _t(viewer, "settings-player-tag-action-set"),
+          Theme.textPrefix() + _t(viewer, "settings-player-tag-action-clear"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -512,15 +564,14 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Bossbar Compass"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-compass-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Shows a compass in the bossbar",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.TOGGLECOMPASS) : null),
+          Theme.textPrefix() + _t(viewer, "settings-compass-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.TOGGLECOMPASS) : null),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -537,28 +588,27 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.CHESTSORT.getName());
 
     meta.displayName(
-        Component.text(Theme.titlePrefix() + "Chest Sorting"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-chest-sorting-title")));
 
     List<String> lore = new java.util.ArrayList<>();
-    lore.add(Theme.textPrefix() + "Right-Click outside of a chest inventory to sort it!");
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-chest-sorting-description"));
     if (!hasPermission) {
-      lore.add(Main.getShortNoPermissionMessage(Permissions.CHESTSORT));
+      lore.add(Main.getShortNoPermissionMessage(viewer, Permissions.CHESTSORT));
     }
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "State: "
-        + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"));
+    lore.add(Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)));
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "Sorting Mode:");
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-sorting-mode-label"));
     for (InventorySortMode option : InventorySortMode.values()) {
       ChatColor color = option == mode ? Theme.highlight() : Theme.primary();
-      lore.add(Theme.textPrefix() + color + option.getLabel());
+      lore.add(Theme.textPrefix() + color + option.getLabel(viewer));
     }
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "Left-Click: Toggle");
-    lore.add(Theme.textPrefix() + "Right-Click: Next mode");
+    lore.add(Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"));
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-sorting-action-next-mode"));
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
@@ -576,31 +626,31 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.INVENTORYSORT.getName());
 
     meta.displayName(
-        Component.text(Theme.titlePrefix() + "Inventory Sorting"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-inventory-sorting-title")));
 
     List<String> lore = new java.util.ArrayList<>();
-    lore.add(Theme.textPrefix() + "Right-Click outside of your inventory to sort it!");
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-inventory-sorting-description"));
     if (!hasPermission) {
-      lore.add(Main.getShortNoPermissionMessage(Permissions.INVENTORYSORT));
+      lore.add(Main.getShortNoPermissionMessage(viewer, Permissions.INVENTORYSORT));
     }
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "State: "
-        + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"));
-    lore.add(Theme.textPrefix() + "Include Hotbar: "
-        + (includeHotbar ? Theme.highlight() + "INCLUDE" : Theme.error() + "NOT INCLUDE"));
+    lore.add(Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)));
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-inventory-sorting-hotbar", "state",
+        (includeHotbar ? Theme.highlight() : Theme.error())
+            + _t(viewer, includeHotbar ? "common-state-included" : "common-state-excluded")));
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "Sorting Mode:");
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-sorting-mode-label"));
     for (InventorySortMode option : InventorySortMode.values()) {
       ChatColor color = option == mode ? Theme.highlight() : Theme.primary();
-      lore.add(Theme.textPrefix() + color + option.getLabel());
+      lore.add(Theme.textPrefix() + color + option.getLabel(viewer));
     }
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "Left-Click: Toggle");
-    lore.add(Theme.textPrefix() + "Right-Click: Next mode");
-    lore.add(Theme.textPrefix() + "Shift-Left-Click: Toggle hotbar");
+    lore.add(Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"));
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-sorting-action-next-mode"));
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-inventory-sorting-action-hotbar"));
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
@@ -617,28 +667,27 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.BACKPACK.getName());
 
     meta.displayName(
-        Component.text(Theme.titlePrefix() + "Backpack Sorting"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-backpack-sorting-title")));
 
     List<String> lore = new java.util.ArrayList<>();
-    lore.add(Theme.textPrefix() + "Right-Click outside of a backpack to sort its current page!");
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-backpack-sorting-description"));
     if (!hasPermission) {
-      lore.add(Main.getShortNoPermissionMessage(Permissions.BACKPACK));
+      lore.add(Main.getShortNoPermissionMessage(viewer, Permissions.BACKPACK));
     }
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "State: "
-        + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"));
+    lore.add(Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)));
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "Sorting Mode:");
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-sorting-mode-label"));
     for (InventorySortMode option : InventorySortMode.values()) {
       ChatColor color = option == mode ? Theme.highlight() : Theme.primary();
-      lore.add(Theme.textPrefix() + color + option.getLabel());
+      lore.add(Theme.textPrefix() + color + option.getLabel(viewer));
     }
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "Left-Click: Toggle");
-    lore.add(Theme.textPrefix() + "Right-Click: Next mode");
+    lore.add(Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"));
+    lore.add(Theme.textPrefix() + _t(viewer, "settings-sorting-action-next-mode"));
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
@@ -648,21 +697,20 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createNavigationTrailItem(Player target) {
+  private ItemStack _createNavigationTrailItem(Player viewer, Player target) {
     boolean state = _settingsManager.getPlayerNavigationTrail(target.getUniqueId());
     ItemStack item = new ItemStack(Material.BLAZE_POWDER);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Navigation Particles"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-navigation-particles-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Show particle trails when navigating to a location.",
+          Theme.textPrefix() + _t(viewer, "settings-navigation-particles-description"),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -670,7 +718,7 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createNavigationAutoCancelItem(Player target) {
+  private ItemStack _createNavigationAutoCancelItem(Player viewer, Player target) {
     boolean state = _settingsManager.getPlayerNavigationAutoCancel(target.getUniqueId());
     int radius = _settingsManager.getPlayerNavigationReachedRadius(target.getUniqueId());
     ItemStack item = new ItemStack(Material.REPEATER);
@@ -678,17 +726,15 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Navigation Auto Cancel"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-navigation-auto-cancel-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Automatically stop navigation when you reach the destination.",
+          Theme.textPrefix() + _t(viewer, "settings-navigation-auto-cancel-description"),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
-          Theme.textPrefix() + "Radius: " + Theme.highlight() + radius + Theme.primary()
-              + " blocks",
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
+          Theme.textPrefix() + _t(viewer, "settings-navigation-radius", "radius", radius),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle",
-          Theme.textPrefix() + "Right-Click: Set radius")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"),
+          Theme.textPrefix() + _t(viewer, "settings-navigation-action-set-radius"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -707,17 +753,15 @@ public class SettingsGUI {
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Vein Miner"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-vein-miner-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix()
-              + "While sneaking, mine all ores of the same type if using a pickaxe.",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.VEINMINER)
-              : !globalState ? Theme.error() + "Vein Miner is globally disabled on the server." : null),
+          Theme.textPrefix() + _t(viewer, "settings-vein-miner-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.VEINMINER)
+              : !globalState ? Theme.error() + _t(viewer, "settings-error-vein-miner-disabled") : null),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -736,16 +780,15 @@ public class SettingsGUI {
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Vein Chopper"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-vein-chopper-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "While sneaking, chop all logs of the same type if using an axe.",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.VEINCHOPPER)
-              : !globalState ? Theme.error() + "Vein Chopper is globally disabled on the server." : null),
+          Theme.textPrefix() + _t(viewer, "settings-vein-chopper-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.VEINCHOPPER)
+              : !globalState ? Theme.error() + _t(viewer, "settings-error-vein-chopper-disabled") : null),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -763,16 +806,15 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Item Restock"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-item-restock-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Refill your hotbar slot with matching items automatically.",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.ITEM_RESTOCK)
-              : !globalState ? Theme.error() + "Item Restock is globally disabled on the server." : null),
+          Theme.textPrefix() + _t(viewer, "settings-item-restock-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.ITEM_RESTOCK)
+              : !globalState ? Theme.error() + _t(viewer, "settings-error-item-restock-disabled") : null),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -789,15 +831,14 @@ public class SettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Double Door Sync"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-double-door-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Interact with one door to toggle the paired door.",
-          (!hasPermission ? Main.getShortNoPermissionMessage(Permissions.DOUBLE_DOOR) : null),
+          Theme.textPrefix() + _t(viewer, "settings-double-door-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.DOUBLE_DOOR) : null),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -805,17 +846,17 @@ public class SettingsGUI {
     return item;
   }
 
-  private ItemStack _createAdminSettingsItem() {
+  private ItemStack _createAdminSettingsItem(Player viewer) {
     ItemStack item = new ItemStack(Material.REDSTONE_TORCH);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Admin Settings"));
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-admin-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Manage admin and server settings.",
+          Theme.textPrefix() + _t(viewer, "settings-admin-description"),
           "",
-          Theme.textPrefix() + "Left-Click: Open")
+          Theme.textPrefix() + _t(viewer, "gui-common-action-open"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -828,21 +869,21 @@ public class SettingsGUI {
     String currentColorName = _settingsManager.getPlayerTagColor(target.getUniqueId());
 
     DialogInput inputName = CustomDialog.createTextInput("tagname",
-        Theme.textPrefix() + "Tag Name",
+        Theme.textPrefix() + _t(viewer, "settings-tag-dialog-name-label"),
         currentName);
 
     DialogInput inputColor = CustomDialog.createSelectInput("tagcolor",
-        Theme.textPrefix() + "Tag Color",
-        _buildTagColorOptions(),
+        Theme.textPrefix() + _t(viewer, "settings-tag-dialog-color-label"),
+        _buildTagColorOptions(viewer),
         currentColorName);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Player Tag",
-        "Set your tag name and color.",
+        _t(viewer, "settings-tag-dialog-title"),
+        _t(viewer, "settings-tag-dialog-description"),
         errorMessage,
         List.of(inputName, inputColor),
         (view, audience) -> _setPlayerTagDialogCB(view, audience, parentMenu, target),
-        null);
+        null, _t(viewer, "dialog-button-apply"), _t(viewer, "dialog-button-cancel"));
 
     viewer.showDialog(dialog);
   }
@@ -851,16 +892,16 @@ public class SettingsGUI {
     int radius = _settingsManager.getPlayerNavigationReachedRadius(target.getUniqueId());
 
     DialogInput inputRadius = CustomDialog.createNumberInput("radius",
-        Theme.textPrefix() + "Reached Radius (blocks)",
+        Theme.textPrefix() + _t(viewer, "settings-navigation-dialog-radius-label"),
         1, 200, 1, (float) radius);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Waypoints Auto Cancel Radius",
-        "Set how close you must be for a destination to count as reached.",
+        _t(viewer, "settings-navigation-dialog-title"),
+        _t(viewer, "settings-navigation-dialog-description"),
         null,
         List.of(inputRadius),
         (view, audience) -> _setNavigationReachedRadiusDialogCB(view, audience, parentMenu, target),
-        null);
+        null, _t(viewer, "dialog-button-apply"), _t(viewer, "dialog-button-cancel"));
 
     viewer.showDialog(dialog);
   }
@@ -872,12 +913,12 @@ public class SettingsGUI {
     String colorKey = Optional.ofNullable(view.getText("tagcolor")).map(String::trim).orElse("AQUA");
 
     if (name.isEmpty()) {
-      _openPlayerTagDialog(viewer, parentMenu, "Tag name cannot be empty.", target);
+      _openPlayerTagDialog(viewer, parentMenu, _t(viewer, "settings-tag-error-empty"), target);
       return;
     }
 
     if (name.length() > 10) {
-      _openPlayerTagDialog(viewer, parentMenu, "Tag too long! Maximum length is 10 characters.", target);
+      _openPlayerTagDialog(viewer, parentMenu, _t(viewer, "settings-tag-error-too-long"), target);
       return;
     }
 
@@ -886,8 +927,8 @@ public class SettingsGUI {
     _nameTagManager.updateNameTag(target);
     _tabListManager.refreshPlayerListEntry(target);
 
-    target.sendMessage(Main.getPrefix() + Theme.primary() + "Tag set to: " + Theme.primary() + "[" + color + name
-        + Theme.primary() + "]");
+    target.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(target, "settings-tag-set-message",
+        "tag", Theme.primary() + "[" + color + name + Theme.primary() + "]"));
     target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(viewer, target);
@@ -900,8 +941,7 @@ public class SettingsGUI {
 
     _settingsManager.setPlayerNavigationReachedRadius(target.getUniqueId(), radius);
 
-    target.sendMessage(Main.getPrefix() + "Navigation reach radius set to " + Theme.highlight() + radius
-        + Theme.primary() + " blocks.");
+    target.sendMessage(Main.getPrefix() + Main.tr(target, "settings-navigation-radius-set-message", "radius", radius));
     target.playSound(target, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(viewer, target);
@@ -912,28 +952,18 @@ public class SettingsGUI {
     _nameTagManager.updateNameTag(target);
     _tabListManager.refreshPlayerListEntry(target);
 
-    target.sendMessage(Main.getPrefix() + Theme.primary() + "Tag cleared.");
+    target.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(target, "settings-tag-cleared-message"));
   }
 
-  private Map<String, String> _buildTagColorOptions() {
+  private Map<String, String> _buildTagColorOptions(Player viewer) {
     Map<String, String> options = new LinkedHashMap<>();
     for (Map.Entry<String, ChatColor> entry : Theme.minecraftColors().entrySet()) {
-      String name = _formatColorName(entry.getKey());
+      String translationKey = "enum-chat-color-" + entry.getKey().toLowerCase().replace('_', '-');
+      String name = _t(viewer, translationKey);
       options.put(entry.getKey(), entry.getValue() + name);
     }
 
     return options;
-  }
-
-  private String _formatColorName(String name) {
-    if (name == null || name.isBlank()) {
-      return "";
-    }
-
-    return Arrays.stream(name.split("_"))
-        .filter(part -> part != null && !part.isBlank())
-        .map(part -> part.substring(0, 1) + part.substring(1).toLowerCase())
-        .collect(Collectors.joining(" "));
   }
 
 
@@ -950,25 +980,23 @@ public class SettingsGUI {
 
       var blockLoc = p.getLocation().toBlockLocation();
       Biome biome = p.getWorld().getBiome(blockLoc);
-      String locationText = Theme.highlight() + "X: " + Theme.primary() + blockLoc.getBlockX()
-          + Theme.highlight() + " Y: " + Theme.primary() + blockLoc.getBlockY()
-          + Theme.highlight() + " Z: " + Theme.primary() + blockLoc.getBlockZ() + Theme.textSymbol()
+      String locationText = Theme.highlight() + Main.tr(p, "coordinate-label-x") + " " + Theme.primary() + blockLoc.getBlockX()
+          + Theme.highlight() + " " + Main.tr(p, "coordinate-label-y") + " " + Theme.primary() + blockLoc.getBlockY()
+          + Theme.highlight() + " " + Main.tr(p, "coordinate-label-z") + " " + Theme.primary() + blockLoc.getBlockZ() + Theme.textSymbol()
           + ChatColor.BOLD + " » " + Theme.primary() + biome.getKey();
 
       _actionBar.sendActionBar(p, locationText);
       newState = true;
     }
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Action-Bar location is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-location-toggle-message", newState);
   }
 
   private void _toggleActionBarTimer(Player p) {
     boolean newState = !_settingsManager.getPlayerActionBarTimer(p.getUniqueId());
     _settingsManager.setPlayerActionBarTimer(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-action-bar-timer-toggle-message", newState);
   }
 
   private void _toggleCompass(Player p) {
@@ -983,16 +1011,14 @@ public class SettingsGUI {
 
     _settingsManager.setPlayerToggleCompass(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Bossbar-Compass is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-compass-toggle-message", newState);
   }
 
   private void _toggleChestSort(Player p) {
     boolean newState = !_settingsManager.getPlayerChestSort(p.getUniqueId());
     _settingsManager.setPlayerChestSort(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Chest sorting is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-chest-sorting-toggle-message", newState);
   }
 
   private void _cycleChestSortMode(Player p) {
@@ -1000,15 +1026,30 @@ public class SettingsGUI {
     InventorySortMode next = current.next();
     _settingsManager.setPlayerChestSortMode(p.getUniqueId(), next);
 
-    p.sendMessage(Main.getPrefix() + "Chest sort mode set to " + Theme.highlight() + next.getLabel());
+    p.sendMessage(Main.getPrefix()
+        + Main.tr(p, "settings-chest-sorting-mode-message", "mode", next.getLabel(p)));
+  }
+
+  private String _t(Player viewer, String key, Object... replacements) {
+    return _translations.translate(viewer, key, replacements);
+  }
+
+  private String _state(Player viewer, boolean enabled) {
+    return (enabled ? Theme.highlight() : Theme.error())
+        + _t(viewer, enabled ? "common-state-enabled" : "common-state-disabled");
+  }
+
+  private void _sendToggleMessage(Player player, String key, boolean enabled) {
+    player.sendMessage(Main.getPrefix() + Main.tr(player, key, "state",
+        Theme.highlight().toString() + ChatColor.BOLD
+            + Main.tr(player, enabled ? "common-state-enabled" : "common-state-disabled")));
   }
 
   private void _toggleBackpackSort(Player p) {
     boolean newState = !_settingsManager.getPlayerBackpackSort(p.getUniqueId());
     _settingsManager.setPlayerBackpackSort(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Backpack sorting is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-backpack-sorting-toggle-message", newState);
   }
 
   private void _cycleBackpackSortMode(Player p) {
@@ -1016,15 +1057,15 @@ public class SettingsGUI {
     InventorySortMode next = current.next();
     _settingsManager.setPlayerBackpackSortMode(p.getUniqueId(), next);
 
-    p.sendMessage(Main.getPrefix() + "Backpack sort mode set to " + Theme.highlight() + next.getLabel());
+    p.sendMessage(Main.getPrefix()
+        + Main.tr(p, "settings-backpack-sorting-mode-message", "mode", next.getLabel(p)));
   }
 
   private void _toggleInventorySort(Player p) {
     boolean newState = !_settingsManager.getPlayerInventorySort(p.getUniqueId());
     _settingsManager.setPlayerInventorySort(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Inventory sorting is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-inventory-sorting-toggle-message", newState);
   }
 
   private void _cycleInventorySortMode(Player p) {
@@ -1032,65 +1073,58 @@ public class SettingsGUI {
     InventorySortMode next = current.next();
     _settingsManager.setPlayerInventorySortMode(p.getUniqueId(), next);
 
-    p.sendMessage(Main.getPrefix() + "Inventory sort mode set to " + Theme.highlight() + next.getLabel());
+    p.sendMessage(Main.getPrefix()
+        + Main.tr(p, "settings-inventory-sorting-mode-message", "mode", next.getLabel(p)));
   }
 
   private void _toggleInventorySortIncludeHotbar(Player p) {
     boolean newState = !_settingsManager.getPlayerInventorySortIncludeHotbar(p.getUniqueId());
     _settingsManager.setPlayerInventorySortIncludeHotbar(p.getUniqueId(), newState);
 
-    String stateText = newState ? "INCLUDED" : "EXCLUDED";
-    p.sendMessage(
-        Main.getPrefix() + "Inventory sorting hotbar is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "settings-inventory-sorting-hotbar-message", "state",
+        Main.tr(p, newState ? "common-state-included" : "common-state-excluded")));
   }
 
   private void _toggleNavigationTrail(Player p) {
     boolean newState = !_settingsManager.getPlayerNavigationTrail(p.getUniqueId());
     _settingsManager.setPlayerNavigationTrail(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Navigation particles are now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-navigation-particles-toggle-message", newState);
   }
 
   private void _toggleNavigationAutoCancel(Player p) {
     boolean newState = !_settingsManager.getPlayerNavigationAutoCancel(p.getUniqueId());
     _settingsManager.setPlayerNavigationAutoCancel(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Navigation auto cancel is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-navigation-auto-cancel-toggle-message", newState);
   }
 
   private void _toggleVeinMiner(Player p) {
     boolean newState = !_settingsManager.getPlayerVeinMiner(p.getUniqueId());
     _settingsManager.setPlayerVeinMiner(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vein Miner is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-vein-miner-toggle-message", newState);
   }
 
   private void _toggleVeinChopper(Player p) {
     boolean newState = !_settingsManager.getPlayerVeinChopper(p.getUniqueId());
     _settingsManager.setPlayerVeinChopper(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Vein Chopper is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-vein-chopper-toggle-message", newState);
   }
 
   private void _toggleDoubleDoor(Player p) {
     boolean newState = !_settingsManager.getPlayerDoubleDoorSync(p.getUniqueId());
     _settingsManager.setPlayerDoubleDoorSync(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(
-        Main.getPrefix() + "Double door sync is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-double-door-toggle-message", newState);
   }
 
   private void _toggleItemRestock(Player p) {
     boolean newState = !_settingsManager.getPlayerItemRestock(p.getUniqueId());
     _settingsManager.setPlayerItemRestock(p.getUniqueId(), newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Item restock is now " + Theme.highlight() + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "settings-item-restock-toggle-message", newState);
   }
 
 }

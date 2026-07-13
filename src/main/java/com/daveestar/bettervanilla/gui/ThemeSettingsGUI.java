@@ -5,11 +5,11 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -43,43 +43,43 @@ public class ThemeSettingsGUI {
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
-    entries.put("primaryFontColor", _createColorItem(
+    entries.put("primaryFontColor", _createColorItem(p,
         Material.LIGHT_GRAY_DYE,
-        "Primary Font Color",
-        "The color used for normal text.",
+        "gui-theme-primary-font-color-title",
+        "gui-theme-primary-font-color-description",
         _settingsManager.getPrimaryFontColor(),
         Theme.primary()));
-    entries.put("highlightFontColor", _createColorItem(
+    entries.put("highlightFontColor", _createColorItem(p,
         Material.YELLOW_DYE,
-        "Highlight Font Color",
-        "The color used for highlighted text and values.",
+        "gui-theme-highlight-font-color-title",
+        "gui-theme-highlight-font-color-description",
         _settingsManager.getHighlightFontColor(),
         Theme.highlight()));
-    entries.put("errorFontColor", _createColorItem(
+    entries.put("errorFontColor", _createColorItem(p,
         Material.RED_DYE,
-        "Error Font Color",
-        "The color used for errors and warnings.",
+        "gui-theme-error-font-color-title",
+        "gui-theme-error-font-color-description",
         _settingsManager.getErrorFontColor(),
         Theme.error()));
-    entries.put("titleSymbolColor", _createColorItem(
+    entries.put("titleSymbolColor", _createColorItem(p,
         Material.REDSTONE,
-        "Title Symbol Color",
-        "The color used for symbols before titles.",
+        "gui-theme-title-symbol-color-title",
+        "gui-theme-title-symbol-color-description",
         _settingsManager.getTitleSymbolColor(),
         Theme.titleSymbol()));
-    entries.put("textSymbolColor", _createColorItem(
+    entries.put("textSymbolColor", _createColorItem(p,
         Material.GLOWSTONE_DUST,
-        "Text Symbol Color",
-        "The color used for symbols before normal text.",
+        "gui-theme-text-symbol-color-title",
+        "gui-theme-text-symbol-color-description",
         _settingsManager.getTextSymbolColor(),
         Theme.textSymbol()));
-    entries.put("glassPaneColor", _createColorItem(
+    entries.put("glassPaneColor", _createColorItem(p,
         Theme.glassPaneMaterial(),
-        "Glass Pane Color",
-        "The glass pane color used in the last GUI row.",
+        "gui-theme-glass-pane-color-title",
+        "gui-theme-glass-pane-color-description",
         _settingsManager.getGlassPaneColor(),
         Theme.glassPaneColor()));
-    entries.put("name", _createNameItem());
+    entries.put("name", _createNameItem(p));
 
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("primaryFontColor", 1);
@@ -91,7 +91,7 @@ public class ThemeSettingsGUI {
     customSlots.put("name", 22);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        Theme.titlePrefix() + "Theming",
+        Theme.titlePrefix() + Main.tr(p, "gui-theme-title"),
         entries, 4, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -101,32 +101,32 @@ public class ThemeSettingsGUI {
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     actions.put("primaryFontColor", _colorAction(
-        "Primary Font Color",
+        "gui-theme-primary-font-color-title",
         _settingsManager.getPrimaryFontColor(),
         _settingsManager::setPrimaryFontColor,
         parentMenu, backAction));
     actions.put("highlightFontColor", _colorAction(
-        "Highlight Font Color",
+        "gui-theme-highlight-font-color-title",
         _settingsManager.getHighlightFontColor(),
         _settingsManager::setHighlightFontColor,
         parentMenu, backAction));
     actions.put("errorFontColor", _colorAction(
-        "Error Font Color",
+        "gui-theme-error-font-color-title",
         _settingsManager.getErrorFontColor(),
         _settingsManager::setErrorFontColor,
         parentMenu, backAction));
     actions.put("titleSymbolColor", _colorAction(
-        "Title Symbol Color",
+        "gui-theme-title-symbol-color-title",
         _settingsManager.getTitleSymbolColor(),
         _settingsManager::setTitleSymbolColor,
         parentMenu, backAction));
     actions.put("textSymbolColor", _colorAction(
-        "Text Symbol Color",
+        "gui-theme-text-symbol-color-title",
         _settingsManager.getTextSymbolColor(),
         _settingsManager::setTextSymbolColor,
         parentMenu, backAction));
     actions.put("glassPaneColor", _colorAction(
-        "Glass Pane Color",
+        "gui-theme-glass-pane-color-title",
         _settingsManager.getGlassPaneColor(),
         _settingsManager::setGlassPaneColor,
         parentMenu, backAction));
@@ -141,30 +141,32 @@ public class ThemeSettingsGUI {
     gui.open(p);
   }
 
-  private CustomGUI.ClickAction _colorAction(String title, String currentValue, Consumer<String> setter,
+  private CustomGUI.ClickAction _colorAction(String titleKey, String currentValue, Consumer<String> setter,
       CustomGUI parentMenu, Consumer<Player> backAction) {
     return new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _openColorDialog(p, title, currentValue, setter, parentMenu, backAction);
+        _openColorDialog(p, titleKey, currentValue, setter, parentMenu, backAction);
       }
     };
   }
 
-  private ItemStack _createColorItem(Material material, String title, String description, String configuredValue,
-      ChatColor previewColor) {
+  private ItemStack _createColorItem(Player viewer, Material material, String titleKey, String descriptionKey,
+      String configuredValue, ChatColor previewColor) {
     ItemStack item = new ItemStack(material);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(Theme.titlePrefix() + title));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, titleKey)));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + description,
+          Theme.textPrefix() + Main.tr(viewer, descriptionKey),
           "",
-          Theme.textPrefix() + "Current: " + Theme.highlight() + configuredValue,
-          Theme.textPrefix() + "Preview: " + previewColor + "Sample Text",
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-current-value",
+              "value", Theme.highlight() + _translatedColorName(viewer, configuredValue)),
+          Theme.textPrefix() + Main.tr(viewer, "gui-theme-color-preview",
+              "sample", previewColor + Main.tr(viewer, "gui-theme-color-preview-sample")),
           "",
-          Theme.textPrefix() + "Left-Click: Set value")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-set-value"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -172,18 +174,19 @@ public class ThemeSettingsGUI {
     return item;
   }
 
-  private ItemStack _createNameItem() {
+  private ItemStack _createNameItem(Player viewer) {
     ItemStack item = new ItemStack(Material.NAME_TAG);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(Theme.titlePrefix() + "Name"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-theme-name-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "The name used in plugin messages and branding.",
+          Theme.textPrefix() + Main.tr(viewer, "gui-theme-name-description"),
           "",
-          Theme.textPrefix() + "Current: " + Theme.highlight() + Theme.name(),
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-current-value",
+              "value", Theme.highlight() + Theme.name()),
           "",
-          Theme.textPrefix() + "Left-Click: Set value")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-set-value"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
@@ -191,66 +194,77 @@ public class ThemeSettingsGUI {
     return item;
   }
 
-  private void _openColorDialog(Player p, String title, String initialValue, Consumer<String> setter,
+  private void _openColorDialog(Player p, String titleKey, String initialValue, Consumer<String> setter,
       CustomGUI parentMenu, Consumer<Player> backAction) {
     DialogInput input = CustomDialog.createSelectInput(
         "color",
-        Theme.textPrefix() + title,
-        _buildMinecraftColorOptions(),
+        Theme.textPrefix() + Main.tr(p, titleKey),
+        _buildMinecraftColorOptions(p),
         initialValue);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        title,
-        "Select a Minecraft color.",
+        Main.tr(p, titleKey),
+        Main.tr(p, "gui-theme-color-dialog-description"),
         null,
         List.of(input),
-        (view, audience) -> _setColorDialogCB(view, audience, title, setter, parentMenu, backAction),
-        null);
+        (view, audience) -> _setColorDialogCB(view, audience, titleKey, setter, parentMenu, backAction),
+        null,
+        Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
 
-  private void _setColorDialogCB(DialogResponseView view, Audience audience, String title, Consumer<String> setter,
+  private void _setColorDialogCB(DialogResponseView view, Audience audience, String titleKey,
+      Consumer<String> setter,
       CustomGUI parentMenu, Consumer<Player> backAction) {
     Player p = (Player) audience;
     String colorKey = view.getText("color");
+    ChatColor selectedColor = Theme.minecraftColors().get(colorKey);
+    if (colorKey == null || selectedColor == null) {
+      p.sendMessage(Component.text(Main.getPrefix() + Theme.error()
+          + Main.tr(p, "gui-theme-error-invalid-color")));
+      displayGUI(p, parentMenu, backAction);
+      return;
+    }
+
     setter.accept(colorKey);
     _applyThemeChange();
-    ChatColor selectedColor = Theme.minecraftColors().get(colorKey);
-    p.sendMessage(Component.text(Main.getPrefix() + title + " set to " + selectedColor + colorKey + "."));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "gui-theme-color-changed-message",
+        "setting", Main.tr(p, titleKey),
+        "color", selectedColor + _translatedColorName(p, colorKey) + Theme.primary())));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
     displayGUI(p, parentMenu, backAction);
   }
 
-  private Map<String, String> _buildMinecraftColorOptions() {
+  private Map<String, String> _buildMinecraftColorOptions(Player viewer) {
     Map<String, String> options = new LinkedHashMap<>();
     for (Map.Entry<String, ChatColor> entry : Theme.minecraftColors().entrySet()) {
-      options.put(entry.getKey(), entry.getValue() + _formatColorName(entry.getKey()));
+      options.put(entry.getKey(), entry.getValue() + _translatedColorName(viewer, entry.getKey()));
     }
 
     return options;
   }
 
-  private String _formatColorName(String name) {
-    return Arrays.stream(name.split("_"))
-        .map(part -> part.substring(0, 1) + part.substring(1).toLowerCase())
-        .collect(Collectors.joining(" "));
+  private String _translatedColorName(Player viewer, String colorKey) {
+    String key = "enum-chat-color-" + colorKey.toLowerCase(Locale.ROOT).replace('_', '-');
+    return Main.tr(viewer, key);
   }
 
   private void _openNameDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction, String errorMessage,
       String initialValue) {
     DialogInput input = CustomDialog.createTextInput(
         "name",
-        Theme.textPrefix() + "Name",
+        Theme.textPrefix() + Main.tr(p, "gui-theme-name-dialog-input"),
         initialValue);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Theme Name",
-        "Set the name displayed in plugin messages and branding.",
+        Main.tr(p, "gui-theme-name-dialog-title"),
+        Main.tr(p, "gui-theme-name-dialog-description"),
         errorMessage,
         List.of(input),
         (view, audience) -> _setNameDialogCB(view, audience, parentMenu, backAction),
-        null);
+        null,
+        Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -261,25 +275,26 @@ public class ThemeSettingsGUI {
     String name = Optional.ofNullable(view.getText("name")).map(String::trim).orElse("");
 
     if (name.isEmpty()) {
-      _openNameDialog(p, parentMenu, backAction, "Name cannot be empty.", name);
+      _openNameDialog(p, parentMenu, backAction, Main.tr(p, "gui-theme-name-error-empty"), name);
       return;
     }
 
     if (name.length() > MAX_NAME_LENGTH) {
-      _openNameDialog(p, parentMenu, backAction,
-          "Name is too long. Maximum length is " + MAX_NAME_LENGTH + " characters.", name);
+      _openNameDialog(p, parentMenu, backAction, Main.tr(p, "gui-theme-name-error-too-long",
+          "max", Integer.toString(MAX_NAME_LENGTH)), name);
       return;
     }
 
     if (name.indexOf(ChatColor.COLOR_CHAR) >= 0 || name.matches("(?i).*&[0-9A-FK-ORX].*")
         || name.contains("\n") || name.contains("\r")) {
-      _openNameDialog(p, parentMenu, backAction, "Name cannot contain color codes or line breaks.", name);
+      _openNameDialog(p, parentMenu, backAction, Main.tr(p, "gui-theme-name-error-invalid-characters"), name);
       return;
     }
 
     _settingsManager.setThemeName(name);
     _applyThemeChange();
-    p.sendMessage(Component.text(Main.getPrefix() + "Theme name set to " + Theme.highlight() + Theme.name() + "."));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "gui-theme-name-changed-message",
+        "name", Theme.highlight() + Theme.name() + Theme.primary())));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
     displayGUI(p, parentMenu, backAction);
   }

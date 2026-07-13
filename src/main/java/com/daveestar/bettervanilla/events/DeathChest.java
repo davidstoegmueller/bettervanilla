@@ -100,38 +100,31 @@ public class DeathChest implements Listener {
     int chestY = deathChestLocation.getBlockY();
     int chestZ = deathChestLocation.getBlockZ();
 
-    p.sendMessage(Main.getPrefix() + "You died at: "
-        + Theme.highlight() + "X: " + Theme.primary() + chestX
-        + Theme.highlight() + " Y: " + Theme.primary() + chestY
-        + Theme.highlight() + " Z: " + Theme.primary() + chestZ);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-location",
+        "x", chestX, "y", chestY, "z", chestZ));
 
     if (deathChestSpawned) {
-      p.sendMessage(Main.getPrefix() + "All your items are stored in the death chest at this location.");
-      p.sendMessage(Main.getPrefix() + Theme.error() + "ATTENTION!" + Theme.primary()
-          + " As soon as you close or break the chest all items will be dropped!");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-chest-items-stored"));
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-drop-warning"));
     } else if (deathChestEnabled) {
-      p.sendMessage(Main.getPrefix() + Theme.error()
-          + "No safe air or fluid block was found nearby. Your items were dropped at your death location.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-no-safe-location"));
     } else {
-      p.sendMessage(Main.getPrefix() + "Your items were dropped on the ground.");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-items-dropped"));
     }
 
     if (fellIntoVoid) {
       if (deathChestSpawned) {
-        p.sendMessage(Main.getPrefix() + Theme.error() + "Hint:" + Theme.primary()
-            + " You fell into the void! Your deathchest will spawn at "
-            + Theme.highlight() + "Y: " + Theme.primary() + chestY);
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-void-chest-relocated",
+            "y", chestY));
       } else if (!deathChestEnabled) {
-        p.sendMessage(Main.getPrefix() + Theme.error() + "Hint:" + Theme.primary()
-            + " You fell into the void while death chests are disabled. Items lost in the void cannot be recovered.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-void-chest-disabled"));
       } else {
-        p.sendMessage(Main.getPrefix() + Theme.error() + "Hint:" + Theme.primary()
-            + " Items dropped into the void cannot be recovered.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-void-items-lost"));
       }
     }
 
-    p.sendMessage(Main.getPrefix() + "If you want to list your deathpoints please use: "
-        + Theme.highlight() + "/deathpoints");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "event-deathpoints-list-hint",
+        "command", Theme.highlight() + "/deathpoints" + Theme.primary()));
   }
 
   private Location _findNearestDeathChestLocation(Location origin) {
@@ -216,9 +209,13 @@ public class DeathChest implements Listener {
           e.setCancelled(true);
 
           String playerName = Bukkit.getOfflinePlayer(UUID.fromString(ref.ownerUUID)).getName();
+          if (playerName == null) {
+            playerName = Main.tr(p, "event-death-chest-owner-unknown");
+          }
           ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
           Inventory inv = Bukkit.createInventory(null, 45,
-              Component.text(Theme.titlePrefix() + "Death Chest: " + playerName));
+              Component.text(Theme.titlePrefix() + Main.tr(p, "event-death-chest-inventory-title",
+                  "player", playerName)));
 
           inv.setContents(items);
           p.openInventory(inv);
@@ -240,7 +237,7 @@ public class DeathChest implements Listener {
 
     _deathPointsManager.removeDeathPoint(ownerUUID, pointUUID);
 
-    p.sendMessage(Main.getPrefix() + "You've claimed your deathchest and the deathpoint has been removed.");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-chest-claimed"));
 
   }
 
@@ -297,7 +294,7 @@ public class DeathChest implements Listener {
           removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, items);
         } else {
           e.setCancelled(true);
-          p.sendMessage(Main.getPrefix() + Theme.error() + "You are not allowed to break this death chest.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-break-denied"));
         }
       }
     }

@@ -49,14 +49,13 @@ public class BackpackManager implements Listener {
 
   public void openBackpack(Player p) {
     if (!_settingsManager.getBackpackEnabled()) {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "Backpacks are disabled.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "backpack-error-disabled"));
       return;
     }
 
     if (_deathPointsManager.hasActiveDeathPoints(p)) {
-      p.sendMessage(Main.getPrefix() + Theme.error()
-          + "You have active death points. Claim them before using your backpack again. "
-          + Theme.highlight() + "/deathpoints");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "backpack-error-active-death-points",
+          "command", Theme.highlight() + "/deathpoints"));
       return;
     }
 
@@ -80,7 +79,7 @@ public class BackpackManager implements Listener {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        Theme.titlePrefix() + "Backpack",
+        Theme.titlePrefix() + Main.tr(p, "backpack-gui-title"),
         entries, rows, null, null,
         EnumSet.of(CustomGUI.Option.ALLOW_ITEM_MOVEMENT));
 

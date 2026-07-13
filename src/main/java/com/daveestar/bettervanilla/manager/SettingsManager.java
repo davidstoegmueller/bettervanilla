@@ -12,9 +12,11 @@ import org.bukkit.GameRules;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.enums.InventorySortMode;
+import com.daveestar.bettervanilla.enums.Language;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.Theme;
 
@@ -52,10 +54,20 @@ public class SettingsManager {
   }
 
   public String[] getAllPlayersUUIDS() {
-    return _fileConfig.getConfigurationSection("players").getKeys(false).toArray(new String[0]);
+    ConfigurationSection players = _fileConfig.getConfigurationSection("players");
+    return players == null ? new String[0] : players.getKeys(false).toArray(new String[0]);
   }
 
   // USER SETTINGS
+  public String getPlayerLanguage(UUID uuid) {
+    return Language.fromCode(_fileConfig.getString("players." + uuid + ".language", getServerLanguage())).getCode();
+  }
+
+  public void setPlayerLanguage(UUID uuid, String value) {
+    _fileConfig.set("players." + uuid + ".language", Language.fromCode(value).getCode());
+    _config.save();
+  }
+
   public boolean getPlayerToggleLocation(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".togglelocation", false);
   }
@@ -241,6 +253,15 @@ public class SettingsManager {
   }
 
   // GLOBAL SETTINGS
+  public String getServerLanguage() {
+    return Language.fromCode(_fileConfig.getString("global.language", Language.EN.getCode())).getCode();
+  }
+
+  public void setServerLanguage(String value) {
+    _fileConfig.set("global.language", Language.fromCode(value).getCode());
+    _config.save();
+  }
+
   public String getPrimaryFontColor() {
     return _fileConfig.getString("global.theme.primaryFontColor", Theme.DEFAULT_PRIMARY_FONT_COLOR);
   }

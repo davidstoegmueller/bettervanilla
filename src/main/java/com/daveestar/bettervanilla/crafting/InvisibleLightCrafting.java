@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.CraftingRecipe;
 import com.daveestar.bettervanilla.utils.Theme;
 
@@ -33,7 +34,8 @@ public class InvisibleLightCrafting extends CustomCraftingRecipe {
       meta.displayName(Component.text(Theme.highlight() + recipe.getName()));
       meta.lore(Arrays.asList(
           Theme.primary() + recipe.getDescription(),
-          Theme.primary() + "Crafted with " + Theme.name() + ".")
+          Theme.primary() + Main.tr(null, "crafting-item-lore-crafted-with",
+              "plugin", Theme.highlight() + Theme.name() + Theme.primary()))
           .stream()
           .filter(Objects::nonNull)
           .map(Component::text)

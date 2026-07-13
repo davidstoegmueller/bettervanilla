@@ -8,6 +8,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.ModerationManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
@@ -32,17 +34,22 @@ public class ModerationEvents implements Listener {
     if (_modManager.isBanned(p)) {
       String reason = _modManager.getBanReason(p);
       long expires = _modManager.getBanExpiry(p);
-      String banMsg = Theme.highlight() + "" + ChatColor.BOLD + "BANNED\n\n" + Theme.primary()
-          + "You were banned from the server.\n\n";
+      String banMsg = Theme.highlight() + "" + ChatColor.BOLD
+          + _tr(e.getUniqueId(), "moderation-ban-screen-title") + "\n\n" + Theme.primary()
+          + _tr(e.getUniqueId(), "moderation-ban-screen-description") + "\n\n";
 
       if (!reason.isEmpty()) {
-        banMsg += Theme.highlight() + "" + ChatColor.BOLD + "Reason: " + Theme.primary() + reason + "\n";
+        banMsg += Theme.highlight() + "" + ChatColor.BOLD
+            + _tr(e.getUniqueId(), "moderation-ban-screen-reason",
+                "reason", Theme.primary() + reason) + "\n";
       }
 
       if (expires != -1) {
         long remaining = (expires - System.currentTimeMillis()) / 1000;
-        String time = _timerManager.formatTime((int) remaining);
-        banMsg += Theme.highlight() + "" + ChatColor.BOLD + "Expires in: " + Theme.primary() + time;
+        String time = _timerManager.formatTime(e.getUniqueId(), (int) remaining);
+        banMsg += Theme.highlight() + "" + ChatColor.BOLD
+            + _tr(e.getUniqueId(), "moderation-ban-screen-expires",
+                "time", Theme.primary() + time);
       }
 
       e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, Component.text(banMsg));
@@ -55,19 +62,34 @@ public class ModerationEvents implements Listener {
     if (_modManager.isMuted(p)) {
       String reason = _modManager.getMuteReason(p);
       long expires = _modManager.getMuteExpiry(p);
-      String msg = Main.getPrefix() + Theme.error() + "You are muted";
+      String time = null;
       if (expires != -1) {
         long remaining = (expires - System.currentTimeMillis()) / 1000;
-        String time = _timerManager.formatTime((int) remaining);
-        msg += Theme.primary() + " for " + Theme.highlight() + time;
+        time = _timerManager.formatTime(p, (int) remaining);
       }
-      if (reason != null && !reason.isEmpty()) {
-        msg += Theme.primary() + ". Reason: " + Theme.highlight() + reason;
+
+      boolean hasReason = reason != null && !reason.isEmpty();
+      String key;
+      if (time != null && hasReason) {
+        key = "moderation-mute-message-temporary-with-reason";
+      } else if (time != null) {
+        key = "moderation-mute-message-temporary-without-reason";
+      } else if (hasReason) {
+        key = "moderation-mute-message-permanent-with-reason";
       } else {
-        msg += Theme.primary() + ". No reason given.";
+        key = "moderation-mute-message-permanent-without-reason";
       }
+
+      String msg = Main.getPrefix() + Theme.error() + Main.tr(p, key,
+          "time", Theme.highlight() + String.valueOf(time) + Theme.primary(),
+          "reason", Theme.highlight() + String.valueOf(reason));
       p.sendMessage(msg);
       e.setCancelled(true);
     }
+  }
+
+  private String _tr(UUID playerId, String key, Object... replacements) {
+    var translations = Main.getInstance().getTranslationManager();
+    return translations.translate(translations.getLanguage(playerId), key, replacements);
   }
 }

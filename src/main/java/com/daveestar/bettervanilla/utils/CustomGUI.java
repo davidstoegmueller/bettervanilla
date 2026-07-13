@@ -16,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import com.daveestar.bettervanilla.Main;
+
 import io.papermc.paper.dialog.Dialog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -46,11 +48,13 @@ public class CustomGUI implements Listener {
   private Consumer<Player> _backAction;
   private PageSwitchListener _pageSwitchListener;
   private String _searchTerm;
+  private final Player _viewer;
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
     _currentPage = 1;
+    _viewer = p;
     _allEntryList = new ArrayList<>(pageEntries.entrySet());
     _entryList = new ArrayList<>(_allEntryList);
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
@@ -161,31 +165,32 @@ public class CustomGUI implements Listener {
 
   private void _createSwitchPageButton() {
     _addItemToSlot(_POS_SWITCH_PAGE_BUTTON, Material.BOOK,
-        Theme.titlePrefix() + "Page",
+        Theme.titlePrefix() + Main.tr(_viewer, "gui-common-page-title"),
         Arrays.asList(
-            Theme.textPrefix() + "Current Page: " + Theme.highlight() + _currentPage
-                + Theme.primary() + " of " + Theme.highlight() + _maxPage,
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-page-status",
+                "current", _currentPage, "total", _maxPage),
             "",
-            Theme.textPrefix() + "Left-Click: Next Page",
-            Theme.textPrefix() + "Right-Click: Previous Page"));
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-next-page"),
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-previous-page")));
   }
 
   private void _createBackButton() {
-    _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW, Theme.highlight() + "Back", null);
+    _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW,
+        Theme.highlight() + Main.tr(_viewer, "gui-common-back-title"), null);
   }
 
   private void _createSearchButton() {
     String term = _searchTerm != null && !_searchTerm.isEmpty()
         ? Theme.highlight() + _searchTerm
-        : Theme.error() + "None";
+        : Theme.error() + Main.tr(_viewer, "common-value-none");
 
     _addItemToSlot(_POS_SEARCH_BUTTON, Material.NAME_TAG,
-        Theme.titlePrefix() + "Search",
+        Theme.titlePrefix() + Main.tr(_viewer, "gui-common-search-title"),
         Arrays.asList(
-            Theme.textPrefix() + "Search for: " + term,
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-search-current", "term", term),
             "",
-            Theme.textPrefix() + "Left-Click: Search",
-            Theme.textPrefix() + "Right-Click: Reset"));
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-search"),
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-reset")));
   }
 
   private void _createSortButton() {
@@ -205,11 +210,11 @@ public class CustomGUI implements Listener {
     }
 
     lore.add("");
-    lore.add(Theme.textPrefix() + "Left-Click: Next option");
-    lore.add(Theme.textPrefix() + "Right-Click: Previous option");
+    lore.add(Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-next-option"));
+    lore.add(Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-previous-option"));
 
     _addItemToSlot(_POS_SORT_BUTTON, Material.COMPARATOR,
-        Theme.titlePrefix() + "Sort", lore);
+        Theme.titlePrefix() + Main.tr(_viewer, "gui-common-sort-title"), lore);
   }
 
   private void _createPlaceholderButtons() {
@@ -470,11 +475,11 @@ public class CustomGUI implements Listener {
     }
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Search",
-        "Enter text to filter items.",
+        Main.tr(p, "gui-common-search-dialog-title"),
+        Main.tr(p, "gui-common-search-dialog-description"),
         null,
         List.of(CustomDialog.createTextInput("search",
-            Theme.textPrefix() + "Search",
+            Theme.textPrefix() + Main.tr(p, "gui-common-search-dialog-input"),
             _searchTerm)),
         (view, audience) -> {
           Player player = (Player) audience;
@@ -482,7 +487,7 @@ public class CustomGUI implements Listener {
           _applySearchTerm(input);
           player.openInventory(_gui);
         },
-        null);
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }

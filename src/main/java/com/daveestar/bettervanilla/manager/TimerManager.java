@@ -7,9 +7,11 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.Language;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.Theme;
@@ -86,6 +88,18 @@ public class TimerManager {
   }
 
   public String formatTime(int totalSeconds) {
+    return _formatTime(_plugin.getTranslationManager().getServerLanguage(), totalSeconds);
+  }
+
+  public String formatTime(CommandSender viewer, int totalSeconds) {
+    return _formatTime(_plugin.getTranslationManager().getLanguage(viewer), totalSeconds);
+  }
+
+  public String formatTime(UUID playerId, int totalSeconds) {
+    return _formatTime(_plugin.getTranslationManager().getLanguage(playerId), totalSeconds);
+  }
+
+  private String _formatTime(Language language, int totalSeconds) {
     int days = totalSeconds / (24 * 3600);
     int hours = (totalSeconds % (24 * 3600)) / 3600;
     int minutes = (totalSeconds % 3600) / 60;
@@ -93,12 +107,16 @@ public class TimerManager {
 
     StringBuilder timeBuilder = new StringBuilder();
     if (days > 0)
-      timeBuilder.append(days).append("d ");
+      timeBuilder.append(_plugin.getTranslationManager().translate(language, "time-duration-days-short",
+          "value", days)).append(" ");
     if (hours > 0 || days > 0)
-      timeBuilder.append(hours).append("h ");
+      timeBuilder.append(_plugin.getTranslationManager().translate(language, "time-duration-hours-short",
+          "value", hours)).append(" ");
     if (minutes > 0 || hours > 0 || days > 0)
-      timeBuilder.append(minutes).append("m ");
-    timeBuilder.append(seconds).append("s");
+      timeBuilder.append(_plugin.getTranslationManager().translate(language, "time-duration-minutes-short",
+          "value", minutes)).append(" ");
+    timeBuilder.append(_plugin.getTranslationManager().translate(language, "time-duration-seconds-short",
+        "value", seconds));
 
     return timeBuilder.toString().trim();
   }
@@ -191,24 +209,23 @@ public class TimerManager {
       return;
     }
 
-    String message = _generateTimerMessage();
-
     _plugin.getServer().getOnlinePlayers().forEach(p -> {
       if (!_settingsManager.getPlayerActionBarTimer(p.getUniqueId())) {
         return;
       }
       if (!_settingsManager.getPlayerToggleLocation(p.getUniqueId()) && !_navigationManager.checkActiveNavigation(p)) {
-        _actionBarManager.sendActionBarOnce(p, message);
+        _actionBarManager.sendActionBarOnce(p, _generateTimerMessage(p));
       }
     });
   }
 
-  private String _generateTimerMessage() {
-    String formattedTime = formatTime(_globalTimer);
+  private String _generateTimerMessage(Player viewer) {
+    String formattedTime = formatTime(viewer, _globalTimer);
     return _running
-        ? Theme.highlight() + "" + ChatColor.BOLD + formattedTime
-        : Theme.highlight() + "" + ChatColor.BOLD + "Paused " + Theme.primary() + "("
-            + Theme.error() + formattedTime + Theme.primary() + ")";
+        ? Theme.highlight() + "" + ChatColor.BOLD
+            + Main.tr(viewer, "timer-actionbar-running", "time", formattedTime)
+        : Theme.highlight() + "" + ChatColor.BOLD + Main.tr(viewer, "timer-actionbar-paused",
+            "time", Theme.error() + formattedTime + Theme.highlight() + "" + ChatColor.BOLD);
   }
 
   private PlayerTimer _loadPlayerTimer(UUID playerId) {

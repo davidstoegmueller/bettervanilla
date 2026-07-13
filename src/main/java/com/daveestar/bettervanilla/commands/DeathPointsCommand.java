@@ -31,14 +31,14 @@ public class DeathPointsCommand implements TabExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.DEATHPOINTS.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.DEATHPOINTS));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.DEATHPOINTS));
       return true;
     }
 
     if (args.length == 0) {
       _deathPointsGUI.displayGUI(p);
     } else {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/deathpoints");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-deathpoints-usage"));
     }
 
     return true;

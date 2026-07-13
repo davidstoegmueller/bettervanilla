@@ -27,16 +27,16 @@ public class VanishCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.VANISH.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.VANISH));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.VANISH));
       return true;
     }
 
     if (_vanishManager.isVanished(p)) {
       _vanishManager.unvanish(p);
-      p.sendMessage(Main.getPrefix() + Theme.primary() + "You are now visible.");
+      p.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(p, "command-vanish-visible"));
     } else {
       _vanishManager.vanish(p);
-      p.sendMessage(Main.getPrefix() + Theme.primary() + "You vanished.");
+      p.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(p, "command-vanish-hidden"));
     }
 
     return true;

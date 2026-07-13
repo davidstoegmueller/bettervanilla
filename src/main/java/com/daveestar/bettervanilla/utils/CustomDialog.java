@@ -18,8 +18,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback.Options;
 public class CustomDialog {
   public static Dialog createConfirmationDialog(String title, String message, String errorMessage,
-      List<DialogInput> inputs,
-      DialogActionCallback yesCallback, DialogActionCallback noCallback) {
+      List<DialogInput> inputs, DialogActionCallback yesCallback, DialogActionCallback noCallback,
+      String applyLabel, String cancelLabel) {
     boolean hasError = errorMessage != null && !errorMessage.isEmpty();
 
     DialogBody dialogBody1 = DialogBody.plainMessage(Component.text(""));
@@ -46,7 +46,7 @@ public class CustomDialog {
     }
 
     DialogAction yesAction = DialogAction.customClick(yesCallback, Options.builder().uses(1).build());
-    ActionButton yesButton = ActionButton.builder(Component.text("Apply"))
+    ActionButton yesButton = ActionButton.builder(Component.text(applyLabel))
         .action(yesAction).build();
 
     if (noCallback == null) {
@@ -55,7 +55,7 @@ public class CustomDialog {
     }
 
     DialogAction noAction = DialogAction.customClick(noCallback, Options.builder().uses(1).build());
-    ActionButton noButton = ActionButton.builder(Component.text("Cancel")).action(noAction).build();
+    ActionButton noButton = ActionButton.builder(Component.text(cancelLabel)).action(noAction).build();
 
     DialogType dialogType = DialogType.confirmation(yesButton, noButton);
 

@@ -76,7 +76,7 @@ public class PlayerMove implements Listener {
       // handle world change and cancel navigation if different worlds
       if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
         _navigationManager.stopNavigation(p);
-        p.sendMessage(Main.getPrefix() + Theme.error() + "Your navigation has been canceled due to world change!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "navigation-canceled-world-change"));
         return;
       }
 
@@ -87,9 +87,8 @@ public class PlayerMove implements Listener {
         if (playerLocation.distance(targetLocation) <= radius) {
           _navigationManager.stopNavigation(p);
 
-          p.sendMessage(Main.getPrefix() + "You've reached your destination. You're within " + Theme.highlight()
-              + radius + Theme.primary() + " blocks of " + Theme.highlight()
-              + navigationData.getName() + Theme.primary() + ".");
+          p.sendMessage(Main.getPrefix() + Main.tr(p, "navigation-destination-reached",
+              "radius", radius, "destination", navigationData.getName()));
           return;
         }
       }
@@ -101,7 +100,7 @@ public class PlayerMove implements Listener {
 
         if (targetPlayer == null || !targetPlayer.isOnline()) {
           _navigationManager.stopNavigation(p);
-          p.sendMessage(Main.getPrefix() + Theme.error() + "Navigation canceled as the target player is offline!");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "navigation-canceled-player-offline"));
           return;
         }
 
@@ -119,13 +118,13 @@ public class PlayerMove implements Listener {
     if (_settingsManager.getPlayerToggleLocation(p.getUniqueId())) {
       Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 
-      String locationText = Theme.highlight() + "X: "
-          + Theme.primary()
-          + p.getLocation().toBlockLocation().getBlockX() + Theme.highlight()
-          + " Y: " + Theme.primary() + p.getLocation().toBlockLocation().getBlockY() + Theme.highlight() +
-          " Z: " + Theme.primary()
-          + p.getLocation().toBlockLocation().getBlockZ() + Theme.textSymbol() + ChatColor.BOLD + " » "
-          + Theme.primary() + playerBiome.getKey();
+      Location location = p.getLocation().toBlockLocation();
+      String locationText = Theme.highlight() + Main.tr(p, "location-actionbar-format",
+          "x", Theme.primary() + String.valueOf(location.getBlockX()) + Theme.highlight(),
+          "y", Theme.primary() + String.valueOf(location.getBlockY()) + Theme.highlight(),
+          "z", Theme.primary() + String.valueOf(location.getBlockZ()) + Theme.highlight(),
+          "separator", Theme.textSymbol() + "" + ChatColor.BOLD + " » " + Theme.primary(),
+          "biome", playerBiome.getKey());
 
       _actionBar.sendActionBar(p, locationText);
     }

@@ -29,7 +29,7 @@ public class ReplyCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.MSG.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.MSG));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.MSG));
       return true;
     }
 
@@ -40,10 +40,10 @@ public class ReplyCommand implements CommandExecutor {
         String message = String.join(" ", args);
         _messageManager.sendPrivateMessage(p, target, message);
       } else {
-        p.sendMessage(Main.getPrefix() + Theme.error() + "You have no one to reply to.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-reply-error-no-target"));
       }
     } else {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/r <message>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-reply-usage"));
     }
 
     return true;

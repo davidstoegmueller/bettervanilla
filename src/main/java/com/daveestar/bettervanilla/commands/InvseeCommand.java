@@ -21,7 +21,7 @@ public class InvseeCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.INVSEE.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.INVSEE));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.INVSEE));
       return true;
     }
 
@@ -31,11 +31,11 @@ public class InvseeCommand implements CommandExecutor {
       if (targetPlayer != null) {
         p.openInventory(targetPlayer.getInventory());
       } else {
-        p.sendMessage(Main.getPrefix() + Theme.error() + "The requested player " + Theme.highlight() + args[0]
-            + Theme.error() + " is currently not online!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-player-offline",
+            "player", Theme.highlight() + args[0] + Theme.error()));
       }
     } else {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "Usage: " + Theme.highlight() + "/invsee <name>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-invsee-usage"));
     }
 
     return true;

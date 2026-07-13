@@ -12,10 +12,12 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.WaypointVisibility;
 import com.daveestar.bettervanilla.utils.Config;
 
@@ -83,6 +85,10 @@ public class WaypointsManager {
   }
 
   public String getWaypointOwnerName(String worldName, String waypointId) {
+    return getWaypointOwnerName(null, worldName, waypointId);
+  }
+
+  public String getWaypointOwnerName(CommandSender viewer, String worldName, String waypointId) {
     String path = _getWaypointBasePath(worldName, waypointId) + "." + KEY_OWNER;
 
     if (_fileConfig.contains(path)) {
@@ -93,14 +99,15 @@ public class WaypointsManager {
           UUID ownerUUID = UUID.fromString(ownerString);
           OfflinePlayer p = Bukkit.getOfflinePlayer(ownerUUID);
 
-          return p.getName();
+          String playerName = p.getName();
+          return playerName != null ? playerName : Main.tr(viewer, "common-value-unknown");
         } catch (IllegalArgumentException ex) {
-          return "unknown";
+          return Main.tr(viewer, "common-value-unknown");
         }
       }
     }
 
-    return "unknown";
+    return Main.tr(viewer, "common-value-unknown");
   }
 
   public Optional<UUID> getWaypointOwnerId(String worldName, String waypointId) {

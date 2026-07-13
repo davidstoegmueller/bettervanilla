@@ -72,7 +72,7 @@ public class NameTagManager {
     boolean isAfk = _afkManager.isPlayerMarkedAFK(p);
 
     String afkPrefix = isAfk
-        ? Theme.primary() + "[" + Theme.error() + "AFK" + Theme.primary() + "] "
+        ? Theme.primary() + "[" + Theme.error() + Main.tr(p, "common-status-afk-short") + Theme.primary() + "] "
         : "";
 
     return afkPrefix + Theme.highlight();

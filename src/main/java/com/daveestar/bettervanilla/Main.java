@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.CommandSender;
 
 import com.daveestar.bettervanilla.commands.HelpCommands;
 import com.daveestar.bettervanilla.commands.HereCommand;
@@ -64,6 +65,7 @@ import com.daveestar.bettervanilla.manager.SittingManager;
 import com.daveestar.bettervanilla.manager.RecipeSyncManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.TranslationManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
@@ -101,6 +103,7 @@ public class Main extends JavaPlugin {
   private RecipeSyncManager _recipeSyncManager;
   private NameTagManager _nameTagManager;
   private HeadsManager _headsManager;
+  private TranslationManager _translationManager;
   private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
@@ -116,6 +119,7 @@ public class Main extends JavaPlugin {
 
     // initialize managers with configs
     _settingsManager = new SettingsManager(settingsConfig);
+    _translationManager = new TranslationManager(this, _settingsManager);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
@@ -263,17 +267,29 @@ public class Main extends JavaPlugin {
   }
 
   public static String getNoPermissionMessage(Permissions permission) {
-    return getPrefix() + Theme.error() + "Sorry! You do not have permission to use this. " + Theme.primary() + "("
-        + Theme.error() + permission.getName() + Theme.primary() + ")";
+    return getNoPermissionMessage(null, permission);
+  }
+
+  public static String getNoPermissionMessage(CommandSender sender, Permissions permission) {
+    return getPrefix() + Theme.error() + tr(sender, "common-error-no-permission", "permission", permission.getName());
   }
 
   public static String getShortNoPermissionMessage(Permissions permission) {
-    return Theme.error() + "You do not have permission to use this. " + Theme.primary() + "("
-        + Theme.error() + permission.getName() + Theme.primary() + ")";
+    return getShortNoPermissionMessage(null, permission);
+  }
+
+  public static String getShortNoPermissionMessage(CommandSender sender, Permissions permission) {
+    return Theme.error() + tr(sender, "common-error-no-permission-short", "permission", permission.getName());
   }
 
   public static String getNoPlayerMessage() {
-    return getPrefix() + Theme.error() + "This command can only be run by a player.";
+    return getPrefix() + Theme.error() + tr(null, "common-error-player-only");
+  }
+
+  public static String tr(CommandSender sender, String key, Object... replacements) {
+    if (_mainInstance == null || _mainInstance._translationManager == null)
+      return key;
+    return _mainInstance._translationManager.translate(sender, key, replacements);
   }
 
   public static Main getInstance() {
@@ -358,6 +374,10 @@ public class Main extends JavaPlugin {
 
   public HeadsManager getHeadsManager() {
     return _headsManager;
+  }
+
+  public TranslationManager getTranslationManager() {
+    return _translationManager;
   }
 
   public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {

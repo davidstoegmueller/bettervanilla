@@ -1,0 +1,729 @@
+dialog-button-apply: Apply
+dialog-button-cancel: Cancel
+settings-gui-title: "Settings {primary}({player})"
+settings-language-item-title: Language
+settings-language-item-description: Choose the language used for your UI texts.
+settings-language-item-current: "Current: {highlight}{language}"
+settings-language-item-action: "Left-Click: Select"
+settings-language-dialog-title: Language
+settings-language-dialog-description: Choose your preferred language.
+settings-language-dialog-input-label: Language
+settings-language-changed-message: Your language is now {highlight}{language}{primary}.
+admin-settings-gui-title: Admin Settings
+admin-language-item-title: Server Language
+admin-language-item-description: Choose the default language for the server.
+admin-language-item-current: "Current: {highlight}{language}"
+admin-language-item-action: "Left-Click: Select"
+admin-language-dialog-title: Server Language
+admin-language-dialog-description: Choose the default language for players without an individual selection.
+admin-language-dialog-input-label: Language
+admin-language-changed-message: The server language is now {highlight}{language}{primary}.
+common-error-no-permission: "Sorry! You do not have permission to use this. {primary}({error}{permission}{primary})"
+common-error-no-permission-short: "You do not have permission to use this. {primary}({error}{permission}{primary})"
+common-error-player-only: This command can only be run by a player.
+common-error-player-offline: The requested player {player} is currently not online!
+common-error-player-not-found: Player not found or not online.
+common-error-heads-disabled: Heads Explorer is disabled.
+common-error-heads-unavailable: Heads data is not available yet. Try again later.
+command-timer-error-already-running: The timer is already running.
+command-timer-error-not-running: No active timer to pause.
+command-timer-error-invalid-number: Invalid number. Please provide a valid time in seconds.
+command-timer-resumed: Timer has been resumed.
+command-timer-paused: Timer has been paused.
+command-timer-set-success: Timer has been set to {time} seconds.
+command-timer-reset: Timer has been reset to 0 seconds.
+command-timer-set-usage: "Usage: {highlight}/timer set <time>"
+command-timer-usage: "Usage: {highlight}/timer <resume | pause | reset | set> [time]"
+command-ping-self: Your ping is {ping}ms
+command-ping-other: The ping of {player} is {ping}ms
+command-ping-usage: "Usage: {highlight}/ping [name]"
+command-backpack-usage: "Usage: {highlight}/backpack"
+command-deathpoints-usage: "Usage: {highlight}/deathpoints"
+command-heads-usage: "Usage: {highlight}/heads"
+command-settings-usage: "Usage: {highlight}/settings [player]"
+command-sit-stood-up: You stood up.
+command-sit-error-in-vehicle: Leave your current vehicle before using /sit.
+command-sit-error-solid-ground: You need to stand on solid ground before sitting.
+command-sit-sat-down: You sit down. Use the 'Shift' key to stand up.
+command-playtime-error-never-joined: The requested player {player} has never joined the server!
+command-playtime-usage: "Usage: {highlight}/playtime [player]"
+playtime-total: "Total time: {time}"
+playtime-active: "Playtime: {time}"
+playtime-afk: "AFK: {time}"
+command-vanish-visible: You are now visible.
+command-vanish-hidden: You vanished.
+command-invsee-usage: "Usage: {highlight}/invsee <name>"
+command-message-error-self: You cannot send a message to yourself!
+command-message-usage: "Usage: {highlight}/msg <player> <message>"
+command-reply-error-no-target: You have no one to reply to.
+command-reply-usage: "Usage: {highlight}/r <message>"
+common-world-unknown: unknown
+command-here-broadcast: "{player}'s location: World: {world} | X: {x} | Y: {y} | Z: {z} {highlight}(Click here to navigate)"
+command-here-hover: Click to start navigation
+command-waypoints-error-unknown: Unknown waypoints command. Use /waypoints help for help.
+command-waypoints-coordinates-usage: "Usage: {highlight}/waypoints coords <x> <y> <z>"
+command-waypoints-player-usage: "Usage: {highlight}/waypoints player <player>"
+command-waypoints-error-invalid-coordinates: "Invalid coordinates. Please use numbers for <x>, <y>, <z>."
+command-waypoints-error-player-unavailable: The player {player} is not online or does not exist.
+command-waypoints-help-title: "WAYPOINTS HELP:"
+command-waypoints-help-open: "{highlight}/waypoints{primary} - Opens the waypoints GUI."
+command-waypoints-help-player: "{highlight}/waypoints player <player>{primary} - Navigates to another player's location."
+command-waypoints-help-coordinates: "{highlight}/waypoints coords <x> <y> <z>{primary} - Navigates to specific coordinates."
+navigation-coordinates-name: Coordinates
+help-player-title: "{bold}{plugin} HELP"
+help-player-tip: "Tip: Most features are toggleable in {highlight}/settings{primary}."
+help-player-section-commands: "{highlight}Player Commands"
+help-player-command-settings: "{highlight}/settings{primary} - Open your personal settings menu."
+help-player-command-help: "{highlight}/help{primary} - View this help page."
+help-player-command-waypoints: "{highlight}/waypoints{primary} - Open the waypoint GUI; navigate with {highlight}player <name>{primary} or {highlight}coords <x> <y> <z>{primary}."
+help-player-command-backpack: "{highlight}/backpack{primary} - Open your backpack."
+help-player-command-deathpoints: "{highlight}/deathpoints{primary} - Open the death points GUI."
+help-player-command-heads: "{highlight}/heads{primary} - Open the heads explorer."
+help-player-command-playtime: "{highlight}/playtime [player]{primary} - View playtime including AFK time."
+help-player-command-ping: "{highlight}/ping [player]{primary} - Check latency."
+help-player-command-sit: "{highlight}/sit{primary} - Sit anywhere; sneak to stand."
+help-player-command-message: "{highlight}/msg <player> <message>{primary} - Send a private message."
+help-player-command-reply: "{highlight}/r <message>{primary} - Reply to your last message."
+help-player-command-here: "{highlight}/here{primary} - Share your current location."
+help-player-section-gameplay: "{highlight}Gameplay Features & How To Use"
+help-player-feature-vein-miner: "{highlight}Vein Miner{primary} - Sneak-break ores to mine the full vein when enabled."
+help-player-feature-tree-chopper: "{highlight}Tree Chopper{primary} - Sneak-break logs to chop the full trunk when enabled."
+help-player-feature-backpacks: "{highlight}Backpacks{primary} - Expandable storage accessible via /backpack."
+help-player-feature-waypoints: "{highlight}Waypoints{primary} - Create, share, filter, and navigate through the GUI."
+help-player-feature-waypoint-navigation: "{highlight}Waypoint Navigation{primary} - Optional particle trail or beam during navigation."
+help-player-feature-death-points: "{highlight}Death Points{primary} - View deaths and return through the GUI."
+help-player-feature-death-chest: "{highlight}Death Chest{primary} - A chest stores your items when you die."
+help-player-feature-heads: "{highlight}Heads Explorer{primary} - Browse decorative heads by category."
+help-player-feature-container-sorting: "{highlight}Container Sorting{primary} - Right-click outside containers to sort them."
+help-player-feature-item-restock: "{highlight}Item Restock{primary} - Refill empty hotbar slots with matching items."
+help-player-feature-tags: "{highlight}Player Tags{primary} - Set your tag and color in /settings."
+help-player-feature-action-bar: "{highlight}Action-Bar HUD{primary} - Toggle coordinates and the timer overlay in /settings."
+help-player-feature-compass: "{highlight}Bossbar Compass{primary} - Enable a directional compass in /settings."
+help-player-feature-chat: "{highlight}Colored Chat & Mentions{primary} - Use color codes and @name mentions."
+help-player-feature-sign-colors: "{highlight}Sign Colors{primary} - Apply color codes to signs."
+help-player-feature-sittable-stairs: "{highlight}Sittable Stairs{primary} - Empty-hand right-click stairs to sit."
+help-player-feature-sit: "{highlight}Sit Anywhere{primary} - Use /sit and sneak to stand."
+help-player-feature-sleep-rain: "{highlight}Sleep to Clear Rain{primary} - Sleeping during rain clears the weather."
+help-player-feature-crop-protection: "{highlight}Crop Protection{primary} - Prevents farmland trampling."
+help-player-feature-right-click-harvest: "{highlight}Right-Click Harvest{primary} - Harvest and replant crops with one click."
+help-player-feature-double-door: "{highlight}Double Door Sync{primary} - Opening one door opens its pair."
+help-player-section-server: "{highlight}Server & World Features"
+help-player-server-tab-list: "{highlight}Dynamic Tab List{primary} - Shows server and player status information."
+help-player-server-action-bar: "{highlight}Action-Bar Location{primary} - Shows live coordinates."
+help-player-server-timer: "{highlight}Timer{primary} - A global stopwatch controlled by staff."
+help-player-server-afk: "{highlight}AFK System{primary} - AFK tracking, protection, and indicators."
+help-player-server-recipe-sync: "{highlight}Recipe Sync{primary} - Synchronizes custom recipes when enabled."
+help-player-server-invisible-light: "{highlight}Invisible Light{primary} - A craftable invisible light source."
+help-player-server-invisible-item-frame: "{highlight}Invisible Item Frame{primary} - Craftable invisible item frames."
+help-player-admin-hint: "Need staff tools? Use {highlight}/adminhelp{primary} (permission required)."
+help-admin-title: "{bold}{plugin} ADMIN HELP"
+help-admin-tip: "Tip: Most server toggles are in the Admin Settings GUI."
+help-admin-section-moderation: "{highlight}Moderation Tools"
+help-admin-command-kick: "{highlight}/kick <player> [reason]{primary} - Kick a player."
+help-admin-command-ban: "{highlight}/ban <player> [duration] [reason]{primary} - Ban a player."
+help-admin-command-unban: "{highlight}/unban <player>{primary} - Remove a ban."
+help-admin-command-mute: "{highlight}/mute <player> [duration] [reason]{primary} - Mute a player."
+help-admin-command-unmute: "{highlight}/unmute <player>{primary} - Remove a mute."
+help-admin-section-utilities: "{highlight}Staff Utilities"
+help-admin-command-vanish: "{highlight}/vanish{primary} - Toggle vanish."
+help-admin-command-invsee: "{highlight}/invsee <player>{primary} - Inspect a player inventory."
+help-admin-command-timer: "{highlight}/timer resume|pause|reset|set <time>{primary} - Control the global timer."
+help-admin-command-settings: "{highlight}/settings{primary} - Open Admin Settings."
+help-admin-section-permissions: "{highlight}Permissions Manager"
+help-admin-permissions-group: "{highlight}/permissions group ...{primary} - Manage group permissions."
+help-admin-permissions-user: "{highlight}/permissions user ...{primary} - Manage player permissions."
+help-admin-permissions-set-group: "{highlight}/permissions user setgroup <player> <group>{primary} - Assign a group."
+help-admin-permissions-assignments: "{highlight}/permissions assignments{primary} - List assignments."
+help-admin-permissions-list: "{highlight}/permissions list{primary} - Show permission nodes."
+help-admin-permissions-reload: "{highlight}/permissions reload{primary} - Reload permissions."
+help-admin-section-settings: "{highlight}Admin Settings Highlights"
+help-admin-settings-summary: Configure maintenance, MOTD, AFK, worlds, recipes, protection, backpacks, mining, heads, and more.
+event-dimension-end-disabled: You are not allowed to enter The End yet!
+event-dimension-nether-disabled: You are not allowed to enter The Nether yet!
+event-sleep-rain-cleared: The weather has been cleared and you have slept through the night.
+event-stairs-error-too-far: You are too far away from that stair.
+event-stairs-error-bottom-only: You can only sit on bottom stairs.
+event-stairs-sat-down: Have a rest. Use the Shift key to stand up.
+maintenance-bypass-message: You bypassed maintenance mode.
+afk-player-returned: You are no longer AFK!
+afk-player-started: You are now AFK!
+gui-common-search-title: Search
+gui-common-search-current: "Search for: {term}"
+gui-common-action-search: "Left-Click: Search"
+gui-common-action-reset: "Right-Click: Reset"
+gui-common-action-next-option: "Left-Click: Next option"
+gui-common-action-previous-option: "Right-Click: Previous option"
+gui-common-sort-title: Sort
+gui-common-search-dialog-title: Search
+gui-common-search-dialog-description: Enter text to filter items.
+gui-common-search-dialog-input: Search
+navigation-canceled-world-change: Your navigation was canceled because you changed worlds.
+navigation-destination-reached: You reached {highlight}{destination}{primary} and are within {highlight}{radius}{primary} blocks.
+navigation-canceled-player-offline: Navigation canceled because the target player is offline.
+common-state-enabled: ENABLED
+common-state-disabled: DISABLED
+common-state-included: INCLUDED
+common-state-excluded: EXCLUDED
+common-value-none: NONE
+gui-common-state: "State: {state}"
+gui-common-action-toggle: "Left-Click: Toggle"
+gui-common-action-open: "Left-Click: Open"
+settings-error-item-restock-disabled: Item Restock is globally disabled on the server.
+settings-error-action-bar-timer-disabled: Action-Bar timer is globally disabled on the server.
+settings-error-tags-disabled: Tags are globally disabled on the server.
+settings-error-vein-miner-disabled: Vein Miner is globally disabled on the server.
+settings-error-vein-chopper-disabled: Vein Chopper is globally disabled on the server.
+settings-location-title: Action-Bar Location
+settings-location-description: Show your current location in the action bar.
+settings-action-bar-timer-title: Action-Bar Timer
+settings-action-bar-timer-description: Show the server timer in the action bar.
+settings-player-tag-title: Player Tag
+settings-player-tag-description: Set the tag displayed with your name.
+settings-player-tag-current: "Tag: {tag}"
+settings-player-tag-action-set: "Left-Click: Set Tag"
+settings-player-tag-action-clear: "Right-Click: Clear Tag"
+settings-compass-title: Bossbar Compass
+settings-compass-description: Show a compass in the bossbar.
+settings-chest-sorting-title: Chest Sorting
+settings-chest-sorting-description: Right-click outside a chest inventory to sort it.
+settings-inventory-sorting-title: Inventory Sorting
+settings-inventory-sorting-description: Right-click outside your inventory to sort it.
+settings-inventory-sorting-hotbar: "Include hotbar: {state}"
+settings-inventory-sorting-action-hotbar: "Shift-Left-Click: Toggle hotbar"
+settings-backpack-sorting-title: Backpack Sorting
+settings-backpack-sorting-description: Right-click outside a backpack to sort its current page.
+settings-sorting-mode-label: "Sorting mode:"
+settings-sorting-action-next-mode: "Right-Click: Next mode"
+settings-navigation-particles-title: Navigation Particles
+settings-navigation-particles-description: Show particle trails while navigating.
+settings-navigation-auto-cancel-title: Navigation Auto Cancel
+settings-navigation-auto-cancel-description: Stop navigation automatically after reaching the destination.
+settings-navigation-radius: "Radius: {highlight}{radius}{primary} blocks"
+settings-navigation-action-set-radius: "Right-Click: Set radius"
+settings-vein-miner-title: Vein Miner
+settings-vein-miner-description: Sneak to mine all connected ores of the same type with a pickaxe.
+settings-vein-chopper-title: Vein Chopper
+settings-vein-chopper-description: Sneak to chop all connected logs of the same type with an axe.
+settings-item-restock-title: Item Restock
+settings-item-restock-description: Refill hotbar slots automatically with matching items.
+settings-double-door-title: Double Door Sync
+settings-double-door-description: Interact with one door to toggle its paired door.
+settings-admin-title: Admin Settings
+settings-admin-description: Manage admin and server settings.
+settings-tag-dialog-name-label: Tag Name
+settings-tag-dialog-color-label: Tag Color
+settings-tag-dialog-title: Player Tag
+settings-tag-dialog-description: Set your tag name and color.
+settings-tag-error-empty: Tag name cannot be empty.
+settings-tag-error-too-long: Tag is too long. Maximum length is 10 characters.
+settings-tag-set-message: "Tag set to: {tag}"
+settings-tag-cleared-message: Tag cleared.
+settings-navigation-dialog-radius-label: Reached Radius (blocks)
+settings-navigation-dialog-title: Waypoint Auto Cancel Radius
+settings-navigation-dialog-description: Set how close you must be for a destination to count as reached.
+settings-navigation-radius-set-message: Navigation reach radius set to {highlight}{radius}{primary} blocks.
+settings-location-toggle-message: Action-Bar location is now {state}{primary}.
+settings-action-bar-timer-toggle-message: Action-Bar timer is now {state}{primary}.
+settings-compass-toggle-message: Bossbar compass is now {state}{primary}.
+settings-chest-sorting-toggle-message: Chest sorting is now {state}{primary}.
+settings-chest-sorting-mode-message: Chest sort mode set to {highlight}{mode}{primary}.
+settings-backpack-sorting-toggle-message: Backpack sorting is now {state}{primary}.
+settings-backpack-sorting-mode-message: Backpack sort mode set to {highlight}{mode}{primary}.
+settings-inventory-sorting-toggle-message: Inventory sorting is now {state}{primary}.
+settings-inventory-sorting-mode-message: Inventory sort mode set to {highlight}{mode}{primary}.
+settings-inventory-sorting-hotbar-message: Inventory sorting hotbar is now {highlight}{bold}{state}{primary}.
+settings-navigation-particles-toggle-message: Navigation particles are now {state}{primary}.
+settings-navigation-auto-cancel-toggle-message: Navigation auto cancel is now {state}{primary}.
+settings-vein-miner-toggle-message: Vein Miner is now {state}{primary}.
+settings-vein-chopper-toggle-message: Vein Chopper is now {state}{primary}.
+settings-double-door-toggle-message: Double door sync is now {state}{primary}.
+settings-item-restock-toggle-message: Item restock is now {state}{primary}.
+admin-maintenance-toggle-message: Maintenance mode is now {state}{primary}.
+admin-maintenance-current-message: "Message: {highlight}{message}"
+admin-creeper-block-damage-toggle-message: Creeper block damage is now {state}{primary}.
+admin-creeper-entity-damage-toggle-message: Creeper entity damage is now {state}{primary}.
+admin-end-toggle-message: The End is now {state}{primary}.
+admin-nether-toggle-message: The Nether is now {state}{primary}.
+admin-sleeping-rain-toggle-message: Sleeping through rain is now {state}{primary}.
+admin-crop-protection-toggle-message: Crop protection is now {state}{primary}.
+admin-right-click-harvest-toggle-message: Right-click crop harvesting is now {state}{primary}.
+admin-locator-bar-toggle-message: Locator bar is now {state}{primary}.
+admin-recipe-sync-toggle-message: Recipe sync is now {state}{primary}.
+admin-action-bar-timer-toggle-message: Action-Bar timer is now {state}{primary}.
+admin-tags-toggle-message: Player tags are now {state}{primary}.
+admin-heads-toggle-message: Heads Explorer is now {state}{primary}.
+admin-death-chest-toggle-message: Death chest creation is now {state}{primary}.
+admin-afk-protection-toggle-message: AFK protection is now {state}{primary}.
+admin-item-restock-toggle-message: Item restock is now {state}{primary}.
+admin-motd-dialog-line-one: MOTD Line 1
+admin-motd-dialog-line-two: MOTD Line 2
+admin-motd-dialog-title: Server MOTD
+admin-motd-dialog-description: Set the message of the day shown in the server list.
+admin-maintenance-dialog-input: Maintenance Message
+admin-maintenance-dialog-title: Maintenance Message
+admin-maintenance-dialog-description: Set the message shown when players are kicked for maintenance.
+admin-afk-time-dialog-input: AFK Time (minutes)
+admin-afk-time-dialog-title: AFK Time
+admin-afk-time-dialog-description: Set the AFK timeout in minutes.
+admin-sleep-percentage-dialog-input: Players Sleeping Percentage
+admin-sleep-percentage-dialog-title: Players Sleeping Percentage
+admin-sleep-percentage-dialog-description: Set the percentage of players required to skip the night.
+admin-heads-api-dialog-input: Heads Explorer API Key
+admin-heads-api-dialog-title: Heads Explorer API Key
+admin-heads-api-dialog-description: Optionally provide a minecraft-heads.com API key to improve access limits.
+admin-motd-set-message: 'Server MOTD set to:\nLine 1: {line1}\n{primary}Line 2: {line2}'
+admin-maintenance-set-message: "Maintenance message set to: {highlight}{message}"
+admin-afk-time-set-message: AFK time set to {highlight}{minutes}{primary} minutes.
+admin-sleep-percentage-set-message: Players sleeping percentage set to {highlight}{percentage}{primary}%.
+admin-heads-api-updated-message: Heads Explorer API key updated.
+admin-heads-refresh-success: Heads Explorer data refreshed.
+admin-heads-refresh-failed: Heads Explorer refresh failed.
+admin-heads-refresh-failed-wait: Heads Explorer refresh failed. Wait another {seconds} seconds.
+gui-common-value: "Value: {highlight}{value}"
+admin-maintenance-title: Maintenance
+admin-maintenance-description: Prevent players without permission from joining the server.
+admin-maintenance-message: "Message: {message}"
+admin-maintenance-action-message: "Right-Click: Set message"
+admin-creeper-block-damage-title: Creeper Block Damage
+admin-creeper-block-damage-description: Control whether creeper explosions destroy blocks.
+admin-creeper-entity-damage-title: Creeper Entity Damage
+admin-creeper-entity-damage-description: Control whether creepers damage non-player entities.
+admin-end-title: Enable The End
+admin-end-description: Control entry into The End dimension.
+admin-nether-title: Enable The Nether
+admin-nether-description: Control entry into The Nether dimension.
+admin-sleeping-rain-title: Sleeping Through Rain
+admin-sleeping-rain-description: Allow players to clear rain by sleeping.
+admin-sleep-percentage-title: Sleeping Percentage
+admin-sleep-percentage-description: Set the players-sleeping-percentage gamerule.
+admin-sleep-percentage-action: "Left-Click: Set percentage"
+admin-crop-protection-title: Crop Protection
+admin-crop-protection-description: Prevent crops from being trampled.
+admin-right-click-harvest-title: Right-Click Crop Harvest
+admin-right-click-harvest-description: Allow players to harvest crops by right-clicking them.
+admin-locator-bar-title: Locator Bar
+admin-locator-bar-description: Toggle the locator-bar gamerule for every world.
+common-state-set: SET
+common-state-not-set: NOT SET
+gui-common-action-set-value: "Left-Click: Set value"
+gui-common-current: "Current:"
+gui-common-current-value: "Current: {highlight}{value}"
+admin-recipe-sync-title: Recipe Sync
+admin-recipe-sync-description: Sync custom and vanilla recipes to supported modded clients.
+admin-action-bar-timer-title: Action-Bar Timer
+admin-action-bar-timer-description: Globally enable the timer in the action bar.
+admin-heads-title: Heads Explorer
+admin-heads-description: Browse custom heads powered by minecraft-heads.com.
+admin-heads-command-description: Enables the /heads command.
+admin-heads-api-state: "API key: {state}"
+admin-heads-api-optional: The API key is optional; leave it empty to use default limits.
+admin-heads-api-update-hint: You can add or update it at any time.
+admin-heads-action-api-key: "Right-Click: Set API key"
+admin-heads-action-refresh: "Shift-Left-Click: Refresh heads data"
+admin-tags-title: Player Tags
+admin-tags-description: Globally enable player tags in chat and the player list.
+admin-death-chest-title: Death Chest
+admin-death-chest-description: Control whether a death chest spawns when a player dies.
+admin-death-chest-disabled-description: When disabled, items drop normally.
+admin-item-restock-title: Item Restock
+admin-item-restock-description: Globally enable automatic hotbar restocking.
+admin-crafting-recipes-title: Crafting Recipes
+admin-crafting-recipes-description: Configure custom crafting recipes.
+admin-theme-title: Theming
+admin-theme-description: Customize plugin colors and branding.
+admin-afk-protection-title: AFK Protection
+admin-afk-protection-description: Make players invulnerable while AFK.
+admin-afk-time-title: AFK Time
+admin-afk-time-description: Set the AFK timeout in minutes.
+admin-afk-time-current: "Current: {highlight}{minutes}{primary} minutes"
+admin-motd-title: Server MOTD
+admin-motd-description: Set the message of the day shown in the server list.
+admin-backpack-settings-title: Backpack Settings
+admin-backpack-settings-description: Manage global backpack settings.
+admin-backpack-settings-command-description: Enables the /backpack command.
+admin-backpack-settings-pages: "Pages: {highlight}{pages}"
+admin-backpack-settings-rows: "Rows per page: {highlight}{rows}"
+admin-vein-miner-settings-title: Vein Miner Settings
+admin-vein-miner-settings-description: Manage global vein-miner settings.
+admin-vein-chopper-settings-title: Vein Chopper Settings
+admin-vein-chopper-settings-description: Manage global vein-chopper settings.
+admin-vein-settings-max-size: "Maximum size: {highlight}{size}"
+admin-vein-settings-sound: "Sound: {state}"
+admin-vein-settings-tools: "Tools: {highlight}{selected}{primary}/{highlight}{total}"
+admin-vein-settings-blocks: "Blocks: {highlight}{selected}{primary}/{highlight}{total}"
+gui-common-warning-label: "ATTENTION:"
+gui-common-world: "World: {world}"
+gui-common-coordinate-x: "X: {x}"
+gui-common-coordinate-y: "Y: {y}"
+gui-common-coordinate-z: "Z: {z}"
+gui-common-distance: "Distance: {distance}"
+gui-common-distance-blocks: "{distance}{primary} blocks"
+gui-common-value-not-available: "Not available"
+gui-common-owner: "Owner: {owner}"
+gui-common-action-start-navigation: "Left-Click: Start navigation"
+gui-common-action-open-options: "Right-Click: Options"
+gui-common-sort-name-ascending: "Name (A → Z)"
+gui-common-sort-name-descending: "Name (Z → A)"
+gui-common-sort-count-descending: "Count (High → Low)"
+gui-common-sort-count-ascending: "Count (Low → High)"
+gui-common-sort-distance-nearest-first: "Distance (Near → Far)"
+gui-common-sort-distance-farthest-first: "Distance (Far → Near)"
+gui-backpack-settings-title: "Backpack Settings"
+gui-backpack-settings-pages-title: "Backpack Pages"
+gui-backpack-settings-pages-description: "Set the number of pages."
+gui-backpack-settings-storage-warning: "Changing this can cause items in backpacks to be lost!"
+gui-backpack-settings-pages-current: "Current: {pages} pages"
+gui-backpack-settings-pages-action-increase: "Left-Click: +1 page"
+gui-backpack-settings-pages-action-decrease: "Right-Click: -1 page"
+gui-backpack-settings-enabled-title: "Backpacks"
+gui-backpack-settings-enabled-description: "Enable player backpacks."
+gui-backpack-settings-rows-title: "Backpack Rows"
+gui-backpack-settings-rows-description: "Set the number of rows per page."
+gui-backpack-settings-rows-current: "Current: {rows} rows"
+gui-backpack-settings-rows-action-increase: "Left-Click: +1 row"
+gui-backpack-settings-rows-action-decrease: "Right-Click: -1 row"
+gui-backpack-settings-enabled-changed: "Backpacks are now {state}{primary}."
+gui-crafting-recipes-error-none-registered: "No crafting recipes are currently registered."
+gui-crafting-recipes-title: "Crafting Recipes"
+gui-crafting-recipes-item-description: "Manage this crafting recipe."
+gui-crafting-recipes-action-edit: "Right-Click: Edit recipe"
+gui-crafting-recipes-state-changed: "The {recipe} recipe is now {state}{primary}."
+gui-crafting-recipe-editor-instructions: "Place items in the crafting grid, then click the result to save."
+gui-crafting-recipe-editor-error-no-ingredients: "Please add at least one ingredient before saving."
+gui-crafting-recipe-editor-saved: "Saved the recipe for {recipe}."
+gui-crafting-recipe-editor-action-save: "Left-Click: Save recipe"
+gui-death-points-title: "Death Points"
+gui-death-points-options-title: "Death Point Options"
+gui-death-points-items-title: "Death Point Items"
+gui-death-points-navigation-destination-name: "Death Point"
+gui-death-points-removed-message: "Your death point was removed successfully."
+gui-death-points-item-title: "Death Point {details}"
+gui-death-points-inventory-item-title: "Show Inventory"
+gui-death-points-action-view-inventory: "Left-Click: View inventory"
+gui-death-points-delete-item-title: "Delete"
+gui-death-points-delete-warning: "Deleting this death point will destroy every item stored in it."
+gui-death-points-action-delete: "Left-Click: Delete death point"
+gui-death-points-sort-newest-first: "Date (New → Old)"
+gui-death-points-sort-oldest-first: "Date (Old → New)"
+gui-heads-error-no-categories: "No head categories were found."
+gui-heads-error-category-empty: "No heads are available in this category."
+gui-heads-categories-title: "Categories{primary} ({count} heads)"
+gui-heads-category-title: "Heads{primary} ({category}{primary}: {count}{primary})"
+gui-heads-category-item-count: "Total heads: {count}"
+gui-heads-head-item-category: "Category: {category}"
+gui-heads-action-give: "Left-Click: Give"
+gui-playtime-title: "Playtime"
+gui-playtime-summary-title: "PLAYTIME{reset}{text-symbol} » {primary}{player}"
+gui-playtime-status-format: "({status})"
+gui-playtime-status-online: "online"
+gui-playtime-status-offline: "offline"
+gui-playtime-action-show-summary: "Left-Click: Show details"
+gui-playtime-sort-total-descending: "Total time (High → Low)"
+gui-playtime-sort-total-ascending: "Total time (Low → High)"
+gui-playtime-sort-active-descending: "Playtime (High → Low)"
+gui-playtime-sort-active-ascending: "Playtime (Low → High)"
+gui-playtime-sort-afk-descending: "AFK time (High → Low)"
+gui-playtime-sort-afk-ascending: "AFK time (Low → High)"
+gui-theme-title: "Theming"
+gui-theme-primary-font-color-title: "Primary Font Color"
+gui-theme-primary-font-color-description: "The color used for normal text."
+gui-theme-highlight-font-color-title: "Highlight Font Color"
+gui-theme-highlight-font-color-description: "The color used for highlighted text and values."
+gui-theme-error-font-color-title: "Error Font Color"
+gui-theme-error-font-color-description: "The color used for errors and warnings."
+gui-theme-title-symbol-color-title: "Title Symbol Color"
+gui-theme-title-symbol-color-description: "The color used for symbols before titles."
+gui-theme-text-symbol-color-title: "Text Symbol Color"
+gui-theme-text-symbol-color-description: "The color used for symbols before normal text."
+gui-theme-glass-pane-color-title: "Glass Pane Color"
+gui-theme-glass-pane-color-description: "The glass pane color used in the last GUI row."
+gui-theme-name-title: "Name"
+gui-theme-name-description: "The name used in plugin messages and branding."
+gui-theme-color-preview: "Preview: {sample}"
+gui-theme-color-preview-sample: "Sample Text"
+gui-theme-color-dialog-description: "Select a Minecraft color."
+gui-theme-error-invalid-color: "The selected color is invalid."
+gui-theme-color-changed-message: "{setting} set to {color}."
+gui-theme-name-dialog-input: "Name"
+gui-theme-name-dialog-title: "Theme Name"
+gui-theme-name-dialog-description: "Set the name displayed in plugin messages and branding."
+gui-theme-name-error-empty: "Name cannot be empty."
+gui-theme-name-error-too-long: "Name is too long. The maximum length is {max} characters."
+gui-theme-name-error-invalid-characters: "Name cannot contain color codes or line breaks."
+gui-theme-name-changed-message: "Theme name set to {name}."
+gui-vein-miner-settings-title: "Vein Miner Settings"
+gui-vein-miner-tools-title: "Vein Miner Tools"
+gui-vein-miner-blocks-title: "Vein Miner Blocks"
+gui-vein-miner-enabled-title: "Vein Miner"
+gui-vein-miner-enabled-description: "Toggle the global Vein Miner state."
+gui-vein-miner-max-size-title: "Maximum Vein Size"
+gui-vein-miner-max-size-description: "Set the maximum size of veins that can be mined."
+gui-vein-miner-sound-title: "Sound"
+gui-vein-miner-sound-description: "Toggle sound effects for Vein Miner."
+gui-vein-miner-tools-item-title: "Allowed Tools"
+gui-vein-miner-tools-description: "Open the menu to manage allowed tools."
+gui-vein-miner-blocks-item-title: "Allowed Blocks"
+gui-vein-miner-blocks-description: "Open the menu to manage allowed blocks."
+gui-vein-miner-max-size-dialog-input: "Maximum Vein Miner Size"
+gui-vein-miner-max-size-dialog-title: "Set Maximum Vein Miner Size"
+gui-vein-miner-max-size-dialog-description: "Set the maximum size of veins that can be mined."
+gui-vein-miner-max-size-changed: "Maximum Vein Miner size set to {size}{primary}."
+gui-vein-chopper-settings-title: "Vein Chopper Settings"
+gui-vein-chopper-tools-title: "Vein Chopper Tools"
+gui-vein-chopper-blocks-title: "Vein Chopper Blocks"
+gui-vein-chopper-enabled-title: "Vein Chopper"
+gui-vein-chopper-enabled-description: "Toggle the global Vein Chopper state."
+gui-vein-chopper-max-size-title: "Maximum Vein Size"
+gui-vein-chopper-max-size-description: "Set the maximum size of veins that can be chopped."
+gui-vein-chopper-sound-title: "Sound"
+gui-vein-chopper-sound-description: "Toggle sound effects for Vein Chopper."
+gui-vein-chopper-tools-item-title: "Allowed Tools"
+gui-vein-chopper-tools-description: "Open the menu to manage allowed tools."
+gui-vein-chopper-blocks-item-title: "Allowed Blocks"
+gui-vein-chopper-blocks-description: "Open the menu to manage allowed blocks."
+gui-vein-chopper-max-size-dialog-input: "Maximum Vein Chopper Size"
+gui-vein-chopper-max-size-dialog-title: "Set Maximum Vein Chopper Size"
+gui-vein-chopper-max-size-dialog-description: "Set the maximum size of veins that can be chopped."
+gui-vein-chopper-max-size-changed: "Maximum Vein Chopper size set to {size}{primary}."
+gui-waypoints-title: "Waypoints {primary}({filter}{primary})"
+gui-waypoints-options-title: "Options: {waypoint}"
+gui-waypoints-icon-selection-title: "Icon: {waypoint}"
+gui-waypoints-rename-item-title: "Rename"
+gui-waypoints-action-rename: "Left-Click: Rename {waypoint}"
+gui-waypoints-visibility-item-title: "Visibility"
+gui-waypoints-action-next-visibility: "Left-Click: Next visibility"
+gui-waypoints-action-previous-visibility: "Right-Click: Previous visibility"
+gui-waypoints-delete-item-title: "Delete"
+gui-waypoints-action-delete: "Left-Click: Delete {waypoint}"
+gui-waypoints-set-icon-item-title: "Set Icon"
+gui-waypoints-action-open-icon-selection: "Left-Click: Set a custom icon for {waypoint}"
+gui-waypoints-cancel-navigation-item-title: "Cancel Navigation"
+gui-waypoints-cancel-navigation-description: "Cancel your current active navigation."
+gui-waypoints-action-cancel-navigation: "Left-Click: Cancel navigation"
+gui-waypoints-add-item-title: "Add Waypoint"
+gui-waypoints-add-item-description: "Create a waypoint using custom coordinates or your current location."
+gui-waypoints-action-add: "Left-Click: Add waypoint"
+gui-waypoints-filter-item-title: "Filter"
+gui-waypoints-action-set-icon: "Click to use this icon for {waypoint}"
+gui-waypoints-icon-changed-message: "Custom icon set for {waypoint}."
+gui-waypoints-error-public-name-conflict: "A public waypoint with that name already exists."
+gui-waypoints-visibility-changed-message: "The visibility of {waypoint} was set to {visibility}."
+gui-waypoints-error-not-found: "Could not find the waypoint {waypoint}. Please choose an existing waypoint."
+gui-waypoints-navigation-started-message: "Started navigating to {waypoint} at {highlight}X: {primary}{x}, {highlight}Y: {primary}{y}, {highlight}Z: {primary}{z}."
+gui-waypoints-navigation-canceled-message: "Your active navigation was canceled."
+gui-waypoints-error-no-active-navigation: "You do not have an active destination."
+gui-waypoints-removed-message: "The waypoint {waypoint} was removed successfully."
+gui-waypoints-add-dialog-title: "Add Waypoint"
+gui-waypoints-add-dialog-description: "Set the name, visibility, and coordinates of the new waypoint."
+gui-waypoints-add-dialog-name-input: "Waypoint Name"
+gui-waypoints-add-dialog-visibility-input: "Visibility"
+gui-waypoints-add-dialog-x-input: "X Coordinate"
+gui-waypoints-add-dialog-y-input: "Y Coordinate"
+gui-waypoints-add-dialog-z-input: "Z Coordinate"
+gui-waypoints-rename-dialog-title: "Waypoint Name"
+gui-waypoints-rename-dialog-description: "Set the new name of the waypoint."
+gui-waypoints-rename-dialog-name-input: "Rename Waypoint"
+gui-waypoints-error-name-required: "Please provide a waypoint name."
+gui-waypoints-error-invalid-coordinates: "Please provide valid integer coordinates."
+gui-waypoints-added-message: "The waypoint {waypoint} was added successfully."
+gui-waypoints-added-coordinates-message: "Coordinates: {highlight}X: {primary}{x}, {highlight}Y: {primary}{y}, {highlight}Z: {primary}{z}."
+gui-waypoints-renamed-message: "Waypoint name set to {waypoint}{primary}."
+language-option-english: "English"
+language-option-german: "German"
+enum-inventory-sort-mode-alphabetical-ascending: "Name (A → Z)"
+enum-inventory-sort-mode-alphabetical-descending: "Name (Z → A)"
+enum-inventory-sort-mode-stack-descending: "Stack (High → Low)"
+enum-inventory-sort-mode-stack-ascending: "Stack (Low → High)"
+enum-waypoint-filter-all: "All"
+enum-waypoint-filter-public: "Public"
+enum-waypoint-filter-private: "Private"
+enum-waypoint-visibility-public: "Public"
+enum-waypoint-visibility-private: "Private"
+common-status-afk-short: "AFK"
+common-value-unknown: "Unknown"
+crafting-recipe-invisible-item-frame-name: "Invisible Item Frame"
+crafting-recipe-invisible-item-frame-description: "Item frame that hides when it holds an item."
+crafting-recipe-invisible-light-name: "Invisible Light"
+crafting-recipe-invisible-light-description: "Invisible block emitting light level 15."
+crafting-item-lore-crafted-with: "Crafted with {plugin}."
+backpack-gui-title: "Backpack"
+backpack-error-disabled: "Backpacks are disabled."
+backpack-error-active-death-points: "You have active death points. Claim them before using your backpack again. {command}"
+private-message-label: "MSG"
+private-message-you: "YOU"
+private-message-outgoing-format: "({you} {text-symbol}» {recipient}{primary}) {message}"
+private-message-incoming-format: "({sender} {text-symbol}» {you}{primary}) {message}"
+event-player-joined: "{player} joined the server."
+event-player-left: "{player} left the server."
+chat-message-format: "{sender}{tag} {message}"
+event-sleeping-progress-actionbar: "Sleeping: {sleeping} of {required} players required"
+event-death-location: "You died at: {highlight}X: {primary}{x} {highlight}Y: {primary}{y} {highlight}Z: {primary}{z}"
+event-death-chest-items-stored: "All your items are stored in the death chest at this location."
+event-death-chest-drop-warning: "ATTENTION!{primary} As soon as you close or break the chest, all items will be dropped!"
+event-death-chest-no-safe-location: "No safe air or fluid block was found nearby. Your items were dropped at your death location."
+event-death-items-dropped: "Your items were dropped on the ground."
+event-death-void-chest-relocated: "Hint:{primary} You fell into the void! Your death chest will spawn at {highlight}Y: {primary}{y}"
+event-death-void-chest-disabled: "Hint:{primary} You fell into the void while death chests are disabled. Items lost in the void cannot be recovered."
+event-death-void-items-lost: "Hint:{primary} Items dropped into the void cannot be recovered."
+event-deathpoints-list-hint: "To list your death points, use: {command}"
+event-death-chest-owner-unknown: "Unknown"
+event-death-chest-inventory-title: "Death Chest: {player}"
+event-death-chest-claimed: "You claimed your death chest, and the death point was removed."
+event-death-chest-break-denied: "You are not allowed to break this death chest."
+death-chest-hologram-title: "Death Chest"
+maintenance-kick-title: "MAINTENANCE"
+maintenance-kick-description: "The server is currently in maintenance mode.\nCheck back later or notify the server administrator."
+maintenance-kick-custom-message: "Message: {message}"
+afk-player-started-announcement: "{player} is now AFK."
+afk-player-returned-announcement: "{player} is no longer AFK."
+moderation-ban-screen-title: "BANNED"
+moderation-ban-screen-description: "You were banned from the server."
+moderation-ban-screen-reason: "Reason: {reason}"
+moderation-ban-screen-expires: "Expires in: {time}"
+moderation-mute-message-temporary-with-reason: "You are muted{primary} for {time}. Reason: {reason}"
+moderation-mute-message-temporary-without-reason: "You are muted{primary} for {time}. No reason was provided."
+moderation-mute-message-permanent-with-reason: "You are muted{primary}. Reason: {reason}"
+moderation-mute-message-permanent-without-reason: "You are muted{primary}. No reason was provided."
+navigation-error-target-different-world: "Cannot start navigation because the target is in a different world!"
+navigation-actionbar-format: "{target}: X: {target_x} Y: {target_y} Z: {target_z}{separator}CURRENT: X: {current_x} Y: {current_y} Z: {current_z}{separator}DISTANCE: {distance}{separator}DIRECTION: {direction}"
+location-actionbar-format: "X: {x} Y: {y} Z: {z}{separator}{biome}"
+compass-direction-north-short: "N"
+compass-direction-northeast-short: "NE"
+compass-direction-east-short: "E"
+compass-direction-southeast-short: "SE"
+compass-direction-south-short: "S"
+compass-direction-southwest-short: "SW"
+compass-direction-west-short: "W"
+compass-direction-northwest-short: "NW"
+time-duration-days-short: "{value}d"
+time-duration-hours-short: "{value}h"
+time-duration-minutes-short: "{value}m"
+time-duration-seconds-short: "{value}s"
+timer-actionbar-running: "{time}"
+timer-actionbar-paused: "Paused {primary}({time}{primary})"
+tab-list-player-deaths: " | Deaths: {deaths}"
+tab-list-header-server-name: "{server} SMP"
+tab-list-header-maintenance-enabled: "Maintenance Mode: ON"
+tab-list-header-day-time: "Day: {day} | Time: {time} ({period})"
+tab-list-header-weather-moon: "Weather: {weather} | Moon: {moon}"
+tab-list-footer-player-count: "Players: {online}/{maximum}"
+tab-list-footer-playtime: "Playtime: {time}"
+tab-list-footer-server-performance: "Ping: {ping} | TPS: {tps} | MSPT: {mspt}"
+tab-list-footer-help: "Need some help? {command}"
+time-period-morning: "Morning"
+time-period-midday: "Midday"
+time-period-afternoon: "Afternoon"
+time-period-evening: "Evening"
+time-period-night: "Night"
+weather-thunder: "Thunder"
+weather-raining: "Raining"
+weather-storm: "Storm"
+weather-clear: "Clear"
+weather-none: "None"
+moon-phase-none: "None"
+moon-phase-full-moon: "Full Moon"
+moon-phase-waning-gibbous: "Waning Gibbous"
+moon-phase-last-quarter: "Last Quarter"
+moon-phase-waning-crescent: "Waning Crescent"
+moon-phase-new-moon: "New Moon"
+moon-phase-waxing-crescent: "Waxing Crescent"
+moon-phase-first-quarter: "First Quarter"
+moon-phase-waxing-gibbous: "Waxing Gibbous"
+moon-phase-with-index: "{phase} #{index}/8"
+coordinate-label-x: "X:"
+coordinate-label-y: "Y:"
+coordinate-label-z: "Z:"
+gui-common-page-status: "Current page: {highlight}{current}{primary} of {highlight}{total}"
+gui-common-action-next-page: "Left-Click: Next page"
+gui-common-action-previous-page: "Right-Click: Previous page"
+gui-common-page-title: Page
+gui-common-back-title: Back
+command-kick-usage: "Usage: {highlight}/kick <player> [reason]"
+command-kick-error-player-not-found: "Player {player} was not found or is not online."
+command-kick-error-self: "You cannot kick yourself."
+command-kick-disconnect-title: "KICKED"
+command-kick-disconnect-message: "You were kicked from the server."
+command-kick-disconnect-reason: "Reason: {reason}"
+command-kick-success: "{player} has been kicked."
+command-ban-usage: "Usage: {highlight}/ban <player> [duration] [reason]"
+command-ban-example: "Example: {highlight}/ban playername 1d2h15m30s Inappropriate behavior"
+command-ban-error-self: "You cannot ban yourself."
+command-ban-disconnect-title: "BANNED"
+command-ban-disconnect-message: "You were banned from the server."
+command-ban-disconnect-reason: "Reason: {reason}"
+command-ban-disconnect-expiry: "Expires in: {duration}"
+command-ban-success-temporary: "{player} has been temporarily banned for {duration}."
+command-ban-success-temporary-with-reason: "{player} has been temporarily banned for {duration}. Reason: {reason}"
+command-ban-success-permanent: "{player} has been permanently banned."
+command-ban-success-permanent-with-reason: "{player} has been permanently banned. Reason: {reason}"
+command-unban-usage: "Usage: {highlight}/unban <player>"
+command-unban-error-not-banned: "{player} is not banned."
+command-unban-success: "{player} has been unbanned."
+command-mute-usage: "Usage: {highlight}/mute <player> [duration] [reason]"
+command-mute-error-self: "You cannot mute yourself."
+command-mute-notification-temporary: "You have been muted for {duration}."
+command-mute-notification-temporary-with-reason: "You have been muted for {duration}. Reason: {reason}"
+command-mute-notification-permanent: "You have been permanently muted."
+command-mute-notification-permanent-with-reason: "You have been permanently muted. Reason: {reason}"
+command-mute-success-temporary: "{player} has been muted for {duration}."
+command-mute-success-temporary-with-reason: "{player} has been muted for {duration}. Reason: {reason}"
+command-mute-success-permanent: "{player} has been permanently muted."
+command-mute-success-permanent-with-reason: "{player} has been permanently muted. Reason: {reason}"
+command-unmute-usage: "Usage: {highlight}/unmute <player>"
+command-unmute-notification: "You are no longer muted."
+command-unmute-success: "{player} has been unmuted."
+command-permissions-usage: "Usage: {highlight}/permissions <group | user | assignments | default | list | reload>"
+command-permissions-group-usage: "Usage: {highlight}/permissions group <addperm | removeperm | delete> <group> [<permission>]"
+command-permissions-group-add-permission-usage: "Usage: {highlight}/permissions group addperm <group> <permission>"
+command-permissions-group-add-permission-success: "Permission {permission} was added to group {group}."
+command-permissions-group-add-permission-error-already-assigned: "Permission {permission} is already assigned to group {group}."
+command-permissions-group-remove-permission-usage: "Usage: {highlight}/permissions group removeperm <group> <permission>"
+command-permissions-group-remove-permission-success: "Permission {permission} was removed from group {group}."
+command-permissions-group-remove-permission-error-not-assigned: "Permission {permission} is not assigned to group {group}."
+command-permissions-group-delete-usage: "Usage: {highlight}/permissions group delete <group>"
+command-permissions-group-delete-error-default-group: "You cannot delete the default group."
+command-permissions-group-delete-success: "Group {group} has been deleted."
+command-permissions-group-delete-error-not-found: "Group {group} does not exist."
+command-permissions-default-group-current: "Current default group: {group}"
+command-permissions-default-group-change-hint: "Set another group with {highlight}/permissions default <group>{primary}."
+command-permissions-default-group-usage: "Usage: {highlight}/permissions default <group>"
+command-permissions-default-group-set-success: "The default group has been set to {group}."
+command-permissions-default-group-created-hint: "Created new group {group}. Add permissions with {highlight}/permissions group addperm {group}{highlight} <permission>{primary}."
+command-permissions-user-usage: "Usage: {highlight}/permissions user <addperm | removeperm | setgroup> <username> <permission | group>"
+command-permissions-user-add-permission-usage: "Usage: {highlight}/permissions user addperm <username> <permission>"
+command-permissions-user-add-permission-success: "Permission {permission} was added to player {player}."
+command-permissions-user-add-permission-error-already-assigned: "Permission {permission} is already assigned to player {player}."
+command-permissions-user-remove-permission-usage: "Usage: {highlight}/permissions user removeperm <username> <permission>"
+command-permissions-user-remove-permission-success: "Permission {permission} was removed from player {player}."
+command-permissions-user-remove-permission-error-not-assigned: "Permission {permission} is not assigned to player {player}."
+command-permissions-user-set-group-usage: "Usage: {highlight}/permissions user setgroup <username> <group>"
+command-permissions-user-set-group-success: "Player {player} was assigned to group {group}."
+command-permissions-user-set-group-error-already-assigned: "Player {player} is already assigned to group {group}."
+command-permissions-assignments-groups-title: "PERMISSIONS: Group Assignments"
+command-permissions-assignments-players-title: "PERMISSIONS: Player Assignments"
+command-permissions-assignments-group-entry: "Group: {group}"
+command-permissions-assignments-permissions-entry: "Permissions: {permissions}"
+command-permissions-assignments-player-entry: "Player: {player}"
+command-permissions-assignments-users-entry: "Players: {players}"
+command-permissions-list-title: "PERMISSIONS: Permission List"
+command-permissions-reload-success: "Permissions were reloaded successfully."
+command-playtime-summary-title: "PLAYTIME{reset}{text-symbol} » {primary}{player}"
+command-waypoints-coordinates-navigation-started: "Starting navigation to coordinates {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z}."
+command-waypoints-player-navigation-started: "Starting navigation to {player} at {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z}."
+death-point-date-format: "dd.MM.yyyy » HH:mm:ss"
+enum-chat-color-black: Black
+enum-chat-color-dark-blue: Dark Blue
+enum-chat-color-dark-green: Dark Green
+enum-chat-color-dark-aqua: Dark Aqua
+enum-chat-color-dark-red: Dark Red
+enum-chat-color-dark-purple: Dark Purple
+enum-chat-color-gold: Gold
+enum-chat-color-gray: Gray
+enum-chat-color-dark-gray: Dark Gray
+enum-chat-color-blue: Blue
+enum-chat-color-green: Green
+enum-chat-color-aqua: Aqua
+enum-chat-color-red: Red
+enum-chat-color-light-purple: Light Purple
+enum-chat-color-yellow: Yellow
+enum-chat-color-white: White

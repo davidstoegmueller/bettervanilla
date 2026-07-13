@@ -55,7 +55,9 @@ public class HeadsGUI {
 
   public void displayHeadsGUI(Player p) {
     CustomGUI gui = _createCategoriesGUI(p);
-    gui.open(p);
+    if (gui != null) {
+      gui.open(p);
+    }
   }
 
   // -----------
@@ -69,7 +71,7 @@ public class HeadsGUI {
 
     List<HeadCategory> categories = _buildCategories();
     if (categories.isEmpty()) {
-      p.sendMessage(Main.getPrefix() + Theme.error() + "No head categories found.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "gui-heads-error-no-categories"));
       return null;
     }
 
@@ -84,7 +86,7 @@ public class HeadsGUI {
       List<Head> heads = headsByCategory.getOrDefault(category, List.of());
       int count = heads.size();
       Head iconHead = heads.isEmpty() ? null : heads.get(0);
-      ItemStack categoryItem = _createCategoryItem(category, count, iconHead);
+      ItemStack categoryItem = _createCategoryItem(p, category, count, iconHead);
 
       entries.put(key, categoryItem);
       categoryByKey.put(key, category);
@@ -94,13 +96,14 @@ public class HeadsGUI {
     int categoryGUIRows = Math.min(6, ((int) Math.ceil(totalCategories / 9.0) + 1));
 
     CustomGUI categoriesGUI = new CustomGUI(_plugin, p,
-        Theme.titlePrefix() + "Categories" + Theme.primary() + " (" + totalHeads + " heads)",
+        Theme.titlePrefix() + Main.tr(p, "gui-heads-categories-title",
+            "count", Theme.primary() + Integer.toString(totalHeads)),
         entries, categoryGUIRows, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
     categoriesGUI.setSearchButtonSlot(_footerSearchSlot(categoryGUIRows));
     categoriesGUI.setSortButtonSlot(_footerSortSlot(categoryGUIRows));
-    categoriesGUI.setSortOptions(_createCategorySortOptions(sortData));
+    categoriesGUI.setSortOptions(_createCategorySortOptions(p, sortData));
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     for (Map.Entry<String, HeadCategory> entry : categoryByKey.entrySet()) {
@@ -113,7 +116,8 @@ public class HeadsGUI {
           List<Head> heads = headsByCategory.getOrDefault(category, List.of());
 
           if (heads.isEmpty()) {
-            player.sendMessage(Main.getPrefix() + Theme.error() + "No heads available in this category.");
+            player.sendMessage(Main.getPrefix() + Theme.error()
+                + Main.tr(player, "gui-heads-error-category-empty"));
             player.playSound(player, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
             return;
           }
@@ -133,7 +137,7 @@ public class HeadsGUI {
     Map<String, Head> headByKey = new HashMap<>();
 
     for (Head head : heads) {
-      ItemStack headItem = _createHeadItem(head, category, true);
+      ItemStack headItem = _createHeadItem(p, head, category, true);
       String entryId = KEY_HEAD_PREFIX + head.uid();
 
       entries.put(entryId, headItem);
@@ -141,14 +145,15 @@ public class HeadsGUI {
       sortData.put(entryId, new HeadSortData(head.name()));
     }
 
-    String title = Theme.titlePrefix() + "Heads" + Theme.primary() + " (" + category.name() + " " + heads.size()
-        + " heads)";
+    String title = Theme.titlePrefix() + Main.tr(p, "gui-heads-category-title",
+        "category", Theme.primary() + category.name() + Theme.highlight(),
+        "count", Theme.primary() + Integer.toString(heads.size()) + Theme.highlight());
     CustomGUI headsGUI = new CustomGUI(_plugin, p, title, entries, HEADS_GUI_ROWS, null, parentMenu,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
     headsGUI.setSearchButtonSlot(_footerSearchSlot(HEADS_GUI_ROWS));
     headsGUI.setSortButtonSlot(_footerSortSlot(HEADS_GUI_ROWS));
-    headsGUI.setSortOptions(_createHeadSortOptions(sortData));
+    headsGUI.setSortOptions(_createHeadSortOptions(p, sortData));
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     for (Map.Entry<String, Head> entry : headByKey.entrySet()) {
@@ -218,7 +223,7 @@ public class HeadsGUI {
   // GUI ITEMS
   // ---------
 
-  private ItemStack _createCategoryItem(HeadCategory category, int count, Head iconHead) {
+  private ItemStack _createCategoryItem(Player viewer, HeadCategory category, int count, Head iconHead) {
     ItemStack item = new ItemStack(iconHead != null ? Material.PLAYER_HEAD : Material.BOOK);
     ItemMeta meta = item.getItemMeta();
 
@@ -231,9 +236,10 @@ public class HeadsGUI {
 
       List<String> lore = new ArrayList<>();
       lore.add("");
-      lore.add(Theme.textPrefix() + "Total Heads: " + Theme.highlight() + count);
+      lore.add(Theme.textPrefix() + Main.tr(viewer, "gui-heads-category-item-count",
+          "count", Theme.highlight() + Integer.toString(count)));
       lore.add("");
-      lore.add(Theme.textPrefix() + "Left-Click: Open");
+      lore.add(Theme.textPrefix() + Main.tr(viewer, "gui-common-action-open"));
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -241,7 +247,7 @@ public class HeadsGUI {
     return item;
   }
 
-  private ItemStack _createHeadItem(Head head, HeadCategory category, boolean includeInstructions) {
+  private ItemStack _createHeadItem(Player viewer, Head head, HeadCategory category, boolean includeInstructions) {
     ItemStack item = new ItemStack(Material.PLAYER_HEAD);
     ItemMeta meta = item.getItemMeta();
 
@@ -253,9 +259,10 @@ public class HeadsGUI {
       List<String> lore = new ArrayList<>();
       if (includeInstructions && category != null) {
         lore.add("");
-        lore.add(Theme.textPrefix() + "Category: " + Theme.highlight() + category.name());
+        lore.add(Theme.textPrefix() + Main.tr(viewer, "gui-heads-head-item-category",
+            "category", Theme.highlight() + category.name()));
         lore.add("");
-        lore.add(Theme.textPrefix() + "Left-Click: Give");
+        lore.add(Theme.textPrefix() + Main.tr(viewer, "gui-heads-action-give"));
       }
 
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
@@ -271,7 +278,7 @@ public class HeadsGUI {
   // ------------
 
   private void _giveHead(Player p, Head head) {
-    ItemStack item = _createHeadItem(head, null, false);
+    ItemStack item = _createHeadItem(p, head, null, false);
 
     Map<Integer, ItemStack> inventoryOverflow = p.getInventory().addItem(item);
     if (!inventoryOverflow.isEmpty()) {
@@ -306,7 +313,8 @@ public class HeadsGUI {
   // SORTING
   // ------------
 
-  private List<CustomGUI.SortOption> _createCategorySortOptions(Map<String, CategorySortData> sortData) {
+  private List<CustomGUI.SortOption> _createCategorySortOptions(Player viewer,
+      Map<String, CategorySortData> sortData) {
     Comparator<Map.Entry<String, ItemStack>> byNameAsc = Comparator.comparing(
         entry -> sortData.get(entry.getKey()).name(), String.CASE_INSENSITIVE_ORDER);
 
@@ -320,21 +328,21 @@ public class HeadsGUI {
         entry -> sortData.get(entry.getKey()).count());
 
     return List.of(
-        new CustomGUI.SortOption("Name (A → Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z → A)", byNameDesc),
-        new CustomGUI.SortOption("Count (High → Low)", byCountDesc),
-        new CustomGUI.SortOption("Count (Low → High)", byCountAsc));
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-ascending"), byNameAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-descending"), byNameDesc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-count-descending"), byCountDesc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-count-ascending"), byCountAsc));
   }
 
-  private List<CustomGUI.SortOption> _createHeadSortOptions(Map<String, HeadSortData> sortData) {
+  private List<CustomGUI.SortOption> _createHeadSortOptions(Player viewer, Map<String, HeadSortData> sortData) {
     Comparator<Map.Entry<String, ItemStack>> byNameAsc = Comparator.comparing(
         entry -> sortData.get(entry.getKey()).name(), String.CASE_INSENSITIVE_ORDER);
 
     Comparator<Map.Entry<String, ItemStack>> byNameDesc = byNameAsc.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Name (A → Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z → A)", byNameDesc));
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-ascending"), byNameAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-descending"), byNameDesc));
   }
 
   // ---------

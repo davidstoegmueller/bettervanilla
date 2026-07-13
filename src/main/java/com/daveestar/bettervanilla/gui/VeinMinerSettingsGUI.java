@@ -35,23 +35,23 @@ public class VeinMinerSettingsGUI {
   private final MaterialToggleGUI _toolsGUI;
   private final MaterialToggleGUI _blocksGUI;
 
-  private MaterialToggleGUI _createToggleGUI(String title,
+  private MaterialToggleGUI _createToggleGUI(String titleKey,
       List<Material> defaults,
       Supplier<List<String>> getter,
       Consumer<List<String>> setter) {
-    return new MaterialToggleGUI(title, defaults, getter, setter);
+    return new MaterialToggleGUI(titleKey, defaults, getter, setter);
   }
 
   public VeinMinerSettingsGUI() {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
 
-    _toolsGUI = _createToggleGUI("Vein Miner Tools",
+    _toolsGUI = _createToggleGUI("gui-vein-miner-tools-title",
         SettingsManager.VEIN_MINER_TOOLS,
         _settingsManager::getVeinMinerAllowedTools,
         _settingsManager::setVeinMinerAllowedTools);
 
-    _blocksGUI = _createToggleGUI("Vein Miner Blocks",
+    _blocksGUI = _createToggleGUI("gui-vein-miner-blocks-title",
         SettingsManager.VEIN_MINER_BLOCKS,
         _settingsManager::getVeinMinerAllowedBlocks,
         _settingsManager::setVeinMinerAllowedBlocks);
@@ -59,11 +59,11 @@ public class VeinMinerSettingsGUI {
 
   public void displayGUI(Player p, CustomGUI parent, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
-    entries.put("tools", _createToolsItem());
-    entries.put("maxsize", _createMaxSizeItem());
-    entries.put("enabled", _createEnabledItem());
-    entries.put("sound", _createSoundItem());
-    entries.put("blocks", _createBlocksItem());
+    entries.put("tools", _createToolsItem(p));
+    entries.put("maxsize", _createMaxSizeItem(p));
+    entries.put("enabled", _createEnabledItem(p));
+    entries.put("sound", _createSoundItem(p));
+    entries.put("blocks", _createBlocksItem(p));
 
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("tools", 0);
@@ -73,7 +73,7 @@ public class VeinMinerSettingsGUI {
     customSlots.put("blocks", 8);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        Theme.titlePrefix() + "Vein Miner Settings",
+        Theme.titlePrefix() + Main.tr(p, "gui-vein-miner-settings-title"),
         entries, 2, customSlots, parent,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -122,21 +122,20 @@ public class VeinMinerSettingsGUI {
     gui.open(p);
   }
 
-  private ItemStack _createEnabledItem() {
+  private ItemStack _createEnabledItem(Player viewer) {
     boolean state = _settingsManager.getVeinMinerEnabled();
     ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-      meta.displayName(Component.text(Theme.titlePrefix() + "Vein Miner"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-vein-miner-enabled-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Toggle global vein miner state.",
+          Theme.textPrefix() + Main.tr(viewer, "gui-vein-miner-enabled-description"),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-state", "state", _stateText(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -144,20 +143,21 @@ public class VeinMinerSettingsGUI {
     return item;
   }
 
-  private ItemStack _createMaxSizeItem() {
+  private ItemStack _createMaxSizeItem(Player viewer) {
     int veinSize = _settingsManager.getVeinMinerMaxVeinSize();
     ItemStack item = new ItemStack(Material.PAPER);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Maximum Vein Size"));
+          Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-vein-miner-max-size-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Set the maximum size of veins that can be mined.",
+          Theme.textPrefix() + Main.tr(viewer, "gui-vein-miner-max-size-description"),
           "",
-          Theme.textPrefix() + "Current: " + Theme.highlight() + veinSize,
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-current-value",
+              "value", Theme.highlight() + Integer.toString(veinSize)),
           "",
-          Theme.textPrefix() + "Left-Click: Set value")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-set-value"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -165,20 +165,19 @@ public class VeinMinerSettingsGUI {
     return item;
   }
 
-  private ItemStack _createSoundItem() {
+  private ItemStack _createSoundItem(Player viewer) {
     boolean state = _settingsManager.getVeinMinerSound();
     ItemStack item = new ItemStack(Material.NOTE_BLOCK);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(Theme.titlePrefix() + "Sound"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-vein-miner-sound-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Toggle sound effects for vein miner.",
+          Theme.textPrefix() + Main.tr(viewer, "gui-vein-miner-sound-description"),
           "",
-          Theme.textPrefix() + "State: "
-              + (state ? Theme.highlight() + "ENABLED" : Theme.error() + "DISABLED"),
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-state", "state", _stateText(viewer, state)),
           "",
-          Theme.textPrefix() + "Left-Click: Toggle")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -186,17 +185,17 @@ public class VeinMinerSettingsGUI {
     return item;
   }
 
-  private ItemStack _createToolsItem() {
+  private ItemStack _createToolsItem(Player viewer) {
     ItemStack item = new ItemStack(Material.IRON_PICKAXE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-      meta.displayName(Component.text(Theme.titlePrefix() + "Allowed Tools"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-vein-miner-tools-item-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Open menu to manage allowed tools.",
+          Theme.textPrefix() + Main.tr(viewer, "gui-vein-miner-tools-description"),
           "",
-          Theme.textPrefix() + "Left-Click: Open")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-open"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -204,17 +203,17 @@ public class VeinMinerSettingsGUI {
     return item;
   }
 
-  private ItemStack _createBlocksItem() {
+  private ItemStack _createBlocksItem(Player viewer) {
     ItemStack item = new ItemStack(Material.COAL_ORE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + "Allowed Blocks"));
+          Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-vein-miner-blocks-item-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + "Open menu to manage allowed blocks.",
+          Theme.textPrefix() + Main.tr(viewer, "gui-vein-miner-blocks-description"),
           "",
-          Theme.textPrefix() + "Left-Click: Open")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-open"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -230,16 +229,17 @@ public class VeinMinerSettingsGUI {
     int size = _settingsManager.getVeinMinerMaxVeinSize();
 
     DialogInput inputSize = CustomDialog.createNumberInput("size",
-        Theme.textPrefix() + "Maximum Vein Miner Size", 1,
+        Theme.textPrefix() + Main.tr(p, "gui-vein-miner-max-size-dialog-input"), 1,
         1024, 1, (float) size);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Set Maximum Vein Miner Size",
-        "Set the maximum size of veins that can be mined.",
+        Main.tr(p, "gui-vein-miner-max-size-dialog-title"),
+        Main.tr(p, "gui-vein-miner-max-size-dialog-description"),
         null,
         List.of(inputSize),
         (view, audience) -> _setVeinMinerMaxSizeDialogCB(view, audience, parentMenu, backAction),
-        null);
+        null,
+        Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -255,9 +255,15 @@ public class VeinMinerSettingsGUI {
 
     _settingsManager.setVeinMinerMaxVeinSize(veinSize);
 
-    p.sendMessage(Main.getPrefix() + "Maximum vein miner size set to: " + Theme.highlight() + veinSize);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-vein-miner-max-size-changed",
+        "size", Theme.highlight() + Integer.toString(veinSize)));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);
+  }
+
+  private String _stateText(Player viewer, boolean state) {
+    return (state ? Theme.highlight() : Theme.error())
+        + Main.tr(viewer, state ? "common-state-enabled" : "common-state-disabled");
   }
 }
