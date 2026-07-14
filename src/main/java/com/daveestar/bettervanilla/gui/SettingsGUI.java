@@ -14,7 +14,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -34,8 +33,6 @@ import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.Theme;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
@@ -691,9 +688,6 @@ public class SettingsGUI {
 
     meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).toList());
     item.setItemMeta(meta);
-    item.setData(DataComponentTypes.TOOLTIP_DISPLAY,
-        TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.BUNDLE_CONTENTS));
-
     return item;
   }
 
@@ -751,7 +745,6 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.VEINMINER.getName());
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(Theme.titlePrefix() + _t(viewer, "settings-vein-miner-title")));
       meta.lore(Arrays.asList(
@@ -778,7 +771,6 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.VEINCHOPPER.getName());
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(Theme.titlePrefix() + _t(viewer, "settings-vein-chopper-title")));
       meta.lore(Arrays.asList(

@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -266,7 +265,6 @@ public class HeadsGUI {
       }
 
       meta.lore(lore.stream().map(Component::text).collect(Collectors.toList()));
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       item.setItemMeta(meta);
     }
 

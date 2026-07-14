@@ -18,6 +18,8 @@ import org.bukkit.plugin.Plugin;
 
 import com.daveestar.bettervanilla.Main;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import io.papermc.paper.dialog.Dialog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -240,7 +242,7 @@ public class CustomGUI implements Listener {
       item.setItemMeta(meta);
     }
 
-    _gui.setItem(slot, item);
+    _gui.setItem(slot, _prepareDisplayItem(item));
   }
 
   private List<Map.Entry<String, ItemStack>> _getPageEntries() {
@@ -261,7 +263,7 @@ public class CustomGUI implements Listener {
       String key = entry.getKey();
       int slot = _customSlots.getOrDefault(key, i);
 
-      _gui.setItem(slot, entry.getValue());
+      _gui.setItem(slot, _prepareDisplayItem(entry.getValue()));
       _slotKeyMap.put(slot, key);
     }
 
@@ -276,9 +278,38 @@ public class CustomGUI implements Listener {
       FooterEntry footerEntry = entry.getValue();
       int slot = footerEntry.slot();
 
-      _gui.setItem(slot, footerEntry.item().clone());
+      _gui.setItem(slot, _prepareDisplayItem(footerEntry.item()));
       _slotKeyMap.put(slot, entry.getKey());
     }
+  }
+
+  private ItemStack _prepareDisplayItem(ItemStack item) {
+    if (item == null
+        || _options.contains(Option.ALLOW_ITEM_MOVEMENT)
+        || _options.contains(Option.PRESERVE_ITEM_TOOLTIPS)) {
+      return item;
+    }
+
+    ItemStack displayItem = item.clone();
+
+    if (displayItem.getType().name().endsWith("_SMITHING_TEMPLATE")) {
+      var itemModel = displayItem.getData(DataComponentTypes.ITEM_MODEL);
+
+      displayItem = displayItem.withType(Material.PAPER);
+      displayItem.setData(
+          DataComponentTypes.ITEM_MODEL,
+          itemModel != null ? itemModel : item.getType().key());
+    }
+
+    displayItem.setData(
+        DataComponentTypes.TOOLTIP_DISPLAY,
+        TooltipDisplay.tooltipDisplay().addHiddenComponents(
+            DataComponentTypes.ATTRIBUTE_MODIFIERS,
+            DataComponentTypes.BUNDLE_CONTENTS,
+            DataComponentTypes.TRIM,
+            DataComponentTypes.PROVIDES_TRIM_MATERIAL));
+
+    return displayItem;
   }
 
   @EventHandler
@@ -650,6 +681,7 @@ public class CustomGUI implements Listener {
   public enum Option {
     DISABLE_PAGE_BUTTON,
     ALLOW_ITEM_MOVEMENT,
+    PRESERVE_ITEM_TOOLTIPS,
     ENABLE_SEARCH,
     ENABLE_SORT,
   }

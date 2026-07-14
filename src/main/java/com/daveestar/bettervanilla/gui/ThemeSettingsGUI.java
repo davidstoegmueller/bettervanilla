@@ -32,6 +32,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class ThemeSettingsGUI {
   private static final int MAX_NAME_LENGTH = 32;
+  private static final String KEY_RESET_THEME = "resetTheme";
 
   private final Main _plugin;
   private final SettingsManager _settingsManager;
@@ -48,38 +49,45 @@ public class ThemeSettingsGUI {
         "gui-theme-primary-font-color-title",
         "gui-theme-primary-font-color-description",
         _settingsManager.getPrimaryFontColor(),
-        Theme.primary()));
+        Theme.primary(),
+        Main.tr(p, "gui-theme-color-preview-sample")));
     entries.put("highlightFontColor", _createColorItem(p,
         Material.YELLOW_DYE,
         "gui-theme-highlight-font-color-title",
         "gui-theme-highlight-font-color-description",
         _settingsManager.getHighlightFontColor(),
-        Theme.highlight()));
+        Theme.highlight(),
+        Main.tr(p, "gui-theme-color-preview-sample")));
     entries.put("errorFontColor", _createColorItem(p,
         Material.RED_DYE,
         "gui-theme-error-font-color-title",
         "gui-theme-error-font-color-description",
         _settingsManager.getErrorFontColor(),
-        Theme.error()));
+        Theme.error(),
+        Main.tr(p, "gui-theme-color-preview-sample")));
     entries.put("titleSymbolColor", _createColorItem(p,
         Material.REDSTONE,
         "gui-theme-title-symbol-color-title",
         "gui-theme-title-symbol-color-description",
         _settingsManager.getTitleSymbolColor(),
-        Theme.titleSymbol()));
+        Theme.titleSymbol(),
+        ChatColor.BOLD + "»"));
     entries.put("textSymbolColor", _createColorItem(p,
         Material.GLOWSTONE_DUST,
         "gui-theme-text-symbol-color-title",
         "gui-theme-text-symbol-color-description",
         _settingsManager.getTextSymbolColor(),
-        Theme.textSymbol()));
+        Theme.textSymbol(),
+        "»"));
     entries.put("glassPaneColor", _createColorItem(p,
         Theme.glassPaneMaterial(),
         "gui-theme-glass-pane-color-title",
         "gui-theme-glass-pane-color-description",
         _settingsManager.getGlassPaneColor(),
-        Theme.glassPaneColor()));
+        Theme.glassPaneColor(),
+        Main.tr(p, "gui-theme-color-preview-sample")));
     entries.put("name", _createNameItem(p));
+    entries.put(KEY_RESET_THEME, _createResetItem(p));
 
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("primaryFontColor", 1);
@@ -89,6 +97,7 @@ public class ThemeSettingsGUI {
     customSlots.put("textSymbolColor", 13);
     customSlots.put("glassPaneColor", 16);
     customSlots.put("name", 22);
+    customSlots.put(KEY_RESET_THEME, 31);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         Theme.titlePrefix() + Main.tr(p, "gui-theme-title"),
@@ -136,6 +145,16 @@ public class ThemeSettingsGUI {
         _openNameDialog(player, parentMenu, backAction, null, _settingsManager.getThemeName());
       }
     });
+    actions.put(KEY_RESET_THEME, new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player player) {
+        _settingsManager.resetTheme();
+        _applyThemeChange();
+        player.sendMessage(Component.text(Main.getPrefix() + Main.tr(player, "gui-theme-reset-message")));
+        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+        displayGUI(player, parentMenu, backAction);
+      }
+    });
 
     gui.setClickActions(actions);
     gui.open(p);
@@ -152,7 +171,7 @@ public class ThemeSettingsGUI {
   }
 
   private ItemStack _createColorItem(Player viewer, Material material, String titleKey, String descriptionKey,
-      String configuredValue, ChatColor previewColor) {
+      String configuredValue, ChatColor previewColor, String previewSample) {
     ItemStack item = new ItemStack(material);
     ItemMeta meta = item.getItemMeta();
 
@@ -164,7 +183,7 @@ public class ThemeSettingsGUI {
           Theme.textPrefix() + Main.tr(viewer, "gui-common-current-value",
               "value", Theme.highlight() + _translatedColorName(viewer, configuredValue)),
           Theme.textPrefix() + Main.tr(viewer, "gui-theme-color-preview",
-              "sample", previewColor + Main.tr(viewer, "gui-theme-color-preview-sample")),
+              "sample", previewColor + previewSample),
           "",
           Theme.textPrefix() + Main.tr(viewer, "gui-common-action-set-value"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
@@ -188,6 +207,23 @@ public class ThemeSettingsGUI {
           "",
           Theme.textPrefix() + Main.tr(viewer, "gui-common-action-set-value"))
           .stream().filter(Objects::nonNull).map(Component::text).toList());
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createResetItem(Player viewer) {
+    ItemStack item = new ItemStack(Material.BARRIER);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-theme-reset-title")));
+      meta.lore(Arrays.asList(
+          Theme.textPrefix() + Main.tr(viewer, "gui-theme-reset-description"),
+          "",
+          Theme.textPrefix() + Main.tr(viewer, "gui-theme-reset-action"))
+          .stream().map(Component::text).toList());
       item.setItemMeta(meta);
     }
 

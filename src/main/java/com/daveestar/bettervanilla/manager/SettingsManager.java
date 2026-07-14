@@ -318,6 +318,11 @@ public class SettingsManager {
     _setThemeValue("name", value);
   }
 
+  public void resetTheme() {
+    _fileConfig.set("global.theme", null);
+    _config.save();
+  }
+
   private void _setThemeValue(String key, String value) {
     _fileConfig.set("global.theme." + key, value);
     _config.save();

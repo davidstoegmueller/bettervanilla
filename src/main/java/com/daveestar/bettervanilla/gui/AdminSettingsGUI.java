@@ -15,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -30,8 +29,6 @@ import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.Theme;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 
@@ -583,7 +580,6 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(Theme.titlePrefix() + _t("admin-right-click-harvest-title")));
       meta.lore(Arrays.asList(
@@ -891,8 +887,6 @@ public class AdminSettingsGUI {
       lore.add(Theme.textPrefix() + _t("gui-common-action-open"));
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
-      item.setData(DataComponentTypes.TOOLTIP_DISPLAY,
-          TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.BUNDLE_CONTENTS));
     }
 
     return item;
@@ -910,7 +904,6 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(Theme.titlePrefix() + _t("admin-vein-miner-settings-title")));
       List<String> lore = new ArrayList<>(Arrays.asList(
@@ -942,7 +935,6 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
           Component.text(Theme.titlePrefix() + _t("admin-vein-chopper-settings-title")));
       List<String> lore = new ArrayList<>(Arrays.asList(

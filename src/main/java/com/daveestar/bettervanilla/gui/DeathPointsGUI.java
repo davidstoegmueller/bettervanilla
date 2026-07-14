@@ -155,7 +155,8 @@ public class DeathPointsGUI {
     Map<String, ItemStack> itemPageEntries = Arrays.stream(deathPointItems)
         .collect(Collectors.toMap(item -> UUID.randomUUID().toString(), item -> item));
 
-    CustomGUI itemsGUI = new CustomGUI(_plugin, p, title, itemPageEntries, 6, null, parentMenu, null);
+    CustomGUI itemsGUI = new CustomGUI(_plugin, p, title, itemPageEntries, 6, null, parentMenu,
+        EnumSet.of(CustomGUI.Option.PRESERVE_ITEM_TOOLTIPS));
     Map<String, CustomGUI.ClickAction> itemClickAtions = new HashMap<>();
     itemsGUI.setClickActions(itemClickAtions);
 

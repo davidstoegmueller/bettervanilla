@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -128,7 +127,6 @@ public class VeinMinerSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-vein-miner-enabled-title")));
       meta.lore(Arrays.asList(
           Theme.textPrefix() + Main.tr(viewer, "gui-vein-miner-enabled-description"),
@@ -190,7 +188,6 @@ public class VeinMinerSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-vein-miner-tools-item-title")));
       meta.lore(Arrays.asList(
           Theme.textPrefix() + Main.tr(viewer, "gui-vein-miner-tools-description"),

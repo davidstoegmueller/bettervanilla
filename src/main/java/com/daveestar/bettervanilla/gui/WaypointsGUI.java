@@ -17,7 +17,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -38,6 +37,7 @@ import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.ChatColor;
 
 public class WaypointsGUI {
@@ -294,7 +294,7 @@ public class WaypointsGUI {
         Material.SPYGLASS,
         Component.text(Theme.titlePrefix() + Main.tr(p, "gui-waypoints-visibility-item-title")),
         lore,
-        meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
+        null);
   }
 
   private ItemStack _createDeleteItem(Player viewer, String waypointName) {
@@ -360,7 +360,7 @@ public class WaypointsGUI {
         Material.HOPPER,
         Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-filter-item-title")),
         lore,
-        meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
+        null);
   }
 
   private ItemStack _createWaypointItem(Player p, String worldName, String waypointId) {
@@ -423,13 +423,13 @@ public class WaypointsGUI {
   private ItemStack _createIconSelectionItem(Player viewer, Material material, String waypointName) {
     return _createItem(
         material,
-        Component.text(Theme.titlePrefix()).append(Component.translatable(material.translationKey())),
+        Component.text(Theme.titlePrefix()).append(Component.translatable(material.translationKey())
+            .color(TextColor.color(Theme.highlight().getColor().getRGB()))),
         _createLore(
             "",
             Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-set-icon",
                 "waypoint", Theme.highlight() + waypointName)),
-        meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES));
-
+        null);
   }
 
   // ------------------
