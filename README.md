@@ -1,13 +1,13 @@
 # BetterVanilla ✨ SMP All-in-One
 
-A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVanilla adds modern quality-of-life upgrades to a vanilla Paper server—no client mods or loaders required.
+A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVanilla adds modern quality-of-life upgrades to a vanilla Paper server - no client mods or loaders required.
 
 👑 Core Feature: Configure every player and server toggle through the in-game `/settings` menu and [jump straight to the full settings guide](#settings) when you need the details.
 
 [![GitHub release](https://img.shields.io/github/v/release/davidstoegmueller/bettervanilla?style=flat-round)](https://github.com/davidstoegmueller/bettervanilla/releases)
 [![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-round)](LICENSE)
 
-Tested on Paper 1.21.11 and newer.
+Tested on Paper 26.2 and newer.
 
 ## Table of Contents
 
@@ -29,14 +29,14 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 ### Player-Focused Features
 
 - 🧭 **Waypoints** - Add, share, and filter public or private waypoints with visibility cycling, GUI navigation, optional particle trails, plus auto-cancel and reach-radius controls.
-- 🎒 **Backpacks** - Carry expandable storage with configurable rows and pages.
+- 🎒 **Backpacks** - Carry expandable storage with configurable rows and pages. Right-click outside an open backpack to sort its current page with your preferred sort mode; open backpacks are saved safely when you die.
 - ⛏️ **Vein Miner & Tree Chopper** - Sneak-break to harvest entire ore veins or tree trunks instantly.
-- 💀 **Death Points & Chests** - Track every death, teleport back, and safely reclaim your belongings.
+- 💀 **Death Points & Chests** - Track every death, teleport back, and safely reclaim your belongings from a chest placed in the nearest safe air or fluid block without overwriting terrain.
 - 🧠 **Heads Explorer** - Browse decorative heads by category, search instantly, and preview icons in the GUI.
 - ✨ **Chest Sorting** - Right-click outside inventories to auto-organize loot with selectable sort modes.
 - 🔁 **Item Restock Automation** - Automatically refill empty hotbar slots with matching items using global and per-player toggles.
 - 🏷️ **Player Tags** - Set a custom name tag from the settings menu, including color selection.
-- 🧰 **Settings Menu** - Toggle personal QoL options in an in-game UI.
+- 🧰 **Settings Menu** - Toggle personal QoL options and select English or German in an in-game UI.
 - 🎨 **Colored Chat & Mentions** - Use `&` color codes and ping friends with `@name`.
 - 📬 **Private Messages** - Chat directly with `/msg` and reply quickly using `/r`.
 - 🪧 **Sign Colors** - Decorate signs with vibrant color codes.
@@ -44,7 +44,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - ⏱️ **Timer** - Global stopwatch with resume, pause, reset, and set commands.
 - 🕒 **Playtime** - View detailed play history with AFK tracking for yourself or other players.
 - 📶 **Ping** - Check personal or remote player latency.
-- 📍 **Here/Coords Broadcast** - Share your current location with `/here` (alias `/coords`).
+- 📍 **Here/Coords Broadcast** - Share your current location with `/here` (alias `/coords`); recipients can click the message to start waypoint navigation.
 - 📊 **Dynamic Tab List** - Live header/footer shows day/time, moon phase, weather, online counts, personal playtime, ping, TPS, and MSPT, while nameplates add AFK tags, death totals, and respect vanish.
 - 📍 **Action-Bar Location** - Display live XYZ coordinates in your HUD.
 - 🧭 **Bossbar Compass** - Minimal directional overlay in the boss bar.
@@ -59,7 +59,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 
 ### Admin & Server Tools
 
-- 🛠️ **Admin Settings Menu** - Configure every feature live from the GUI.
+- 🛠️ **Admin Settings Menu** - Configure every feature live from the GUI, including the default English or German server language.
 - 🗝️ **Permissions System** - Manage groups and users with hot-reload via `/permissions`.
 - 💤 **AFK Protection** - Shield idle players from damage, movement, and collisions.
 - 🧭 **Waypoint Management** - Review and edit public/private waypoints with dedicated staff tools.
@@ -74,6 +74,7 @@ Your SMP deserves more than plain vanilla. BetterVanilla keeps the familiar Mine
 - 🚧 **Maintenance Mode** - Toggle server access with custom messaging and bypass support.
 - 🧾 **Recipe Sync Toggle** - Control whether custom recipes are synced to players.
 - 🧰 **Remote Settings Access** - Admins can open player settings menus for other online players.
+- 🎨 **Custom Themes** - Customize the plugin name, font and symbol colors, and GUI footer glass panes; reset the theme at any time. Plugin GUIs also hide unnecessary vanilla item details for a cleaner view.
 
 ### Custom Crafting Recipes
 
@@ -127,7 +128,7 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 - `/sit` - Sit on any solid block; sneak to stand up.
 - `/msg <player> <message>` - Send a private message. Alias: `/message`.
 - `/r <message>` - Reply to the last private message.
-- `/here` - Broadcast your current location. Aliases: `/coords`, `/h`.
+- `/here` - Broadcast your current location; recipients can click it to begin waypoint navigation. Aliases: `/coords`, `/h`.
 - `/help` - View all available commands pulled directly from `plugin.yml`.
 
 ### Admin & Moderation
@@ -157,11 +158,13 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 - 📍 Action-bar location HUD
 - 🧭 Bossbar compass overlay
 - 🏷️ Player tag (name tag color + text)
+- 🌐 UI language (English or German)
 - ⏲️ Action-bar timer overlay toggle
 - ✨ Navigation particles
 - 🧭 Navigation auto-cancel
 - 📏 Navigation reach radius
 - 🧹 Chest sorting toggle
+- 🎒 Backpack sorting toggle and sort mode
 - 🧺 Inventory sort mode
 - 👁️ Waypoint visibility filter
 - 🔁 Item restock automation toggle
@@ -178,6 +181,8 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 - 🌧️ Sleeping rain skip
 - 🛌 Players sleeping percentage gamerule
 - 📣 Server MOTD editor
+- 🌐 Default server language (English or German)
+- 🎨 Theme colors, footer glass panes, and plugin branding
 - 🧭 Locator bar gamerule toggle
 - 💤 AFK protection toggle and AFK timeout
 - 🏷️ Player tags global toggle
