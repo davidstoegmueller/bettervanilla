@@ -2,6 +2,17 @@
 
 # Changelog
 
+## [1.14.0] - 14.07.2026
+
+- 📦 **Minecraft Version 26.2** - Upgraded the plugin to minecraft version 26.2
+- 🌐 **English & German Localization** - Added English and German translations, with configurable server and player language settings.
+- 🎒 **Backpack Sorting** - Added per-player backpack sorting with configurable sort modes.
+- 🎨 **Custom Themes** - Added admin-configurable Minecraft font colors, symbol colors, footer glass panes, plugin branding, and a reset option.
+- 📍 **Clickable Here Messages** - Made shared `/here` coordinates clickable so players can start waypoint navigation directly.
+- ⚰️ **Deathchest Placement** - Improved deathchest spawning to find the nearest available air or fluid block without overwriting terrain.
+- 🖼️ **GUI Item Displays** - Hid unnecessary vanilla item details in plugin GUIs for cleaner menus.
+- 🛠️ **MOTD Settings** - Fixed loading existing MOTDs into the admin dialog correctly.
+
 ## [1.13.0] - 08.07.2026
 
 - 📦 **Minecraft Version 26.1.2** - Upgraded the plugin to minecraft version 26.1.2

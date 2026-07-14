@@ -14,27 +14,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class MaterialToggleGUI implements Listener {
   private final Main _plugin;
-  private final String _title;
+  private final String _titleKey;
   private final List<Material> _materials;
   private final Supplier<List<String>> _getList;
   private final Consumer<List<String>> _setList;
 
-  public MaterialToggleGUI(String title, List<Material> materials,
+  public MaterialToggleGUI(String titleKey, List<Material> materials,
       Supplier<List<String>> getter, Consumer<List<String>> setter) {
     _plugin = Main.getInstance();
-    _title = title;
+    _titleKey = titleKey;
     _materials = materials;
     _getList = getter;
     _setList = setter;
@@ -51,13 +50,13 @@ public class MaterialToggleGUI implements Listener {
       ItemMeta meta = item.getItemMeta();
 
       if (meta != null) {
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + mat.name()));
+        meta.displayName(Component.text(Theme.titlePrefix()).append(Component.translatable(mat.translationKey())));
         meta.lore(Arrays.asList(
             "",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-                + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+            Theme.textPrefix() + Main.tr(p, "gui-common-state",
+                "state", (state ? Theme.highlight() : Theme.error())
+                    + Main.tr(p, state ? "common-state-enabled" : "common-state-disabled")),
+            Theme.textPrefix() + Main.tr(p, "gui-common-action-toggle"))
             .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
         item.setItemMeta(meta);
       }
@@ -67,7 +66,7 @@ public class MaterialToggleGUI implements Listener {
 
     int rows = Math.max(1, (int) Math.ceil(entries.size() / 9.0)) + 1;
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» " + _title,
+        Theme.titlePrefix() + Main.tr(p, _titleKey),
         entries, rows, null, parent,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 

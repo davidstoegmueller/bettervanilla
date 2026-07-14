@@ -12,10 +12,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.CraftingRecipe;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class InvisibleLightCrafting extends CustomCraftingRecipe {
 
@@ -30,10 +31,11 @@ public class InvisibleLightCrafting extends CustomCraftingRecipe {
 
     if (meta != null) {
       CraftingRecipe recipe = getRecipe();
-      meta.displayName(Component.text(ChatColor.YELLOW + recipe.getName()));
+      meta.displayName(Component.text(Theme.highlight() + recipe.getName()));
       meta.lore(Arrays.asList(
-          ChatColor.GRAY + recipe.getDescription(),
-          ChatColor.DARK_GRAY + "Crafted with BetterVanilla.")
+          Theme.primary() + recipe.getDescription(),
+          Theme.primary() + Main.tr(null, "crafting-item-lore-crafted-with",
+              "plugin", Theme.highlight() + Theme.name() + Theme.primary()))
           .stream()
           .filter(Objects::nonNull)
           .map(Component::text)

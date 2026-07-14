@@ -14,6 +14,7 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.NavigationData;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -75,7 +76,7 @@ public class PlayerMove implements Listener {
       // handle world change and cancel navigation if different worlds
       if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
         _navigationManager.stopNavigation(p);
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Your navigation has been canceled due to world change!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "navigation-canceled-world-change"));
         return;
       }
 
@@ -86,9 +87,8 @@ public class PlayerMove implements Listener {
         if (playerLocation.distance(targetLocation) <= radius) {
           _navigationManager.stopNavigation(p);
 
-          p.sendMessage(Main.getPrefix() + "You've reached your destination. You're within " + ChatColor.YELLOW
-              + radius + ChatColor.GRAY + " blocks of " + ChatColor.YELLOW
-              + navigationData.getName() + ChatColor.GRAY + ".");
+          p.sendMessage(Main.getPrefix() + Main.tr(p, "navigation-destination-reached",
+              "radius", radius, "destination", navigationData.getName()));
           return;
         }
       }
@@ -100,7 +100,7 @@ public class PlayerMove implements Listener {
 
         if (targetPlayer == null || !targetPlayer.isOnline()) {
           _navigationManager.stopNavigation(p);
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "Navigation canceled as the target player is offline!");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "navigation-canceled-player-offline"));
           return;
         }
 
@@ -118,13 +118,13 @@ public class PlayerMove implements Listener {
     if (_settingsManager.getPlayerToggleLocation(p.getUniqueId())) {
       Biome playerBiome = p.getWorld().getBiome(p.getLocation().toBlockLocation());
 
-      String locationText = ChatColor.YELLOW + "X: "
-          + ChatColor.GRAY
-          + p.getLocation().toBlockLocation().getBlockX() + ChatColor.YELLOW
-          + " Y: " + ChatColor.GRAY + p.getLocation().toBlockLocation().getBlockY() + ChatColor.YELLOW +
-          " Z: " + ChatColor.GRAY
-          + p.getLocation().toBlockLocation().getBlockZ() + ChatColor.RED + ChatColor.BOLD + " » "
-          + ChatColor.GRAY + playerBiome.getKey();
+      Location location = p.getLocation().toBlockLocation();
+      String locationText = Theme.highlight() + Main.tr(p, "location-actionbar-format",
+          "x", Theme.primary() + String.valueOf(location.getBlockX()) + Theme.highlight(),
+          "y", Theme.primary() + String.valueOf(location.getBlockY()) + Theme.highlight(),
+          "z", Theme.primary() + String.valueOf(location.getBlockZ()) + Theme.highlight(),
+          "separator", Theme.textSymbol() + "" + ChatColor.BOLD + " » " + Theme.primary(),
+          "biome", playerBiome.getKey());
 
       _actionBar.sendActionBar(p, locationText);
     }

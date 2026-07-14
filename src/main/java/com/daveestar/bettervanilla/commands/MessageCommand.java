@@ -15,8 +15,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.MessageManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class MessageCommand implements TabExecutor {
   private final Main _plugin;
@@ -37,26 +36,24 @@ public class MessageCommand implements TabExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.MSG.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.MSG));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.MSG));
       return true;
     }
 
     if (args.length >= 2) {
       Player target = Bukkit.getPlayer(args[0]);
 
-      if (!target.getUniqueId().equals(p.getUniqueId())) {
-        if (target != null && target.isOnline()) {
+      if (target == null || !target.isOnline()) {
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-player-offline",
+            "player", Theme.highlight() + args[0] + Theme.error()));
+      } else if (!target.getUniqueId().equals(p.getUniqueId())) {
           String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
           _messageManager.sendPrivateMessage(p, target, message);
-        } else {
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-              + ChatColor.RED + " is currently not online!");
-        }
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot send a message to yourself!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-message-error-self"));
       }
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/msg <player> <message>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-message-usage"));
     }
 
     return true;

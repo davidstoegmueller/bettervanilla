@@ -18,10 +18,9 @@ import org.bukkit.inventory.ItemStack;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.ItemStackUtils;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.block.Block;
 
 public class DeathPointsManager {
@@ -194,9 +193,10 @@ public class DeathPointsManager {
 
   private void _createDeathHologram(String playerName, String deathPointDateTime, Location loc) {
     Location base = loc.clone().add(0.5, 0.35, 0.5);
-    _spawnHologramLine(base.clone().add(0, 0.5, 0), ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Chest");
-    _spawnHologramLine(base.clone().add(0, 0.25, 0), ChatColor.YELLOW + playerName);
-    _spawnHologramLine(base, ChatColor.GRAY + deathPointDateTime);
+    _spawnHologramLine(base.clone().add(0, 0.5, 0),
+        Theme.titlePrefix() + Main.tr(null, "death-chest-hologram-title"));
+    _spawnHologramLine(base.clone().add(0, 0.25, 0), Theme.highlight() + playerName);
+    _spawnHologramLine(base, Theme.primary() + deathPointDateTime);
   }
 
   // -----------------------
@@ -239,7 +239,7 @@ public class DeathPointsManager {
   }
 
   private String _formatTimestamp(long timestamp) {
-    SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy » HH:mm:ss");
+    SimpleDateFormat sdf = new java.text.SimpleDateFormat(Main.tr(null, "death-point-date-format"));
     return timestamp != 0 ? sdf.format(new Date(timestamp)) : "-";
   }
 

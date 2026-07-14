@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class InvseeCommand implements CommandExecutor {
   @Override
@@ -22,7 +21,7 @@ public class InvseeCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.INVSEE.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.INVSEE));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.INVSEE));
       return true;
     }
 
@@ -32,11 +31,11 @@ public class InvseeCommand implements CommandExecutor {
       if (targetPlayer != null) {
         p.openInventory(targetPlayer.getInventory());
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-            + ChatColor.RED + " is currently not online!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-player-offline",
+            "player", Theme.highlight() + args[0] + Theme.error()));
       }
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/invsee <name>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-invsee-usage"));
     }
 
     return true;

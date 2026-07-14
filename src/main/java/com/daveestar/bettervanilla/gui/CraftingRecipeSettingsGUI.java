@@ -21,6 +21,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.CraftingRecipe;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -62,7 +63,8 @@ public class CraftingRecipeSettingsGUI {
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     if (_recipeConfigs.isEmpty()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "No crafting recipes are currently registered.");
+      p.sendMessage(Main.getPrefix() + Theme.error()
+          + Main.tr(p, "gui-crafting-recipes-error-none-registered"));
       return;
     }
 
@@ -72,7 +74,7 @@ public class CraftingRecipeSettingsGUI {
     int index = 0;
     for (RecipeConfig config : _recipeConfigs.values()) {
       String key = config.recipe().getKey();
-      entries.put(key, _createRecipeItem(config));
+      entries.put(key, _createRecipeItem(p, config));
 
       if (index < _DEFAULT_SLOTS.length) {
         customSlots.put(key, _DEFAULT_SLOTS[index]);
@@ -82,7 +84,7 @@ public class CraftingRecipeSettingsGUI {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Crafting Recipes",
+        Theme.titlePrefix() + Main.tr(p, "gui-crafting-recipes-title"),
         entries, 2, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -111,25 +113,26 @@ public class CraftingRecipeSettingsGUI {
     gui.open(p);
   }
 
-  private ItemStack _createRecipeItem(RecipeConfig config) {
+  private ItemStack _createRecipeItem(Player viewer, RecipeConfig config) {
     boolean enabled = _settingsManager.getCraftingRecipeEnabled(config.recipe().getKey());
     ItemStack icon = new ItemStack(config.recipeIcon());
     ItemMeta meta = icon.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + config.recipe().getName()));
+          Component.text(Theme.titlePrefix() + getRecipeName(viewer, config.recipe())));
 
       List<String> loreLines = new ArrayList<>();
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage this crafting recipe.");
+      loreLines.add(Theme.textPrefix() + Main.tr(viewer, "gui-crafting-recipes-item-description"));
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + config.recipe().getDescription());
+      loreLines.add(Theme.textPrefix() + getRecipeDescription(viewer, config.recipe()));
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+      loreLines.add(Theme.textPrefix() + Main.tr(viewer, "gui-common-state",
+          "state", (enabled ? Theme.highlight() : Theme.error())
+              + Main.tr(viewer, enabled ? "common-state-enabled" : "common-state-disabled")));
       loreLines.add("");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle");
-      loreLines.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Edit Recipe");
+      loreLines.add(Theme.textPrefix() + Main.tr(viewer, "gui-common-action-toggle"));
+      loreLines.add(Theme.textPrefix() + Main.tr(viewer, "gui-crafting-recipes-action-edit"));
 
       meta.lore(loreLines.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       icon.setItemMeta(meta);
@@ -143,16 +146,23 @@ public class CraftingRecipeSettingsGUI {
     _settingsManager.setCraftingRecipeEnabled(config.recipe().getKey(), newState);
     config.applyRecipeAction().run();
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix()
-        + ChatColor.YELLOW + config.recipe().getName()
-        + ChatColor.GRAY + " recipe is now "
-        + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-crafting-recipes-state-changed",
+        "recipe", Theme.highlight() + getRecipeName(p, config.recipe()) + Theme.primary(),
+        "state", Theme.highlight() + "" + ChatColor.BOLD
+            + Main.tr(p, newState ? "common-state-enabled" : "common-state-disabled")));
     p.playSound(p, Sound.UI_BUTTON_CLICK, 0.5F, 1);
   }
 
   private void _displayCraftingEditorGUI(Player p, RecipeConfig config, Consumer<Player> backAction) {
     _craftingRecipeEditorGUI.displayGUI(p, config, backAction);
+  }
+
+  static String getRecipeName(Player viewer, CraftingRecipe recipe) {
+    return recipe.getName(viewer);
+  }
+
+  static String getRecipeDescription(Player viewer, CraftingRecipe recipe) {
+    return recipe.getDescription(viewer);
   }
 
   public static record RecipeConfig(

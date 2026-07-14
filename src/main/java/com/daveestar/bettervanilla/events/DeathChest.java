@@ -1,6 +1,9 @@
 package com.daveestar.bettervanilla.events;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -30,11 +33,21 @@ import com.daveestar.bettervanilla.manager.DeathPointsManager;
 import com.daveestar.bettervanilla.manager.DeathPointsManager.DeathPointReference;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class DeathChest implements Listener {
+
+  private static final int DEATH_CHEST_SEARCH_RADIUS = 16;
+  private static final int[][] SEARCH_DIRECTIONS = {
+      { 0, 1, 0 },
+      { 1, 0, 0 },
+      { -1, 0, 0 },
+      { 0, 0, 1 },
+      { 0, 0, -1 },
+      { 0, -1, 0 }
+  };
 
   private final HashMap<Player, Location> openedDeathChests = new HashMap<>();
   private final HashMap<Inventory, String> deathChestInventories = new HashMap<>();
@@ -67,22 +80,19 @@ public class DeathChest implements Listener {
     }
 
     boolean deathChestEnabled = _settingsManager.getDeathChestEnabled();
+    boolean deathChestSpawned = false;
 
     if (deathChestEnabled) {
-      Location candidate = deathChestLocation.clone();
-      int maxY = candidate.getWorld().getMaxHeight() - 1;
-
-      while (candidate.getBlockY() < maxY
-          && _deathPointsManager.getDeathPointAtLocation(candidate.toBlockLocation()) != null) {
-        candidate.add(0, 1, 0);
+      Location validatedLocation = _findNearestDeathChestLocation(deathChestLocation);
+      if (validatedLocation != null) {
+        deathChestLocation = validatedLocation;
+        deathChestSpawned = true;
       }
-
-      deathChestLocation = candidate;
     }
 
-    _deathPointsManager.addDeathPoint(p, deathChestLocation, deathChestEnabled);
+    _deathPointsManager.addDeathPoint(p, deathChestLocation, deathChestSpawned);
 
-    if (deathChestEnabled) {
+    if (deathChestSpawned) {
       e.getDrops().clear();
     }
 
@@ -90,32 +100,100 @@ public class DeathChest implements Listener {
     int chestY = deathChestLocation.getBlockY();
     int chestZ = deathChestLocation.getBlockZ();
 
-    p.sendMessage(Main.getPrefix() + "You died at: "
-        + ChatColor.YELLOW + "X: " + ChatColor.GRAY + chestX
-        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + chestY
-        + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + chestZ);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-location",
+        "x", chestX, "y", chestY, "z", chestZ));
 
-    if (deathChestEnabled) {
-      p.sendMessage(Main.getPrefix() + "All your items are stored in the death chest at this location.");
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "ATTENTION!" + ChatColor.GRAY
-          + " As soon as you close or break the chest all items will be dropped!");
+    if (deathChestSpawned) {
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-chest-items-stored"));
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-drop-warning"));
+    } else if (deathChestEnabled) {
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-no-safe-location"));
     } else {
-      p.sendMessage(Main.getPrefix() + "Your items were dropped on the ground.");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-items-dropped"));
     }
 
     if (fellIntoVoid) {
-      if (deathChestEnabled) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
-            + " You fell into the void! Your deathchest will spawn at "
-            + ChatColor.YELLOW + "Y: " + ChatColor.GRAY + "100");
+      if (deathChestSpawned) {
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-void-chest-relocated",
+            "y", chestY));
+      } else if (!deathChestEnabled) {
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-void-chest-disabled"));
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Hint:" + ChatColor.GRAY
-            + " You fell into the void while death chests are disabled. Items lost in the void cannot be recovered.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-void-items-lost"));
       }
     }
 
-    p.sendMessage(Main.getPrefix() + "If you want to list your deathpoints please use: "
-        + ChatColor.YELLOW + "/deathpoints");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "event-deathpoints-list-hint",
+        "command", Theme.highlight() + "/deathpoints" + Theme.primary()));
+  }
+
+  private Location _findNearestDeathChestLocation(Location origin) {
+    PriorityQueue<SearchOffset> candidates = new PriorityQueue<>();
+    Set<SearchOffset> visited = new HashSet<>();
+    SearchOffset start = new SearchOffset(0, 0, 0);
+
+    candidates.add(start);
+    visited.add(start);
+
+    while (!candidates.isEmpty()) {
+      SearchOffset offset = candidates.poll();
+      Location candidate = origin.clone().add(offset.x(), offset.y(), offset.z());
+
+      if (_isValidDeathChestLocation(candidate)) {
+        return candidate;
+      }
+
+      for (int[] direction : SEARCH_DIRECTIONS) {
+        SearchOffset next = new SearchOffset(
+            offset.x() + direction[0],
+            offset.y() + direction[1],
+            offset.z() + direction[2]);
+
+        if (next.isWithin(DEATH_CHEST_SEARCH_RADIUS) && visited.add(next)) {
+          candidates.add(next);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private boolean _isValidDeathChestLocation(Location location) {
+    int blockY = location.getBlockY();
+    if (blockY < location.getWorld().getMinHeight() || blockY >= location.getWorld().getMaxHeight()) {
+      return false;
+    }
+
+    Material material = location.getBlock().getType();
+    boolean replaceable = material.isAir() || location.getBlock().isLiquid();
+    return replaceable
+        && _deathPointsManager.getDeathPointAtLocation(location.toBlockLocation()) == null;
+  }
+
+  private record SearchOffset(int x, int y, int z) implements Comparable<SearchOffset> {
+    private int distanceSquared() {
+      return x * x + y * y + z * z;
+    }
+
+    private boolean isWithin(int radius) {
+      return Math.abs(x) <= radius && Math.abs(y) <= radius && Math.abs(z) <= radius;
+    }
+
+    @Override
+    public int compareTo(SearchOffset other) {
+      int distanceComparison = Integer.compare(distanceSquared(), other.distanceSquared());
+      if (distanceComparison != 0) {
+        return distanceComparison;
+      }
+
+      int yComparison = Integer.compare(other.y, y);
+      if (yComparison != 0) {
+        return yComparison;
+      }
+
+      int xComparison = Integer.compare(x, other.x);
+      return xComparison != 0 ? xComparison : Integer.compare(z, other.z);
+    }
   }
 
   @EventHandler
@@ -131,9 +209,13 @@ public class DeathChest implements Listener {
           e.setCancelled(true);
 
           String playerName = Bukkit.getOfflinePlayer(UUID.fromString(ref.ownerUUID)).getName();
+          if (playerName == null) {
+            playerName = Main.tr(p, "event-death-chest-owner-unknown");
+          }
           ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
           Inventory inv = Bukkit.createInventory(null, 45,
-              Component.text(ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Chest: " + playerName));
+              Component.text(Theme.titlePrefix() + Main.tr(p, "event-death-chest-inventory-title",
+                  "player", playerName)));
 
           inv.setContents(items);
           p.openInventory(inv);
@@ -155,7 +237,7 @@ public class DeathChest implements Listener {
 
     _deathPointsManager.removeDeathPoint(ownerUUID, pointUUID);
 
-    p.sendMessage(Main.getPrefix() + "You've claimed your deathchest and the deathpoint has been removed.");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-chest-claimed"));
 
   }
 
@@ -212,7 +294,7 @@ public class DeathChest implements Listener {
           removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, items);
         } else {
           e.setCancelled(true);
-          p.sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to break this death chest.");
+          p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-break-denied"));
         }
       }
     }

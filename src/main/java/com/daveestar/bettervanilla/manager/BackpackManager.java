@@ -13,16 +13,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.enums.InventorySortMode;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.InventorySortUtils;
 import com.daveestar.bettervanilla.utils.ItemStackUtils;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class BackpackManager implements Listener {
   private final Main _plugin;
@@ -47,14 +49,13 @@ public class BackpackManager implements Listener {
 
   public void openBackpack(Player p) {
     if (!_settingsManager.getBackpackEnabled()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Backpacks are disabled.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "backpack-error-disabled"));
       return;
     }
 
     if (_deathPointsManager.hasActiveDeathPoints(p)) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED
-          + "You have active death points. Claim them before using your backpack again. "
-          + ChatColor.YELLOW + "/deathpoints");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "backpack-error-active-death-points",
+          "command", Theme.highlight() + "/deathpoints"));
       return;
     }
 
@@ -78,7 +79,7 @@ public class BackpackManager implements Listener {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Backpack",
+        Theme.titlePrefix() + Main.tr(p, "backpack-gui-title"),
         entries, rows, null, null,
         EnumSet.of(CustomGUI.Option.ALLOW_ITEM_MOVEMENT));
 
@@ -196,6 +197,38 @@ public class BackpackManager implements Listener {
   private int _getPageSize() {
     int rows = _settingsManager.getBackpackRows();
     return (rows + 1) * 9 - 9;
+  }
+
+  @EventHandler
+  public void onInventoryClick(InventoryClickEvent e) {
+    if (!e.isRightClick() || e.getRawSlot() != -999) {
+      return;
+    }
+
+    Player p = (Player) e.getWhoClicked();
+    CustomGUI gui = _openGUIs.get(p.getUniqueId());
+    Map<Integer, ItemStack[]> backpack = _backpacks.get(p.getUniqueId());
+
+    if (gui == null || backpack == null || !e.getInventory().equals(gui.getInventory())) {
+      return;
+    }
+
+    if (!_settingsManager.getPlayerBackpackSort(p.getUniqueId())) {
+      return;
+    }
+
+    e.setCancelled(true);
+
+    Inventory inv = gui.getInventory();
+    int pageSize = _getPageSize();
+    InventorySortMode mode = _settingsManager.getPlayerBackpackSortMode(p.getUniqueId());
+    ItemStack[] sorted = InventorySortUtils.sortStorageContents(inv.getContents(), 0, pageSize, mode);
+
+    for (int i = 0; i < pageSize; i++) {
+      inv.setItem(i, sorted[i]);
+    }
+
+    _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
   }
 
   @EventHandler

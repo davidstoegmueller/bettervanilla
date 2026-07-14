@@ -15,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,8 +24,10 @@ import com.daveestar.bettervanilla.manager.MaintenanceManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
+import com.daveestar.bettervanilla.manager.TranslationManager;
 import com.daveestar.bettervanilla.utils.CustomDialog;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
@@ -48,6 +49,9 @@ public class AdminSettingsGUI {
   private final VeinMinerSettingsGUI _veinMinerSettingsGUI;
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
   private final CraftingRecipeSettingsGUI _craftingRecipeSettingsGUI;
+  private final ThemeSettingsGUI _themeSettingsGUI;
+  private final TranslationManager _translations;
+  private Player _viewer;
 
   public AdminSettingsGUI() {
     _plugin = Main.getInstance();
@@ -61,6 +65,8 @@ public class AdminSettingsGUI {
     _veinMinerSettingsGUI = new VeinMinerSettingsGUI();
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
     _craftingRecipeSettingsGUI = new CraftingRecipeSettingsGUI();
+    _themeSettingsGUI = new ThemeSettingsGUI();
+    _translations = _plugin.getTranslationManager();
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu) {
@@ -68,6 +74,7 @@ public class AdminSettingsGUI {
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    _viewer = p;
     Map<String, ItemStack> entries = new HashMap<>();
     // top row
     entries.put("maintenance", _createMaintenanceItem());
@@ -94,6 +101,7 @@ public class AdminSettingsGUI {
     entries.put("veinminersettings", _createVeinMinerSettingsItem());
     entries.put("craftingrecipes", _createCraftingRecipesItem());
     entries.put("veinchoppersettings", _createVeinChopperSettingsItem());
+    entries.put("themesettings", _createThemeSettingsItem());
 
     // fifth row
     entries.put("recipesync", _createRecipeSyncItem());
@@ -101,6 +109,7 @@ public class AdminSettingsGUI {
     entries.put("sleepingpercentage", _createSleepingPercentageItem());
     entries.put("playertag", _createTagsItem());
     entries.put("headsexplorer", _createHeadsExplorerItem());
+    entries.put("language", _createLanguageItem(p));
 
     Map<String, Integer> customSlots = new HashMap<>();
     // top row - slots 0 to 8
@@ -124,10 +133,11 @@ public class AdminSettingsGUI {
     customSlots.put("itemrestock", 26);
 
     // fourth row - slots 27 to 35
-    customSlots.put("backpacksettings", 28);
-    customSlots.put("veinminersettings", 30);
-    customSlots.put("craftingrecipes", 32);
-    customSlots.put("veinchoppersettings", 34);
+    customSlots.put("backpacksettings", 27);
+    customSlots.put("veinminersettings", 29);
+    customSlots.put("craftingrecipes", 31);
+    customSlots.put("veinchoppersettings", 33);
+    customSlots.put("themesettings", 35);
 
     // fifth row - slots 36 to 44
     customSlots.put("headsexplorer", 36);
@@ -135,9 +145,10 @@ public class AdminSettingsGUI {
     customSlots.put("actionbartimer", 40);
     customSlots.put("sleepingpercentage", 42);
     customSlots.put("playertag", 44);
+    customSlots.put("language", 49);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Admin Settings",
+        Theme.titlePrefix() + _translations.translate(p, "admin-settings-gui-title"),
         entries, 6, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -146,6 +157,12 @@ public class AdminSettingsGUI {
     }
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
+    actions.put("language", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _openLanguageDialog(p, parentMenu, backAction);
+      }
+    });
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
@@ -328,6 +345,12 @@ public class AdminSettingsGUI {
         _veinChopperSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
+    actions.put("themesettings", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _themeSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
+      }
+    });
     actions.put("itemrestock", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
@@ -340,6 +363,48 @@ public class AdminSettingsGUI {
     gui.open(p);
   }
 
+  private ItemStack _createLanguageItem(Player viewer) {
+    String code = _settingsManager.getServerLanguage();
+    String language = com.daveestar.bettervanilla.enums.Language.fromCode(code).getDisplayName(viewer);
+    ItemStack item = new ItemStack(Material.KNOWLEDGE_BOOK);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(Component.text(Theme.titlePrefix()
+          + _translations.translate(viewer, "admin-language-item-title")));
+      meta.lore(List.of(
+          Component.text(Theme.textPrefix() + _translations.translate(viewer,
+              "admin-language-item-description")),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _translations.translate(viewer,
+              "admin-language-item-current", "language", language)),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _translations.translate(viewer,
+              "admin-language-item-action"))));
+      item.setItemMeta(meta);
+    }
+    return item;
+  }
+
+  private void _openLanguageDialog(Player viewer, CustomGUI parentMenu, Consumer<Player> backAction) {
+    DialogInput input = CustomDialog.createSelectInput("language",
+        Theme.textPrefix() + _translations.translate(viewer, "admin-language-dialog-input-label"),
+        _translations.getLanguageOptions(viewer), _settingsManager.getServerLanguage());
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        _translations.translate(viewer, "admin-language-dialog-title"),
+        _translations.translate(viewer, "admin-language-dialog-description"),
+        null, List.of(input), (view, audience) -> {
+          String code = Optional.ofNullable(view.getText("language")).orElse("en");
+          _settingsManager.setServerLanguage(code);
+          Player player = (Player) audience;
+          String name = com.daveestar.bettervanilla.enums.Language.fromCode(code).getDisplayName(player);
+          player.sendMessage(Main.getPrefix() + _translations.translate(player,
+              "admin-language-changed-message", "language", name));
+          displayGUI(player, parentMenu, backAction);
+        }, null, _translations.translate(viewer, "dialog-button-apply"),
+        _translations.translate(viewer, "dialog-button-cancel"));
+    viewer.showDialog(dialog);
+  }
+
   private ItemStack _createMaintenanceItem() {
     boolean state = _settingsManager.getMaintenanceState();
     String message = _settingsManager.getMaintenanceMessage();
@@ -347,18 +412,17 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Maintenance"));
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-maintenance-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Prevents players without permissions from joining the server.",
+          Theme.textPrefix() + _t("admin-maintenance-description"),
           "",
 
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Message: "
-              + (message != null && !message.isEmpty() ? ChatColor.YELLOW + message : ChatColor.RED + "NONE"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
+          Theme.textPrefix() + _t("admin-maintenance-message", "message",
+              message != null && !message.isEmpty() ? Theme.highlight() + message : Theme.error() + _t("common-value-none")),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set message")
+          Theme.textPrefix() + _t("gui-common-action-toggle"),
+          Theme.textPrefix() + _t("admin-maintenance-action-message"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -373,14 +437,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Block Damage"));
+          Component.text(Theme.titlePrefix() + _t("admin-creeper-block-damage-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether creepers destroy blocks when exploding.",
+          Theme.textPrefix() + _t("admin-creeper-block-damage-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -395,14 +458,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Creeper Entity Damage"));
+          Component.text(Theme.titlePrefix() + _t("admin-creeper-entity-damage-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether creepers damage non-player entities.",
+          Theme.textPrefix() + _t("admin-creeper-entity-damage-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -416,14 +478,13 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable End"));
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-end-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Control the entry into 'The End' dimension.",
+          Theme.textPrefix() + _t("admin-end-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -437,14 +498,13 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Enable Nether"));
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-nether-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Control the entry into 'The Nether' dimension.",
+          Theme.textPrefix() + _t("admin-nether-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -458,14 +518,13 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Rain"));
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-sleeping-rain-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Allows players to skip rain by sleeping.",
+          Theme.textPrefix() + _t("admin-sleeping-rain-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -480,13 +539,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sleeping Percentage"));
+          Component.text(Theme.titlePrefix() + _t("admin-sleep-percentage-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the players sleeping percentage gamerule.",
+          Theme.textPrefix() + _t("admin-sleep-percentage-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Value: " + ChatColor.YELLOW + percentage,
+          Theme.textPrefix() + _t("gui-common-value", "value", Theme.highlight().toString() + percentage),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set percentage")
+          Theme.textPrefix() + _t("admin-sleep-percentage-action"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -501,14 +560,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Crop Protection"));
+          Component.text(Theme.titlePrefix() + _t("admin-crop-protection-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Prevents crops from being trampled.",
+          Theme.textPrefix() + _t("admin-crop-protection-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -522,16 +580,14 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Right-Click Crop Harvest"));
+          Component.text(Theme.titlePrefix() + _t("admin-right-click-harvest-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Allows players to harvest crops by right-clicking them.",
+          Theme.textPrefix() + _t("admin-right-click-harvest-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -546,14 +602,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Locator Bar"));
+          Component.text(Theme.titlePrefix() + _t("admin-locator-bar-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Toggle the locator bar gamerule for all worlds.",
+          Theme.textPrefix() + _t("admin-locator-bar-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -568,14 +623,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Recipe Sync"));
+          Component.text(Theme.titlePrefix() + _t("admin-recipe-sync-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sync custom and vanilla recipes to modded clients.",
+          Theme.textPrefix() + _t("admin-recipe-sync-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -590,14 +644,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Action-Bar Timer"));
+          Component.text(Theme.titlePrefix() + _t("admin-action-bar-timer-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable the timer in the actionbar.",
+          Theme.textPrefix() + _t("admin-action-bar-timer-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -614,22 +667,22 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Heads Explorer"));
+          Component.text(Theme.titlePrefix() + _t("admin-heads-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Browse custom heads - powered by minecraft-heads.com.",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enables the /heads command.",
+          Theme.textPrefix() + _t("admin-heads-description"),
+          Theme.textPrefix() + _t("admin-heads-command-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API Key: "
-              + (hasApiKey ? ChatColor.GREEN + "SET" : ChatColor.RED + "NOT SET"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
+          Theme.textPrefix() + _t("admin-heads-api-state", "state",
+              (hasApiKey ? Theme.highlight() : Theme.error())
+                  + _t(hasApiKey ? "common-state-set" : "common-state-not-set")),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "API Key is optional - leave empty to use default limits.",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "You can add or update it at any time.",
+          Theme.textPrefix() + _t("admin-heads-api-optional"),
+          Theme.textPrefix() + _t("admin-heads-api-update-hint"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Set API Key",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Shift-Left-Click: Refresh/Reload heads data")
+          Theme.textPrefix() + _t("gui-common-action-toggle"),
+          Theme.textPrefix() + _t("admin-heads-action-api-key"),
+          Theme.textPrefix() + _t("admin-heads-action-refresh"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -644,14 +697,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Player Tag"));
+          Component.text(Theme.titlePrefix() + _t("admin-tags-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable player tags in chat and tab.",
+          Theme.textPrefix() + _t("admin-tags-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -666,15 +718,14 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Death Chest"));
+          Component.text(Theme.titlePrefix() + _t("admin-death-chest-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Controls whether death chests spawn on player death.",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "If disabled, items will drop normally.",
+          Theme.textPrefix() + _t("admin-death-chest-description"),
+          Theme.textPrefix() + _t("admin-death-chest-disabled-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -689,14 +740,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Item Restock"));
+          Component.text(Theme.titlePrefix() + _t("admin-item-restock-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Globally enable automatic hotbar restocking.",
+          Theme.textPrefix() + _t("admin-item-restock-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -710,13 +760,30 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Crafting Recipes"));
+          Component.text(Theme.titlePrefix() + _t("admin-crafting-recipes-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Configure custom crafting recipes.",
+          Theme.textPrefix() + _t("admin-crafting-recipes-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open")
+          Theme.textPrefix() + _t("gui-common-action-open"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
 
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createThemeSettingsItem() {
+    ItemStack item = new ItemStack(Material.PAINTING);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-theme-title")));
+      meta.lore(Arrays.asList(
+          Theme.textPrefix() + _t("admin-theme-description"),
+          "",
+          Theme.textPrefix() + _t("gui-common-action-open"))
+          .stream().filter(Objects::nonNull).map(Component::text).toList());
       item.setItemMeta(meta);
     }
 
@@ -730,14 +797,13 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Protection"));
+          Component.text(Theme.titlePrefix() + _t("admin-afk-protection-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Makes the player invulnerable while AFK.",
+          Theme.textPrefix() + _t("admin-afk-protection-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -751,14 +817,13 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "AFK Time"));
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-afk-time-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set the AFK timeout in minutes.",
+          Theme.textPrefix() + _t("admin-afk-time-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + minutes + ChatColor.GRAY
-              + " minutes",
+          Theme.textPrefix() + _t("admin-afk-time-current", "minutes", minutes),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value")
+          Theme.textPrefix() + _t("gui-common-action-set-value"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -773,25 +838,26 @@ public class AdminSettingsGUI {
 
     if (meta != null) {
       meta.displayName(Component.text(
-          ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Server MOTD"));
+          Theme.titlePrefix() + _t("admin-motd-title")));
 
       List<String> lore = new ArrayList<>();
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY
-          + "Set the server message of the day (MOTD) visible in the server list.");
+      lore.add(Theme.textPrefix()
+          + _t("admin-motd-description"));
       lore.add("");
 
       if (motd != null && !motd.isEmpty()) {
-        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current:");
+        lore.add(Theme.textPrefix() + _t("gui-common-current"));
         String[] lines = motd.split("\\n");
         for (String line : lines) {
-          lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', line));
+          lore.add(Theme.primary() + ChatColor.translateAlternateColorCodes('&', line));
         }
       } else {
-        lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.RED + "Not set");
+        lore.add(Theme.textPrefix() + _t("gui-common-current-value", "value",
+            Theme.error() + _t("common-state-not-set")));
       }
 
       lore.add("");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Set value");
+      lore.add(Theme.textPrefix() + _t("gui-common-action-set-value"));
 
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
@@ -804,22 +870,21 @@ public class AdminSettingsGUI {
     boolean enabled = _settingsManager.getBackpackEnabled();
     int pages = _settingsManager.getBackpackPages();
     int rows = _settingsManager.getBackpackRows();
-    ItemStack item = new ItemStack(Material.BARREL);
+    ItemStack item = new ItemStack(Material.BUNDLE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Settings"));
+          Component.text(Theme.titlePrefix() + _t("admin-backpack-settings-title")));
       List<String> lore = new ArrayList<>(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global backpack settings.",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enables the /backpack command.",
+          Theme.textPrefix() + _t("admin-backpack-settings-description"),
+          Theme.textPrefix() + _t("admin-backpack-settings-command-description"),
           ""));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Pages: " + ChatColor.YELLOW + pages);
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Rows/Page: " + ChatColor.YELLOW + rows);
+      lore.add(Theme.textPrefix() + _t("gui-common-state", "state", _state(enabled)));
+      lore.add(Theme.textPrefix() + _t("admin-backpack-settings-pages", "pages", pages));
+      lore.add(Theme.textPrefix() + _t("admin-backpack-settings-rows", "rows", rows));
       lore.add("");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      lore.add(Theme.textPrefix() + _t("gui-common-action-open"));
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -839,23 +904,18 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Miner Settings"));
+          Component.text(Theme.titlePrefix() + _t("admin-vein-miner-settings-title")));
       List<String> lore = new ArrayList<>(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein miner settings.",
+          Theme.textPrefix() + _t("admin-vein-miner-settings-description"),
           ""));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Max Size: " + ChatColor.YELLOW + maxSize);
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sound: "
-          + (sound ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tools: "
-          + ChatColor.YELLOW + allowedTools.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalTools);
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Blocks: "
-          + ChatColor.YELLOW + allowedBlocks.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalBlocks);
+      lore.add(Theme.textPrefix() + _t("gui-common-state", "state", _state(enabled)));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-max-size", "size", maxSize));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-sound", "state", _state(sound)));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-tools", "selected", allowedTools.size(), "total", totalTools));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-blocks", "selected", allowedBlocks.size(), "total", totalBlocks));
       lore.add("");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      lore.add(Theme.textPrefix() + _t("gui-common-action-open"));
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -875,23 +935,18 @@ public class AdminSettingsGUI {
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Vein Chopper Settings"));
+          Component.text(Theme.titlePrefix() + _t("admin-vein-chopper-settings-title")));
       List<String> lore = new ArrayList<>(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Manage the global vein chopper settings.",
+          Theme.textPrefix() + _t("admin-vein-chopper-settings-description"),
           ""));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-          + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Max Size: " + ChatColor.YELLOW + maxSize);
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Sound: "
-          + (sound ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Tools: "
-          + ChatColor.YELLOW + allowedTools.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalTools);
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Blocks: "
-          + ChatColor.YELLOW + allowedBlocks.size() + ChatColor.GRAY + "/" + ChatColor.YELLOW + totalBlocks);
+      lore.add(Theme.textPrefix() + _t("gui-common-state", "state", _state(enabled)));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-max-size", "size", maxSize));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-sound", "state", _state(sound)));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-tools", "selected", allowedTools.size(), "total", totalTools));
+      lore.add(Theme.textPrefix() + _t("admin-vein-settings-blocks", "selected", allowedBlocks.size(), "total", totalBlocks));
       lore.add("");
-      lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Open");
+      lore.add(Theme.textPrefix() + _t("gui-common-action-open"));
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -910,23 +965,23 @@ public class AdminSettingsGUI {
     String motdLine2 = (motdLines != null && motdLines.length > 1 && motdLines[1] != null) ? motdLines[1] : "";
 
     DialogInput inputMotdLine1 = DialogInput
-        .text("line1", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "MOTD Line 1"))
+        .text("line1", Component.text(Theme.textPrefix() + Main.tr(p, "admin-motd-dialog-line-one")))
         .initial(motdLine1)
         .maxLength(Integer.MAX_VALUE)
         .build();
     DialogInput inputMotdLine2 = DialogInput
-        .text("line2", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "MOTD Line 2"))
+        .text("line2", Component.text(Theme.textPrefix() + Main.tr(p, "admin-motd-dialog-line-two")))
         .initial(motdLine2)
         .maxLength(Integer.MAX_VALUE)
         .build();
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Server MOTD",
-        "Set the server message of the day (MOTD) visible in the server list.",
+        Main.tr(p, "admin-motd-dialog-title"),
+        Main.tr(p, "admin-motd-dialog-description"),
         null,
         List.of(inputMotdLine1, inputMotdLine2),
         (view, audience) -> _setServerMOTDDialogCB(view, audience, parentMenu, backAction),
-        null);
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -935,18 +990,18 @@ public class AdminSettingsGUI {
     String maintenanceMessage = _settingsManager.getMaintenanceMessage();
 
     DialogInput inputMessage = DialogInput
-        .text("message", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Maintenance Message"))
+        .text("message", Component.text(Theme.textPrefix() + Main.tr(p, "admin-maintenance-dialog-input")))
         .initial(maintenanceMessage != null ? maintenanceMessage : "")
         .maxLength(Integer.MAX_VALUE)
         .build();
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Maintenance Message",
-        "Set the maintenance message displayed to players when they are kicked.",
+        Main.tr(p, "admin-maintenance-dialog-title"),
+        Main.tr(p, "admin-maintenance-dialog-description"),
         null,
         List.of(inputMessage),
         (view, audience) -> _setMaintenanceMessageDialogCB(view, audience, parentMenu, backAction),
-        null);
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -955,15 +1010,15 @@ public class AdminSettingsGUI {
     int afkTime = _settingsManager.getAFKTime();
 
     DialogInput inputMinutes = CustomDialog.createNumberInput("minutes",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK Time (minutes)", 1, 300, 1, (float) afkTime);
+        Theme.textPrefix() + Main.tr(p, "admin-afk-time-dialog-input"), 1, 300, 1, (float) afkTime);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "AFK Time",
-        "Set the AFK timeout in minutes.",
+        Main.tr(p, "admin-afk-time-dialog-title"),
+        Main.tr(p, "admin-afk-time-dialog-description"),
         null,
         List.of(inputMinutes),
         (view, audience) -> _setAFKTimeDialogCB(view, audience, parentMenu, backAction),
-        null);
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -972,15 +1027,15 @@ public class AdminSettingsGUI {
     int percentage = _settingsManager.getPlayersSleepingPercentage();
 
     DialogInput inputPercentage = CustomDialog.createNumberInput("percentage",
-        ChatColor.YELLOW + "» " + ChatColor.GRAY + "Players Sleeping Percentage", 0, 100, 1, (float) percentage);
+        Theme.textPrefix() + Main.tr(p, "admin-sleep-percentage-dialog-input"), 0, 100, 1, (float) percentage);
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Players Sleeping Percentage",
-        "Set the percentage of players required to sleep to skip the night.",
+        Main.tr(p, "admin-sleep-percentage-dialog-title"),
+        Main.tr(p, "admin-sleep-percentage-dialog-description"),
         null,
         List.of(inputPercentage),
         (view, audience) -> _setSleepingPercentageDialogCB(view, audience, parentMenu, backAction),
-        null);
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -989,18 +1044,18 @@ public class AdminSettingsGUI {
     String apiKey = _settingsManager.getHeadsExplorerApiKey();
 
     DialogInput inputApiKey = DialogInput
-        .text("apikey", Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Heads Explorer API Key"))
+        .text("apikey", Component.text(Theme.textPrefix() + Main.tr(p, "admin-heads-api-dialog-input")))
         .initial(apiKey != null ? apiKey : "")
         .maxLength(Integer.MAX_VALUE)
         .build();
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Heads Explorer API Key",
-        "Optionally provide an API key for minecraft-heads.com (improves access/limits).",
+        Main.tr(p, "admin-heads-api-dialog-title"),
+        Main.tr(p, "admin-heads-api-dialog-description"),
         null,
         List.of(inputApiKey),
         (view, audience) -> _setHeadsExplorerApiKeyDialogCB(view, audience, parentMenu, backAction),
-        null);
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -1017,9 +1072,9 @@ public class AdminSettingsGUI {
 
     _settingsManager.setServerMOTD(line1, line2);
 
-    p.sendMessage(Component.text(Main.getPrefix() + "Server MOTD set to:\n" +
-        "Line 1: " + ChatColor.translateAlternateColorCodes('&', line1) + "\n" + ChatColor.GRAY +
-        "Line 2: " + ChatColor.translateAlternateColorCodes('&', line2)));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-motd-set-message",
+        "line1", ChatColor.translateAlternateColorCodes('&', line1),
+        "line2", ChatColor.translateAlternateColorCodes('&', line2))));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);
@@ -1032,7 +1087,7 @@ public class AdminSettingsGUI {
 
     _settingsManager.setMaintenanceMessage(message);
 
-    p.sendMessage(Component.text(Main.getPrefix() + "Maintenance message set to: " + ChatColor.YELLOW + message));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-maintenance-set-message", "message", message)));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);
@@ -1045,8 +1100,7 @@ public class AdminSettingsGUI {
 
     _settingsManager.setAFKTime((int) minutes);
 
-    p.sendMessage(Component
-        .text(Main.getPrefix() + "AFK time set to: " + ChatColor.YELLOW + minutes + ChatColor.GRAY + " minutes"));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-afk-time-set-message", "minutes", minutes)));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);
@@ -1061,8 +1115,8 @@ public class AdminSettingsGUI {
     _settingsManager.setPlayersSleepingPercentage(percentage);
     _settingsManager.applyPlayersSleepingPercentageSetting();
 
-    p.sendMessage(
-        Component.text(Main.getPrefix() + "Players sleeping percentage set to: " + ChatColor.YELLOW + percentage));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-sleep-percentage-set-message",
+        "percentage", percentage)));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);
@@ -1075,7 +1129,7 @@ public class AdminSettingsGUI {
 
     _settingsManager.setHeadsExplorerApiKey(apiKey);
 
-    p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer API key updated."));
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-heads-api-updated-message")));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     _headsManager.fetchHeadsData().thenAccept(success -> {
@@ -1086,17 +1140,15 @@ public class AdminSettingsGUI {
 
         if (success) {
           _plugin.getLogger().info("Heads Explorer data refreshed for API key update by " + p.getName() + ".");
-          p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+          p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-heads-refresh-success")));
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         } else {
           _plugin.getLogger()
               .warning("Heads Explorer data refresh failed for API key update by " + p.getName() + ".");
           long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
-          String waitSuffix = remainingSeconds > 0
-              ? " Wait another " + remainingSeconds + " seconds."
-              : "";
-          p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
-              + "Heads Explorer refresh failed." + waitSuffix));
+          p.sendMessage(Component.text(Main.getPrefix() + Theme.error() + Main.tr(p,
+              remainingSeconds > 0 ? "admin-heads-refresh-failed-wait" : "admin-heads-refresh-failed",
+              "seconds", remainingSeconds)));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
         }
       });
@@ -1114,13 +1166,10 @@ public class AdminSettingsGUI {
     String message = _settingsManager.getMaintenanceMessage();
 
     _settingsManager.setMaintenanceState(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-
-    p.sendMessage(
-        Main.getPrefix() + "The maintenance mode is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-maintenance-toggle-message", newState);
 
     if (newState) {
-      p.sendMessage(Main.getPrefix() + "Message: " + ChatColor.YELLOW + message);
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "admin-maintenance-current-message", "message", message));
     }
 
     _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
@@ -1129,82 +1178,68 @@ public class AdminSettingsGUI {
   private void _toggleCreeperBlockDamage(Player p) {
     boolean newState = !_settingsManager.getCreeperBlockDamage();
     _settingsManager.setCreeperBlockDamage(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(
-        Main.getPrefix() + "Creeper block damage is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-creeper-block-damage-toggle-message", newState);
   }
 
   private void _toggleCreeperEntityDamage(Player p) {
     boolean newState = !_settingsManager.getCreeperEntityDamage();
     _settingsManager.setCreeperEntityDamage(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(
-        Main.getPrefix() + "Creeper entity damage is now: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-creeper-entity-damage-toggle-message", newState);
   }
 
   private void _toggleEnd(Player p) {
     boolean newState = !_settingsManager.getEnableEnd();
     _settingsManager.setEnableEnd(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "The End is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-end-toggle-message", newState);
   }
 
   private void _toggleNether(Player p) {
     boolean newState = !_settingsManager.getEnableNether();
     _settingsManager.setEnableNether(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "The Nether is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-nether-toggle-message", newState);
   }
 
   private void _toggleSleepingRain(Player p) {
     boolean newState = !_settingsManager.getSleepingRain();
     _settingsManager.setSleepingRain(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Sleeping Rain is now turned: " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-sleeping-rain-toggle-message", newState);
   }
 
   private void _toggleCropProtection(Player p) {
     boolean newState = !_settingsManager.getCropProtection();
     _settingsManager.setCropProtection(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Crop protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-crop-protection-toggle-message", newState);
   }
 
   private void _toggleRightClickCropHarvest(Player p) {
     boolean newState = !_settingsManager.getRightClickCropHarvest();
     _settingsManager.setRightClickCropHarvest(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(
-        Main.getPrefix() + "Right-Click crop harvest is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-right-click-harvest-toggle-message", newState);
   }
 
   private void _toggleLocatorBar(Player p) {
     boolean newState = !_settingsManager.getLocatorBarEnabled();
     _settingsManager.setLocatorBarEnabled(newState);
     _settingsManager.applyLocatorBarSetting();
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Locator bar is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-locator-bar-toggle-message", newState);
   }
 
   private void _toggleRecipeSync(Player p) {
     boolean newState = !_settingsManager.getRecipeSyncEnabled();
     _settingsManager.setRecipeSyncEnabled(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Recipe sync is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-recipe-sync-toggle-message", newState);
   }
 
   private void _toggleActionBarTimer(Player p) {
     boolean newState = !_settingsManager.getActionBarTimerEnabled();
     _settingsManager.setActionBarTimerEnabled(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Action-Bar timer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-action-bar-timer-toggle-message", newState);
   }
 
   private void _toggleTags(Player p) {
     boolean newState = !_settingsManager.getTagsEnabled();
     _settingsManager.setTagsEnabled(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Player tags are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-tags-toggle-message", newState);
 
     for (Player online : p.getServer().getOnlinePlayers()) {
       _nameTagManager.updateNameTag(online);
@@ -1215,8 +1250,7 @@ public class AdminSettingsGUI {
   private void _toggleHeadsExplorer(Player p) {
     boolean newState = !_settingsManager.getHeadsExplorerEnabled();
     _settingsManager.setHeadsExplorerEnabled(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Heads explorer is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-heads-toggle-message", newState);
 
     if (newState) {
       _headsManager.fetchHeadsData().thenAccept(success -> {
@@ -1227,16 +1261,14 @@ public class AdminSettingsGUI {
 
           if (success) {
             _plugin.getLogger().info("Heads Explorer data refreshed after enabling by " + p.getName() + ".");
-            p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+            p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-heads-refresh-success")));
             p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
           } else {
             _plugin.getLogger().warning("Heads Explorer data refresh failed after enabling by " + p.getName() + ".");
             long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
-            String waitSuffix = remainingSeconds > 0
-                ? " Wait another " + remainingSeconds + " seconds."
-                : "";
-            p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
-                + "Heads Explorer refresh failed." + waitSuffix));
+            p.sendMessage(Component.text(Main.getPrefix() + Theme.error() + Main.tr(p,
+                remainingSeconds > 0 ? "admin-heads-refresh-failed-wait" : "admin-heads-refresh-failed",
+                "seconds", remainingSeconds)));
             p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
           }
         });
@@ -1246,7 +1278,7 @@ public class AdminSettingsGUI {
 
   private void _refreshHeadsExplorerData(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     if (!_settingsManager.getHeadsExplorerEnabled()) {
-      p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED + "Heads Explorer is disabled."));
+      p.sendMessage(Component.text(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-heads-disabled")));
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
       displayGUI(p, parentMenu, backAction);
       return;
@@ -1260,16 +1292,14 @@ public class AdminSettingsGUI {
 
         if (success) {
           _plugin.getLogger().info("Heads Explorer data refreshed via manual refresh by " + p.getName() + ".");
-          p.sendMessage(Component.text(Main.getPrefix() + "Heads Explorer data refreshed."));
+          p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-heads-refresh-success")));
           p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
         } else {
           _plugin.getLogger().warning("Heads Explorer data refresh failed via manual refresh by " + p.getName() + ".");
           long remainingSeconds = _headsManager.getRemainingFetchCooldownSeconds();
-          String waitSuffix = remainingSeconds > 0
-              ? " Wait another " + remainingSeconds + " seconds."
-              : "";
-          p.sendMessage(Component.text(Main.getPrefix() + ChatColor.RED
-              + "Heads Explorer refresh failed." + waitSuffix));
+          p.sendMessage(Component.text(Main.getPrefix() + Theme.error() + Main.tr(p,
+              remainingSeconds > 0 ? "admin-heads-refresh-failed-wait" : "admin-heads-refresh-failed",
+              "seconds", remainingSeconds)));
           p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
         }
       });
@@ -1281,23 +1311,34 @@ public class AdminSettingsGUI {
   private void _toggleDeathChest(Player p) {
     boolean newState = !_settingsManager.getDeathChestEnabled();
     _settingsManager.setDeathChestEnabled(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Death chest creation is now "
-        + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-death-chest-toggle-message", newState);
   }
 
   private void _toggleAFKProtection(Player p) {
     boolean newState = !_settingsManager.getAFKProtection();
     _settingsManager.setAFKProtection(newState);
     _afkManager.applyProtectionToAFKPlayers(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "AFK protection is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-afk-protection-toggle-message", newState);
   }
 
   private void _toggleItemRestock(Player p) {
     boolean newState = !_settingsManager.getItemRestockEnabled();
     _settingsManager.setItemRestockEnabled(newState);
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Item restock is now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    _sendToggleMessage(p, "admin-item-restock-toggle-message", newState);
+  }
+
+  private String _t(String key, Object... replacements) {
+    return _translations.translate(_viewer, key, replacements);
+  }
+
+  private String _state(boolean enabled) {
+    return (enabled ? Theme.highlight() : Theme.error())
+        + _t(enabled ? "common-state-enabled" : "common-state-disabled");
+  }
+
+  private void _sendToggleMessage(Player player, String key, boolean enabled) {
+    player.sendMessage(Main.getPrefix() + Main.tr(player, key, "state",
+        Theme.highlight().toString() + ChatColor.BOLD
+            + Main.tr(player, enabled ? "common-state-enabled" : "common-state-disabled")));
   }
 }

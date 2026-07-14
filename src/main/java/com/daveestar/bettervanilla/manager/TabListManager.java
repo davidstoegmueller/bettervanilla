@@ -12,6 +12,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -81,13 +82,14 @@ public class TabListManager {
     String tagSuffix = _tagManager.getFormattedTag(p);
 
     String baseName = (isAfk
-        ? ChatColor.GRAY + "[" + ChatColor.RED + "AFK" + ChatColor.GRAY + "] "
+        ? Theme.primary() + "[" + Theme.error() + Main.tr(p, "common-status-afk-short") + Theme.primary() + "] "
         : "")
-        + ChatColor.YELLOW + p.getName()
+        + Theme.highlight() + p.getName()
         + tagSuffix;
 
     int deaths = p.getStatistic(Statistic.DEATHS);
-    return baseName + ChatColor.GRAY + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.YELLOW + deaths;
+    return baseName + Theme.primary() + Main.tr(p, "tab-list-player-deaths",
+        "deaths", Theme.highlight() + String.valueOf(deaths));
   }
 
   private void _startTask() {
@@ -108,34 +110,27 @@ public class TabListManager {
     World world = p.getWorld();
     long day = world.getFullTime() / 24000L;
     String timeStr = _formatWorldTime(world);
-    String timTextStr = _getTimeOfDayText(world);
-    String moonPhaseText = _getMoonPhaseText(world);
-    Environment env = world.getEnvironment();
-
-    String weatherStr;
-    if (env == Environment.NETHER || env == Environment.THE_END) {
-      weatherStr = "None";
-    } else if (world.isThundering()) {
-      weatherStr = "Thunder";
-    } else if (world.hasStorm()) {
-      weatherStr = p.isInRain() ? "Raining" : "Storm";
-    } else {
-      weatherStr = "Clear";
-    }
+    String timePeriod = _getTimeOfDayText(p, world);
+    String moonPhase = _getMoonPhaseText(p, world);
+    String weather = _getWeatherText(p, world);
 
     boolean isMaintenance = _settingsManager.getMaintenanceState();
 
     List<String> lines = Arrays.asList(
         "",
-        placeholder + ChatColor.YELLOW + "" + ChatColor.BOLD + "BetterVanilla SMP" + ChatColor.RESET + placeholder,
-        isMaintenance ? Main.getShortPrefix() + ChatColor.RED + "" + ChatColor.BOLD + "Maintenance-Mode: ON" : null,
+        placeholder + Theme.highlight() + "" + ChatColor.BOLD
+            + Main.tr(p, "tab-list-header-server-name", "server", Theme.name())
+            + ChatColor.RESET + placeholder,
+        isMaintenance ? Main.getShortPrefix() + Theme.error() + "" + ChatColor.BOLD
+            + Main.tr(p, "tab-list-header-maintenance-enabled") : null,
         "",
-        Main.getShortPrefix() + ChatColor.GRAY + "Day: " + ChatColor.YELLOW + day + ChatColor.GRAY + " | "
-            + ChatColor.GRAY + "Time: " + ChatColor.YELLOW + timeStr + ChatColor.GRAY + " (" + ChatColor.YELLOW
-            + timTextStr
-            + ChatColor.GRAY + ")",
-        Main.getShortPrefix() + ChatColor.GRAY + "Weather: " + ChatColor.YELLOW + weatherStr
-            + ChatColor.GRAY + " | " + ChatColor.GRAY + "Moon: " + ChatColor.YELLOW + moonPhaseText,
+        Main.getShortPrefix() + Theme.primary() + Main.tr(p, "tab-list-header-day-time",
+            "day", Theme.highlight() + String.valueOf(day) + Theme.primary(),
+            "time", Theme.highlight() + timeStr + Theme.primary(),
+            "period", Theme.highlight() + timePeriod + Theme.primary()),
+        Main.getShortPrefix() + Theme.primary() + Main.tr(p, "tab-list-header-weather-moon",
+            "weather", Theme.highlight() + weather + Theme.primary(),
+            "moon", Theme.highlight() + moonPhase),
         "");
 
     return Component.join(
@@ -153,18 +148,20 @@ public class TabListManager {
 
     List<String> lines = Arrays.asList(
         "",
-        Main.getShortPrefix() + ChatColor.GRAY + "Players: " + ChatColor.YELLOW + onlinePlayersCount + ChatColor.GRAY
-            + "/" + ChatColor.YELLOW
-            + maxPlayerCount,
-        Main.getShortPrefix() + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW
-            + _timerManager.formatTime(playTimeSeconds),
+        Main.getShortPrefix() + Theme.primary() + Main.tr(p, "tab-list-footer-player-count",
+            "online", Theme.highlight() + String.valueOf(onlinePlayersCount) + Theme.primary(),
+            "maximum", Theme.highlight() + String.valueOf(maxPlayerCount)),
+        Main.getShortPrefix() + Theme.primary() + Main.tr(p, "tab-list-footer-playtime",
+            "time", Theme.highlight() + _timerManager.formatTime(p, playTimeSeconds)),
         "",
         "",
-        Main.getShortPrefix() + ChatColor.GRAY + "Ping: " + ChatColor.YELLOW + _formatPing(p) + ChatColor.GRAY
-            + " | TPS: " + ChatColor.YELLOW + _formatTps()
-            + ChatColor.GRAY + " | MSPT: " + ChatColor.YELLOW + _formatMspt(),
+        Main.getShortPrefix() + Theme.primary() + Main.tr(p, "tab-list-footer-server-performance",
+            "ping", Theme.highlight() + _formatPing(p) + Theme.primary(),
+            "tps", Theme.highlight() + _formatTps() + Theme.primary(),
+            "mspt", Theme.highlight() + _formatMspt()),
         "",
-        ChatColor.GRAY + "Need some help? " + ChatColor.YELLOW + "/help",
+        Theme.primary() + Main.tr(p, "tab-list-footer-help",
+            "command", Theme.highlight() + "/help"),
         "");
 
     return Component.join(
@@ -179,49 +176,61 @@ public class TabListManager {
     return Component.text(buildPlayerListName(p));
   }
 
-  private String _getTimeOfDayText(World world) {
+  private String _getTimeOfDayText(Player viewer, World world) {
     long time = (world.getTime() + 6000L) % 24000L;
     int hours = (int) (time / 1000L);
 
     if (hours >= 6 && hours < 12) {
-      return "Morning";
+      return Main.tr(viewer, "time-period-morning");
     } else if (hours >= 12 && hours < 13.5) {
-      return "Midday";
+      return Main.tr(viewer, "time-period-midday");
     } else if (hours >= 13.5 && hours < 18) {
-      return "Afternoon";
+      return Main.tr(viewer, "time-period-afternoon");
     } else if (hours >= 18 && hours < 21) {
-      return "Evening";
+      return Main.tr(viewer, "time-period-evening");
     } else {
-      return "Night";
+      return Main.tr(viewer, "time-period-night");
     }
   }
 
-  private String _getMoonPhaseText(World world) {
+  private String _getWeatherText(Player viewer, World world) {
+    Environment env = world.getEnvironment();
+    if (env == Environment.NETHER || env == Environment.THE_END) {
+      return Main.tr(viewer, "weather-none");
+    } else if (world.isThundering()) {
+      return Main.tr(viewer, "weather-thunder");
+    } else if (world.hasStorm()) {
+      return Main.tr(viewer, viewer.isInRain() ? "weather-raining" : "weather-storm");
+    }
+    return Main.tr(viewer, "weather-clear");
+  }
+
+  private String _getMoonPhaseText(Player viewer, World world) {
     if (world == null) {
-      return "Unknown";
+      return Main.tr(viewer, "common-value-unknown");
     }
 
     Environment env = world.getEnvironment();
     if (env == Environment.NETHER || env == Environment.THE_END) {
-      return "None";
+      return Main.tr(viewer, "moon-phase-none");
     }
 
     long day = world.getFullTime() / 24000L;
     int phase = (int) (day % 8L);
 
     String name = switch (phase) {
-      case 0 -> "Full Moon";
-      case 1 -> "Waning Gibbous";
-      case 2 -> "Last Quarter";
-      case 3 -> "Waning Crescent";
-      case 4 -> "New Moon";
-      case 5 -> "Waxing Crescent";
-      case 6 -> "First Quarter";
-      case 7 -> "Waxing Gibbous";
-      default -> "Unknown";
+      case 0 -> Main.tr(viewer, "moon-phase-full-moon");
+      case 1 -> Main.tr(viewer, "moon-phase-waning-gibbous");
+      case 2 -> Main.tr(viewer, "moon-phase-last-quarter");
+      case 3 -> Main.tr(viewer, "moon-phase-waning-crescent");
+      case 4 -> Main.tr(viewer, "moon-phase-new-moon");
+      case 5 -> Main.tr(viewer, "moon-phase-waxing-crescent");
+      case 6 -> Main.tr(viewer, "moon-phase-first-quarter");
+      case 7 -> Main.tr(viewer, "moon-phase-waxing-gibbous");
+      default -> Main.tr(viewer, "common-value-unknown");
     };
 
-    return name + " #" + phase + "/8";
+    return Main.tr(viewer, "moon-phase-with-index", "phase", name, "index", phase);
   }
 
   private String _formatWorldTime(World world) {

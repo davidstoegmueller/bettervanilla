@@ -19,6 +19,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -37,9 +38,9 @@ public class BackpackSettingsGUI implements Listener {
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
     Map<String, ItemStack> entries = new HashMap<>();
-    entries.put("pages", _createPagesItem());
-    entries.put("enabled", _createEnabledItem());
-    entries.put("rows", _createRowsItem());
+    entries.put("pages", _createPagesItem(p));
+    entries.put("enabled", _createEnabledItem(p));
+    entries.put("rows", _createRowsItem(p));
 
     Map<String, Integer> customSlots = new HashMap<>();
     customSlots.put("pages", 2);
@@ -47,7 +48,7 @@ public class BackpackSettingsGUI implements Listener {
     customSlots.put("enabled", 4);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Backpack Settings",
+        Theme.titlePrefix() + Main.tr(p, "gui-backpack-settings-title"),
         entries, 2, customSlots, parentMenu,
         EnumSet.of(CustomGUI.Option.DISABLE_PAGE_BUTTON));
 
@@ -103,23 +104,25 @@ public class BackpackSettingsGUI implements Listener {
     gui.open(p);
   }
 
-  private ItemStack _createPagesItem() {
+  private ItemStack _createPagesItem(Player viewer) {
     int pages = _settingsManager.getBackpackPages();
     ItemStack item = new ItemStack(Material.PAPER);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Pages"));
+          Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-backpack-settings-pages-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of pages.",
-          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + ChatColor.GRAY
-              + "Changing this can cause items in backpacks to be lost!",
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-pages-description"),
+          Theme.textPrefix() + Theme.error() + ChatColor.BOLD
+              + Main.tr(viewer, "gui-common-warning-label") + ChatColor.RESET + Theme.primary()
+              + " " + Main.tr(viewer, "gui-backpack-settings-storage-warning"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + pages + ChatColor.GRAY + " pages",
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-pages-current",
+              "pages", Theme.highlight() + Integer.toString(pages) + Theme.primary()),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Page",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Page")
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-pages-action-increase"),
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-pages-action-decrease"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -127,20 +130,20 @@ public class BackpackSettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createEnabledItem() {
+  private ItemStack _createEnabledItem(Player viewer) {
     boolean state = _settingsManager.getBackpackEnabled();
     ItemStack item = new ItemStack(Material.BARREL);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpacks"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-backpack-settings-enabled-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Enable player backpacks.",
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-enabled-description"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "State: "
-              + (state ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"),
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-state",
+              "state", _stateText(viewer, state)),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Toggle")
+          Theme.textPrefix() + Main.tr(viewer, "gui-common-action-toggle"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -148,22 +151,24 @@ public class BackpackSettingsGUI implements Listener {
     return item;
   }
 
-  private ItemStack _createRowsItem() {
+  private ItemStack _createRowsItem(Player viewer) {
     int rows = _settingsManager.getBackpackRows();
     ItemStack item = new ItemStack(Material.CHEST);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Backpack Rows"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-backpack-settings-rows-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Set number of rows per page.",
-          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.RESET + ChatColor.GRAY
-              + "Changing this can cause items in backpacks to be lost!",
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-rows-description"),
+          Theme.textPrefix() + Theme.error() + ChatColor.BOLD
+              + Main.tr(viewer, "gui-common-warning-label") + ChatColor.RESET + Theme.primary()
+              + " " + Main.tr(viewer, "gui-backpack-settings-storage-warning"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current: " + ChatColor.YELLOW + rows + ChatColor.GRAY + " rows",
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-rows-current",
+              "rows", Theme.highlight() + Integer.toString(rows) + Theme.primary()),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: +1 Row",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: -1 Row")
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-rows-action-increase"),
+          Theme.textPrefix() + Main.tr(viewer, "gui-backpack-settings-rows-action-decrease"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -176,7 +181,13 @@ public class BackpackSettingsGUI implements Listener {
     _settingsManager.setBackpackEnabled(newState);
     _backpackManager.setEnabled(newState);
 
-    String stateText = newState ? "ENABLED" : "DISABLED";
-    p.sendMessage(Main.getPrefix() + "Backpacks are now " + ChatColor.YELLOW + ChatColor.BOLD + stateText);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-backpack-settings-enabled-changed",
+        "state", Theme.highlight() + "" + ChatColor.BOLD + Main.tr(p,
+            newState ? "common-state-enabled" : "common-state-disabled")));
+  }
+
+  private String _stateText(Player viewer, boolean state) {
+    return (state ? Theme.highlight() : Theme.error())
+        + Main.tr(viewer, state ? "common-state-enabled" : "common-state-disabled");
   }
 }

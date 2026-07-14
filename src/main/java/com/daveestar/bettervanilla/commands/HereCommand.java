@@ -8,9 +8,12 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class HereCommand implements CommandExecutor {
   @Override
@@ -23,22 +26,28 @@ public class HereCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.HERE.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.HERE));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.HERE));
       return true;
     }
 
     Location loc = p.getLocation();
-    String worldName = loc.getWorld() != null ? loc.getWorld().getName() : "unknown";
+    String navigationCommand = "/waypoints coords " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
 
-    String messageText = Main.getPrefix()
-        + ChatColor.YELLOW + p.getName() + ChatColor.GRAY + "'s location: "
-        + ChatColor.GRAY + "World: " + ChatColor.YELLOW + worldName + ChatColor.GRAY + " | "
-        + ChatColor.GRAY + "X: " + ChatColor.YELLOW + loc.getBlockX() + ChatColor.GRAY + " | "
-        + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + loc.getBlockY() + ChatColor.GRAY + " | "
-        + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + loc.getBlockZ();
-
-    Component message = Component.text(messageText);
-    Main.getInstance().getServer().sendMessage(message);
+    for (Player recipient : Main.getInstance().getServer().getOnlinePlayers()) {
+      String worldName = loc.getWorld() != null
+          ? loc.getWorld().getName()
+          : Main.tr(recipient, "common-world-unknown");
+      String messageText = Main.getPrefix() + Main.tr(recipient, "command-here-broadcast",
+          "player", Theme.highlight() + p.getName() + Theme.primary(),
+          "world", Theme.highlight() + worldName + Theme.primary(),
+          "x", Theme.highlight().toString() + loc.getBlockX() + Theme.primary(),
+          "y", Theme.highlight().toString() + loc.getBlockY() + Theme.primary(),
+          "z", Theme.highlight().toString() + loc.getBlockZ() + Theme.primary());
+      Component message = LegacyComponentSerializer.legacySection().deserialize(messageText)
+          .clickEvent(ClickEvent.runCommand(navigationCommand))
+          .hoverEvent(HoverEvent.showText(Component.text(Main.tr(recipient, "command-here-hover"))));
+      recipient.sendMessage(message);
+    }
 
     return true;
   }

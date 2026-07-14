@@ -36,7 +36,7 @@ public class SittableStairs implements Listener {
         if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
           // range check
           if (p.getLocation().distance(clickedBlock.getLocation()) > MAX_DISTANCE) {
-            p.sendMessage(Main.getPrefix() + "You're too far away from that stair.");
+            p.sendMessage(Main.getPrefix() + Main.tr(p, "event-stairs-error-too-far"));
             return;
           }
 
@@ -44,7 +44,7 @@ public class SittableStairs implements Listener {
           if (clickedBlock.getBlockData() instanceof Stairs) {
             Stairs stairs = (Stairs) clickedBlock.getBlockData();
             if (stairs.getHalf() != Half.BOTTOM) {
-              p.sendMessage(Main.getPrefix() + "You can only sit on bottom stairs.");
+              p.sendMessage(Main.getPrefix() + Main.tr(p, "event-stairs-error-bottom-only"));
               return;
             }
           }
@@ -79,7 +79,7 @@ public class SittableStairs implements Listener {
 
           sittingManager.sitPlayer(p, location);
 
-          p.sendMessage(Main.getPrefix() + "Well have a rest. Stand up using the 'Shift' key.");
+          p.sendMessage(Main.getPrefix() + Main.tr(p, "event-stairs-sat-down"));
         }
       }
     }

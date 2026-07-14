@@ -9,8 +9,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.SettingsGUI;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class SettingsCommand implements CommandExecutor {
   private final SettingsGUI _settingsGUI;
@@ -29,8 +28,8 @@ public class SettingsCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.SETTINGS.getName()) && !p.hasPermission(Permissions.ADMINSETTINGS.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.SETTINGS));
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.ADMINSETTINGS));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.SETTINGS));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.ADMINSETTINGS));
       return true;
     }
 
@@ -38,17 +37,17 @@ public class SettingsCommand implements CommandExecutor {
 
     if (args.length == 1) {
       if (!p.hasPermission(Permissions.ADMINSETTINGS.getName())) {
-        p.sendMessage(Main.getNoPermissionMessage(Permissions.ADMINSETTINGS));
+        p.sendMessage(Main.getNoPermissionMessage(p, Permissions.ADMINSETTINGS));
         return true;
       }
 
       target = Bukkit.getPlayer(args[0]);
       if (target == null) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Player not found or not online.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-player-not-found"));
         return true;
       }
     } else if (args.length > 1) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/settings [player]");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-settings-usage"));
       return true;
     }
 

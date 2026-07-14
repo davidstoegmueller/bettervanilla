@@ -16,6 +16,7 @@ import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.gui.PlayTimeGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -41,7 +42,7 @@ public class PlayTimeCommand implements TabExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.PLAYTIME.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.PLAYTIME));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.PLAYTIME));
       return true;
     }
 
@@ -51,8 +52,8 @@ public class PlayTimeCommand implements TabExecutor {
       OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(args[0]);
 
       if (!targetPlayer.hasPlayedBefore() && !targetPlayer.isOnline()) {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-            + ChatColor.RED + " has never joined the server!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-playtime-error-never-joined",
+            "player", Theme.highlight() + args[0] + Theme.error()));
         return true;
       }
 
@@ -61,15 +62,17 @@ public class PlayTimeCommand implements TabExecutor {
 
       String playerName = targetPlayer.getName() != null ? targetPlayer.getName() : args[0];
 
-      p.sendMessage(
-          Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
-              + " » " + ChatColor.GRAY + playerName);
-      p.sendMessage(Main.getShortPrefix()
-          + "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
-      p.sendMessage(Main.getShortPrefix() + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime));
-      p.sendMessage(Main.getShortPrefix() + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime));
+      p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+          + Main.tr(p, "command-playtime-summary-title",
+              "player", ChatColor.RESET + Theme.primary().toString() + playerName));
+      p.sendMessage(Main.getShortPrefix() + Main.tr(p, "playtime-total", "time",
+          Theme.highlight() + _timerManager.formatTime(p, playTime + afkTime)));
+      p.sendMessage(Main.getShortPrefix() + Main.tr(p, "playtime-active", "time",
+          Theme.highlight() + _timerManager.formatTime(p, playTime)));
+      p.sendMessage(Main.getShortPrefix() + Main.tr(p, "playtime-afk", "time",
+          Theme.highlight() + _timerManager.formatTime(p, afkTime)));
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/playtime [player]");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-playtime-usage"));
     }
 
     return true;

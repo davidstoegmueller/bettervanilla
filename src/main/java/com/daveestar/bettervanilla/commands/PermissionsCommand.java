@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.PermissionsManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -36,14 +37,13 @@ public class PermissionsCommand implements TabExecutor {
     if (cs instanceof Player) {
       Player p = (Player) cs;
       if (!p.hasPermission(Permissions.PERMISSIONS.getName())) {
-        p.sendMessage(Main.getNoPermissionMessage(Permissions.PERMISSIONS));
+        p.sendMessage(Main.getNoPermissionMessage(p, Permissions.PERMISSIONS));
         return true;
       }
     }
 
     if (args.length < 1) {
-      cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
-          + ChatColor.YELLOW + "/permissions <group | user | assignments | default | list | reload>");
+      cs.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(cs, "command-permissions-usage"));
       return true;
     }
 
@@ -68,8 +68,7 @@ public class PermissionsCommand implements TabExecutor {
         handleReloadCommand(cs, args);
         break;
       default:
-        cs.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: "
-            + ChatColor.YELLOW + "/permissions <group | user | assignments | default | list | reload>");
+        cs.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(cs, "command-permissions-usage"));
         break;
     }
 
@@ -82,8 +81,7 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleGroupCommand(CommandSender sender, String[] args) {
     if (args.length < 3) {
-      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-          + "/permissions group <addperm | removeperm | delete> <group> [<permission>]");
+      sender.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(sender, "command-permissions-group-usage"));
       return;
     }
 
@@ -95,80 +93,85 @@ public class PermissionsCommand implements TabExecutor {
       case "addperm":
         // syntax: /permissions group addperm <group> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-              + " /permissions group addperm <group> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-add-permission-usage"));
           return;
         }
 
         if (!permissionsManager.hasGroupPermission(group, permission)) {
           permissionsManager.addPermissionToGroup(group, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + ChatColor.YELLOW + permission + ChatColor.GRAY
-              + " added to group " + ChatColor.YELLOW + group);
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-group-add-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(
-              Main.getPrefix() + ChatColor.RED + "Permission " + ChatColor.YELLOW + permission + ChatColor.RED
-                  + " has already been added to group " + ChatColor.YELLOW + group);
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-add-permission-error-already-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       case "removeperm":
         // syntax: /permissions group removeperm <group> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-              + "/permissions group removeperm <group> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-remove-permission-usage"));
           return;
         }
 
         if (permissionsManager.hasGroupPermission(group, permission)) {
           permissionsManager.removePermissionFromGroup(group, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + ChatColor.YELLOW + permission + ChatColor.GRAY
-              + " removed from group " + ChatColor.YELLOW + group);
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-group-remove-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Permission " + ChatColor.YELLOW + permission
-              + ChatColor.RED + " is not assigned to group " + ChatColor.YELLOW + group);
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-remove-permission-error-not-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       case "delete":
         // syntax: /permissions group delete <group>
         if (args.length != 3) {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-              + "/permissions group delete <group>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-delete-usage"));
           return;
         }
 
         if (permissionsManager.getAllGroupNames().contains(group)) {
           if (group.equalsIgnoreCase(permissionsManager.getDefaultGroupName())) {
-            sender.sendMessage(Main.getPrefix() + ChatColor.RED + "You cannot delete the default group.");
+            sender.sendMessage(Main.getPrefix() + Theme.error()
+                + Main.tr(sender, "command-permissions-group-delete-error-default-group"));
             return;
           }
 
           permissionsManager.removeGroup(group);
-          sender.sendMessage(Main.getPrefix() + "Group " + ChatColor.YELLOW + group + ChatColor.GRAY
-              + " has been deleted.");
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-group-delete-success",
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Group " + ChatColor.YELLOW + group
-              + ChatColor.RED + " does not exist.");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-group-delete-error-not-found",
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       default:
-        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-            + " /permissions group <addperm | removeperm | delete> <group> [<permission>]");
+        sender.sendMessage(Main.getPrefix() + Theme.error()
+            + Main.tr(sender, "command-permissions-group-usage"));
         break;
     }
   }
 
   private void handleDefaultGroupCommand(CommandSender sender, String[] args) {
     if (args.length == 1) {
-      sender.sendMessage(
-          Main.getPrefix() + ChatColor.GRAY + "Current default group: " + ChatColor.YELLOW
-              + permissionsManager.getDefaultGroupName());
-      sender.sendMessage(Main.getShortPrefix() + ChatColor.GRAY
-          + "Set another group with " + ChatColor.YELLOW + "/permissions default <group>");
+      sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-default-group-current",
+          "group", Theme.highlight() + permissionsManager.getDefaultGroupName() + Theme.primary()));
+      sender.sendMessage(Main.getShortPrefix() + Main.tr(sender, "command-permissions-default-group-change-hint"));
       return;
     }
 
     if (args.length != 2) {
-      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-          + "/permissions default <group>");
+      sender.sendMessage(Main.getPrefix() + Theme.error()
+          + Main.tr(sender, "command-permissions-default-group-usage"));
       return;
     }
 
@@ -176,13 +179,12 @@ public class PermissionsCommand implements TabExecutor {
     boolean groupExists = permissionsManager.groupExists(groupName);
 
     permissionsManager.setDefaultGroup(groupName);
-    sender.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Default group set to " + ChatColor.YELLOW + groupName
-        + ChatColor.GRAY + ".");
+    sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-default-group-set-success",
+        "group", Theme.highlight() + groupName + Theme.primary()));
 
     if (!groupExists) {
-      sender.sendMessage(Main.getShortPrefix() + ChatColor.GRAY + "Created new group " + ChatColor.YELLOW + groupName
-          + ChatColor.GRAY + ". Add permissions with " + ChatColor.YELLOW
-          + "/permissions group addperm " + groupName + " <permission>");
+      sender.sendMessage(Main.getShortPrefix() + Main.tr(sender, "command-permissions-default-group-created-hint",
+          "group", Theme.highlight() + groupName + Theme.primary()));
     }
   }
 
@@ -192,13 +194,13 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleUserCommand(CommandSender sender, String[] args) {
     if (args.length != 4) {
-      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-          + "/permissions user <addperm | removeperm | setgroup> <username> <permission | group>");
+      sender.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(sender, "command-permissions-user-usage"));
       return;
     }
 
     String action = args[1].toLowerCase();
     OfflinePlayer p = Bukkit.getOfflinePlayer(args[2]);
+    String playerName = p.getName() != null ? p.getName() : args[2];
     String permission = args[3];
     String group = args[3];
 
@@ -206,57 +208,66 @@ public class PermissionsCommand implements TabExecutor {
       case "addperm":
         // syntax: /permissions user addperm <username> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-              + "/permissions user addperm <username> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-add-permission-usage"));
           return;
         }
 
         if (!permissionsManager.hasUserPermission(p, permission)) {
           permissionsManager.addPermissionToUser(p, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + ChatColor.YELLOW + permission + ChatColor.GRAY
-              + " added to user " + ChatColor.YELLOW + p.getName());
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-user-add-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "player", Theme.highlight() + playerName + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Permission " + ChatColor.YELLOW + permission
-              + ChatColor.RED + " has already been added to user " + ChatColor.YELLOW + p.getName());
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-add-permission-error-already-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "player", Theme.highlight() + playerName + Theme.error()));
         }
         break;
       case "removeperm":
         // syntax: /permissions user removeperm <username> <permission>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-              + "/permissions user removeperm <username> <permission>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-remove-permission-usage"));
           return;
         }
 
         if (permissionsManager.hasUserPermission(p, permission)) {
           permissionsManager.removePermissionFromUser(p, permission);
-          sender.sendMessage(Main.getPrefix() + "Permission " + ChatColor.YELLOW + permission + ChatColor.GRAY
-              + " removed from user " + ChatColor.YELLOW + p.getName());
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-user-remove-permission-success",
+              "permission", Theme.highlight() + permission + Theme.primary(),
+              "player", Theme.highlight() + playerName + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Permission " + ChatColor.YELLOW + permission
-              + ChatColor.RED + " is not assigned to user " + ChatColor.YELLOW + p.getName());
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-remove-permission-error-not-assigned",
+                  "permission", Theme.highlight() + permission + Theme.error(),
+                  "player", Theme.highlight() + playerName + Theme.error()));
         }
         break;
       case "setgroup":
         // syntax: /permissions user setgroup <username> <group>
         if (args.length != 4) {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-              + "/permissions user setgroup <username> <group>");
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-set-group-usage"));
           return;
         }
 
         if (!permissionsManager.getUserGroup(p).equalsIgnoreCase(group)) {
           permissionsManager.assignUserToGroup(p, group);
-          sender.sendMessage(Main.getPrefix() + "User " + ChatColor.YELLOW + p.getName() + ChatColor.GRAY
-              + " assigned to group " + ChatColor.YELLOW + group);
+          sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-user-set-group-success",
+              "player", Theme.highlight() + playerName + Theme.primary(),
+              "group", Theme.highlight() + group + Theme.primary()));
         } else {
-          sender.sendMessage(Main.getPrefix() + ChatColor.RED + "User " + ChatColor.YELLOW + p.getName() + ChatColor.RED
-              + " is already assigned to group " + ChatColor.YELLOW + group);
+          sender.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(sender, "command-permissions-user-set-group-error-already-assigned",
+                  "player", Theme.highlight() + playerName + Theme.error(),
+                  "group", Theme.highlight() + group + Theme.error()));
         }
         break;
       default:
-        sender.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-            + "/permissions user <addperm | removeperm | setgroup> <username> <permission | group>");
+        sender.sendMessage(Main.getPrefix() + Theme.error()
+            + Main.tr(sender, "command-permissions-user-usage"));
         break;
     }
   }
@@ -267,7 +278,7 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleAssignmentsCommand(CommandSender sender) {
     if (!(sender instanceof Player)) {
-      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "You must be a player to use this command.");
+      sender.sendMessage(Main.getNoPlayerMessage());
       return;
     }
 
@@ -275,34 +286,38 @@ public class PermissionsCommand implements TabExecutor {
     Set<String> groupNames = permissionsManager.getAllGroupNames();
     Set<String> userNames = permissionsManager.getAllUserIds();
 
-    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PERMISSIONS: Group Assignments");
-    p.sendMessage(Main.getShortPrefix() + ChatColor.GRAY + "Current default group: " + ChatColor.YELLOW
-        + permissionsManager.getDefaultGroupName());
+    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+        + Main.tr(p, "command-permissions-assignments-groups-title"));
+    p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-permissions-default-group-current",
+        "group", Theme.highlight() + permissionsManager.getDefaultGroupName() + Theme.primary()));
     p.sendMessage("");
 
     for (String group : groupNames) {
       List<String> groupPerms = permissionsManager.getGroupPermissions(group);
 
-      p.sendMessage(ChatColor.YELLOW + " » Group: " + ChatColor.GRAY + group);
-      p.sendMessage(ChatColor.YELLOW + "     » Permissions: "
-          + ChatColor.GRAY + groupPerms);
+      p.sendMessage(" " + Theme.textPrefix() + Main.tr(p, "command-permissions-assignments-group-entry",
+          "group", group));
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-permissions-entry", "permissions", groupPerms));
 
       List<String> usersInGroup = new ArrayList<>();
       for (String uid : userNames) {
         OfflinePlayer user = Bukkit.getOfflinePlayer(UUID.fromString(uid));
 
         if (permissionsManager.getUserGroup(user).equals(group)) {
-          usersInGroup.add(user.getName());
+          usersInGroup.add(user.getName() != null ? user.getName() : uid);
         }
       }
 
-      p.sendMessage(ChatColor.YELLOW + "     » Users: " + ChatColor.GRAY + usersInGroup);
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-users-entry", "players", usersInGroup));
       p.sendMessage("");
     }
 
     p.sendMessage("");
 
-    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PERMISSIONS: User Assignments");
+    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+        + Main.tr(p, "command-permissions-assignments-players-title"));
 
     for (String uid : userNames) {
       OfflinePlayer user = Bukkit.getOfflinePlayer(UUID.fromString(uid));
@@ -310,9 +325,13 @@ public class PermissionsCommand implements TabExecutor {
       String userGroup = permissionsManager.getUserGroup(user);
       List<String> userPerms = permissionsManager.getUserPermissions(user);
 
-      p.sendMessage(ChatColor.YELLOW + " » User: " + ChatColor.GRAY + user.getName());
-      p.sendMessage(ChatColor.YELLOW + "     » Group: " + ChatColor.GRAY + userGroup);
-      p.sendMessage(ChatColor.YELLOW + "     » Permissions: " + ChatColor.GRAY + userPerms);
+      String playerName = user.getName() != null ? user.getName() : uid;
+      p.sendMessage(" " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-player-entry", "player", playerName));
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-group-entry", "group", userGroup));
+      p.sendMessage("     " + Theme.textPrefix()
+          + Main.tr(p, "command-permissions-assignments-permissions-entry", "permissions", userPerms));
       p.sendMessage("");
     }
   }
@@ -323,13 +342,14 @@ public class PermissionsCommand implements TabExecutor {
 
   public void handleListCommand(CommandSender sender) {
     if (!(sender instanceof Player)) {
-      sender.sendMessage(Main.getPrefix() + ChatColor.RED + "You must be a player to use this command.");
+      sender.sendMessage(Main.getNoPlayerMessage());
       return;
     }
 
     Player p = (Player) sender;
 
-    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PERMISSIONS: List of Permissions");
+    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+        + Main.tr(p, "command-permissions-list-title"));
     for (Permissions permission : Permissions.values()) {
       p.sendMessage(Main.getShortPrefix() + permission.getName());
     }
@@ -341,7 +361,7 @@ public class PermissionsCommand implements TabExecutor {
 
   private void handleReloadCommand(CommandSender sender, String[] args) {
     permissionsManager.reloadPermissions();
-    sender.sendMessage(Main.getPrefix() + "Permissions reloaded successfully.");
+    sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-reload-success"));
   }
 
   // --------------

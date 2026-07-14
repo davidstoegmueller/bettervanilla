@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.VanishManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class VanishCommand implements CommandExecutor {
   private final VanishManager _vanishManager;
@@ -28,16 +27,16 @@ public class VanishCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.VANISH.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.VANISH));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.VANISH));
       return true;
     }
 
     if (_vanishManager.isVanished(p)) {
       _vanishManager.unvanish(p);
-      p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "You are now visible.");
+      p.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(p, "command-vanish-visible"));
     } else {
       _vanishManager.vanish(p);
-      p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "You vanished.");
+      p.sendMessage(Main.getPrefix() + Theme.primary() + Main.tr(p, "command-vanish-hidden"));
     }
 
     return true;

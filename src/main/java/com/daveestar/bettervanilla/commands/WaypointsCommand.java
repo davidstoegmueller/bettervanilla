@@ -14,6 +14,7 @@ import com.daveestar.bettervanilla.gui.WaypointsGUI;
 import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.NavigationData;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -43,7 +44,7 @@ public class WaypointsCommand implements TabExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.WAYPOINTS.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.WAYPOINTS));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.WAYPOINTS));
       return true;
     }
 
@@ -64,7 +65,7 @@ public class WaypointsCommand implements TabExecutor {
         _handleHelp(p);
         break;
       default:
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "Unknown waypoints command. Use /waypoints help for help.");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-waypoints-error-unknown"));
     }
 
     return true;
@@ -72,7 +73,7 @@ public class WaypointsCommand implements TabExecutor {
 
   private void _handleCoordsNavigation(Player p, String[] args) {
     if (args.length < 4) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/waypoints coords <x> <y> <z>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-waypoints-coordinates-usage"));
       return;
     }
 
@@ -84,22 +85,20 @@ public class WaypointsCommand implements TabExecutor {
       Location destination = new Location(p.getWorld(), x, y, z);
       _settingsManager.setPlayerToggleLocation(p.getUniqueId(), false);
 
-      NavigationData navigationData = new NavigationData("Coordinates", destination, NavigationType.WAYPOINT,
-          Color.YELLOW);
+      NavigationData navigationData = new NavigationData(
+          Main.tr(p, "navigation-coordinates-name"), destination, NavigationType.WAYPOINT, Color.YELLOW);
       _navigationManager.startNavigation(p, navigationData);
 
-      p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to coordinates "
-          + ChatColor.YELLOW + "X: " + ChatColor.GRAY + x + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + y
-          + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + z);
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "command-waypoints-coordinates-navigation-started",
+          "x", x, "y", y, "z", z));
     } catch (NumberFormatException e) {
-      p.sendMessage(
-          Main.getPrefix() + ChatColor.RED + "Invalid coordinates. Please use numbers for <x>, <y>, <z>.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-waypoints-error-invalid-coordinates"));
     }
   }
 
   private void _handlePlayerNavigation(Player p, String[] args) {
     if (args.length < 2) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/waypoints player <player>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-waypoints-player-usage"));
       return;
     }
 
@@ -107,8 +106,8 @@ public class WaypointsCommand implements TabExecutor {
     Player targetPlayer = p.getServer().getPlayer(targetPlayerName);
 
     if (targetPlayer == null || !targetPlayer.isOnline()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "The player " + ChatColor.YELLOW + targetPlayerName
-          + ChatColor.RED + " is not online or does not exist.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-waypoints-error-player-unavailable",
+          "player", Theme.highlight() + targetPlayerName + Theme.error()));
       return;
     }
 
@@ -119,18 +118,18 @@ public class WaypointsCommand implements TabExecutor {
         Color.YELLOW);
     _navigationManager.startNavigation(p, navigationData);
 
-    p.sendMessage(Main.getPrefix() + ChatColor.GRAY + "Start navigation to player "
-        + ChatColor.YELLOW + targetPlayerName + ChatColor.GRAY + " at "
-        + ChatColor.YELLOW + "X: " + ChatColor.GRAY + targetLocation.getBlockX()
-        + ChatColor.YELLOW + " Y: " + ChatColor.GRAY + targetLocation.getBlockY()
-        + ChatColor.YELLOW + " Z: " + ChatColor.GRAY + targetLocation.getBlockZ());
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "command-waypoints-player-navigation-started",
+        "player", Theme.highlight() + targetPlayerName + Theme.primary(),
+        "x", targetLocation.getBlockX(),
+        "y", targetLocation.getBlockY(),
+        "z", targetLocation.getBlockZ()));
   }
 
   private void _handleHelp(Player p) {
-    p.sendMessage(Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "WAYPOINTS HELP:");
-    p.sendMessage(Main.getShortPrefix() + "/waypoints - Opens the waypoints GUI.");
-    p.sendMessage(Main.getShortPrefix() + "/waypoints player <player> - Navigates to another player's location.");
-    p.sendMessage(Main.getShortPrefix() + "/waypoints coords <x> <y> <z> - Navigates to specific coordinates.");
+    p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD + Main.tr(p, "command-waypoints-help-title"));
+    p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-waypoints-help-open"));
+    p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-waypoints-help-player"));
+    p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-waypoints-help-coordinates"));
   }
 
   @Override

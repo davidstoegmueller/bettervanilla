@@ -12,10 +12,13 @@ import org.bukkit.GameRules;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import com.daveestar.bettervanilla.enums.InventorySortMode;
+import com.daveestar.bettervanilla.enums.Language;
 import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class SettingsManager {
   private Config _config;
@@ -51,10 +54,20 @@ public class SettingsManager {
   }
 
   public String[] getAllPlayersUUIDS() {
-    return _fileConfig.getConfigurationSection("players").getKeys(false).toArray(new String[0]);
+    ConfigurationSection players = _fileConfig.getConfigurationSection("players");
+    return players == null ? new String[0] : players.getKeys(false).toArray(new String[0]);
   }
 
   // USER SETTINGS
+  public String getPlayerLanguage(UUID uuid) {
+    return Language.fromCode(_fileConfig.getString("players." + uuid + ".language", getServerLanguage())).getCode();
+  }
+
+  public void setPlayerLanguage(UUID uuid, String value) {
+    _fileConfig.set("players." + uuid + ".language", Language.fromCode(value).getCode());
+    _config.save();
+  }
+
   public boolean getPlayerToggleLocation(UUID uuid) {
     return _fileConfig.getBoolean("players." + uuid + ".togglelocation", false);
   }
@@ -99,6 +112,26 @@ public class SettingsManager {
   public void setPlayerChestSortMode(UUID uuid, InventorySortMode mode) {
     String value = mode == null ? InventorySortMode.ALPHABETICAL_ASC.name() : mode.name();
     _fileConfig.set("players." + uuid + ".chestsortmode", value);
+    _config.save();
+  }
+
+  public boolean getPlayerBackpackSort(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".backpacksort", false);
+  }
+
+  public void setPlayerBackpackSort(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".backpacksort", value);
+    _config.save();
+  }
+
+  public InventorySortMode getPlayerBackpackSortMode(UUID uuid) {
+    String mode = _fileConfig.getString("players." + uuid + ".backpacksortmode", "ALPHABETICAL_ASC");
+    return InventorySortMode.fromString(mode);
+  }
+
+  public void setPlayerBackpackSortMode(UUID uuid, InventorySortMode mode) {
+    String value = mode == null ? InventorySortMode.ALPHABETICAL_ASC.name() : mode.name();
+    _fileConfig.set("players." + uuid + ".backpacksortmode", value);
     _config.save();
   }
 
@@ -220,6 +253,81 @@ public class SettingsManager {
   }
 
   // GLOBAL SETTINGS
+  public String getServerLanguage() {
+    return Language.fromCode(_fileConfig.getString("global.language", Language.EN.getCode())).getCode();
+  }
+
+  public void setServerLanguage(String value) {
+    _fileConfig.set("global.language", Language.fromCode(value).getCode());
+    _config.save();
+  }
+
+  public String getPrimaryFontColor() {
+    return _fileConfig.getString("global.theme.primaryFontColor", Theme.DEFAULT_PRIMARY_FONT_COLOR);
+  }
+
+  public void setPrimaryFontColor(String value) {
+    _setThemeValue("primaryFontColor", value);
+  }
+
+  public String getHighlightFontColor() {
+    return _fileConfig.getString("global.theme.highlightFontColor", Theme.DEFAULT_HIGHLIGHT_FONT_COLOR);
+  }
+
+  public void setHighlightFontColor(String value) {
+    _setThemeValue("highlightFontColor", value);
+  }
+
+  public String getErrorFontColor() {
+    return _fileConfig.getString("global.theme.errorFontColor", Theme.DEFAULT_ERROR_FONT_COLOR);
+  }
+
+  public void setErrorFontColor(String value) {
+    _setThemeValue("errorFontColor", value);
+  }
+
+  public String getTitleSymbolColor() {
+    return _fileConfig.getString("global.theme.titleSymbolColor", Theme.DEFAULT_TITLE_SYMBOL_COLOR);
+  }
+
+  public void setTitleSymbolColor(String value) {
+    _setThemeValue("titleSymbolColor", value);
+  }
+
+  public String getTextSymbolColor() {
+    return _fileConfig.getString("global.theme.textSymbolColor", Theme.DEFAULT_TEXT_SYMBOL_COLOR);
+  }
+
+  public void setTextSymbolColor(String value) {
+    _setThemeValue("textSymbolColor", value);
+  }
+
+  public String getGlassPaneColor() {
+    return _fileConfig.getString("global.theme.glassPaneColor", Theme.DEFAULT_GLASS_PANE_COLOR);
+  }
+
+  public void setGlassPaneColor(String value) {
+    _setThemeValue("glassPaneColor", value);
+  }
+
+  public String getThemeName() {
+    return _fileConfig.getString("global.theme.name", Theme.DEFAULT_NAME);
+  }
+
+  public void setThemeName(String value) {
+    _setThemeValue("name", value);
+  }
+
+  public void resetTheme() {
+    _fileConfig.set("global.theme", null);
+    _config.save();
+  }
+
+  private void _setThemeValue(String key, String value) {
+    _fileConfig.set("global.theme." + key, value);
+    _config.save();
+  }
+
   public boolean getMaintenanceState() {
     return _fileConfig.getBoolean("global.maintenance.enabled", false);
   }
@@ -398,23 +506,34 @@ public class SettingsManager {
   }
 
   public String getServerMOTD() {
-    if (_fileConfig.isList("global.motd")) {
-      return String.join("\n", _fileConfig.getStringList("global.motd"));
-    }
-
-    return _fileConfig.getString("global.motd",
-        "&7                  &e&lBetterVanilla\n&7                         &b&lSMP");
+    return String.join("\n", _getServerMOTDLines());
   }
 
   public String[] getServerMOTDRaw() {
+    return _getServerMOTDLines().toArray(new String[0]);
+  }
+
+  private List<String> _getServerMOTDLines() {
+    List<String> lines;
+
     if (_fileConfig.isList("global.motd")) {
-      return _fileConfig.getStringList("global.motd").toArray(new String[0]);
+      lines = _fileConfig.getStringList("global.motd");
+    } else {
+      String motd = _fileConfig.getString("global.motd");
+      lines = motd == null
+          ? _getDefaultServerMOTDLines()
+          : Arrays.asList(motd.split("\\R", 2));
     }
 
-    return new String[] {
-        _fileConfig.getString("global.motd",
-            "[&7                  &e&lBetterVanilla,&7                         &b&lSMP]")
-    };
+    return lines;
+  }
+
+  private List<String> _getDefaultServerMOTDLines() {
+    String primary = Theme.asAmpersandCode(Theme.primary());
+    String highlight = Theme.asAmpersandCode(Theme.highlight());
+    return Arrays.asList(
+        primary + "                  " + highlight + "&l" + Theme.name(),
+        primary + "                         " + highlight + "&lSMP");
   }
 
   public void setServerMOTD(String line1, String line2) {

@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -40,7 +41,7 @@ public class PlayTimeGUI {
     Map<String, PlaytimeSortData> sortData = new HashMap<>();
 
     String selfKey = p.getUniqueId().toString();
-    entries.put(selfKey, _createPlayerItem(p));
+    entries.put(selfKey, _createPlayerItem(p, p));
     sortData.put(selfKey, _buildPlaytimeSortData(p));
     actions.put(selfKey, new CustomGUI.ClickAction() {
       @Override
@@ -57,7 +58,7 @@ public class PlayTimeGUI {
         continue;
 
       String key = op.getUniqueId().toString();
-      entries.put(key, _createPlayerItem(op));
+      entries.put(key, _createPlayerItem(p, op));
       sortData.put(key, _buildPlaytimeSortData(op));
       actions.put(key, new CustomGUI.ClickAction() {
         @Override
@@ -68,12 +69,12 @@ public class PlayTimeGUI {
     }
 
     CustomGUI gui = new CustomGUI(_plugin, p,
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "» Playtime",
+        Theme.titlePrefix() + Main.tr(p, "gui-playtime-title"),
         entries, 3, null, null, EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
     gui.setSearchButtonSlot(_footerSearchSlot(3));
 
-    gui.setSortOptions(_createPlaytimeSortOptions(sortData));
+    gui.setSortOptions(_createPlaytimeSortOptions(p, sortData));
     gui.setSortButtonSlot(_footerSortSlot(3));
 
     gui.setClickActions(actions);
@@ -92,16 +93,19 @@ public class PlayTimeGUI {
     int playTime = _timerManager.getPlayTime(target.getUniqueId());
     int afkTime = _timerManager.getAFKTime(target.getUniqueId());
 
-    viewer.sendMessage(
-        Main.getPrefix() + ChatColor.YELLOW + ChatColor.BOLD + "PLAYTIME" + ChatColor.RESET + ChatColor.YELLOW
-            + " » " + ChatColor.GRAY + (target.getName() != null ? target.getName() : "Unknown"));
-    viewer.sendMessage(
-        Main.getShortPrefix() + "Totaltime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime + afkTime));
-    viewer.sendMessage(Main.getShortPrefix() + "Playtime: " + ChatColor.YELLOW + _timerManager.formatTime(playTime));
-    viewer.sendMessage(Main.getShortPrefix() + "AFK: " + ChatColor.YELLOW + _timerManager.formatTime(afkTime));
+    String playerName = target.getName() != null ? target.getName() : Main.tr(viewer, "common-value-unknown");
+    viewer.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD
+        + Main.tr(viewer, "gui-playtime-summary-title",
+            "player", ChatColor.RESET + "" + Theme.primary() + playerName));
+    viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-total",
+        "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime + afkTime)));
+    viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-active",
+        "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)));
+    viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-afk",
+        "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)));
   }
 
-  private ItemStack _createPlayerItem(OfflinePlayer op) {
+  private ItemStack _createPlayerItem(Player viewer, OfflinePlayer op) {
     int playTime = _timerManager.getPlayTime(op.getUniqueId());
     int afkTime = _timerManager.getAFKTime(op.getUniqueId());
 
@@ -111,27 +115,28 @@ public class PlayTimeGUI {
     if (meta instanceof SkullMeta skullMeta) {
       skullMeta.setOwningPlayer(op);
 
-      String status = op.isOnline()
-          ? ChatColor.GRAY + " (" + ChatColor.GREEN + "online" + ChatColor.GRAY + ")"
-          : ChatColor.GRAY + " (" + ChatColor.RED + "offline" + ChatColor.GRAY + ")";
+      String status = Main.tr(viewer, "gui-playtime-status-format",
+          "status", (op.isOnline() ? Theme.highlight() : Theme.error())
+              + Main.tr(viewer, op.isOnline() ? "gui-playtime-status-online" : "gui-playtime-status-offline")
+              + Theme.primary());
+      String playerName = op.getName() != null ? op.getName() : Main.tr(viewer, "common-value-unknown");
 
       skullMeta.displayName(
           Component.text(
-              ChatColor.RED + "" + ChatColor.BOLD + "» "
-                  + ChatColor.YELLOW + op.getName()
-                  + status));
+              Theme.titlePrefix()
+                  + playerName + Theme.primary() + " " + status));
 
       skullMeta.lore(
           Arrays.asList(
               "",
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Total: " + ChatColor.YELLOW
-                  + _timerManager.formatTime(playTime + afkTime),
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Playtime: " + ChatColor.YELLOW
-                  + _timerManager.formatTime(playTime),
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "AFK: " + ChatColor.YELLOW
-                  + _timerManager.formatTime(afkTime),
+              Theme.textPrefix() + Main.tr(viewer, "playtime-total",
+                  "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime + afkTime)),
+              Theme.textPrefix() + Main.tr(viewer, "playtime-active",
+                  "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)),
+              Theme.textPrefix() + Main.tr(viewer, "playtime-afk",
+                  "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)),
               "",
-              ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Show Message").stream()
+              Theme.textPrefix() + Main.tr(viewer, "gui-playtime-action-show-summary")).stream()
               .filter(Objects::nonNull)
               .map(Component::text)
               .collect(Collectors.toList()));
@@ -154,7 +159,8 @@ public class PlayTimeGUI {
     return new PlaytimeSortData(name, playTime, afkTime, totalTime);
   }
 
-  private List<CustomGUI.SortOption> _createPlaytimeSortOptions(Map<String, PlaytimeSortData> sortData) {
+  private List<CustomGUI.SortOption> _createPlaytimeSortOptions(Player viewer,
+      Map<String, PlaytimeSortData> sortData) {
     Comparator<Map.Entry<String, ItemStack>> byTotalDesc = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
         entry -> sortData.get(entry.getKey()).totalTime())
         .reversed();
@@ -182,14 +188,14 @@ public class PlayTimeGUI {
     Comparator<Map.Entry<String, ItemStack>> byNameDesc = byNameAsc.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Total (High → Low)", byTotalDesc),
-        new CustomGUI.SortOption("Total (Low → High)", byTotalAsc),
-        new CustomGUI.SortOption("Playtime (High → Low)", byPlayDesc),
-        new CustomGUI.SortOption("Playtime (Low → High)", byPlayAsc),
-        new CustomGUI.SortOption("AFK-Time (High → Low)", byAfkDesc),
-        new CustomGUI.SortOption("AFK-Time (Low → High)", byAfkAsc),
-        new CustomGUI.SortOption("Name (A → Z)", byNameAsc),
-        new CustomGUI.SortOption("Name (Z → A)", byNameDesc));
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-playtime-sort-total-descending"), byTotalDesc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-playtime-sort-total-ascending"), byTotalAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-playtime-sort-active-descending"), byPlayDesc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-playtime-sort-active-ascending"), byPlayAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-playtime-sort-afk-descending"), byAfkDesc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-playtime-sort-afk-ascending"), byAfkAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-ascending"), byNameAsc),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-name-descending"), byNameDesc));
   }
 
   private record PlaytimeSortData(String name, long playTime, long afkTime, long totalTime) {

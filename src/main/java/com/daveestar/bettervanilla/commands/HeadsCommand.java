@@ -10,8 +10,7 @@ import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.gui.HeadsGUI;
 import com.daveestar.bettervanilla.manager.HeadsManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class HeadsCommand implements CommandExecutor {
   private final HeadsGUI _headsGUI;
@@ -35,22 +34,22 @@ public class HeadsCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.HEADS.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.HEADS));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.HEADS));
       return true;
     }
 
     if (args.length > 0) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/heads");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-heads-usage"));
       return true;
     }
 
     if (!_settingsManager.getHeadsExplorerEnabled()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Heads Explorer is disabled.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-heads-disabled"));
       return true;
     }
 
     if (_headsManager.getTotalCustomHeads() <= 0 || _headsManager.getTotalCustomHeadCategories() <= 0) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Heads data is not available yet. Try again later.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-heads-unavailable"));
       return true;
     }
 

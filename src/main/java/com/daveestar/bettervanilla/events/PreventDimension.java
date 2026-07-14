@@ -8,8 +8,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class PreventDimension implements Listener {
 
@@ -32,14 +31,14 @@ public class PreventDimension implements Listener {
       if (destinationEnvironment == World.Environment.THE_END && !_settingsManager.getEnableEnd()) {
         // cancel the portal event
         e.setCancelled(true);
-        e.getPlayer().sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The End' yet!");
+        e.getPlayer().sendMessage(Main.getPrefix() + Theme.error() + Main.tr(e.getPlayer(), "event-dimension-end-disabled"));
       }
 
       if (destinationEnvironment == World.Environment.NETHER && !_settingsManager.getEnableNether()) {
         // cancel the portal event
         e.setCancelled(true);
         e.getPlayer()
-            .sendMessage(Main.getPrefix() + ChatColor.RED + "You are not allowed to enter 'The Nether' yet!");
+            .sendMessage(Main.getPrefix() + Theme.error() + Main.tr(e.getPlayer(), "event-dimension-nether-disabled"));
       }
     }
   }

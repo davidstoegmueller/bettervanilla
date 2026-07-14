@@ -16,6 +16,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import com.daveestar.bettervanilla.Main;
+
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import io.papermc.paper.dialog.Dialog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -46,11 +50,13 @@ public class CustomGUI implements Listener {
   private Consumer<Player> _backAction;
   private PageSwitchListener _pageSwitchListener;
   private String _searchTerm;
+  private final Player _viewer;
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
     _currentPage = 1;
+    _viewer = p;
     _allEntryList = new ArrayList<>(pageEntries.entrySet());
     _entryList = new ArrayList<>(_allEntryList);
     _customSlots = customSlots != null ? customSlots : new HashMap<>();
@@ -161,31 +167,32 @@ public class CustomGUI implements Listener {
 
   private void _createSwitchPageButton() {
     _addItemToSlot(_POS_SWITCH_PAGE_BUTTON, Material.BOOK,
-        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Page",
+        Theme.titlePrefix() + Main.tr(_viewer, "gui-common-page-title"),
         Arrays.asList(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Current Page: " + ChatColor.YELLOW + _currentPage
-                + ChatColor.GRAY + " of " + ChatColor.YELLOW + _maxPage,
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-page-status",
+                "current", _currentPage, "total", _maxPage),
             "",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next Page",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous Page"));
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-next-page"),
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-previous-page")));
   }
 
   private void _createBackButton() {
-    _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW, ChatColor.YELLOW + "Back", null);
+    _addItemToSlot(_POS_BACK_BUTTON, Material.ARROW,
+        Theme.highlight() + Main.tr(_viewer, "gui-common-back-title"), null);
   }
 
   private void _createSearchButton() {
     String term = _searchTerm != null && !_searchTerm.isEmpty()
-        ? ChatColor.YELLOW + _searchTerm
-        : ChatColor.RED + "None";
+        ? Theme.highlight() + _searchTerm
+        : Theme.error() + Main.tr(_viewer, "common-value-none");
 
     _addItemToSlot(_POS_SEARCH_BUTTON, Material.NAME_TAG,
-        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Search",
+        Theme.titlePrefix() + Main.tr(_viewer, "gui-common-search-title"),
         Arrays.asList(
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Search for: " + term,
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-search-current", "term", term),
             "",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Search",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Reset"));
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-search"),
+            Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-reset")));
   }
 
   private void _createSortButton() {
@@ -199,17 +206,17 @@ public class CustomGUI implements Listener {
     for (int i = 0; i < _sortOptions.size(); i++) {
       SortOption option = _sortOptions.get(i);
       if (option != null && option.displayName() != null) {
-        ChatColor color = i == _currentSortIdx ? ChatColor.GREEN : ChatColor.YELLOW;
-        lore.add(ChatColor.YELLOW + "» " + color + option.displayName());
+        ChatColor color = i == _currentSortIdx ? Theme.highlight() : Theme.primary();
+        lore.add(Theme.textSymbol() + "» " + color + option.displayName());
       }
     }
 
     lore.add("");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Next option");
-    lore.add(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Previous option");
+    lore.add(Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-next-option"));
+    lore.add(Theme.textPrefix() + Main.tr(_viewer, "gui-common-action-previous-option"));
 
     _addItemToSlot(_POS_SORT_BUTTON, Material.COMPARATOR,
-        ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Sort", lore);
+        Theme.titlePrefix() + Main.tr(_viewer, "gui-common-sort-title"), lore);
   }
 
   private void _createPlaceholderButtons() {
@@ -218,7 +225,7 @@ public class CustomGUI implements Listener {
 
     for (int i = startIdx; i < endIdx; i++) {
       if (_gui.getItem(i) == null) {
-        _addItemToSlot(i, Material.YELLOW_STAINED_GLASS_PANE, ChatColor.YELLOW + "*", null);
+        _addItemToSlot(i, Theme.glassPaneMaterial(), Theme.highlight() + "*", null);
       }
     }
   }
@@ -235,7 +242,7 @@ public class CustomGUI implements Listener {
       item.setItemMeta(meta);
     }
 
-    _gui.setItem(slot, item);
+    _gui.setItem(slot, _prepareDisplayItem(item));
   }
 
   private List<Map.Entry<String, ItemStack>> _getPageEntries() {
@@ -256,7 +263,7 @@ public class CustomGUI implements Listener {
       String key = entry.getKey();
       int slot = _customSlots.getOrDefault(key, i);
 
-      _gui.setItem(slot, entry.getValue());
+      _gui.setItem(slot, _prepareDisplayItem(entry.getValue()));
       _slotKeyMap.put(slot, key);
     }
 
@@ -271,9 +278,38 @@ public class CustomGUI implements Listener {
       FooterEntry footerEntry = entry.getValue();
       int slot = footerEntry.slot();
 
-      _gui.setItem(slot, footerEntry.item().clone());
+      _gui.setItem(slot, _prepareDisplayItem(footerEntry.item()));
       _slotKeyMap.put(slot, entry.getKey());
     }
+  }
+
+  private ItemStack _prepareDisplayItem(ItemStack item) {
+    if (item == null
+        || _options.contains(Option.ALLOW_ITEM_MOVEMENT)
+        || _options.contains(Option.PRESERVE_ITEM_TOOLTIPS)) {
+      return item;
+    }
+
+    ItemStack displayItem = item.clone();
+
+    if (displayItem.getType().name().endsWith("_SMITHING_TEMPLATE")) {
+      var itemModel = displayItem.getData(DataComponentTypes.ITEM_MODEL);
+
+      displayItem = displayItem.withType(Material.PAPER);
+      displayItem.setData(
+          DataComponentTypes.ITEM_MODEL,
+          itemModel != null ? itemModel : item.getType().key());
+    }
+
+    displayItem.setData(
+        DataComponentTypes.TOOLTIP_DISPLAY,
+        TooltipDisplay.tooltipDisplay().addHiddenComponents(
+            DataComponentTypes.ATTRIBUTE_MODIFIERS,
+            DataComponentTypes.BUNDLE_CONTENTS,
+            DataComponentTypes.TRIM,
+            DataComponentTypes.PROVIDES_TRIM_MATERIAL));
+
+    return displayItem;
   }
 
   @EventHandler
@@ -470,11 +506,11 @@ public class CustomGUI implements Listener {
     }
 
     Dialog dialog = CustomDialog.createConfirmationDialog(
-        "Search",
-        "Enter text to filter items.",
+        Main.tr(p, "gui-common-search-dialog-title"),
+        Main.tr(p, "gui-common-search-dialog-description"),
         null,
         List.of(CustomDialog.createTextInput("search",
-            ChatColor.YELLOW + "» " + ChatColor.GRAY + "Search",
+            Theme.textPrefix() + Main.tr(p, "gui-common-search-dialog-input"),
             _searchTerm)),
         (view, audience) -> {
           Player player = (Player) audience;
@@ -482,7 +518,7 @@ public class CustomGUI implements Listener {
           _applySearchTerm(input);
           player.openInventory(_gui);
         },
-        null);
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 
     p.showDialog(dialog);
   }
@@ -645,6 +681,7 @@ public class CustomGUI implements Listener {
   public enum Option {
     DISABLE_PAGE_BUTTON,
     ALLOW_ITEM_MOVEMENT,
+    PRESERVE_ITEM_TOOLTIPS,
     ENABLE_SEARCH,
     ENABLE_SORT,
   }

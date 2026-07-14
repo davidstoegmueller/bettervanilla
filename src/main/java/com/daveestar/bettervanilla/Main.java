@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.CommandSender;
 
 import com.daveestar.bettervanilla.commands.HelpCommands;
 import com.daveestar.bettervanilla.commands.HereCommand;
@@ -64,15 +65,15 @@ import com.daveestar.bettervanilla.manager.SittingManager;
 import com.daveestar.bettervanilla.manager.RecipeSyncManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
+import com.daveestar.bettervanilla.manager.TranslationManager;
 import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.WaypointsManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import org.bstats.bukkit.Metrics;
-
-import net.md_5.bungee.api.ChatColor;
 
 /*
  * Bettervanilla Java Plugin
@@ -102,6 +103,7 @@ public class Main extends JavaPlugin {
   private RecipeSyncManager _recipeSyncManager;
   private NameTagManager _nameTagManager;
   private HeadsManager _headsManager;
+  private TranslationManager _translationManager;
   private Map<CraftingRecipe, CustomCraftingRecipe> _craftingRecipes;
 
   public void onEnable() {
@@ -117,6 +119,7 @@ public class Main extends JavaPlugin {
 
     // initialize managers with configs
     _settingsManager = new SettingsManager(settingsConfig);
+    _translationManager = new TranslationManager(this, _settingsManager);
     _permissionsManager = new PermissionsManager(permissionsConfig);
     _timerManager = new TimerManager(timerConfig);
     _deathPointManager = new DeathPointsManager(deathPointConfig);
@@ -254,27 +257,39 @@ public class Main extends JavaPlugin {
   }
 
   public static String getPrefix() {
-    return ChatColor.GRAY + "[" + ChatColor.YELLOW + "BetterVanilla" + ChatColor.GRAY + "]"
-        + ChatColor.YELLOW + " » "
-        + ChatColor.GRAY;
+    return Theme.primary() + "[" + Theme.highlight() + Theme.name() + Theme.primary() + "]"
+        + Theme.textSymbol() + " » "
+        + Theme.primary();
   }
 
   public static String getShortPrefix() {
-    return ChatColor.YELLOW + " » " + ChatColor.GRAY;
+    return Theme.textSymbol() + " » " + Theme.primary();
   }
 
   public static String getNoPermissionMessage(Permissions permission) {
-    return getPrefix() + ChatColor.RED + "Sorry! You do not have permission to use this. " + ChatColor.GRAY + "("
-        + ChatColor.RED + permission.getName() + ChatColor.GRAY + ")";
+    return getNoPermissionMessage(null, permission);
+  }
+
+  public static String getNoPermissionMessage(CommandSender sender, Permissions permission) {
+    return getPrefix() + Theme.error() + tr(sender, "common-error-no-permission", "permission", permission.getName());
   }
 
   public static String getShortNoPermissionMessage(Permissions permission) {
-    return ChatColor.RED + "You do not have permission to use this. " + ChatColor.GRAY + "("
-        + ChatColor.RED + permission.getName() + ChatColor.GRAY + ")";
+    return getShortNoPermissionMessage(null, permission);
+  }
+
+  public static String getShortNoPermissionMessage(CommandSender sender, Permissions permission) {
+    return Theme.error() + tr(sender, "common-error-no-permission-short", "permission", permission.getName());
   }
 
   public static String getNoPlayerMessage() {
-    return getPrefix() + ChatColor.RED + "This command can only be run by a player.";
+    return getPrefix() + Theme.error() + tr(null, "common-error-player-only");
+  }
+
+  public static String tr(CommandSender sender, String key, Object... replacements) {
+    if (_mainInstance == null || _mainInstance._translationManager == null)
+      return key;
+    return _mainInstance._translationManager.translate(sender, key, replacements);
   }
 
   public static Main getInstance() {
@@ -361,12 +376,24 @@ public class Main extends JavaPlugin {
     return _headsManager;
   }
 
+  public TranslationManager getTranslationManager() {
+    return _translationManager;
+  }
+
   public CustomCraftingRecipe getCraftingRecipe(CraftingRecipe recipe) {
     if (_craftingRecipes == null) {
       return null;
     }
 
     return _craftingRecipes.get(recipe);
+  }
+
+  public void refreshCraftingRecipes() {
+    if (_craftingRecipes == null) {
+      return;
+    }
+
+    _craftingRecipes.values().forEach(CustomCraftingRecipe::applyRecipe);
   }
 
   public Map<CraftingRecipe, CustomCraftingRecipe> getCraftingRecipes() {

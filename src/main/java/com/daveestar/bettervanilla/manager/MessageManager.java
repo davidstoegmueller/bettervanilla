@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.Theme;
+
 import net.md_5.bungee.api.ChatColor;
 
 public class MessageManager {
@@ -12,16 +15,22 @@ public class MessageManager {
 
   public void sendPrivateMessage(Player sender, Player receiver, String message) {
     String translated = ChatColor.translateAlternateColorCodes('&', message);
-    String prefix = ChatColor.GRAY + "[" + ChatColor.YELLOW + "MSG" + ChatColor.GRAY + "] ";
 
-    sender.sendMessage(
-        prefix + "(" + ChatColor.YELLOW + "YOU" + ChatColor.GRAY + " » " + ChatColor.YELLOW + receiver.getName()
-            + ChatColor.GRAY + ")" + ChatColor.YELLOW + " » " + ChatColor.GRAY + translated);
-    receiver
-        .sendMessage(
-            prefix + "(" + ChatColor.YELLOW + sender.getName() + ChatColor.GRAY + " » " + ChatColor.YELLOW + "YOU"
-                + ChatColor.GRAY + ")" + ChatColor.YELLOW + " » " + ChatColor.GRAY
-                + translated);
+    String senderPrefix = Theme.primary() + "[" + Theme.highlight()
+        + Main.tr(sender, "private-message-label") + Theme.primary() + "] ";
+    String senderYou = Theme.highlight() + Main.tr(sender, "private-message-you") + Theme.primary();
+    sender.sendMessage(senderPrefix + Main.tr(sender, "private-message-outgoing-format",
+        "you", senderYou,
+        "recipient", Theme.highlight() + receiver.getName() + Theme.primary(),
+        "message", Theme.textPrefix() + translated));
+
+    String receiverPrefix = Theme.primary() + "[" + Theme.highlight()
+        + Main.tr(receiver, "private-message-label") + Theme.primary() + "] ";
+    String receiverYou = Theme.highlight() + Main.tr(receiver, "private-message-you") + Theme.primary();
+    receiver.sendMessage(receiverPrefix + Main.tr(receiver, "private-message-incoming-format",
+        "sender", Theme.highlight() + sender.getName() + Theme.primary(),
+        "you", receiverYou,
+        "message", Theme.textPrefix() + translated));
 
     _lastMessages.put(sender, receiver);
     _lastMessages.put(receiver, sender);

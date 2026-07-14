@@ -12,8 +12,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
 import com.daveestar.bettervanilla.manager.TimerManager;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class TimerCommand implements TabExecutor {
 
@@ -35,7 +34,7 @@ public class TimerCommand implements TabExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.TIMER.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.TIMER));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.TIMER));
       return true;
     }
 
@@ -67,27 +66,27 @@ public class TimerCommand implements TabExecutor {
 
   private void handleResume(Player p, TimerManager timer) {
     if (timer.isRunning()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "The timer is already running.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-timer-error-already-running"));
     } else {
       timer.setRunning(true);
       timer.setRunningOverride(true);
-      p.sendMessage(Main.getPrefix() + "Timer has been resumed.");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "command-timer-resumed"));
     }
   }
 
   private void handlePause(Player p, TimerManager timer) {
     if (!timer.isRunning()) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "No active timer to pause.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-timer-error-not-running"));
     } else {
       timer.setRunning(false);
       timer.setRunningOverride(false);
-      p.sendMessage(Main.getPrefix() + "Timer has been paused.");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "command-timer-paused"));
     }
   }
 
   private void handleSet(Player p, TimerManager timer, String[] args) {
     if (args.length != 2) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/timer set <time>");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-timer-set-usage"));
       return;
     }
 
@@ -96,10 +95,10 @@ public class TimerCommand implements TabExecutor {
       timer.setRunning(false);
       timer.setRunningOverride(false);
       timer.setGlobalTimer(time);
-      p.sendMessage(Main.getPrefix() + "Timer has been set to " + ChatColor.YELLOW + time
-          + ChatColor.GRAY + " seconds.");
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "command-timer-set-success", "time",
+          Theme.highlight().toString() + time + Theme.primary()));
     } catch (NumberFormatException e) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Invalid number. Please provide a valid time in seconds.");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-timer-error-invalid-number"));
     }
   }
 
@@ -108,13 +107,11 @@ public class TimerCommand implements TabExecutor {
     timer.setRunningOverride(false);
     timer.setGlobalTimer(0);
     timer.resetPlayerTimers();
-    p.sendMessage(
-        Main.getPrefix() + "Timer has been reset to" + ChatColor.YELLOW + " 0 " + ChatColor.GRAY + "seconds.");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "command-timer-reset"));
   }
 
   private void sendUsageMessage(Player p) {
-    p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW
-        + "/timer <resume | pause | reset | set> [time]");
+    p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-timer-usage"));
   }
 
   @Override

@@ -3,6 +3,7 @@ package com.daveestar.bettervanilla.events;
 import java.util.regex.Pattern;
 
 import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +24,7 @@ import com.daveestar.bettervanilla.manager.VanishManager;
 import com.daveestar.bettervanilla.manager.TabListManager;
 import com.daveestar.bettervanilla.manager.TagManager;
 import com.daveestar.bettervanilla.manager.NameTagManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -64,6 +66,7 @@ public class ChatMessages implements Listener {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent e) {
     Player p = (Player) e.getPlayer();
+    e.joinMessage(null);
 
     _permissionsManager.onPlayerJoined(p);
 
@@ -76,12 +79,9 @@ public class ChatMessages implements Listener {
 
     boolean wasVanished = _vanishManager.isVanished(p);
     if (wasVanished) {
-      e.joinMessage(null);
+      // Vanished players do not produce a join announcement.
     } else {
-      String tagSuffix = _tagManager.getFormattedTag(p);
-      e.joinMessage(
-          Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + "+" + ChatColor.GRAY + "] " + ChatColor.YELLOW
-              + p.getName() + tagSuffix));
+      _broadcastJoinMessage(p);
     }
 
     _afkManager.onPlayerJoined(p);
@@ -97,13 +97,11 @@ public class ChatMessages implements Listener {
   public void onPlayerLeave(PlayerQuitEvent e) {
     Player p = (Player) e.getPlayer();
 
+    e.quitMessage(null);
     if (_vanishManager.isVanished(p)) {
-      e.quitMessage(null);
+      // Vanished players do not produce a quit announcement.
     } else {
-      String tagSuffix = _tagManager.getFormattedTag(p);
-      e.quitMessage(Component
-          .text(ChatColor.GRAY + "[" + ChatColor.RED + "-" + ChatColor.GRAY + "] " + ChatColor.RED + p.getName()
-              + tagSuffix));
+      _broadcastQuitMessage(p);
     }
 
     _permissionsManager.onPlayerLeft(p);
@@ -146,7 +144,7 @@ public class ChatMessages implements Listener {
 
         if (formatted.toLowerCase().contains(lowerName) || formatted.toLowerCase().contains("@" + lowerName)) {
           formatted = formatted.replaceAll("(?i)@?" + Pattern.quote(name),
-              ChatColor.YELLOW + "" + ChatColor.BOLD + name + ChatColor.GRAY);
+              Theme.highlight() + "" + ChatColor.BOLD + name + Theme.primary());
 
           chatViewer.playSound(chatViewer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1);
         }
@@ -157,8 +155,29 @@ public class ChatMessages implements Listener {
         tagSuffix = _tagManager.getFormattedTag(sourcePlayer);
       }
 
-      return Component.text(ChatColor.GRAY + "[" + ChatColor.YELLOW + source.getName() + ChatColor.GRAY + "]"
-          + tagSuffix + ChatColor.YELLOW + " » " + ChatColor.GRAY + formatted);
+      CommandSender commandViewer = viewer instanceof CommandSender sender ? sender : null;
+      return Component.text(Main.tr(commandViewer, "chat-message-format",
+          "sender", Theme.primary() + "[" + Theme.highlight() + source.getName() + Theme.primary() + "]",
+          "tag", tagSuffix,
+          "message", Theme.textPrefix() + formatted));
     });
+  }
+
+  private void _broadcastJoinMessage(Player joinedPlayer) {
+    String tagSuffix = _tagManager.getFormattedTag(joinedPlayer);
+    _plugin.getServer().getOnlinePlayers().forEach(viewer -> viewer.sendMessage(Component.text(
+        Theme.primary() + "[" + Theme.highlight() + "+" + Theme.primary() + "] "
+            + Main.tr(viewer, "event-player-joined",
+                "player", Theme.highlight() + joinedPlayer.getName() + tagSuffix + Theme.primary()))));
+  }
+
+  private void _broadcastQuitMessage(Player leavingPlayer) {
+    String tagSuffix = _tagManager.getFormattedTag(leavingPlayer);
+    _plugin.getServer().getOnlinePlayers().stream()
+        .filter(viewer -> !viewer.equals(leavingPlayer))
+        .forEach(viewer -> viewer.sendMessage(Component.text(
+            Theme.primary() + "[" + Theme.error() + "-" + Theme.primary() + "] "
+                + Main.tr(viewer, "event-player-left",
+                    "player", Theme.error() + leavingPlayer.getName() + tagSuffix + Theme.primary()))));
   }
 }

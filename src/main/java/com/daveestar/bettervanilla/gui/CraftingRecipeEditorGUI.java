@@ -24,9 +24,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.gui.CraftingRecipeSettingsGUI.RecipeConfig;
 import com.daveestar.bettervanilla.manager.SettingsManager;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
 
 public class CraftingRecipeEditorGUI implements Listener {
   private static final int RESULT_SLOT = 0;
@@ -47,14 +47,15 @@ public class CraftingRecipeEditorGUI implements Listener {
     Inventory inventory = Bukkit.createInventory(
         session,
         InventoryType.WORKBENCH,
-        Component.text(ChatColor.YELLOW + "" + ChatColor.BOLD + "» " + recipeConfig.recipe().getName()));
+        Component.text(Theme.titlePrefix()
+            + CraftingRecipeSettingsGUI.getRecipeName(p, recipeConfig.recipe())));
 
     session.bindInventory(inventory);
-    inventory.setItem(RESULT_SLOT, _createResultItem(recipeConfig));
+    inventory.setItem(RESULT_SLOT, _createResultItem(p, recipeConfig));
 
     p.openInventory(inventory);
-    p.sendMessage(Main.getPrefix()
-        + ChatColor.GRAY + "Place items in the crafting grid, then click the result to save.");
+    p.sendMessage(Main.getPrefix() + Theme.primary()
+        + Main.tr(p, "gui-crafting-recipe-editor-instructions"));
   }
 
   // ---------------
@@ -66,7 +67,8 @@ public class CraftingRecipeEditorGUI implements Listener {
     List<ItemStack> matrix = _collectMatrix(inventory);
 
     if (!_hasIngredients(matrix)) {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Please add at least one ingredient before saving.");
+      p.sendMessage(Main.getPrefix() + Theme.error()
+          + Main.tr(p, "gui-crafting-recipe-editor-error-no-ingredients"));
       p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
       return;
     }
@@ -78,14 +80,16 @@ public class CraftingRecipeEditorGUI implements Listener {
     _clearGridItems(inventory);
     session._markSaved();
 
-    p.sendMessage(Main.getPrefix()
-        + ChatColor.GRAY + "Saved recipe for "
-        + ChatColor.YELLOW + session._recipeConfig().recipe().getName() + ChatColor.GRAY + ".");
+    p.sendMessage(Main.getPrefix() + Theme.primary()
+        + Main.tr(p, "gui-crafting-recipe-editor-saved",
+            "recipe", Theme.highlight()
+                + CraftingRecipeSettingsGUI.getRecipeName(p, session._recipeConfig().recipe())
+                + Theme.primary()));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
     p.closeInventory();
   }
 
-  private ItemStack _createResultItem(RecipeConfig recipeConfig) {
+  private ItemStack _createResultItem(Player viewer, RecipeConfig recipeConfig) {
     ItemStack baseItem = recipeConfig.recipeResultItemSupplier().get();
     ItemStack result = baseItem == null ? new ItemStack(Material.BARRIER) : baseItem.clone();
 
@@ -93,7 +97,8 @@ public class CraftingRecipeEditorGUI implements Listener {
     if (meta != null) {
       List<Component> lore = meta.lore() != null ? new ArrayList<>(meta.lore()) : new ArrayList<>();
       lore.add(Component.text(""));
-      lore.add(Component.text(ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Save Recipe"));
+      lore.add(Component.text(Theme.textPrefix()
+          + Main.tr(viewer, "gui-crafting-recipe-editor-action-save")));
       meta.lore(lore);
       result.setItemMeta(meta);
     }

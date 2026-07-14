@@ -26,6 +26,7 @@ import com.daveestar.bettervanilla.manager.NavigationManager;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.NavigationData;
+import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -51,10 +52,10 @@ public class DeathPointsGUI {
         .collect(Collectors.toMap(pointUUID -> pointUUID, pointUUID -> _createDeathPointItem(p, pointUUID), (a, b) -> a,
             LinkedHashMap::new));
 
-    String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Death Points";
+    String title = Theme.titlePrefix() + Main.tr(p, "gui-death-points-title");
     CustomGUI deathPointsGUI = new CustomGUI(_plugin, p, title, deathPointEntries, 3, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SORT));
-    deathPointsGUI.setSortOptions(_createDeathPointSortOptions(sortData));
+    deathPointsGUI.setSortOptions(_createDeathPointSortOptions(p, sortData));
     deathPointsGUI.setSortButtonSlot(_footerSortSlot(3));
     deathPointsGUI.open(p);
 
@@ -84,7 +85,7 @@ public class DeathPointsGUI {
   // ---------------
 
   private void _displayOptionsGUI(Player p, String pointUUID, CustomGUI parentMenu) {
-    String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Deathpoint Options";
+    String title = Theme.titlePrefix() + Main.tr(p, "gui-death-points-options-title");
 
     // create a new GUI for the options-menu
     Map<String, ItemStack> optionPageEntries = new HashMap<>();
@@ -93,11 +94,11 @@ public class DeathPointsGUI {
     boolean inventoryAvailable = _deathPointsManager.hasDeathPointInventory(p.getUniqueId().toString(), pointUUID);
 
     if (inventoryAvailable) {
-      optionPageEntries.put("items", _createListItem());
+      optionPageEntries.put("items", _createListItem(p));
       customSlots.put("items", 3);
     }
 
-    optionPageEntries.put("delete", _createDeleteItem());
+    optionPageEntries.put("delete", _createDeleteItem(p));
     customSlots.put("delete", inventoryAvailable ? 5 : 4);
 
     CustomGUI optionsGUI = new CustomGUI(_plugin, p, title, optionPageEntries, 2, customSlots, parentMenu,
@@ -130,8 +131,9 @@ public class DeathPointsGUI {
     String playerUUID = p.getUniqueId().toString();
     Location deathPointLocation = _deathPointsManager.getDeathPointLocation(playerUUID, pointUUID);
 
-    NavigationData navigationData = new NavigationData("DEATH", deathPointLocation, NavigationType.WAYPOINT,
-        Color.RED);
+    NavigationData navigationData = new NavigationData(
+        Main.tr(p, "gui-death-points-navigation-destination-name"), deathPointLocation,
+        NavigationType.WAYPOINT, Color.RED);
     _navigationManager.startNavigation(p, navigationData);
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
@@ -142,18 +144,19 @@ public class DeathPointsGUI {
     _deathPointsManager.removeDeathPoint(playerUUID, pointUUID);
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
-    p.sendMessage(Main.getPrefix() + "Your death point has been successfully removed.");
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-death-points-removed-message"));
   }
 
   private void _displayItemsGUI(Player p, String pointUUID, CustomGUI parentMenu) {
-    String title = ChatColor.YELLOW + "" + ChatColor.BOLD + "» Deathpoint Items";
+    String title = Theme.titlePrefix() + Main.tr(p, "gui-death-points-items-title");
 
     ItemStack[] deathPointItems = _deathPointsManager.getDeathPointItems(p, pointUUID);
 
     Map<String, ItemStack> itemPageEntries = Arrays.stream(deathPointItems)
         .collect(Collectors.toMap(item -> UUID.randomUUID().toString(), item -> item));
 
-    CustomGUI itemsGUI = new CustomGUI(_plugin, p, title, itemPageEntries, 6, null, parentMenu, null);
+    CustomGUI itemsGUI = new CustomGUI(_plugin, p, title, itemPageEntries, 6, null, parentMenu,
+        EnumSet.of(CustomGUI.Option.PRESERVE_ITEM_TOOLTIPS));
     Map<String, CustomGUI.ClickAction> itemClickAtions = new HashMap<>();
     itemsGUI.setClickActions(itemClickAtions);
 
@@ -171,35 +174,38 @@ public class DeathPointsGUI {
 
     Location playerLocation = p.getLocation().toBlockLocation();
     World deathPointWorld = deathPointLocation.getWorld();
-    String worldName = deathPointWorld != null ? deathPointWorld.getName() : "Unknown";
+    String worldName = deathPointWorld != null ? deathPointWorld.getName() : Main.tr(p, "common-value-unknown");
 
     String distanceString = "";
     if (deathPointWorld != null && deathPointWorld.equals(playerLocation.getWorld())) {
       long distance = Math.round(playerLocation.distance(deathPointLocation));
 
-      distanceString = "" + distance + ChatColor.GRAY + " blocks";
+      distanceString = Main.tr(p, "gui-common-distance-blocks", "distance", Long.toString(distance));
     } else {
-      distanceString = "Not Available";
+      distanceString = Main.tr(p, "gui-common-value-not-available");
     }
 
     ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Death Point"
-          + ChatColor.GRAY + " (" + deathPointDateTime + ")"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(p, "gui-death-points-item-title",
+          "details", Theme.primary() + "(" + deathPointDateTime + ")")));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "World: " + ChatColor.YELLOW + worldName,
+          Theme.textPrefix() + Main.tr(p, "gui-common-world", "world", Theme.highlight() + worldName),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "X: " + ChatColor.YELLOW + deathPointLocation.getBlockX(),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Y: " + ChatColor.YELLOW + deathPointLocation.getBlockY(),
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Z: " + ChatColor.YELLOW + deathPointLocation.getBlockZ(),
+          Theme.textPrefix() + Main.tr(p, "gui-common-coordinate-x",
+              "x", Theme.highlight() + Integer.toString(deathPointLocation.getBlockX())),
+          Theme.textPrefix() + Main.tr(p, "gui-common-coordinate-y",
+              "y", Theme.highlight() + Integer.toString(deathPointLocation.getBlockY())),
+          Theme.textPrefix() + Main.tr(p, "gui-common-coordinate-z",
+              "z", Theme.highlight() + Integer.toString(deathPointLocation.getBlockZ())),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Distance: " + ChatColor.YELLOW + distanceString,
+          Theme.textPrefix() + Main.tr(p, "gui-common-distance", "distance", Theme.highlight() + distanceString),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Start navigation",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Right-Click: Options").stream()
+          Theme.textPrefix() + Main.tr(p, "gui-common-action-start-navigation"),
+          Theme.textPrefix() + Main.tr(p, "gui-common-action-open-options")).stream()
           .map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -207,16 +213,16 @@ public class DeathPointsGUI {
     return item;
   }
 
-  private ItemStack _createListItem() {
+  private ItemStack _createListItem(Player viewer) {
     ItemStack item = new ItemStack(Material.ENDER_EYE);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Show Inventory"));
+          Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-death-points-inventory-item-title")));
       meta.lore(Arrays.asList(
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: View inventory")
+          Theme.textPrefix() + Main.tr(viewer, "gui-death-points-action-view-inventory"))
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -224,17 +230,18 @@ public class DeathPointsGUI {
     return item;
   }
 
-  private ItemStack _createDeleteItem() {
+  private ItemStack _createDeleteItem(Player viewer) {
     ItemStack item = new ItemStack(Material.BARRIER);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
-      meta.displayName(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + "Delete"));
+      meta.displayName(Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-death-points-delete-item-title")));
       meta.lore(Arrays.asList(
-          ChatColor.YELLOW + "» " + ChatColor.RED + ChatColor.BOLD + "ATTENTION: " + ChatColor.GRAY
-              + "As you delete this death point, you will lose all items stored in it.",
+          Theme.textPrefix() + Theme.error() + ChatColor.BOLD + Main.tr(viewer, "gui-common-warning-label")
+              + ChatColor.RESET + Theme.primary() + " "
+              + Main.tr(viewer, "gui-death-points-delete-warning"),
           "",
-          ChatColor.YELLOW + "» " + ChatColor.GRAY + "Left-Click: Delete death point")
+          Theme.textPrefix() + Main.tr(viewer, "gui-death-points-action-delete"))
           .stream().map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -267,7 +274,8 @@ public class DeathPointsGUI {
     return sortData;
   }
 
-  private List<CustomGUI.SortOption> _createDeathPointSortOptions(Map<String, DeathPointSortData> sortData) {
+  private List<CustomGUI.SortOption> _createDeathPointSortOptions(Player viewer,
+      Map<String, DeathPointSortData> sortData) {
     Comparator<Map.Entry<String, ItemStack>> byNewest = Comparator.<Map.Entry<String, ItemStack>>comparingLong(
         entry -> sortData.get(entry.getKey()).timestamp())
         .reversed();
@@ -281,10 +289,10 @@ public class DeathPointsGUI {
     Comparator<Map.Entry<String, ItemStack>> byFarthest = byNearest.reversed();
 
     return List.of(
-        new CustomGUI.SortOption("Date (New → Old)", byNewest),
-        new CustomGUI.SortOption("Date (Old → New", byOldest),
-        new CustomGUI.SortOption("Distance (Near → Far)", byNearest),
-        new CustomGUI.SortOption("Distance (Far → Near)", byFarthest));
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-death-points-sort-newest-first"), byNewest),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-death-points-sort-oldest-first"), byOldest),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-distance-nearest-first"), byNearest),
+        new CustomGUI.SortOption(Main.tr(viewer, "gui-common-sort-distance-farthest-first"), byFarthest));
   }
 
   private record DeathPointSortData(long timestamp, long distance) {

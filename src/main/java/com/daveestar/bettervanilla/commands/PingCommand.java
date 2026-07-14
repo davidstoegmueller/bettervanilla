@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.enums.Permissions;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class PingCommand implements CommandExecutor {
   @Override
@@ -22,29 +21,29 @@ public class PingCommand implements CommandExecutor {
     Player p = (Player) cs;
 
     if (!p.hasPermission(Permissions.PING.getName())) {
-      p.sendMessage(Main.getNoPermissionMessage(Permissions.PING));
+      p.sendMessage(Main.getNoPermissionMessage(p, Permissions.PING));
       return true;
     }
 
     if (args.length == 0) {
       // show ping for current player
       p.sendMessage(
-          Main.getPrefix() + "Your ping is " + ChatColor.YELLOW + p.getPing() + "ms");
+          Main.getPrefix() + Main.tr(p, "command-ping-self", "ping", Theme.highlight().toString() + p.getPing()));
     } else if (args.length == 1) {
       // show ping for specific player
       Player targetPlayer = (Player) Bukkit.getPlayer(args[0]);
 
       if (targetPlayer != null) {
-        p.sendMessage(
-            Main.getPrefix() + "The ping of " + ChatColor.YELLOW + targetPlayer.getName() + ChatColor.GRAY + " is "
-                + ChatColor.YELLOW + targetPlayer.getPing() + "ms");
+        p.sendMessage(Main.getPrefix() + Main.tr(p, "command-ping-other",
+            "player", Theme.highlight() + targetPlayer.getName() + Theme.primary(),
+            "ping", Theme.highlight().toString() + targetPlayer.getPing()));
       } else {
-        p.sendMessage(Main.getPrefix() + ChatColor.RED + "The requested player " + ChatColor.YELLOW + args[0]
-            + ChatColor.RED + " is currently not online!");
+        p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-player-offline",
+            "player", Theme.highlight() + args[0] + Theme.error()));
       }
 
     } else {
-      p.sendMessage(Main.getPrefix() + ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/ping [name]");
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-ping-usage"));
     }
 
     return true;

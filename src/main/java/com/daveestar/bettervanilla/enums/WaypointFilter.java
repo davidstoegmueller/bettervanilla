@@ -1,9 +1,16 @@
 package com.daveestar.bettervanilla.enums;
 
+import java.util.function.Supplier;
+
+import org.bukkit.command.CommandSender;
+
+import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.utils.Theme;
+
 import net.md_5.bungee.api.ChatColor;
 
 public enum WaypointFilter {
-  ALL("All", ChatColor.GRAY) {
+  ALL("enum-waypoint-filter-all", Theme::primary) {
     @Override
     public WaypointFilter next() {
       return PUBLIC;
@@ -19,7 +26,7 @@ public enum WaypointFilter {
       return true;
     }
   },
-  PUBLIC("Public", ChatColor.GREEN) {
+  PUBLIC("enum-waypoint-filter-public", Theme::highlight) {
     @Override
     public WaypointFilter next() {
       return PRIVATE;
@@ -35,7 +42,7 @@ public enum WaypointFilter {
       return visibility == WaypointVisibility.PUBLIC;
     }
   },
-  PRIVATE("Private", ChatColor.RED) {
+  PRIVATE("enum-waypoint-filter-private", Theme::error) {
     @Override
     public WaypointFilter next() {
       return ALL;
@@ -52,16 +59,20 @@ public enum WaypointFilter {
     }
   };
 
-  private final String _displayName;
-  private final ChatColor _color;
+  private final String _translationKey;
+  private final Supplier<ChatColor> _color;
 
-  WaypointFilter(String displayName, ChatColor color) {
-    _displayName = displayName;
+  WaypointFilter(String translationKey, Supplier<ChatColor> color) {
+    _translationKey = translationKey;
     _color = color;
   }
 
   public String getColoredName() {
-    return _color + _displayName + ChatColor.YELLOW;
+    return getColoredName(null);
+  }
+
+  public String getColoredName(CommandSender viewer) {
+    return _color.get() + Main.tr(viewer, _translationKey) + Theme.highlight();
   }
 
   public abstract WaypointFilter next();

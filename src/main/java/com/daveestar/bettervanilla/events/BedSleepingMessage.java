@@ -20,8 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.utils.ActionBar;
-
-import net.md_5.bungee.api.ChatColor;
+import com.daveestar.bettervanilla.utils.Theme;
 
 public class BedSleepingMessage implements Listener {
 
@@ -83,12 +82,12 @@ public class BedSleepingMessage implements Listener {
     int percentage = _settingsManager.getPlayersSleepingPercentage();
     int requiredPlayers = _calculateRequiredPlayers(totalPlayers, percentage);
 
-    String message = ChatColor.GRAY + "Sleeping: " + ChatColor.YELLOW + sleepingPlayers + ChatColor.GRAY + " of "
-        + ChatColor.YELLOW + requiredPlayers + ChatColor.GRAY + " players required";
-
     for (UUID playerId : _getWorldSleepers(world)) {
       Player player = Bukkit.getPlayer(playerId);
       if (player != null && player.isSleeping()) {
+        String message = Theme.primary() + Main.tr(player, "event-sleeping-progress-actionbar",
+            "sleeping", Theme.highlight() + String.valueOf(sleepingPlayers) + Theme.primary(),
+            "required", Theme.highlight() + String.valueOf(requiredPlayers) + Theme.primary());
         _actionBar.startOverride(player, message, ActionBar.Priority.HIGH);
       }
     }

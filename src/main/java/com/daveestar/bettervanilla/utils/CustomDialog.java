@@ -16,19 +16,18 @@ import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput.Optio
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback.Options;
-import net.md_5.bungee.api.ChatColor;
-
 public class CustomDialog {
   public static Dialog createConfirmationDialog(String title, String message, String errorMessage,
-      List<DialogInput> inputs,
-      DialogActionCallback yesCallback, DialogActionCallback noCallback) {
+      List<DialogInput> inputs, DialogActionCallback yesCallback, DialogActionCallback noCallback,
+      String applyLabel, String cancelLabel) {
     boolean hasError = errorMessage != null && !errorMessage.isEmpty();
 
     DialogBody dialogBody1 = DialogBody.plainMessage(Component.text(""));
     DialogBody dialogBody2 = DialogBody
-        .plainMessage(Component.text(ChatColor.RED + "" + ChatColor.BOLD + "» " + ChatColor.YELLOW + title));
-    DialogBody dialogBody3 = DialogBody.plainMessage(Component.text(ChatColor.GRAY + message));
-    DialogBody dialogBodyError = DialogBody.plainMessage(Component.text(ChatColor.RED + errorMessage));
+        .plainMessage(Component.text(Theme.titlePrefix() + title));
+    DialogBody dialogBody3 = DialogBody.plainMessage(Component.text(Theme.primary() + message));
+    DialogBody dialogBodyError = DialogBody
+        .plainMessage(Component.text(hasError ? Theme.error() + errorMessage : ""));
 
     List<DialogBody> body = new ArrayList<>(List.of(dialogBody1, dialogBody2, dialogBody3));
     if (hasError) {
@@ -47,7 +46,7 @@ public class CustomDialog {
     }
 
     DialogAction yesAction = DialogAction.customClick(yesCallback, Options.builder().uses(1).build());
-    ActionButton yesButton = ActionButton.builder(Component.text("Apply"))
+    ActionButton yesButton = ActionButton.builder(Component.text(applyLabel))
         .action(yesAction).build();
 
     if (noCallback == null) {
@@ -56,7 +55,7 @@ public class CustomDialog {
     }
 
     DialogAction noAction = DialogAction.customClick(noCallback, Options.builder().uses(1).build());
-    ActionButton noButton = ActionButton.builder(Component.text("Cancel")).action(noAction).build();
+    ActionButton noButton = ActionButton.builder(Component.text(cancelLabel)).action(noAction).build();
 
     DialogType dialogType = DialogType.confirmation(yesButton, noButton);
 
