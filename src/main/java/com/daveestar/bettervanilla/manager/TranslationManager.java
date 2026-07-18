@@ -1,9 +1,6 @@
 package com.daveestar.bettervanilla.manager;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
@@ -12,10 +9,11 @@ import java.util.UUID;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.daveestar.bettervanilla.enums.Language;
+import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.Theme;
 
 import net.md_5.bungee.api.ChatColor;
@@ -89,23 +87,14 @@ public class TranslationManager {
 
   private Map<String, String> _load(Language language) {
     String resourceName = "translations_" + language.getCode() + ".yml";
-    try (InputStream stream = _plugin.getResource(resourceName)) {
-      if (stream == null) {
-        _plugin.getLogger().severe("Missing translation resource " + resourceName);
-        return Collections.emptyMap();
-      }
-      YamlConfiguration yaml = YamlConfiguration.loadConfiguration(
-          new InputStreamReader(stream, StandardCharsets.UTF_8));
-      Map<String, String> values = new LinkedHashMap<>();
-      for (String key : yaml.getKeys(false)) {
-        if (yaml.isString(key)) values.put(key, yaml.getString(key, key));
-      }
-      return Collections.unmodifiableMap(values);
-    } catch (IOException exception) {
-      _plugin.getLogger().severe("Could not close translation resource " + resourceName + ": "
-          + exception.getMessage());
-      return Collections.emptyMap();
+    File translationsDirectory = new File(_plugin.getDataFolder(), "translations");
+    Config translationConfig = new Config(resourceName, translationsDirectory, _plugin);
+    FileConfiguration yaml = translationConfig.getFileConfig();
+    Map<String, String> values = new LinkedHashMap<>();
+    for (String key : yaml.getKeys(false)) {
+      if (yaml.isString(key)) values.put(key, yaml.getString(key, key));
     }
+    return Collections.unmodifiableMap(values);
   }
 
   private void _validateKeyParity() {
