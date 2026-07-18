@@ -271,7 +271,7 @@ admin-sleep-percentage-dialog-description: Set the percentage of players require
 admin-heads-api-dialog-input: Heads Explorer API Key
 admin-heads-api-dialog-title: Heads Explorer API Key
 admin-heads-api-dialog-description: Optionally provide a minecraft-heads.com API key to improve access limits.
-admin-motd-set-message: 'Server MOTD set to:\nLine 1: {line1}\n{primary}Line 2: {line2}'
+admin-motd-set-message: "Server MOTD set to:\nLine 1: {line1}\n{primary}Line 2: {line2}"
 admin-maintenance-set-message: "Maintenance message set to: {highlight}{message}"
 admin-afk-time-set-message: AFK time set to {highlight}{minutes}{primary} minutes.
 admin-sleep-percentage-set-message: Players sleeping percentage set to {highlight}{percentage}{primary}%.

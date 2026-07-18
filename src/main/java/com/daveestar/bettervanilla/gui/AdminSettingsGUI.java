@@ -35,6 +35,7 @@ import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
 public class AdminSettingsGUI {
@@ -419,7 +420,8 @@ public class AdminSettingsGUI {
 
           Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           Theme.textPrefix() + _t("admin-maintenance-message", "message",
-              message != null && !message.isEmpty() ? Theme.highlight() + message : Theme.error() + _t("common-value-none")),
+              message != null && !message.isEmpty() ? Theme.highlight() + message
+                  : Theme.error() + _t("common-value-none")),
           "",
           Theme.textPrefix() + _t("gui-common-action-toggle"),
           Theme.textPrefix() + _t("admin-maintenance-action-message"))
@@ -912,8 +914,10 @@ public class AdminSettingsGUI {
       lore.add(Theme.textPrefix() + _t("gui-common-state", "state", _state(enabled)));
       lore.add(Theme.textPrefix() + _t("admin-vein-settings-max-size", "size", maxSize));
       lore.add(Theme.textPrefix() + _t("admin-vein-settings-sound", "state", _state(sound)));
-      lore.add(Theme.textPrefix() + _t("admin-vein-settings-tools", "selected", allowedTools.size(), "total", totalTools));
-      lore.add(Theme.textPrefix() + _t("admin-vein-settings-blocks", "selected", allowedBlocks.size(), "total", totalBlocks));
+      lore.add(
+          Theme.textPrefix() + _t("admin-vein-settings-tools", "selected", allowedTools.size(), "total", totalTools));
+      lore.add(Theme.textPrefix()
+          + _t("admin-vein-settings-blocks", "selected", allowedBlocks.size(), "total", totalBlocks));
       lore.add("");
       lore.add(Theme.textPrefix() + _t("gui-common-action-open"));
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
@@ -943,8 +947,10 @@ public class AdminSettingsGUI {
       lore.add(Theme.textPrefix() + _t("gui-common-state", "state", _state(enabled)));
       lore.add(Theme.textPrefix() + _t("admin-vein-settings-max-size", "size", maxSize));
       lore.add(Theme.textPrefix() + _t("admin-vein-settings-sound", "state", _state(sound)));
-      lore.add(Theme.textPrefix() + _t("admin-vein-settings-tools", "selected", allowedTools.size(), "total", totalTools));
-      lore.add(Theme.textPrefix() + _t("admin-vein-settings-blocks", "selected", allowedBlocks.size(), "total", totalBlocks));
+      lore.add(
+          Theme.textPrefix() + _t("admin-vein-settings-tools", "selected", allowedTools.size(), "total", totalTools));
+      lore.add(Theme.textPrefix()
+          + _t("admin-vein-settings-blocks", "selected", allowedBlocks.size(), "total", totalBlocks));
       lore.add("");
       lore.add(Theme.textPrefix() + _t("gui-common-action-open"));
       meta.lore(lore.stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
@@ -1072,9 +1078,11 @@ public class AdminSettingsGUI {
 
     _settingsManager.setServerMOTD(line1, line2);
 
-    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-motd-set-message",
-        "line1", ChatColor.translateAlternateColorCodes('&', line1),
-        "line2", ChatColor.translateAlternateColorCodes('&', line2))));
+    String confirmationTemplate = Main.tr(p, "admin-motd-set-message").replace("\\n", "\n");
+    String confirmation = Main.getPrefix() + confirmationTemplate
+        .replace("{line1}", ChatColor.translateAlternateColorCodes('&', line1))
+        .replace("{line2}", ChatColor.translateAlternateColorCodes('&', line2));
+    p.sendMessage(LegacyComponentSerializer.legacySection().deserialize(confirmation));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);

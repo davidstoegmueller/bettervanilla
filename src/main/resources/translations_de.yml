@@ -271,7 +271,7 @@ admin-sleep-percentage-dialog-description: Lege fest, wie viel Prozent der Spiel
 admin-heads-api-dialog-input: Köpfe-Explorer-API-Schlüssel
 admin-heads-api-dialog-title: Köpfe-Explorer-API-Schlüssel
 admin-heads-api-dialog-description: Hinterlege optional einen API-Schlüssel von minecraft-heads.com, um höhere Abfragelimits zu erhalten.
-admin-motd-set-message: 'Server-MOTD gesetzt:\nZeile 1: {line1}\n{primary}Zeile 2: {line2}'
+admin-motd-set-message: "Server-MOTD gesetzt:\nZeile 1: {line1}\n{primary}Zeile 2: {line2}"
 admin-maintenance-set-message: "Wartungsnachricht gesetzt: {highlight}{message}"
 admin-afk-time-set-message: AFK-Zeit auf {highlight}{minutes}{primary} Minuten gesetzt.
 admin-sleep-percentage-set-message: Der benötigte Schlafanteil wurde auf {highlight}{percentage}{primary} % gesetzt.
