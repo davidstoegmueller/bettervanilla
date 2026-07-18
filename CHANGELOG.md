@@ -2,6 +2,10 @@
 
 # Changelog
 
+## [1.14.2] - 18.07.2026
+
+- 🌐 **MOTD Display Issue in Chat** - Fixed MOTD display issue in chat as you edited the MOTD in the admin settings GUI.
+
 ## [1.14.1] - 18.07.2026
 
 - 🌐 **Translation Coloring Issue** - Fixed coloring issue in vein miner/vein chopper items UI that was introduced with the i18n feature.
