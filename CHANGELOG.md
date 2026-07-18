@@ -2,6 +2,11 @@
 
 # Changelog
 
+## [1.14.1] - 18.07.2026
+
+- 🌐 **Translation Coloring Issue** - Fixed coloring issue in vein miner/vein chopper items UI that was introduced with the i18n feature.
+- 🌐 **Translation Config Folder** - Expose the translations folder to pugins directory to be able to customize all UI texts.
+
 ## [1.14.0] - 14.07.2026
 
 - 📦 **Minecraft Version 26.2** - Upgraded the plugin to minecraft version 26.2

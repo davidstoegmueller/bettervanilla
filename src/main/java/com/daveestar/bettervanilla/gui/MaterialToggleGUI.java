@@ -22,6 +22,7 @@ import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.Theme;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 
 public class MaterialToggleGUI implements Listener {
   private final Main _plugin;
@@ -50,7 +51,8 @@ public class MaterialToggleGUI implements Listener {
       ItemMeta meta = item.getItemMeta();
 
       if (meta != null) {
-        meta.displayName(Component.text(Theme.titlePrefix()).append(Component.translatable(mat.translationKey())));
+        meta.displayName(Component.text(Theme.titlePrefix()).append(Component.translatable(mat.translationKey())
+            .color(TextColor.color(Theme.highlight().getColor().getRGB()))));
         meta.lore(Arrays.asList(
             "",
             Theme.textPrefix() + Main.tr(p, "gui-common-state",

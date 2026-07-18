@@ -110,6 +110,10 @@ Craft an invisible item frame that becomes invisible once an item is placed insi
 3. Restart the server and you are ready to go!
 ```
 
+### Translations
+
+On its first start, BetterVanilla creates `plugins/bettervanilla/translations/` and copies every bundled translation file into it. Edit these YAML files to customize player-facing text; changes are applied after the next plugin/server restart. Existing translation files are preserved when the plugin updates.
+
 ## Commands
 
 ### Core Command
