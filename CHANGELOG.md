@@ -2,6 +2,8 @@
 
 # Changelog
 
+## [1.14.3] - xx.07.2026
+
 ## [1.14.2] - 18.07.2026
 
 - 🌐 **MOTD Display Issue in Chat** - Fixed MOTD display issue in chat as you edited the MOTD in the admin settings GUI.
