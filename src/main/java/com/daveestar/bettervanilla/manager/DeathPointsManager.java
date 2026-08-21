@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.ArrayList;
 
@@ -239,8 +240,18 @@ public class DeathPointsManager {
   }
 
   private String _formatTimestamp(long timestamp) {
-    SimpleDateFormat sdf = new java.text.SimpleDateFormat(Main.tr(null, "death-point-date-format"));
-    return timestamp != 0 ? sdf.format(new Date(timestamp)) : "-";
+    if (timestamp == 0) {
+      return "-";
+    }
+
+    Date date = new Date(timestamp);
+    TimeZone serverTimeZone = TimeZone.getDefault();
+    SimpleDateFormat sdf = new SimpleDateFormat(Main.tr(null, "death-point-date-format"));
+    sdf.setTimeZone(serverTimeZone);
+
+    String shortTimeZone = serverTimeZone.getDisplayName(
+        serverTimeZone.inDaylightTime(date), TimeZone.SHORT);
+    return sdf.format(date) + " (" + shortTimeZone + ")";
   }
 
   public static class DeathPointReference {
