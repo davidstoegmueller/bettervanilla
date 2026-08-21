@@ -102,7 +102,7 @@ public class BedSleepingMessage implements Listener {
       return 0;
     }
 
-    return (int) Math.ceil(totalPlayers * (percentage / 100.0));
+    return (int) Math.max(1, Math.ceil(totalPlayers * (percentage / 100.0)));
   }
 
   private Set<UUID> _getWorldSleepers(World world) {
