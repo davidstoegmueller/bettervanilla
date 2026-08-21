@@ -25,7 +25,7 @@ public class SettingsManager {
   private FileConfiguration _fileConfig;
 
   public static final List<Material> VEIN_MINER_TOOLS = Arrays.asList(
-      Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE,
+      Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.COPPER_PICKAXE, Material.IRON_PICKAXE,
       Material.GOLDEN_PICKAXE, Material.DIAMOND_PICKAXE,
       Material.NETHERITE_PICKAXE);
 
@@ -39,14 +39,16 @@ public class SettingsManager {
       Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE, Material.GLOWSTONE);
 
   public static final List<Material> VEIN_CHOPPER_TOOLS = Arrays.asList(
-      Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE,
+      Material.WOODEN_AXE, Material.STONE_AXE, Material.COPPER_AXE, Material.IRON_AXE,
       Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE);
 
   public static final List<Material> VEIN_CHOPPER_BLOCKS = Arrays.asList(
       Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
       Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG,
       Material.MANGROVE_LOG, Material.CHERRY_LOG, Material.CRIMSON_STEM, Material.WARPED_STEM, Material.PALE_OAK_LOG,
-      Material.MANGROVE_ROOTS);
+      Material.MANGROVE_ROOTS, Material.STRIPPED_OAK_LOG, Material.STRIPPED_BIRCH_LOG, Material.STRIPPED_ACACIA_LOG,
+      Material.STRIPPED_CHERRY_LOG, Material.STRIPPED_JUNGLE_LOG, Material.STRIPPED_SPRUCE_LOG,
+      Material.STRIPPED_DARK_OAK_LOG, Material.STRIPPED_PALE_OAK_LOG, Material.STRIPPED_PALE_OAK_LOG);
 
   public SettingsManager(Config config) {
     _config = config;
@@ -565,6 +567,15 @@ public class SettingsManager {
 
   public void setRightClickCropHarvest(boolean value) {
     _fileConfig.set("global.rightclickcropharvest", value);
+    _config.save();
+  }
+
+  public boolean getVillagerTradeCyclingEnabled() {
+    return _fileConfig.getBoolean("global.villagertradecycling", false);
+  }
+
+  public void setVillagerTradeCyclingEnabled(boolean value) {
+    _fileConfig.set("global.villagertradecycling", value);
     _config.save();
   }
 

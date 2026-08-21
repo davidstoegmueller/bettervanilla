@@ -256,6 +256,7 @@ admin-heads-toggle-message: Köpfe-Explorer ist jetzt {state}{primary}.
 admin-death-chest-toggle-message: Das Erstellen von Todestruhen ist jetzt {state}{primary}.
 admin-afk-protection-toggle-message: AFK-Schutz ist jetzt {state}{primary}.
 admin-item-restock-toggle-message: Automatisches Auffüllen ist jetzt {state}{primary}.
+admin-villager-trade-cycling-toggle-message: Das Wechseln von Dorfbewohnerangeboten ist jetzt {state}{primary}.
 admin-motd-dialog-line-one: MOTD-Zeile 1
 admin-motd-dialog-line-two: MOTD-Zeile 2
 admin-motd-dialog-title: Server-MOTD
@@ -310,6 +311,10 @@ admin-crop-protection-title: Ackerbodenschutz
 admin-crop-protection-description: Verhindert, dass Ackerboden zertrampelt wird.
 admin-right-click-harvest-title: Rechtsklick-Ernte
 admin-right-click-harvest-description: Erlaubt das Ernten von Pflanzen per Rechtsklick.
+admin-villager-trade-cycling-title: Dorfbewohnerangebote wechseln
+admin-villager-trade-cycling-description: Ein Rechtsklick ausserhalb des Handelsfensters erzeugt neue Angebote.
+admin-villager-trade-cycling-restriction: Funktioniert nur, bevor mit dem Dorfbewohner gehandelt wurde.
+villager-trade-cycling-locked-message: Die Angebote dieses Dorfbewohners sind gesperrt, da bereits mit ihm gehandelt wurde.
 admin-locator-bar-title: Ortungsleiste
 admin-locator-bar-description: Schaltet die Ortungsleisten-Spielregel in allen Welten um.
 common-state-set: GESETZT

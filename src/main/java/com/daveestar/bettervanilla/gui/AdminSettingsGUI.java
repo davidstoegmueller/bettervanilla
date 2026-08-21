@@ -88,6 +88,7 @@ public class AdminSettingsGUI {
 
     // second row
     entries.put("mobprotectionssettings", _createMobProtectionsSettingsItem());
+    entries.put("villagertradecycling", _createVillagerTradeCyclingItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
 
@@ -123,6 +124,7 @@ public class AdminSettingsGUI {
 
     // second row - slots 9 to 17
     customSlots.put("mobprotectionssettings", 10);
+    customSlots.put("villagertradecycling", 12);
     customSlots.put("cropprotection", 14);
     customSlots.put("rightclickcropharvest", 16);
 
@@ -181,6 +183,14 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _mobProtectionsSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
+      }
+    });
+
+    actions.put("villagertradecycling", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _toggleVillagerTradeCycling(p);
+        displayGUI(p, parentMenu, backAction);
       }
     });
 
@@ -539,6 +549,28 @@ public class AdminSettingsGUI {
           Component.text(Theme.titlePrefix() + _t("admin-crop-protection-title")));
       meta.lore(Arrays.asList(
           Theme.textPrefix() + _t("admin-crop-protection-description"),
+          "",
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
+          "",
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createVillagerTradeCyclingItem() {
+    boolean state = _settingsManager.getVillagerTradeCyclingEnabled();
+    ItemStack item = new ItemStack(Material.EMERALD);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(Theme.titlePrefix() + _t("admin-villager-trade-cycling-title")));
+      meta.lore(Arrays.asList(
+          Theme.textPrefix() + _t("admin-villager-trade-cycling-description"),
+          Theme.textPrefix() + _t("admin-villager-trade-cycling-restriction"),
           "",
           Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
@@ -1185,6 +1217,12 @@ public class AdminSettingsGUI {
     boolean newState = !_settingsManager.getRightClickCropHarvest();
     _settingsManager.setRightClickCropHarvest(newState);
     _sendToggleMessage(p, "admin-right-click-harvest-toggle-message", newState);
+  }
+
+  private void _toggleVillagerTradeCycling(Player p) {
+    boolean newState = !_settingsManager.getVillagerTradeCyclingEnabled();
+    _settingsManager.setVillagerTradeCyclingEnabled(newState);
+    _sendToggleMessage(p, "admin-villager-trade-cycling-toggle-message", newState);
   }
 
   private void _toggleLocatorBar(Player p) {

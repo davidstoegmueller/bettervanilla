@@ -39,6 +39,7 @@ import com.daveestar.bettervanilla.events.ServerMOTD;
 import com.daveestar.bettervanilla.events.SittableStairs;
 import com.daveestar.bettervanilla.events.SleepingRain;
 import com.daveestar.bettervanilla.events.VeinMiningChopping;
+import com.daveestar.bettervanilla.events.VillagerTradeCycling;
 import com.daveestar.bettervanilla.events.RightClickCropHarvest;
 import com.daveestar.bettervanilla.events.DoubleDoorSync;
 import com.daveestar.bettervanilla.events.ChestSort;
@@ -202,6 +203,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new InventorySort(), this);
     manager.registerEvents(new ItemRestock(), this);
     manager.registerEvents(new VeinMiningChopping(), this);
+    manager.registerEvents(new VillagerTradeCycling(), this);
     manager.registerEvents(new SignColors(), this);
     manager.registerEvents(new VanishEvents(), this);
     manager.registerEvents(new ModerationEvents(), this);

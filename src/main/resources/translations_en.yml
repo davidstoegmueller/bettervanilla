@@ -256,6 +256,7 @@ admin-heads-toggle-message: Heads Explorer is now {state}{primary}.
 admin-death-chest-toggle-message: Death chest creation is now {state}{primary}.
 admin-afk-protection-toggle-message: AFK protection is now {state}{primary}.
 admin-item-restock-toggle-message: Item restock is now {state}{primary}.
+admin-villager-trade-cycling-toggle-message: Villager trade cycling is now {state}{primary}.
 admin-motd-dialog-line-one: MOTD Line 1
 admin-motd-dialog-line-two: MOTD Line 2
 admin-motd-dialog-title: Server MOTD
@@ -310,6 +311,10 @@ admin-crop-protection-title: Crop Protection
 admin-crop-protection-description: Prevent crops from being trampled.
 admin-right-click-harvest-title: Right-Click Crop Harvest
 admin-right-click-harvest-description: Allow players to harvest crops by right-clicking them.
+admin-villager-trade-cycling-title: Villager Trade Cycling
+admin-villager-trade-cycling-description: Right-click outside a villager trading screen to generate new trades.
+admin-villager-trade-cycling-restriction: Only works before the villager has been traded with.
+villager-trade-cycling-locked-message: This villager's trades are locked because it has already been traded with.
 admin-locator-bar-title: Locator Bar
 admin-locator-bar-description: Toggle the locator-bar gamerule for every world.
 common-state-set: SET
