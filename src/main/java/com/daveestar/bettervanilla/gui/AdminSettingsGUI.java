@@ -51,6 +51,7 @@ public class AdminSettingsGUI {
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
   private final CraftingRecipeSettingsGUI _craftingRecipeSettingsGUI;
   private final ThemeSettingsGUI _themeSettingsGUI;
+  private final MobProtectionsSettingsGUI _mobProtectionsSettingsGUI;
   private final TranslationManager _translations;
   private Player _viewer;
 
@@ -67,6 +68,7 @@ public class AdminSettingsGUI {
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
     _craftingRecipeSettingsGUI = new CraftingRecipeSettingsGUI();
     _themeSettingsGUI = new ThemeSettingsGUI();
+    _mobProtectionsSettingsGUI = new MobProtectionsSettingsGUI();
     _translations = _plugin.getTranslationManager();
   }
 
@@ -85,8 +87,7 @@ public class AdminSettingsGUI {
     entries.put("enableend", _createEnableEndItem());
 
     // second row
-    entries.put("creeperblockdamage", _createCreeperBlockDamageItem());
-    entries.put("creeperentitydamage", _createCreeperEntityDamageItem());
+    entries.put("mobprotectionssettings", _createMobProtectionsSettingsItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
 
@@ -121,8 +122,7 @@ public class AdminSettingsGUI {
     customSlots.put("enableend", 8);
 
     // second row - slots 9 to 17
-    customSlots.put("creeperblockdamage", 10);
-    customSlots.put("creeperentitydamage", 12);
+    customSlots.put("mobprotectionssettings", 10);
     customSlots.put("cropprotection", 14);
     customSlots.put("rightclickcropharvest", 16);
 
@@ -177,19 +177,10 @@ public class AdminSettingsGUI {
       }
     });
 
-    actions.put("creeperblockdamage", new CustomGUI.ClickAction() {
+    actions.put("mobprotectionssettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleCreeperBlockDamage(p);
-        displayGUI(p, parentMenu, backAction);
-      }
-    });
-
-    actions.put("creeperentitydamage", new CustomGUI.ClickAction() {
-      @Override
-      public void onLeftClick(Player p) {
-        _toggleCreeperEntityDamage(p);
-        displayGUI(p, parentMenu, backAction);
+        _mobProtectionsSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
@@ -432,41 +423,24 @@ public class AdminSettingsGUI {
     return item;
   }
 
-  private ItemStack _createCreeperBlockDamageItem() {
-    boolean state = _settingsManager.getCreeperBlockDamage();
-    ItemStack item = new ItemStack(Material.CREEPER_HEAD);
+  private ItemStack _createMobProtectionsSettingsItem() {
+    ItemStack item = new ItemStack(Material.SHIELD);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + _t("admin-creeper-block-damage-title")));
+          Component.text(Theme.titlePrefix() + _t("admin-protections-settings-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + _t("admin-creeper-block-damage-description"),
+          Theme.textPrefix() + _t("admin-protections-settings-description"),
           "",
-          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
+          Theme.textPrefix() + _t("admin-protections-settings-creeper-block-damage", "state",
+              _state(_settingsManager.getCreeperBlockDamage())),
+          Theme.textPrefix() + _t("admin-protections-settings-creeper-entity-damage", "state",
+              _state(_settingsManager.getCreeperEntityDamage())),
+          Theme.textPrefix() + _t("admin-protections-settings-enderman-block-steal", "state",
+              _state(_settingsManager.getEndermanBlockSteal())),
           "",
-          Theme.textPrefix() + _t("gui-common-action-toggle"))
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
-      item.setItemMeta(meta);
-    }
-
-    return item;
-  }
-
-  private ItemStack _createCreeperEntityDamageItem() {
-    boolean state = _settingsManager.getCreeperEntityDamage();
-    ItemStack item = new ItemStack(Material.TNT);
-    ItemMeta meta = item.getItemMeta();
-
-    if (meta != null) {
-      meta.displayName(
-          Component.text(Theme.titlePrefix() + _t("admin-creeper-entity-damage-title")));
-      meta.lore(Arrays.asList(
-          Theme.textPrefix() + _t("admin-creeper-entity-damage-description"),
-          "",
-          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
-          "",
-          Theme.textPrefix() + _t("gui-common-action-toggle"))
+          Theme.textPrefix() + _t("gui-common-action-open"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -1181,18 +1155,6 @@ public class AdminSettingsGUI {
     }
 
     _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
-  }
-
-  private void _toggleCreeperBlockDamage(Player p) {
-    boolean newState = !_settingsManager.getCreeperBlockDamage();
-    _settingsManager.setCreeperBlockDamage(newState);
-    _sendToggleMessage(p, "admin-creeper-block-damage-toggle-message", newState);
-  }
-
-  private void _toggleCreeperEntityDamage(Player p) {
-    boolean newState = !_settingsManager.getCreeperEntityDamage();
-    _settingsManager.setCreeperEntityDamage(newState);
-    _sendToggleMessage(p, "admin-creeper-entity-damage-toggle-message", newState);
   }
 
   private void _toggleEnd(Player p) {

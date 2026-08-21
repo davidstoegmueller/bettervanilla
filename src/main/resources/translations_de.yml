@@ -242,6 +242,7 @@ admin-maintenance-toggle-message: Der Wartungsmodus ist jetzt {state}{primary}.
 admin-maintenance-current-message: "Nachricht: {highlight}{message}"
 admin-creeper-block-damage-toggle-message: Blockschaden durch Creeper ist jetzt {state}{primary}.
 admin-creeper-entity-damage-toggle-message: Schaden an Entitäten durch Creeper ist jetzt {state}{primary}.
+admin-enderman-block-steal-toggle-message: Blockdiebstahl durch Endermen ist jetzt {state}{primary}.
 admin-end-toggle-message: Das Ende ist jetzt {state}{primary}.
 admin-nether-toggle-message: Der Nether ist jetzt {state}{primary}.
 admin-sleeping-rain-toggle-message: "Regen wegschlafen: {state}{primary}."
@@ -288,6 +289,14 @@ admin-creeper-block-damage-title: Blockschaden durch Creeper
 admin-creeper-block-damage-description: Steuert, ob Creeper-Explosionen Blöcke zerstören.
 admin-creeper-entity-damage-title: Entitätsschaden durch Creeper
 admin-creeper-entity-damage-description: Steuert, ob Creeper-Explosionen anderen Entitäten Schaden zufügen.
+admin-enderman-block-steal-title: Blockdiebstahl durch Endermen
+admin-enderman-block-steal-description: Steuert, ob Endermen Blöcke aufnehmen und platzieren können.
+admin-protections-settings-title: Kreaturenschutz
+admin-protections-settings-description: Konfiguriert Schutzmaßnahmen gegen durch Kreaturen verursachte Weltschäden.
+admin-protections-settings-creeper-block-damage: "Blockschaden durch Creeper: {state}"
+admin-protections-settings-creeper-entity-damage: "Entitätsschaden durch Creeper: {state}"
+admin-protections-settings-enderman-block-steal: "Blockdiebstahl durch Endermen: {state}"
+gui-protections-settings-title: Kreaturenschutz
 admin-end-title: Das Ende aktivieren
 admin-end-description: Steuert den Zugang zur End-Dimension.
 admin-nether-title: Den Nether aktivieren

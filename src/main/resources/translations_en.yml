@@ -242,6 +242,7 @@ admin-maintenance-toggle-message: Maintenance mode is now {state}{primary}.
 admin-maintenance-current-message: "Message: {highlight}{message}"
 admin-creeper-block-damage-toggle-message: Creeper block damage is now {state}{primary}.
 admin-creeper-entity-damage-toggle-message: Creeper entity damage is now {state}{primary}.
+admin-enderman-block-steal-toggle-message: Enderman block stealing is now {state}{primary}.
 admin-end-toggle-message: The End is now {state}{primary}.
 admin-nether-toggle-message: The Nether is now {state}{primary}.
 admin-sleeping-rain-toggle-message: Sleeping through rain is now {state}{primary}.
@@ -288,6 +289,14 @@ admin-creeper-block-damage-title: Creeper Block Damage
 admin-creeper-block-damage-description: Control whether creeper explosions destroy blocks.
 admin-creeper-entity-damage-title: Creeper Entity Damage
 admin-creeper-entity-damage-description: Control whether creepers damage non-player entities.
+admin-enderman-block-steal-title: Enderman Block Stealing
+admin-enderman-block-steal-description: Control whether Endermen can pick up and place blocks.
+admin-protections-settings-title: Mob Protection
+admin-protections-settings-description: Configure protections against mob-related world damage.
+admin-protections-settings-creeper-block-damage: "Creeper block damage: {state}"
+admin-protections-settings-creeper-entity-damage: "Creeper entity damage: {state}"
+admin-protections-settings-enderman-block-steal: "Enderman block stealing: {state}"
+gui-protections-settings-title: Mob Protection
 admin-end-title: Enable The End
 admin-end-description: Control entry into The End dimension.
 admin-nether-title: Enable The Nether

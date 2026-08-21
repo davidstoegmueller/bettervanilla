@@ -49,6 +49,7 @@ import com.daveestar.bettervanilla.events.SignColors;
 import com.daveestar.bettervanilla.events.VanishEvents;
 import com.daveestar.bettervanilla.events.ModerationEvents;
 import com.daveestar.bettervanilla.events.CreeperProtection;
+import com.daveestar.bettervanilla.events.EndermanProtection;
 import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.BackpackManager;
 import com.daveestar.bettervanilla.manager.CompassManager;
@@ -187,6 +188,7 @@ public class Main extends JavaPlugin {
     manager.registerEvents(new ServerMOTD(), this);
     manager.registerEvents(new DeathChest(), this);
     manager.registerEvents(new CreeperProtection(), this);
+    manager.registerEvents(new EndermanProtection(), this);
     manager.registerEvents(new ChatMessages(), this);
     manager.registerEvents(new PlayerMove(), this);
     manager.registerEvents(new SittableStairs(), this);

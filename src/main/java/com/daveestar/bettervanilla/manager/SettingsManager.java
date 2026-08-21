@@ -373,6 +373,15 @@ public class SettingsManager {
     _config.save();
   }
 
+  public boolean getEndermanBlockSteal() {
+    return _fileConfig.getBoolean("global.endermanblocksteal", true);
+  }
+
+  public void setEndermanBlockSteal(boolean value) {
+    _fileConfig.set("global.endermanblocksteal", value);
+    _config.save();
+  }
+
   public boolean getEnableEnd() {
     return _fileConfig.getBoolean("global.enableend", false);
   }
