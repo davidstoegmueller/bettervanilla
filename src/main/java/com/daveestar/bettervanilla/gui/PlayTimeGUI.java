@@ -1,13 +1,17 @@
 package com.daveestar.bettervanilla.gui;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -103,6 +107,8 @@ public class PlayTimeGUI {
         "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-afk",
         "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)));
+    viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "gui-playtime-last-seen",
+        "lastSeen", ChatColor.YELLOW + _formatLastSeen(viewer, target)));
   }
 
   private ItemStack _createPlayerItem(Player viewer, OfflinePlayer op) {
@@ -116,7 +122,7 @@ public class PlayTimeGUI {
       skullMeta.setOwningPlayer(op);
 
       String status = Main.tr(viewer, "gui-playtime-status-format",
-          "status", (op.isOnline() ? Theme.highlight() : Theme.error())
+          "status", (op.isOnline() ? ChatColor.GREEN : Theme.error())
               + Main.tr(viewer, op.isOnline() ? "gui-playtime-status-online" : "gui-playtime-status-offline")
               + Theme.primary());
       String playerName = op.getName() != null ? op.getName() : Main.tr(viewer, "common-value-unknown");
@@ -135,6 +141,8 @@ public class PlayTimeGUI {
                   "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)),
               Theme.textPrefix() + Main.tr(viewer, "playtime-afk",
                   "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)),
+              Theme.textPrefix() + Main.tr(viewer, "gui-playtime-last-seen",
+                  "lastSeen", ChatColor.YELLOW + _formatLastSeen(viewer, op)),
               "",
               Theme.textPrefix() + Main.tr(viewer, "gui-playtime-action-show-summary")).stream()
               .filter(Objects::nonNull)
@@ -145,6 +153,43 @@ public class PlayTimeGUI {
     }
 
     return item;
+  }
+
+  private long _getLastSeen(OfflinePlayer op) {
+    return op.isOnline() ? System.currentTimeMillis() : op.getLastSeen();
+  }
+
+  private String _formatLastSeen(Player viewer, OfflinePlayer op) {
+    if (op.isOnline()) {
+      return Main.tr(viewer, "gui-playtime-last-seen-online");
+    }
+
+    long lastSeen = _getLastSeen(op);
+    long elapsed = Math.max(0, System.currentTimeMillis() - lastSeen);
+
+    return Main.tr(viewer, "gui-playtime-last-seen-date",
+        "elapsed", _formatElapsedTime(elapsed),
+        "arrow", Theme.textSymbol() + "»" + ChatColor.YELLOW,
+        "date", new SimpleDateFormat("dd.MM.yy").format(new Date(lastSeen)));
+  }
+
+  private String _formatElapsedTime(long elapsed) {
+    StringJoiner parts = new StringJoiner(" ");
+    long days = TimeUnit.MILLISECONDS.toDays(elapsed);
+    long hours = TimeUnit.MILLISECONDS.toHours(elapsed) % 24;
+    long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed) % 60;
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsed) % 60;
+
+    if (days > 0)
+      parts.add(days + "d");
+    if (hours > 0)
+      parts.add(hours + "h");
+    if (minutes > 0)
+      parts.add(minutes + "m");
+    if (seconds > 0)
+      parts.add(seconds + "s");
+
+    return parts.length() == 0 ? "" : parts + " ";
   }
 
   // ---------
