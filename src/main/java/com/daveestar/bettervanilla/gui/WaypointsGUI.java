@@ -51,6 +51,7 @@ public class WaypointsGUI {
   private final String KEY_OPTION_RENAME = "option::renameWaypoint";
   private final String KEY_OPTION_DELETE = "option::deleteWaypoint";
   private final String KEY_OPTION_SET_ICON = "option::setWaypointIcon";
+  private final String KEY_OPTION_SET_COORDINATES = "option::setWaypointCoordinates";
   private final String KEY_OPTION_SET_VISIBILITY = "option::setWaypointVisibility";
 
   private final String KEY_COORD_X = "x";
@@ -173,14 +174,16 @@ public class WaypointsGUI {
     Map<String, ItemStack> entries = new LinkedHashMap<>();
     entries.put(KEY_OPTION_RENAME, _createRenameItem(p, waypointName));
     entries.put(KEY_OPTION_SET_VISIBILITY, _createSetVisibilityItem(p, waypointId));
+    entries.put(KEY_OPTION_SET_COORDINATES, _createSetCoordinatesItem(p, waypointName));
     entries.put(KEY_OPTION_SET_ICON, _createSetIconItem(p, waypointName));
     entries.put(KEY_OPTION_DELETE, _createDeleteItem(p, waypointName));
 
     Map<String, Integer> customSlots = new LinkedHashMap<>();
-    customSlots.put(KEY_OPTION_RENAME, 1);
-    customSlots.put(KEY_OPTION_SET_VISIBILITY, 3);
-    customSlots.put(KEY_OPTION_SET_ICON, 5);
-    customSlots.put(KEY_OPTION_DELETE, 7);
+    customSlots.put(KEY_OPTION_RENAME, 0);
+    customSlots.put(KEY_OPTION_SET_VISIBILITY, 2);
+    customSlots.put(KEY_OPTION_SET_COORDINATES, 4);
+    customSlots.put(KEY_OPTION_SET_ICON, 6);
+    customSlots.put(KEY_OPTION_DELETE, 8);
 
     CustomGUI optionsGUI = _createGUI(p, Main.tr(p, "gui-waypoints-options-title",
         "waypoint", Theme.highlight() + waypointName), OPTIONS_GUI_ROWS, entries, customSlots, parentGUI,
@@ -196,6 +199,12 @@ public class WaypointsGUI {
     actions.put(KEY_OPTION_SET_VISIBILITY, _clickAction(
         player -> _handleVisibilityCycle(player, waypointId, true),
         player -> _handleVisibilityCycle(player, waypointId, false),
+        null,
+        null));
+
+    actions.put(KEY_OPTION_SET_COORDINATES, _clickAction(
+        player -> _handleSetWaypointCoordinates(player, waypointId),
+        null,
         null,
         null));
 
@@ -315,6 +324,18 @@ public class WaypointsGUI {
         _createLore(
             "",
             Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-open-icon-selection",
+                "waypoint", Theme.highlight() + waypointName)),
+        null);
+  }
+
+  private ItemStack _createSetCoordinatesItem(Player viewer, String waypointName) {
+    return _createItem(
+        Material.COMPASS,
+        Component.text(Theme.titlePrefix() + Main.tr(viewer, "gui-waypoints-set-coordinates-item-title")),
+        _createLore(
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-set-coordinates-item-description"),
+            "",
+            Theme.textPrefix() + Main.tr(viewer, "gui-waypoints-action-set-coordinates",
                 "waypoint", Theme.highlight() + waypointName)),
         null);
   }
@@ -445,6 +466,33 @@ public class WaypointsGUI {
 
     p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-waypoints-icon-changed-message",
         "waypoint", Theme.highlight() + waypointName + Theme.primary()));
+    _playSuccessSound(p);
+
+    displayWaypointsGUI(p);
+  }
+
+  private void _handleSetWaypointCoordinates(Player p, String waypointId) {
+    String worldName = p.getWorld().getName();
+    String waypointName = _waypointsManager.getWaypointDisplayName(worldName, waypointId);
+
+    if (!_waypointsManager.checkWaypointExists(worldName, waypointId)) {
+      p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "gui-waypoints-error-not-found",
+          "waypoint", Theme.highlight() + waypointName + Theme.error()));
+      _playErrorSound(p);
+      displayWaypointsGUI(p);
+      return;
+    }
+
+    Location location = p.getLocation().toBlockLocation();
+    int x = location.getBlockX();
+    int y = location.getBlockY();
+    int z = location.getBlockZ();
+
+    _waypointsManager.setWaypointCoordinates(worldName, waypointId, x, y, z);
+
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-waypoints-coordinates-changed-message",
+        "waypoint", Theme.highlight() + waypointName + Theme.primary(),
+        "x", x, "y", y, "z", z));
     _playSuccessSound(p);
 
     displayWaypointsGUI(p);
