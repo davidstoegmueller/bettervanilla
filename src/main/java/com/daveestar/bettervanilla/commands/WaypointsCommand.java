@@ -55,6 +55,9 @@ public class WaypointsCommand implements TabExecutor {
 
     String subCommand = args[0].toLowerCase();
     switch (subCommand) {
+      case "cancel":
+        _handleCancelNavigation(p);
+        break;
       case "player":
         _handlePlayerNavigation(p, args);
         break;
@@ -125,11 +128,23 @@ public class WaypointsCommand implements TabExecutor {
         "z", targetLocation.getBlockZ()));
   }
 
+  private void _handleCancelNavigation(Player p) {
+    if (!_navigationManager.checkActiveNavigation(p)) {
+      p.sendMessage(Main.getPrefix() + Theme.error()
+          + Main.tr(p, "command-waypoints-error-no-active-navigation"));
+      return;
+    }
+
+    _navigationManager.stopNavigation(p);
+    p.sendMessage(Main.getPrefix() + Main.tr(p, "command-waypoints-navigation-canceled"));
+  }
+
   private void _handleHelp(Player p) {
     p.sendMessage(Main.getPrefix() + Theme.highlight() + ChatColor.BOLD + Main.tr(p, "command-waypoints-help-title"));
     p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-waypoints-help-open"));
     p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-waypoints-help-player"));
     p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-waypoints-help-coordinates"));
+    p.sendMessage(Main.getShortPrefix() + Main.tr(p, "command-waypoints-help-cancel"));
   }
 
   @Override
@@ -137,7 +152,7 @@ public class WaypointsCommand implements TabExecutor {
     List<String> suggestions = new ArrayList<>();
 
     if (args.length == 1) {
-      suggestions.addAll(Arrays.asList("player", "coords", "help"));
+      suggestions.addAll(Arrays.asList("player", "coords", "cancel", "help"));
     } else if (args.length == 2 && args[0].equalsIgnoreCase("player")) {
       Collection<? extends Player> onlinePlayers = _plugin.getServer().getOnlinePlayers();
       suggestions.addAll(onlinePlayers.stream().map(Player::getName).collect(Collectors.toList()));

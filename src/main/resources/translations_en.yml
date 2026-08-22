@@ -69,6 +69,7 @@ command-waypoints-help-title: "WAYPOINTS HELP:"
 command-waypoints-help-open: "{highlight}/waypoints{primary} - Opens the waypoints GUI."
 command-waypoints-help-player: "{highlight}/waypoints player <player>{primary} - Navigates to another player's location."
 command-waypoints-help-coordinates: "{highlight}/waypoints coords <x> <y> <z>{primary} - Navigates to specific coordinates."
+command-waypoints-help-cancel: "{highlight}/waypoints cancel{primary} - Cancels your active navigation."
 navigation-coordinates-name: Coordinates
 help-player-title: "{bold}{plugin} HELP"
 help-player-tip: "Tip: Most features are toggleable in {highlight}/settings{primary}."
@@ -733,6 +734,8 @@ command-permissions-reload-success: "Permissions were reloaded successfully."
 command-playtime-summary-title: "PLAYTIME{reset}{text-symbol} » {primary}{player}"
 command-waypoints-coordinates-navigation-started: "Starting navigation to coordinates {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z}."
 command-waypoints-player-navigation-started: "Starting navigation to {player} at {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z}."
+command-waypoints-navigation-canceled: "Your active navigation was canceled."
+command-waypoints-error-no-active-navigation: "You do not have an active destination."
 death-point-date-format: "dd.MM.yyyy » HH:mm:ss"
 enum-chat-color-black: Black
 enum-chat-color-dark-blue: Dark Blue
