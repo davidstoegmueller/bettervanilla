@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.AFKManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.Theme;
@@ -32,10 +33,12 @@ import net.md_5.bungee.api.ChatColor;
 
 public class PlayTimeGUI {
   private final Main _plugin;
+  private final AFKManager _afkManager;
   private final TimerManager _timerManager;
 
   public PlayTimeGUI() {
     _plugin = Main.getInstance();
+    _afkManager = _plugin.getAFKManager();
     _timerManager = _plugin.getTimerManager();
   }
 
@@ -102,11 +105,13 @@ public class PlayTimeGUI {
         + Main.tr(viewer, "gui-playtime-summary-title",
             "player", ChatColor.RESET + "" + Theme.primary() + playerName));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-total",
-        "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime + afkTime)));
+        "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime + afkTime)));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-active",
-        "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)));
+        "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime)));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-afk",
-        "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)));
+        "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, afkTime)));
+    viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "gui-playtime-current-afk",
+        "time", _formatCurrentAFKTime(viewer, target)));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "gui-playtime-last-seen",
         "lastSeen", ChatColor.YELLOW + _formatLastSeen(viewer, target)));
   }
@@ -122,7 +127,7 @@ public class PlayTimeGUI {
       skullMeta.setOwningPlayer(op);
 
       String status = Main.tr(viewer, "gui-playtime-status-format",
-          "status", (op.isOnline() ? ChatColor.GREEN : Theme.error())
+          "status", (op.isOnline() ? ChatColor.GREEN : ChatColor.RED)
               + Main.tr(viewer, op.isOnline() ? "gui-playtime-status-online" : "gui-playtime-status-offline")
               + Theme.primary());
       String playerName = op.getName() != null ? op.getName() : Main.tr(viewer, "common-value-unknown");
@@ -136,11 +141,13 @@ public class PlayTimeGUI {
           Arrays.asList(
               "",
               Theme.textPrefix() + Main.tr(viewer, "playtime-total",
-                  "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime + afkTime)),
+                  "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime + afkTime)),
               Theme.textPrefix() + Main.tr(viewer, "playtime-active",
-                  "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)),
+                  "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime)),
               Theme.textPrefix() + Main.tr(viewer, "playtime-afk",
-                  "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)),
+                  "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, afkTime)),
+              Theme.textPrefix() + Main.tr(viewer, "gui-playtime-current-afk",
+                  "time", _formatCurrentAFKTime(viewer, op)),
               Theme.textPrefix() + Main.tr(viewer, "gui-playtime-last-seen",
                   "lastSeen", ChatColor.YELLOW + _formatLastSeen(viewer, op)),
               "",
@@ -153,6 +160,15 @@ public class PlayTimeGUI {
     }
 
     return item;
+  }
+
+  private String _formatCurrentAFKTime(Player viewer, OfflinePlayer target) {
+    Player onlineTarget = target.getPlayer();
+    if (onlineTarget != null && _afkManager.isPlayerMarkedAFK(onlineTarget)) {
+      return ChatColor.YELLOW + _timerManager.formatTime(viewer, _afkManager.getCurrentAFKTime(onlineTarget));
+    }
+
+    return ChatColor.YELLOW + Main.tr(viewer, "gui-playtime-current-afk-none");
   }
 
   private long _getLastSeen(OfflinePlayer op) {
