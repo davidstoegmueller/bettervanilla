@@ -24,6 +24,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.Theme;
@@ -34,11 +35,13 @@ import net.md_5.bungee.api.ChatColor;
 public class PlayTimeGUI {
   private final Main _plugin;
   private final AFKManager _afkManager;
+  private final SettingsManager _settingsManager;
   private final TimerManager _timerManager;
 
   public PlayTimeGUI() {
     _plugin = Main.getInstance();
     _afkManager = _plugin.getAFKManager();
+    _settingsManager = _plugin.getSettingsManager();
     _timerManager = _plugin.getTimerManager();
   }
 
@@ -75,14 +78,15 @@ public class PlayTimeGUI {
       });
     }
 
+    int rows = _settingsManager.getPlaytimeGUIRows();
     CustomGUI gui = new CustomGUI(_plugin, p,
         Theme.titlePrefix() + Main.tr(p, "gui-playtime-title"),
-        entries, 3, null, null, EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
+        entries, rows, null, null, EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
-    gui.setSearchButtonSlot(_footerSearchSlot(3));
+    gui.setSearchButtonSlot(_footerSearchSlot(rows));
 
     gui.setSortOptions(_createPlaytimeSortOptions(p, sortData));
-    gui.setSortButtonSlot(_footerSortSlot(3));
+    gui.setSortButtonSlot(_footerSortSlot(rows));
 
     gui.setClickActions(actions);
     gui.open(p);

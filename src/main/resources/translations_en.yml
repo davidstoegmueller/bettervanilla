@@ -277,6 +277,7 @@ admin-heads-api-dialog-description: Optionally provide a minecraft-heads.com API
 admin-motd-set-message: "Server MOTD set to:\nLine 1: {line1}\n{primary}Line 2: {line2}"
 admin-maintenance-set-message: "Maintenance message set to: {highlight}{message}"
 admin-afk-time-set-message: AFK time set to {highlight}{minutes}{primary} minutes.
+admin-gui-rows-set-message: "GUI rows set to {highlight}{playtimeRows}{primary} for Playtime and {highlight}{waypointsRows}{primary} for Waypoints."
 admin-sleep-percentage-set-message: Players sleeping percentage set to {highlight}{percentage}{primary}%.
 admin-heads-api-updated-message: Heads Explorer API key updated.
 admin-heads-refresh-success: Heads Explorer data refreshed.
@@ -351,6 +352,14 @@ admin-afk-protection-description: Make players invulnerable while AFK.
 admin-afk-time-title: AFK Time
 admin-afk-time-description: Set the AFK timeout in minutes.
 admin-afk-time-current: "Current: {highlight}{minutes}{primary} minutes"
+admin-gui-rows-title: GUI Rows
+admin-gui-rows-description: Set the height of the list GUIs.
+admin-gui-rows-playtime: "Playtime: {highlight}{rows}{primary} rows"
+admin-gui-rows-waypoints: "Waypoints: {highlight}{rows}{primary} rows"
+admin-gui-rows-dialog-title: GUI Rows
+admin-gui-rows-dialog-description: Set each GUI height. The last row is reserved for controls.
+admin-gui-rows-dialog-playtime: Playtime rows
+admin-gui-rows-dialog-waypoints: Waypoint rows
 admin-motd-title: Server MOTD
 admin-motd-description: Set the message of the day shown in the server list.
 admin-backpack-settings-title: Backpack Settings

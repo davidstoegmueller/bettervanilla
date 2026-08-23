@@ -277,6 +277,7 @@ admin-heads-api-dialog-description: Hinterlege optional einen API-Schlüssel von
 admin-motd-set-message: "Server-MOTD gesetzt:\nZeile 1: {line1}\n{primary}Zeile 2: {line2}"
 admin-maintenance-set-message: "Wartungsnachricht gesetzt: {highlight}{message}"
 admin-afk-time-set-message: AFK-Zeit auf {highlight}{minutes}{primary} Minuten gesetzt.
+admin-gui-rows-set-message: "GUI-Zeilen auf {highlight}{playtimeRows}{primary} für Spielzeit und {highlight}{waypointsRows}{primary} für Wegpunkte gesetzt."
 admin-sleep-percentage-set-message: Der benötigte Schlafanteil wurde auf {highlight}{percentage}{primary} % gesetzt.
 admin-heads-api-updated-message: Köpfe-Explorer-API-Schlüssel aktualisiert.
 admin-heads-refresh-success: Die Kopfdaten wurden aktualisiert.
@@ -351,6 +352,14 @@ admin-afk-protection-description: Macht Spieler unverwundbar, während sie AFK s
 admin-afk-time-title: AFK-Zeit
 admin-afk-time-description: Legt das AFK-Zeitlimit in Minuten fest.
 admin-afk-time-current: "Aktuell: {highlight}{minutes}{primary} Minuten"
+admin-gui-rows-title: GUI-Zeilen
+admin-gui-rows-description: Lege die Höhe der Listen-GUIs fest.
+admin-gui-rows-playtime: "Spielzeit: {highlight}{rows}{primary} Zeilen"
+admin-gui-rows-waypoints: "Wegpunkte: {highlight}{rows}{primary} Zeilen"
+admin-gui-rows-dialog-title: GUI-Zeilen
+admin-gui-rows-dialog-description: Lege die Höhe jedes GUIs fest. Die letzte Zeile ist für Steuerelemente reserviert.
+admin-gui-rows-dialog-playtime: Spielzeit-Zeilen
+admin-gui-rows-dialog-waypoints: Wegpunkt-Zeilen
 admin-motd-title: Server-MOTD
 admin-motd-description: Legt die Nachricht in der Serverliste fest.
 admin-backpack-settings-title: Rucksackeinstellungen

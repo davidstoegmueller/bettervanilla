@@ -113,6 +113,7 @@ public class AdminSettingsGUI {
     entries.put("playertag", _createTagsItem());
     entries.put("headsexplorer", _createHeadsExplorerItem());
     entries.put("language", _createLanguageItem(p));
+    entries.put("guirows", _createGUIRowsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // top row - slots 0 to 8
@@ -148,7 +149,8 @@ public class AdminSettingsGUI {
     customSlots.put("actionbartimer", 40);
     customSlots.put("sleepingpercentage", 42);
     customSlots.put("playertag", 44);
-    customSlots.put("language", 49);
+    customSlots.put("language", 37);
+    customSlots.put("guirows", 43);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         Theme.titlePrefix() + _translations.translate(p, "admin-settings-gui-title"),
@@ -164,6 +166,12 @@ public class AdminSettingsGUI {
       @Override
       public void onLeftClick(Player p) {
         _openLanguageDialog(p, parentMenu, backAction);
+      }
+    });
+    actions.put("guirows", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _openGUIRowsDialog(p, parentMenu, backAction);
       }
     });
     actions.put("maintenance", new CustomGUI.ClickAction() {
@@ -387,6 +395,27 @@ public class AdminSettingsGUI {
     return item;
   }
 
+  private ItemStack _createGUIRowsItem() {
+    int playtimeRows = _settingsManager.getPlaytimeGUIRows();
+    int waypointsRows = _settingsManager.getWaypointsGUIRows();
+    ItemStack item = new ItemStack(Material.COMPARATOR);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-gui-rows-title")));
+      meta.lore(List.of(
+          Component.text(Theme.textPrefix() + _t("admin-gui-rows-description")),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _t("admin-gui-rows-playtime", "rows", playtimeRows)),
+          Component.text(Theme.textPrefix() + _t("admin-gui-rows-waypoints", "rows", waypointsRows)),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _t("gui-common-action-set-value"))));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private void _openLanguageDialog(Player viewer, CustomGUI parentMenu, Consumer<Player> backAction) {
     DialogInput input = CustomDialog.createSelectInput("language",
         Theme.textPrefix() + _translations.translate(viewer, "admin-language-dialog-input-label"),
@@ -405,6 +434,23 @@ public class AdminSettingsGUI {
         }, null, _translations.translate(viewer, "dialog-button-apply"),
         _translations.translate(viewer, "dialog-button-cancel"));
     viewer.showDialog(dialog);
+  }
+
+  private void _openGUIRowsDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    DialogInput playtimeInput = CustomDialog.createNumberInput("playtimeRows",
+        Theme.textPrefix() + Main.tr(p, "admin-gui-rows-dialog-playtime"), 2, 6, 1,
+        _settingsManager.getPlaytimeGUIRows());
+    DialogInput waypointsInput = CustomDialog.createNumberInput("waypointsRows",
+        Theme.textPrefix() + Main.tr(p, "admin-gui-rows-dialog-waypoints"), 2, 6, 1,
+        _settingsManager.getWaypointsGUIRows());
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        Main.tr(p, "admin-gui-rows-dialog-title"),
+        Main.tr(p, "admin-gui-rows-dialog-description"),
+        null, List.of(playtimeInput, waypointsInput),
+        (view, audience) -> _setGUIRowsDialogCB(view, audience, parentMenu, backAction),
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
+    p.showDialog(dialog);
   }
 
   private ItemStack _createMaintenanceItem() {
@@ -1115,6 +1161,23 @@ public class AdminSettingsGUI {
     _settingsManager.setAFKTime((int) minutes);
 
     p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-afk-time-set-message", "minutes", minutes)));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu, backAction);
+  }
+
+  private void _setGUIRowsDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
+    Player p = (Player) audience;
+    int playtimeRows = Math.round(view.getFloat("playtimeRows"));
+    int waypointsRows = Math.round(view.getFloat("waypointsRows"));
+
+    _settingsManager.setPlaytimeGUIRows(playtimeRows);
+    _settingsManager.setWaypointsGUIRows(waypointsRows);
+
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-gui-rows-set-message",
+        "playtimeRows", _settingsManager.getPlaytimeGUIRows(),
+        "waypointsRows", _settingsManager.getWaypointsGUIRows())));
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     displayGUI(p, parentMenu, backAction);

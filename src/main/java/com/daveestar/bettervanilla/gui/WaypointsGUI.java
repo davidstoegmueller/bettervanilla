@@ -64,7 +64,6 @@ public class WaypointsGUI {
   private final String WAYPOINT_ADD_DIALOG_FIELD_Y = "y";
   private final String WAYPOINT_ADD_DIALOG_FIELD_Z = "z";
 
-  private final int MAIN_GUI_ROWS = 3;
   private final int OPTIONS_GUI_ROWS = 2;
   private final int ICON_GUI_ROWS = 6;
 
@@ -114,14 +113,15 @@ public class WaypointsGUI {
 
     String waypointGUITitle = Main.tr(p, "gui-waypoints-title",
         "filter", filterMode.getColoredName(p) + Theme.primary());
-    CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, MAIN_GUI_ROWS, entries, null, null,
+    int rows = _settingsManager.getWaypointsGUIRows();
+    CustomGUI waypointsGUI = _createGUI(p, waypointGUITitle, rows, entries, null, null,
         EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
-    waypointsGUI.setSearchButtonSlot(_footerSearchSlot(MAIN_GUI_ROWS));
+    waypointsGUI.setSearchButtonSlot(_footerSearchSlot(rows));
 
     Map<String, WaypointSortData> sortData = _buildWaypointSortData(p, worldName, filteredWaypointIds);
     waypointsGUI.setSortOptions(_createWaypointSortOptions(p, sortData));
-    waypointsGUI.setSortButtonSlot(_footerSortSlot(MAIN_GUI_ROWS));
+    waypointsGUI.setSortButtonSlot(_footerSortSlot(rows));
 
     Map<String, CustomGUI.ClickAction> actions = new LinkedHashMap<>();
     for (String waypointId : filteredWaypointIds) {
@@ -160,9 +160,9 @@ public class WaypointsGUI {
         null,
         null));
 
-    waypointsGUI.addFooterEntry(KEY_CANCEL_BTN, _createCancelNavigationItem(p), _footerCancelSlot(MAIN_GUI_ROWS));
-    waypointsGUI.addFooterEntry(KEY_ADD_BTN, _createAddWaypointItem(p), _footerAddWaypointSlot(MAIN_GUI_ROWS));
-    waypointsGUI.addFooterEntry(KEY_FILTER_BTN, _createFilterItem(p, filterMode), _footerFilterSlot(MAIN_GUI_ROWS));
+    waypointsGUI.addFooterEntry(KEY_CANCEL_BTN, _createCancelNavigationItem(p), _footerCancelSlot(rows));
+    waypointsGUI.addFooterEntry(KEY_ADD_BTN, _createAddWaypointItem(p), _footerAddWaypointSlot(rows));
+    waypointsGUI.addFooterEntry(KEY_FILTER_BTN, _createFilterItem(p, filterMode), _footerFilterSlot(rows));
 
     waypointsGUI.setClickActions(actions);
     return waypointsGUI;

@@ -264,6 +264,24 @@ public class SettingsManager {
     _config.save();
   }
 
+  public int getPlaytimeGUIRows() {
+    return Math.max(2, Math.min(6, _fileConfig.getInt("global.guirows.playtime", 3)));
+  }
+
+  public void setPlaytimeGUIRows(int value) {
+    _fileConfig.set("global.guirows.playtime", Math.max(2, Math.min(6, value)));
+    _config.save();
+  }
+
+  public int getWaypointsGUIRows() {
+    return Math.max(2, Math.min(6, _fileConfig.getInt("global.guirows.waypoints", 3)));
+  }
+
+  public void setWaypointsGUIRows(int value) {
+    _fileConfig.set("global.guirows.waypoints", Math.max(2, Math.min(6, value)));
+    _config.save();
+  }
+
   public String getPrimaryFontColor() {
     return _fileConfig.getString("global.theme.primaryFontColor", Theme.DEFAULT_PRIMARY_FONT_COLOR);
   }
