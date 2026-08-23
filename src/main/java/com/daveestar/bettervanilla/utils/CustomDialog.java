@@ -16,6 +16,7 @@ import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput.Optio
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback.Options;
+
 public class CustomDialog {
   public static Dialog createConfirmationDialog(String title, String message, String errorMessage,
       List<DialogInput> inputs, DialogActionCallback yesCallback, DialogActionCallback noCallback,
