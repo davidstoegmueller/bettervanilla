@@ -225,6 +225,15 @@ public class SettingsManager {
     return _fileConfig.getBoolean("players." + uuid + ".veinchopper", false);
   }
 
+  public boolean getPlayerRightClickCropHarvest(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".rightclickcropharvest", false);
+  }
+
+  public void setPlayerRightClickCropHarvest(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".rightclickcropharvest", value);
+    _config.save();
+  }
+
   public void setPlayerVeinChopper(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".veinchopper", value);
     _config.save();
@@ -586,6 +595,13 @@ public class SettingsManager {
   public void setRightClickCropHarvest(boolean value) {
     _fileConfig.set("global.rightclickcropharvest", value);
     _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setPlayerRightClickCropHarvest(UUID.fromString(uuid), false);
+      }
+    }
   }
 
   public boolean getVillagerTradeCyclingEnabled() {

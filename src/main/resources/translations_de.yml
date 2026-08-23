@@ -174,6 +174,7 @@ settings-error-action-bar-timer-disabled: Der Aktionsleisten-Timer ist auf dem S
 settings-error-tags-disabled: Tags sind auf dem Server deaktiviert.
 settings-error-vein-miner-disabled: Der Aderabbau ist auf dem Server deaktiviert.
 settings-error-vein-chopper-disabled: Der Baumfäller ist auf dem Server deaktiviert.
+settings-error-right-click-crop-harvest-disabled: Die Rechtsklick-Ernte ist auf dem Server deaktiviert.
 settings-location-title: Aktionsleisten-Position
 settings-location-description: Zeigt deine aktuelle Position in der Aktionsleiste.
 settings-action-bar-timer-title: Aktionsleisten-Timer
@@ -209,6 +210,8 @@ settings-item-restock-title: Automatisches Auffüllen
 settings-item-restock-description: Füllt Schnellleistenslots automatisch mit passenden Gegenständen auf.
 settings-double-door-title: Doppeltür-Synchronisierung
 settings-double-door-description: Öffne oder schließe eine Tür, damit die verbundene Tür ebenfalls reagiert.
+settings-right-click-crop-harvest-title: Rechtsklick-Ernte
+settings-right-click-crop-harvest-description: Ernte reife Pflanzen per Rechtsklick und pflanze sie neu ein.
 settings-admin-title: Admin-Einstellungen
 settings-admin-description: Verwaltet Admin- und Servereinstellungen.
 settings-tag-dialog-name-label: Tag-Name
@@ -238,6 +241,7 @@ settings-navigation-auto-cancel-toggle-message: Automatisches Navigationsende is
 settings-vein-miner-toggle-message: Der Aderabbau ist jetzt {state}{primary}.
 settings-vein-chopper-toggle-message: Der Baumfäller ist jetzt {state}{primary}.
 settings-double-door-toggle-message: Doppeltür-Synchronisierung ist jetzt {state}{primary}.
+settings-right-click-crop-harvest-toggle-message: Rechtsklick-Ernte ist jetzt {state}{primary}.
 settings-item-restock-toggle-message: Automatisches Auffüllen ist jetzt {state}{primary}.
 admin-maintenance-toggle-message: Der Wartungsmodus ist jetzt {state}{primary}.
 admin-maintenance-current-message: "Nachricht: {highlight}{message}"

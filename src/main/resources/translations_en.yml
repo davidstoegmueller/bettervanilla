@@ -174,6 +174,7 @@ settings-error-action-bar-timer-disabled: Action-Bar timer is globally disabled 
 settings-error-tags-disabled: Tags are globally disabled on the server.
 settings-error-vein-miner-disabled: Vein Miner is globally disabled on the server.
 settings-error-vein-chopper-disabled: Vein Chopper is globally disabled on the server.
+settings-error-right-click-crop-harvest-disabled: Right-click crop harvesting is globally disabled on the server.
 settings-location-title: Action-Bar Location
 settings-location-description: Show your current location in the action bar.
 settings-action-bar-timer-title: Action-Bar Timer
@@ -209,6 +210,8 @@ settings-item-restock-title: Item Restock
 settings-item-restock-description: Refill hotbar slots automatically with matching items.
 settings-double-door-title: Double Door Sync
 settings-double-door-description: Interact with one door to toggle its paired door.
+settings-right-click-crop-harvest-title: Right-Click Crop Harvest
+settings-right-click-crop-harvest-description: Harvest and replant mature crops by right-clicking them.
 settings-admin-title: Admin Settings
 settings-admin-description: Manage admin and server settings.
 settings-tag-dialog-name-label: Tag Name
@@ -238,6 +241,7 @@ settings-navigation-auto-cancel-toggle-message: Navigation auto cancel is now {s
 settings-vein-miner-toggle-message: Vein Miner is now {state}{primary}.
 settings-vein-chopper-toggle-message: Vein Chopper is now {state}{primary}.
 settings-double-door-toggle-message: Double door sync is now {state}{primary}.
+settings-right-click-crop-harvest-toggle-message: Right-click crop harvesting is now {state}{primary}.
 settings-item-restock-toggle-message: Item restock is now {state}{primary}.
 admin-maintenance-toggle-message: Maintenance mode is now {state}{primary}.
 admin-maintenance-current-message: "Message: {highlight}{message}"
