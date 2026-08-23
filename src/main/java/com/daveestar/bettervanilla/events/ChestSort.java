@@ -1,5 +1,6 @@
 package com.daveestar.bettervanilla.events;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +29,10 @@ public class ChestSort implements Listener {
     }
 
     if (e.getRawSlot() != -999) {
+      return;
+    }
+
+    if (e.getCursor().getType() != Material.AIR) {
       return;
     }
 
