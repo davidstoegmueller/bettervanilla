@@ -95,6 +95,9 @@ public class SettingsGUI {
     entries.put("language", _createLanguageItem(viewer, target));
 
     // fourth row
+    entries.put("rightclickcropharvest", _createRightClickCropHarvestItem(viewer, target));
+
+    // final row
     if (showAdminSettings) {
       entries.put("adminsettings", _createAdminSettingsItem(viewer));
     }
@@ -121,6 +124,9 @@ public class SettingsGUI {
     customSlots.put("language", 31);
 
     // fourth row
+    customSlots.put("rightclickcropharvest", 29);
+
+    // final row
     if (showAdminSettings) {
       customSlots.put("adminsettings", rows * 9 - 10);
     }
@@ -414,6 +420,26 @@ public class SettingsGUI {
         displayGUI(p, target);
       }
     });
+    clickActions.put("rightclickcropharvest", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        if (!target.hasPermission(Permissions.RIGHT_CLICK_CROP_HARVEST.getName())) {
+          p.sendMessage(Main.getNoPermissionMessage(p, Permissions.RIGHT_CLICK_CROP_HARVEST));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        if (!_settingsManager.getRightClickCropHarvest()) {
+          p.sendMessage(Main.getPrefix() + Theme.error()
+              + Main.tr(p, "settings-error-right-click-crop-harvest-disabled"));
+          p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
+          return;
+        }
+
+        _toggleRightClickCropHarvest(target);
+        displayGUI(p, target);
+      }
+    });
 
     if (showAdminSettings) {
       clickActions.put("adminsettings", new CustomGUI.ClickAction() {
@@ -585,7 +611,7 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.CHESTSORT.getName());
 
     meta.displayName(
-          Component.text(Theme.titlePrefix() + _t(viewer, "settings-chest-sorting-title")));
+        Component.text(Theme.titlePrefix() + _t(viewer, "settings-chest-sorting-title")));
 
     List<String> lore = new java.util.ArrayList<>();
     lore.add(Theme.textPrefix() + _t(viewer, "settings-chest-sorting-description"));
@@ -623,7 +649,7 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.INVENTORYSORT.getName());
 
     meta.displayName(
-          Component.text(Theme.titlePrefix() + _t(viewer, "settings-inventory-sorting-title")));
+        Component.text(Theme.titlePrefix() + _t(viewer, "settings-inventory-sorting-title")));
 
     List<String> lore = new java.util.ArrayList<>();
     lore.add(Theme.textPrefix() + _t(viewer, "settings-inventory-sorting-description"));
@@ -664,7 +690,7 @@ public class SettingsGUI {
     boolean hasPermission = target.hasPermission(Permissions.BACKPACK.getName());
 
     meta.displayName(
-          Component.text(Theme.titlePrefix() + _t(viewer, "settings-backpack-sorting-title")));
+        Component.text(Theme.titlePrefix() + _t(viewer, "settings-backpack-sorting-title")));
 
     List<String> lore = new java.util.ArrayList<>();
     lore.add(Theme.textPrefix() + _t(viewer, "settings-backpack-sorting-description"));
@@ -838,6 +864,34 @@ public class SettingsGUI {
     return item;
   }
 
+  private ItemStack _createRightClickCropHarvestItem(Player viewer, Player target) {
+    boolean state = _settingsManager.getPlayerRightClickCropHarvest(target.getUniqueId());
+    ItemStack item = new ItemStack(Material.IRON_HOE);
+    ItemMeta meta = item.getItemMeta();
+
+    boolean globalState = _settingsManager.getRightClickCropHarvest();
+    boolean hasPermission = target.hasPermission(Permissions.RIGHT_CLICK_CROP_HARVEST.getName());
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(Theme.titlePrefix() + _t(viewer, "settings-right-click-crop-harvest-title")));
+      meta.lore(Arrays.asList(
+          Theme.textPrefix() + _t(viewer, "settings-right-click-crop-harvest-description"),
+          (!hasPermission ? Main.getShortNoPermissionMessage(viewer, Permissions.RIGHT_CLICK_CROP_HARVEST)
+              : !globalState
+                  ? Theme.error() + _t(viewer, "settings-error-right-click-crop-harvest-disabled")
+                  : null),
+          "",
+          Theme.textPrefix() + _t(viewer, "gui-common-state", "state", _state(viewer, state)),
+          "",
+          Theme.textPrefix() + _t(viewer, "gui-common-action-toggle"))
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private ItemStack _createAdminSettingsItem(Player viewer) {
     ItemStack item = new ItemStack(Material.REDSTONE_TORCH);
     ItemMeta meta = item.getItemMeta();
@@ -958,7 +1012,6 @@ public class SettingsGUI {
     return options;
   }
 
-
   private void _toggleLocation(Player p) {
     boolean newState;
 
@@ -972,9 +1025,11 @@ public class SettingsGUI {
 
       var blockLoc = p.getLocation().toBlockLocation();
       Biome biome = p.getWorld().getBiome(blockLoc);
-      String locationText = Theme.highlight() + Main.tr(p, "coordinate-label-x") + " " + Theme.primary() + blockLoc.getBlockX()
+      String locationText = Theme.highlight() + Main.tr(p, "coordinate-label-x") + " " + Theme.primary()
+          + blockLoc.getBlockX()
           + Theme.highlight() + " " + Main.tr(p, "coordinate-label-y") + " " + Theme.primary() + blockLoc.getBlockY()
-          + Theme.highlight() + " " + Main.tr(p, "coordinate-label-z") + " " + Theme.primary() + blockLoc.getBlockZ() + Theme.textSymbol()
+          + Theme.highlight() + " " + Main.tr(p, "coordinate-label-z") + " " + Theme.primary() + blockLoc.getBlockZ()
+          + Theme.textSymbol()
           + ChatColor.BOLD + " » " + Theme.primary() + biome.getKey();
 
       _actionBar.sendActionBar(p, locationText);
@@ -1103,6 +1158,13 @@ public class SettingsGUI {
     _settingsManager.setPlayerVeinChopper(p.getUniqueId(), newState);
 
     _sendToggleMessage(p, "settings-vein-chopper-toggle-message", newState);
+  }
+
+  private void _toggleRightClickCropHarvest(Player p) {
+    boolean newState = !_settingsManager.getPlayerRightClickCropHarvest(p.getUniqueId());
+    _settingsManager.setPlayerRightClickCropHarvest(p.getUniqueId(), newState);
+
+    _sendToggleMessage(p, "settings-right-click-crop-harvest-toggle-message", newState);
   }
 
   private void _toggleDoubleDoor(Player p) {

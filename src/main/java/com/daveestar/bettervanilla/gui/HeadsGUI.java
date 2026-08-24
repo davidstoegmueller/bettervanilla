@@ -103,6 +103,14 @@ public class HeadsGUI {
     categoriesGUI.setSearchButtonSlot(_footerSearchSlot(categoryGUIRows));
     categoriesGUI.setSortButtonSlot(_footerSortSlot(categoryGUIRows));
     categoriesGUI.setSortOptions(_createCategorySortOptions(p, sortData));
+    categoriesGUI.setSearchAction((player, searchTerm) -> {
+      if (searchTerm.isEmpty()) {
+        categoriesGUI.open(player);
+        return;
+      }
+
+      _displayHeadSearchResults(player, headsByCategory, categoriesGUI, searchTerm);
+    });
 
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     for (Map.Entry<String, HeadCategory> entry : categoryByKey.entrySet()) {
@@ -130,6 +138,40 @@ public class HeadsGUI {
     return categoriesGUI;
   }
 
+  private void _displayHeadSearchResults(Player p, Map<HeadCategory, List<Head>> headsByCategory,
+      CustomGUI parentMenu, String searchTerm) {
+    Map<String, ItemStack> entries = new LinkedHashMap<>();
+    Map<String, HeadSortData> sortData = new HashMap<>();
+    Map<String, Head> headByKey = new HashMap<>();
+
+    for (Map.Entry<HeadCategory, List<Head>> categoryEntry : headsByCategory.entrySet()) {
+      HeadCategory category = categoryEntry.getKey();
+      if (category == null) {
+        continue;
+      }
+
+      for (Head head : categoryEntry.getValue()) {
+        String key = KEY_HEAD_PREFIX + head.uid();
+        entries.put(key, _createHeadItem(p, head, category, true));
+        sortData.put(key, new HeadSortData(head.name()));
+        headByKey.put(key, head);
+      }
+    }
+
+    CustomGUI searchGUI = new CustomGUI(_plugin, p,
+        Theme.titlePrefix() + Main.tr(p, \u0022gui-heads-categories-title\u0022,
+            \u0022count\u0022, Theme.primary() + Integer.toString(entries.size())),
+        entries, HEADS_GUI_ROWS, null, parentMenu,
+        EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
+
+    searchGUI.setSearchButtonSlot(_footerSearchSlot(HEADS_GUI_ROWS));
+    searchGUI.setSortButtonSlot(_footerSortSlot(HEADS_GUI_ROWS));
+    searchGUI.setSortOptions(_createHeadSortOptions(p, sortData));
+    searchGUI.setClickActions(_createHeadClickActions(headByKey));
+    searchGUI.setSearchTerm(searchTerm);
+    searchGUI.open(p);
+  }
+
   private void _displayHeadsGUI(Player p, HeadCategory category, List<Head> heads, CustomGUI parentMenu) {
     Map<String, ItemStack> entries = new LinkedHashMap<>();
     Map<String, HeadSortData> sortData = new HashMap<>();
@@ -154,21 +196,22 @@ public class HeadsGUI {
     headsGUI.setSortButtonSlot(_footerSortSlot(HEADS_GUI_ROWS));
     headsGUI.setSortOptions(_createHeadSortOptions(p, sortData));
 
+    headsGUI.setClickActions(_createHeadClickActions(headByKey));
+    headsGUI.open(p);
+  }
+
+  private Map<String, CustomGUI.ClickAction> _createHeadClickActions(Map<String, Head> headByKey) {
     Map<String, CustomGUI.ClickAction> actions = new HashMap<>();
     for (Map.Entry<String, Head> entry : headByKey.entrySet()) {
-      String key = entry.getKey();
       Head head = entry.getValue();
-
-      actions.put(key, new CustomGUI.ClickAction() {
+      actions.put(entry.getKey(), new CustomGUI.ClickAction() {
         @Override
         public void onLeftClick(Player player) {
           _giveHead(player, head);
         }
       });
     }
-
-    headsGUI.setClickActions(actions);
-    headsGUI.open(p);
+    return actions;
   }
 
   // -------------------

@@ -69,6 +69,7 @@ command-waypoints-help-title: "WAYPOINTS HELP:"
 command-waypoints-help-open: "{highlight}/waypoints{primary} - Opens the waypoints GUI."
 command-waypoints-help-player: "{highlight}/waypoints player <player>{primary} - Navigates to another player's location."
 command-waypoints-help-coordinates: "{highlight}/waypoints coords <x> <y> <z>{primary} - Navigates to specific coordinates."
+command-waypoints-help-cancel: "{highlight}/waypoints cancel{primary} - Cancels your active navigation."
 navigation-coordinates-name: Coordinates
 help-player-title: "{bold}{plugin} HELP"
 help-player-tip: "Tip: Most features are toggleable in {highlight}/settings{primary}."
@@ -173,6 +174,7 @@ settings-error-action-bar-timer-disabled: Action-Bar timer is globally disabled 
 settings-error-tags-disabled: Tags are globally disabled on the server.
 settings-error-vein-miner-disabled: Vein Miner is globally disabled on the server.
 settings-error-vein-chopper-disabled: Vein Chopper is globally disabled on the server.
+settings-error-right-click-crop-harvest-disabled: Right-click crop harvesting is globally disabled on the server.
 settings-location-title: Action-Bar Location
 settings-location-description: Show your current location in the action bar.
 settings-action-bar-timer-title: Action-Bar Timer
@@ -208,6 +210,8 @@ settings-item-restock-title: Item Restock
 settings-item-restock-description: Refill hotbar slots automatically with matching items.
 settings-double-door-title: Double Door Sync
 settings-double-door-description: Interact with one door to toggle its paired door.
+settings-right-click-crop-harvest-title: Right-Click Crop Harvest
+settings-right-click-crop-harvest-description: Harvest and replant mature crops by right-clicking them.
 settings-admin-title: Admin Settings
 settings-admin-description: Manage admin and server settings.
 settings-tag-dialog-name-label: Tag Name
@@ -237,11 +241,13 @@ settings-navigation-auto-cancel-toggle-message: Navigation auto cancel is now {s
 settings-vein-miner-toggle-message: Vein Miner is now {state}{primary}.
 settings-vein-chopper-toggle-message: Vein Chopper is now {state}{primary}.
 settings-double-door-toggle-message: Double door sync is now {state}{primary}.
+settings-right-click-crop-harvest-toggle-message: Right-click crop harvesting is now {state}{primary}.
 settings-item-restock-toggle-message: Item restock is now {state}{primary}.
 admin-maintenance-toggle-message: Maintenance mode is now {state}{primary}.
 admin-maintenance-current-message: "Message: {highlight}{message}"
 admin-creeper-block-damage-toggle-message: Creeper block damage is now {state}{primary}.
 admin-creeper-entity-damage-toggle-message: Creeper entity damage is now {state}{primary}.
+admin-enderman-block-steal-toggle-message: Enderman block stealing is now {state}{primary}.
 admin-end-toggle-message: The End is now {state}{primary}.
 admin-nether-toggle-message: The Nether is now {state}{primary}.
 admin-sleeping-rain-toggle-message: Sleeping through rain is now {state}{primary}.
@@ -255,6 +261,7 @@ admin-heads-toggle-message: Heads Explorer is now {state}{primary}.
 admin-death-chest-toggle-message: Death chest creation is now {state}{primary}.
 admin-afk-protection-toggle-message: AFK protection is now {state}{primary}.
 admin-item-restock-toggle-message: Item restock is now {state}{primary}.
+admin-villager-trade-cycling-toggle-message: Villager trade cycling is now {state}{primary}.
 admin-motd-dialog-line-one: MOTD Line 1
 admin-motd-dialog-line-two: MOTD Line 2
 admin-motd-dialog-title: Server MOTD
@@ -274,6 +281,7 @@ admin-heads-api-dialog-description: Optionally provide a minecraft-heads.com API
 admin-motd-set-message: "Server MOTD set to:\nLine 1: {line1}\n{primary}Line 2: {line2}"
 admin-maintenance-set-message: "Maintenance message set to: {highlight}{message}"
 admin-afk-time-set-message: AFK time set to {highlight}{minutes}{primary} minutes.
+admin-gui-rows-set-message: "GUI rows set to {highlight}{playtimeRows}{primary} for Playtime and {highlight}{waypointsRows}{primary} for Waypoints."
 admin-sleep-percentage-set-message: Players sleeping percentage set to {highlight}{percentage}{primary}%.
 admin-heads-api-updated-message: Heads Explorer API key updated.
 admin-heads-refresh-success: Heads Explorer data refreshed.
@@ -288,6 +296,14 @@ admin-creeper-block-damage-title: Creeper Block Damage
 admin-creeper-block-damage-description: Control whether creeper explosions destroy blocks.
 admin-creeper-entity-damage-title: Creeper Entity Damage
 admin-creeper-entity-damage-description: Control whether creepers damage non-player entities.
+admin-enderman-block-steal-title: Enderman Block Stealing
+admin-enderman-block-steal-description: Control whether Endermen can pick up and place blocks.
+admin-protections-settings-title: Mob Protection
+admin-protections-settings-description: Configure protections against mob-related world damage.
+admin-protections-settings-creeper-block-damage: "Creeper block damage: {state}"
+admin-protections-settings-creeper-entity-damage: "Creeper entity damage: {state}"
+admin-protections-settings-enderman-block-steal: "Enderman block stealing: {state}"
+gui-protections-settings-title: Mob Protection
 admin-end-title: Enable The End
 admin-end-description: Control entry into The End dimension.
 admin-nether-title: Enable The Nether
@@ -301,6 +317,10 @@ admin-crop-protection-title: Crop Protection
 admin-crop-protection-description: Prevent crops from being trampled.
 admin-right-click-harvest-title: Right-Click Crop Harvest
 admin-right-click-harvest-description: Allow players to harvest crops by right-clicking them.
+admin-villager-trade-cycling-title: Villager Trade Cycling
+admin-villager-trade-cycling-description: Right-click outside a villager trading screen to generate new trades.
+admin-villager-trade-cycling-restriction: Only works before the villager has been traded with.
+villager-trade-cycling-locked-message: This villager's trades are locked because it has already been traded with.
 admin-locator-bar-title: Locator Bar
 admin-locator-bar-description: Toggle the locator-bar gamerule for every world.
 common-state-set: SET
@@ -336,6 +356,14 @@ admin-afk-protection-description: Make players invulnerable while AFK.
 admin-afk-time-title: AFK Time
 admin-afk-time-description: Set the AFK timeout in minutes.
 admin-afk-time-current: "Current: {highlight}{minutes}{primary} minutes"
+admin-gui-rows-title: GUI Rows
+admin-gui-rows-description: Set the height of the list GUIs.
+admin-gui-rows-playtime: "Playtime: {highlight}{rows}{primary} rows"
+admin-gui-rows-waypoints: "Waypoints: {highlight}{rows}{primary} rows"
+admin-gui-rows-dialog-title: GUI Rows
+admin-gui-rows-dialog-description: Set each GUI height. The last row is reserved for controls.
+admin-gui-rows-dialog-playtime: Playtime rows
+admin-gui-rows-dialog-waypoints: Waypoint rows
 admin-motd-title: Server MOTD
 admin-motd-description: Set the message of the day shown in the server list.
 admin-backpack-settings-title: Backpack Settings
@@ -417,6 +445,11 @@ gui-playtime-summary-title: "PLAYTIME{reset}{text-symbol} » {primary}{player}"
 gui-playtime-status-format: "({status})"
 gui-playtime-status-online: "online"
 gui-playtime-status-offline: "offline"
+gui-playtime-current-afk: "Current AFK: {time}"
+gui-playtime-current-afk-none: "none"
+gui-playtime-last-seen: "Last seen: {lastSeen}"
+gui-playtime-last-seen-date: "{elapsed}{arrow} ({date})"
+gui-playtime-last-seen-online: "online"
 gui-playtime-action-show-summary: "Left-Click: Show details"
 gui-playtime-sort-total-descending: "Total time (High → Low)"
 gui-playtime-sort-total-ascending: "Total time (Low → High)"
@@ -501,6 +534,10 @@ gui-waypoints-delete-item-title: "Delete"
 gui-waypoints-action-delete: "Left-Click: Delete {waypoint}"
 gui-waypoints-set-icon-item-title: "Set Icon"
 gui-waypoints-action-open-icon-selection: "Left-Click: Set a custom icon for {waypoint}"
+gui-waypoints-set-coordinates-item-title: "Set Coordinates"
+gui-waypoints-set-coordinates-item-description: "Reset this waypoint's coordinates to your current location."
+gui-waypoints-action-set-coordinates: "Left-Click: Set your current location for {waypoint}"
+gui-waypoints-coordinates-changed-message: "The coordinates of {waypoint} were set to {highlight}X: {primary}{x}, {highlight}Y: {primary}{y}, {highlight}Z: {primary}{z}."
 gui-waypoints-cancel-navigation-item-title: "Cancel Navigation"
 gui-waypoints-cancel-navigation-description: "Cancel your current active navigation."
 gui-waypoints-action-cancel-navigation: "Left-Click: Cancel navigation"
@@ -714,6 +751,8 @@ command-permissions-reload-success: "Permissions were reloaded successfully."
 command-playtime-summary-title: "PLAYTIME{reset}{text-symbol} » {primary}{player}"
 command-waypoints-coordinates-navigation-started: "Starting navigation to coordinates {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z}."
 command-waypoints-player-navigation-started: "Starting navigation to {player} at {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z}."
+command-waypoints-navigation-canceled: "Your active navigation was canceled."
+command-waypoints-error-no-active-navigation: "You do not have an active destination."
 death-point-date-format: "dd.MM.yyyy » HH:mm:ss"
 enum-chat-color-black: Black
 enum-chat-color-dark-blue: Dark Blue

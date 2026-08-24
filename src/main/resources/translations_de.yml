@@ -69,6 +69,7 @@ command-waypoints-help-title: "WEGPUNKTE-HILFE:"
 command-waypoints-help-open: "{highlight}/waypoints{primary} - Öffnet das Wegpunkt-Menü."
 command-waypoints-help-player: "{highlight}/waypoints player <Spieler>{primary} - Navigiert zur Position eines anderen Spielers."
 command-waypoints-help-coordinates: "{highlight}/waypoints coords <x> <y> <z>{primary} - Navigiert zu bestimmten Koordinaten."
+command-waypoints-help-cancel: "{highlight}/waypoints cancel{primary} - Bricht deine aktive Navigation ab."
 navigation-coordinates-name: Koordinaten
 help-player-title: "{bold}{plugin}-HILFE"
 help-player-tip: "Tipp: Die meisten Funktionen kannst du unter {highlight}/settings{primary} ein- oder ausschalten."
@@ -173,6 +174,7 @@ settings-error-action-bar-timer-disabled: Der Aktionsleisten-Timer ist auf dem S
 settings-error-tags-disabled: Tags sind auf dem Server deaktiviert.
 settings-error-vein-miner-disabled: Der Aderabbau ist auf dem Server deaktiviert.
 settings-error-vein-chopper-disabled: Der Baumfäller ist auf dem Server deaktiviert.
+settings-error-right-click-crop-harvest-disabled: Die Rechtsklick-Ernte ist auf dem Server deaktiviert.
 settings-location-title: Aktionsleisten-Position
 settings-location-description: Zeigt deine aktuelle Position in der Aktionsleiste.
 settings-action-bar-timer-title: Aktionsleisten-Timer
@@ -208,6 +210,8 @@ settings-item-restock-title: Automatisches Auffüllen
 settings-item-restock-description: Füllt Schnellleistenslots automatisch mit passenden Gegenständen auf.
 settings-double-door-title: Doppeltür-Synchronisierung
 settings-double-door-description: Öffne oder schließe eine Tür, damit die verbundene Tür ebenfalls reagiert.
+settings-right-click-crop-harvest-title: Rechtsklick-Ernte
+settings-right-click-crop-harvest-description: Ernte reife Pflanzen per Rechtsklick und pflanze sie neu ein.
 settings-admin-title: Admin-Einstellungen
 settings-admin-description: Verwaltet Admin- und Servereinstellungen.
 settings-tag-dialog-name-label: Tag-Name
@@ -237,11 +241,13 @@ settings-navigation-auto-cancel-toggle-message: Automatisches Navigationsende is
 settings-vein-miner-toggle-message: Der Aderabbau ist jetzt {state}{primary}.
 settings-vein-chopper-toggle-message: Der Baumfäller ist jetzt {state}{primary}.
 settings-double-door-toggle-message: Doppeltür-Synchronisierung ist jetzt {state}{primary}.
+settings-right-click-crop-harvest-toggle-message: Rechtsklick-Ernte ist jetzt {state}{primary}.
 settings-item-restock-toggle-message: Automatisches Auffüllen ist jetzt {state}{primary}.
 admin-maintenance-toggle-message: Der Wartungsmodus ist jetzt {state}{primary}.
 admin-maintenance-current-message: "Nachricht: {highlight}{message}"
 admin-creeper-block-damage-toggle-message: Blockschaden durch Creeper ist jetzt {state}{primary}.
 admin-creeper-entity-damage-toggle-message: Schaden an Entitäten durch Creeper ist jetzt {state}{primary}.
+admin-enderman-block-steal-toggle-message: Blockdiebstahl durch Endermen ist jetzt {state}{primary}.
 admin-end-toggle-message: Das Ende ist jetzt {state}{primary}.
 admin-nether-toggle-message: Der Nether ist jetzt {state}{primary}.
 admin-sleeping-rain-toggle-message: "Regen wegschlafen: {state}{primary}."
@@ -255,6 +261,7 @@ admin-heads-toggle-message: Köpfe-Explorer ist jetzt {state}{primary}.
 admin-death-chest-toggle-message: Das Erstellen von Todestruhen ist jetzt {state}{primary}.
 admin-afk-protection-toggle-message: AFK-Schutz ist jetzt {state}{primary}.
 admin-item-restock-toggle-message: Automatisches Auffüllen ist jetzt {state}{primary}.
+admin-villager-trade-cycling-toggle-message: Das Wechseln von Dorfbewohnerangeboten ist jetzt {state}{primary}.
 admin-motd-dialog-line-one: MOTD-Zeile 1
 admin-motd-dialog-line-two: MOTD-Zeile 2
 admin-motd-dialog-title: Server-MOTD
@@ -274,6 +281,7 @@ admin-heads-api-dialog-description: Hinterlege optional einen API-Schlüssel von
 admin-motd-set-message: "Server-MOTD gesetzt:\nZeile 1: {line1}\n{primary}Zeile 2: {line2}"
 admin-maintenance-set-message: "Wartungsnachricht gesetzt: {highlight}{message}"
 admin-afk-time-set-message: AFK-Zeit auf {highlight}{minutes}{primary} Minuten gesetzt.
+admin-gui-rows-set-message: "GUI-Zeilen auf {highlight}{playtimeRows}{primary} für Spielzeit und {highlight}{waypointsRows}{primary} für Wegpunkte gesetzt."
 admin-sleep-percentage-set-message: Der benötigte Schlafanteil wurde auf {highlight}{percentage}{primary} % gesetzt.
 admin-heads-api-updated-message: Köpfe-Explorer-API-Schlüssel aktualisiert.
 admin-heads-refresh-success: Die Kopfdaten wurden aktualisiert.
@@ -288,6 +296,14 @@ admin-creeper-block-damage-title: Blockschaden durch Creeper
 admin-creeper-block-damage-description: Steuert, ob Creeper-Explosionen Blöcke zerstören.
 admin-creeper-entity-damage-title: Entitätsschaden durch Creeper
 admin-creeper-entity-damage-description: Steuert, ob Creeper-Explosionen anderen Entitäten Schaden zufügen.
+admin-enderman-block-steal-title: Blockdiebstahl durch Endermen
+admin-enderman-block-steal-description: Steuert, ob Endermen Blöcke aufnehmen und platzieren können.
+admin-protections-settings-title: Kreaturenschutz
+admin-protections-settings-description: Konfiguriert Schutzmaßnahmen gegen durch Kreaturen verursachte Weltschäden.
+admin-protections-settings-creeper-block-damage: "Blockschaden durch Creeper: {state}"
+admin-protections-settings-creeper-entity-damage: "Entitätsschaden durch Creeper: {state}"
+admin-protections-settings-enderman-block-steal: "Blockdiebstahl durch Endermen: {state}"
+gui-protections-settings-title: Kreaturenschutz
 admin-end-title: Das Ende aktivieren
 admin-end-description: Steuert den Zugang zur End-Dimension.
 admin-nether-title: Den Nether aktivieren
@@ -301,6 +317,10 @@ admin-crop-protection-title: Ackerbodenschutz
 admin-crop-protection-description: Verhindert, dass Ackerboden zertrampelt wird.
 admin-right-click-harvest-title: Rechtsklick-Ernte
 admin-right-click-harvest-description: Erlaubt das Ernten von Pflanzen per Rechtsklick.
+admin-villager-trade-cycling-title: Dorfbewohnerangebote wechseln
+admin-villager-trade-cycling-description: Ein Rechtsklick ausserhalb des Handelsfensters erzeugt neue Angebote.
+admin-villager-trade-cycling-restriction: Funktioniert nur, bevor mit dem Dorfbewohner gehandelt wurde.
+villager-trade-cycling-locked-message: Die Angebote dieses Dorfbewohners sind gesperrt, da bereits mit ihm gehandelt wurde.
 admin-locator-bar-title: Ortungsleiste
 admin-locator-bar-description: Schaltet die Ortungsleisten-Spielregel in allen Welten um.
 common-state-set: GESETZT
@@ -336,6 +356,14 @@ admin-afk-protection-description: Macht Spieler unverwundbar, während sie AFK s
 admin-afk-time-title: AFK-Zeit
 admin-afk-time-description: Legt das AFK-Zeitlimit in Minuten fest.
 admin-afk-time-current: "Aktuell: {highlight}{minutes}{primary} Minuten"
+admin-gui-rows-title: GUI-Zeilen
+admin-gui-rows-description: Lege die Höhe der Listen-GUIs fest.
+admin-gui-rows-playtime: "Spielzeit: {highlight}{rows}{primary} Zeilen"
+admin-gui-rows-waypoints: "Wegpunkte: {highlight}{rows}{primary} Zeilen"
+admin-gui-rows-dialog-title: GUI-Zeilen
+admin-gui-rows-dialog-description: Lege die Höhe jedes GUIs fest. Die letzte Zeile ist für Steuerelemente reserviert.
+admin-gui-rows-dialog-playtime: Spielzeit-Zeilen
+admin-gui-rows-dialog-waypoints: Wegpunkt-Zeilen
 admin-motd-title: Server-MOTD
 admin-motd-description: Legt die Nachricht in der Serverliste fest.
 admin-backpack-settings-title: Rucksackeinstellungen
@@ -417,6 +445,11 @@ gui-playtime-summary-title: "SPIELZEIT{reset}{text-symbol} » {primary}{player}"
 gui-playtime-status-format: "({status})"
 gui-playtime-status-online: "online"
 gui-playtime-status-offline: "offline"
+gui-playtime-current-afk: "Aktuell AFK: {time}"
+gui-playtime-current-afk-none: "keine"
+gui-playtime-last-seen: "Zuletzt gesehen: {lastSeen}"
+gui-playtime-last-seen-date: "{elapsed}{arrow} ({date})"
+gui-playtime-last-seen-online: "online"
 gui-playtime-action-show-summary: "Linksklick: Details anzeigen"
 gui-playtime-sort-total-descending: "Gesamtzeit (absteigend)"
 gui-playtime-sort-total-ascending: "Gesamtzeit (aufsteigend)"
@@ -501,6 +534,10 @@ gui-waypoints-delete-item-title: "Löschen"
 gui-waypoints-action-delete: "Linksklick: {waypoint} löschen"
 gui-waypoints-set-icon-item-title: "Symbol festlegen"
 gui-waypoints-action-open-icon-selection: "Linksklick: Symbol für {waypoint} auswählen"
+gui-waypoints-set-coordinates-item-title: "Koordinaten festlegen"
+gui-waypoints-set-coordinates-item-description: "Setze die Koordinaten dieses Wegpunkts auf deine aktuelle Position."
+gui-waypoints-action-set-coordinates: "Linksklick: Deine aktuelle Position setzen für {waypoint}"
+gui-waypoints-coordinates-changed-message: "Die Koordinaten von {waypoint} wurden auf {highlight}X: {primary}{x}, {highlight}Y: {primary}{y}, {highlight}Z: {primary}{z} gesetzt."
 gui-waypoints-cancel-navigation-item-title: "Navigation abbrechen"
 gui-waypoints-cancel-navigation-description: "Brich deine aktive Navigation ab."
 gui-waypoints-action-cancel-navigation: "Linksklick: Navigation abbrechen"
@@ -714,6 +751,8 @@ command-permissions-reload-success: "Die Berechtigungen wurden neu geladen."
 command-playtime-summary-title: "SPIELZEIT{reset}{text-symbol} » {primary}{player}"
 command-waypoints-coordinates-navigation-started: "Navigation zu {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z} wurde gestartet."
 command-waypoints-player-navigation-started: "Navigation zu {player} bei {highlight}X: {primary}{x} | {highlight}Y: {primary}{y} | {highlight}Z: {primary}{z} wurde gestartet."
+command-waypoints-navigation-canceled: "Deine aktive Navigation wurde abgebrochen."
+command-waypoints-error-no-active-navigation: "Du hast keine aktive Navigation."
 death-point-date-format: "dd.MM.yyyy » HH:mm:ss"
 enum-chat-color-black: Schwarz
 enum-chat-color-dark-blue: Dunkelblau

@@ -172,6 +172,10 @@ public class TimerManager {
     return _running;
   }
 
+  public int getGlobalTimer() {
+    return _globalTimer;
+  }
+
   public void setRunning(boolean state) {
     if (_running != state) {
       _running = state;

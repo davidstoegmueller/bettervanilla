@@ -1,13 +1,17 @@
 package com.daveestar.bettervanilla.gui;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -19,6 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import com.daveestar.bettervanilla.Main;
+import com.daveestar.bettervanilla.manager.AFKManager;
+import com.daveestar.bettervanilla.manager.SettingsManager;
 import com.daveestar.bettervanilla.manager.TimerManager;
 import com.daveestar.bettervanilla.utils.CustomGUI;
 import com.daveestar.bettervanilla.utils.Theme;
@@ -28,10 +34,14 @@ import net.md_5.bungee.api.ChatColor;
 
 public class PlayTimeGUI {
   private final Main _plugin;
+  private final AFKManager _afkManager;
+  private final SettingsManager _settingsManager;
   private final TimerManager _timerManager;
 
   public PlayTimeGUI() {
     _plugin = Main.getInstance();
+    _afkManager = _plugin.getAFKManager();
+    _settingsManager = _plugin.getSettingsManager();
     _timerManager = _plugin.getTimerManager();
   }
 
@@ -68,14 +78,15 @@ public class PlayTimeGUI {
       });
     }
 
+    int rows = _settingsManager.getPlaytimeGUIRows();
     CustomGUI gui = new CustomGUI(_plugin, p,
         Theme.titlePrefix() + Main.tr(p, "gui-playtime-title"),
-        entries, 3, null, null, EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
+        entries, rows, null, null, EnumSet.of(CustomGUI.Option.ENABLE_SEARCH, CustomGUI.Option.ENABLE_SORT));
 
-    gui.setSearchButtonSlot(_footerSearchSlot(3));
+    gui.setSearchButtonSlot(_footerSearchSlot(rows));
 
     gui.setSortOptions(_createPlaytimeSortOptions(p, sortData));
-    gui.setSortButtonSlot(_footerSortSlot(3));
+    gui.setSortButtonSlot(_footerSortSlot(rows));
 
     gui.setClickActions(actions);
     gui.open(p);
@@ -98,11 +109,15 @@ public class PlayTimeGUI {
         + Main.tr(viewer, "gui-playtime-summary-title",
             "player", ChatColor.RESET + "" + Theme.primary() + playerName));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-total",
-        "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime + afkTime)));
+        "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime + afkTime)));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-active",
-        "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)));
+        "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime)));
     viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "playtime-afk",
-        "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)));
+        "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, afkTime)));
+    viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "gui-playtime-current-afk",
+        "time", _formatCurrentAFKTime(viewer, target)));
+    viewer.sendMessage(Main.getShortPrefix() + Main.tr(viewer, "gui-playtime-last-seen",
+        "lastSeen", ChatColor.YELLOW + _formatLastSeen(viewer, target)));
   }
 
   private ItemStack _createPlayerItem(Player viewer, OfflinePlayer op) {
@@ -116,7 +131,7 @@ public class PlayTimeGUI {
       skullMeta.setOwningPlayer(op);
 
       String status = Main.tr(viewer, "gui-playtime-status-format",
-          "status", (op.isOnline() ? Theme.highlight() : Theme.error())
+          "status", (op.isOnline() ? ChatColor.GREEN : ChatColor.RED)
               + Main.tr(viewer, op.isOnline() ? "gui-playtime-status-online" : "gui-playtime-status-offline")
               + Theme.primary());
       String playerName = op.getName() != null ? op.getName() : Main.tr(viewer, "common-value-unknown");
@@ -130,11 +145,15 @@ public class PlayTimeGUI {
           Arrays.asList(
               "",
               Theme.textPrefix() + Main.tr(viewer, "playtime-total",
-                  "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime + afkTime)),
+                  "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime + afkTime)),
               Theme.textPrefix() + Main.tr(viewer, "playtime-active",
-                  "time", Theme.highlight() + _timerManager.formatTime(viewer, playTime)),
+                  "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, playTime)),
               Theme.textPrefix() + Main.tr(viewer, "playtime-afk",
-                  "time", Theme.highlight() + _timerManager.formatTime(viewer, afkTime)),
+                  "time", ChatColor.YELLOW + _timerManager.formatTime(viewer, afkTime)),
+              Theme.textPrefix() + Main.tr(viewer, "gui-playtime-current-afk",
+                  "time", _formatCurrentAFKTime(viewer, op)),
+              Theme.textPrefix() + Main.tr(viewer, "gui-playtime-last-seen",
+                  "lastSeen", ChatColor.YELLOW + _formatLastSeen(viewer, op)),
               "",
               Theme.textPrefix() + Main.tr(viewer, "gui-playtime-action-show-summary")).stream()
               .filter(Objects::nonNull)
@@ -145,6 +164,52 @@ public class PlayTimeGUI {
     }
 
     return item;
+  }
+
+  private String _formatCurrentAFKTime(Player viewer, OfflinePlayer target) {
+    Player onlineTarget = target.getPlayer();
+    if (onlineTarget != null && _afkManager.isPlayerMarkedAFK(onlineTarget)) {
+      return ChatColor.YELLOW + _timerManager.formatTime(viewer, _afkManager.getCurrentAFKTime(onlineTarget));
+    }
+
+    return ChatColor.YELLOW + Main.tr(viewer, "gui-playtime-current-afk-none");
+  }
+
+  private long _getLastSeen(OfflinePlayer op) {
+    return op.isOnline() ? System.currentTimeMillis() : op.getLastSeen();
+  }
+
+  private String _formatLastSeen(Player viewer, OfflinePlayer op) {
+    if (op.isOnline()) {
+      return Main.tr(viewer, "gui-playtime-last-seen-online");
+    }
+
+    long lastSeen = _getLastSeen(op);
+    long elapsed = Math.max(0, System.currentTimeMillis() - lastSeen);
+
+    return Main.tr(viewer, "gui-playtime-last-seen-date",
+        "elapsed", _formatElapsedTime(elapsed),
+        "arrow", Theme.textSymbol() + "»" + ChatColor.YELLOW,
+        "date", new SimpleDateFormat("dd.MM.yy").format(new Date(lastSeen)));
+  }
+
+  private String _formatElapsedTime(long elapsed) {
+    StringJoiner parts = new StringJoiner(" ");
+    long days = TimeUnit.MILLISECONDS.toDays(elapsed);
+    long hours = TimeUnit.MILLISECONDS.toHours(elapsed) % 24;
+    long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed) % 60;
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsed) % 60;
+
+    if (days > 0)
+      parts.add(days + "d");
+    if (hours > 0)
+      parts.add(hours + "h");
+    if (minutes > 0)
+      parts.add(minutes + "m");
+    if (seconds > 0)
+      parts.add(seconds + "s");
+
+    return parts.length() == 0 ? "" : parts + " ";
   }
 
   // ---------

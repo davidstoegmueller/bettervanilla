@@ -1,6 +1,7 @@
 package com.daveestar.bettervanilla.utils;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -48,6 +49,7 @@ public class CustomGUI implements Listener {
   private List<SortOption> _sortOptions;
   private int _currentSortIdx;
   private Consumer<Player> _backAction;
+  private BiConsumer<Player, String> _searchAction;
   private PageSwitchListener _pageSwitchListener;
   private String _searchTerm;
   private final Player _viewer;
@@ -100,6 +102,14 @@ public class CustomGUI implements Listener {
     _sortOptions = sortOptions != null ? new ArrayList<>(sortOptions) : new ArrayList<>();
     _currentSortIdx = 0;
     _applySearchTerm(_searchTerm);
+  }
+
+  public void setSearchAction(BiConsumer<Player, String> searchAction) {
+    _searchAction = searchAction;
+  }
+
+  public void setSearchTerm(String searchTerm) {
+    _applySearchTerm(searchTerm);
   }
 
   public void setSearchButtonSlot(int slot) {
@@ -515,8 +525,12 @@ public class CustomGUI implements Listener {
         (view, audience) -> {
           Player player = (Player) audience;
           String input = Optional.ofNullable(view.getText("search")).map(String::trim).orElse("");
-          _applySearchTerm(input);
-          player.openInventory(_gui);
+          if (_searchAction != null) {
+            _searchAction.accept(player, input);
+          } else {
+            _applySearchTerm(input);
+            player.openInventory(_gui);
+          }
         },
         null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
 

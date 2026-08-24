@@ -190,6 +190,14 @@ public class WaypointsManager {
     _config.save();
   }
 
+  public void setWaypointCoordinates(String worldName, String waypointId, int x, int y, int z) {
+    String basePath = _getWaypointBasePath(worldName, waypointId);
+    _fileConfig.set(basePath + "." + KEY_X, x);
+    _fileConfig.set(basePath + "." + KEY_Y, y);
+    _fileConfig.set(basePath + "." + KEY_Z, z);
+    _config.save();
+  }
+
   public void setWaypointVisibility(String worldName, String waypointId, WaypointVisibility visibility) {
     _fileConfig.set(_getWaypointBasePath(worldName, waypointId) + "." + KEY_VISIBILITY, visibility.name());
     _config.save();

@@ -15,6 +15,7 @@ public class AFKManager {
 
   private HashMap<Player, Long> _lastMovement;
   private HashMap<Player, Boolean> _afkStates;
+  private HashMap<Player, Integer> _afkStartTimes;
 
   private TimerManager _timerManager;
   private SettingsManager _settingsManager;
@@ -27,6 +28,7 @@ public class AFKManager {
 
     _lastMovement = new HashMap<Player, Long>();
     _afkStates = new HashMap<Player, Boolean>();
+    _afkStartTimes = new HashMap<Player, Integer>();
   }
 
   public void initManagers() {
@@ -53,6 +55,7 @@ public class AFKManager {
   public void onPlayerLeft(Player p) {
     _lastMovement.remove(p);
     _afkStates.remove(p);
+    _afkStartTimes.remove(p);
 
     // reset any invulnerability or collision changes
     p.setInvulnerable(false);
@@ -123,6 +126,7 @@ public class AFKManager {
       if (wasAFK && !nowAFK) {
         p.sendMessage(Main.getPrefix() + Main.tr(p, "afk-player-returned"));
         _afkStates.put(p, false);
+        _afkStartTimes.remove(p);
         updated = true;
 
         if (_settingsManager.getAFKProtection()) {
@@ -134,6 +138,7 @@ public class AFKManager {
       } else if (!wasAFK && nowAFK) {
         p.sendMessage(Main.getPrefix() + Main.tr(p, "afk-player-started"));
         _afkStates.put(p, true);
+        _afkStartTimes.put(p, _timerManager.getGlobalTimer());
         updated = true;
 
         if (_settingsManager.getAFKProtection()) {
@@ -145,6 +150,9 @@ public class AFKManager {
       }
     } else {
       _afkStates.put(p, nowAFK);
+      if (nowAFK) {
+        _afkStartTimes.put(p, _timerManager.getGlobalTimer());
+      }
       updated = true;
     }
 
@@ -188,6 +196,15 @@ public class AFKManager {
 
   public boolean isPlayerMarkedAFK(Player p) {
     return _afkStates.getOrDefault(p, false);
+  }
+
+  public int getCurrentAFKTime(Player p) {
+    if (!isPlayerMarkedAFK(p)) {
+      return 0;
+    }
+
+    int afkStartTime = _afkStartTimes.getOrDefault(p, _timerManager.getGlobalTimer());
+    return Math.max(0, _timerManager.getGlobalTimer() - afkStartTime);
   }
 
   private int _getAFKTime() {

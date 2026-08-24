@@ -51,6 +51,7 @@ public class AdminSettingsGUI {
   private final VeinChopperSettingsGUI _veinChopperSettingsGUI;
   private final CraftingRecipeSettingsGUI _craftingRecipeSettingsGUI;
   private final ThemeSettingsGUI _themeSettingsGUI;
+  private final MobProtectionsSettingsGUI _mobProtectionsSettingsGUI;
   private final TranslationManager _translations;
   private Player _viewer;
 
@@ -67,6 +68,7 @@ public class AdminSettingsGUI {
     _veinChopperSettingsGUI = new VeinChopperSettingsGUI();
     _craftingRecipeSettingsGUI = new CraftingRecipeSettingsGUI();
     _themeSettingsGUI = new ThemeSettingsGUI();
+    _mobProtectionsSettingsGUI = new MobProtectionsSettingsGUI();
     _translations = _plugin.getTranslationManager();
   }
 
@@ -85,8 +87,8 @@ public class AdminSettingsGUI {
     entries.put("enableend", _createEnableEndItem());
 
     // second row
-    entries.put("creeperblockdamage", _createCreeperBlockDamageItem());
-    entries.put("creeperentitydamage", _createCreeperEntityDamageItem());
+    entries.put("mobprotectionssettings", _createMobProtectionsSettingsItem());
+    entries.put("villagertradecycling", _createVillagerTradeCyclingItem());
     entries.put("cropprotection", _createCropProtectionItem());
     entries.put("rightclickcropharvest", _createRightClickCropHarvestItem());
 
@@ -111,6 +113,7 @@ public class AdminSettingsGUI {
     entries.put("playertag", _createTagsItem());
     entries.put("headsexplorer", _createHeadsExplorerItem());
     entries.put("language", _createLanguageItem(p));
+    entries.put("guirows", _createGUIRowsItem());
 
     Map<String, Integer> customSlots = new HashMap<>();
     // top row - slots 0 to 8
@@ -121,8 +124,8 @@ public class AdminSettingsGUI {
     customSlots.put("enableend", 8);
 
     // second row - slots 9 to 17
-    customSlots.put("creeperblockdamage", 10);
-    customSlots.put("creeperentitydamage", 12);
+    customSlots.put("mobprotectionssettings", 10);
+    customSlots.put("villagertradecycling", 12);
     customSlots.put("cropprotection", 14);
     customSlots.put("rightclickcropharvest", 16);
 
@@ -146,7 +149,8 @@ public class AdminSettingsGUI {
     customSlots.put("actionbartimer", 40);
     customSlots.put("sleepingpercentage", 42);
     customSlots.put("playertag", 44);
-    customSlots.put("language", 49);
+    customSlots.put("language", 37);
+    customSlots.put("guirows", 43);
 
     CustomGUI gui = new CustomGUI(_plugin, p,
         Theme.titlePrefix() + _translations.translate(p, "admin-settings-gui-title"),
@@ -164,6 +168,12 @@ public class AdminSettingsGUI {
         _openLanguageDialog(p, parentMenu, backAction);
       }
     });
+    actions.put("guirows", new CustomGUI.ClickAction() {
+      @Override
+      public void onLeftClick(Player p) {
+        _openGUIRowsDialog(p, parentMenu, backAction);
+      }
+    });
     actions.put("maintenance", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
@@ -177,18 +187,17 @@ public class AdminSettingsGUI {
       }
     });
 
-    actions.put("creeperblockdamage", new CustomGUI.ClickAction() {
+    actions.put("mobprotectionssettings", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleCreeperBlockDamage(p);
-        displayGUI(p, parentMenu, backAction);
+        _mobProtectionsSettingsGUI.displayGUI(p, gui, player -> displayGUI(player, parentMenu, backAction));
       }
     });
 
-    actions.put("creeperentitydamage", new CustomGUI.ClickAction() {
+    actions.put("villagertradecycling", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        _toggleCreeperEntityDamage(p);
+        _toggleVillagerTradeCycling(p);
         displayGUI(p, parentMenu, backAction);
       }
     });
@@ -386,6 +395,27 @@ public class AdminSettingsGUI {
     return item;
   }
 
+  private ItemStack _createGUIRowsItem() {
+    int playtimeRows = _settingsManager.getPlaytimeGUIRows();
+    int waypointsRows = _settingsManager.getWaypointsGUIRows();
+    ItemStack item = new ItemStack(Material.COMPARATOR);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(Component.text(Theme.titlePrefix() + _t("admin-gui-rows-title")));
+      meta.lore(List.of(
+          Component.text(Theme.textPrefix() + _t("admin-gui-rows-description")),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _t("admin-gui-rows-playtime", "rows", playtimeRows)),
+          Component.text(Theme.textPrefix() + _t("admin-gui-rows-waypoints", "rows", waypointsRows)),
+          Component.empty(),
+          Component.text(Theme.textPrefix() + _t("gui-common-action-set-value"))));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
   private void _openLanguageDialog(Player viewer, CustomGUI parentMenu, Consumer<Player> backAction) {
     DialogInput input = CustomDialog.createSelectInput("language",
         Theme.textPrefix() + _translations.translate(viewer, "admin-language-dialog-input-label"),
@@ -404,6 +434,23 @@ public class AdminSettingsGUI {
         }, null, _translations.translate(viewer, "dialog-button-apply"),
         _translations.translate(viewer, "dialog-button-cancel"));
     viewer.showDialog(dialog);
+  }
+
+  private void _openGUIRowsDialog(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
+    DialogInput playtimeInput = CustomDialog.createNumberInput("playtimeRows",
+        Theme.textPrefix() + Main.tr(p, "admin-gui-rows-dialog-playtime"), 2, 6, 1,
+        _settingsManager.getPlaytimeGUIRows());
+    DialogInput waypointsInput = CustomDialog.createNumberInput("waypointsRows",
+        Theme.textPrefix() + Main.tr(p, "admin-gui-rows-dialog-waypoints"), 2, 6, 1,
+        _settingsManager.getWaypointsGUIRows());
+
+    Dialog dialog = CustomDialog.createConfirmationDialog(
+        Main.tr(p, "admin-gui-rows-dialog-title"),
+        Main.tr(p, "admin-gui-rows-dialog-description"),
+        null, List.of(playtimeInput, waypointsInput),
+        (view, audience) -> _setGUIRowsDialogCB(view, audience, parentMenu, backAction),
+        null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));
+    p.showDialog(dialog);
   }
 
   private ItemStack _createMaintenanceItem() {
@@ -432,41 +479,24 @@ public class AdminSettingsGUI {
     return item;
   }
 
-  private ItemStack _createCreeperBlockDamageItem() {
-    boolean state = _settingsManager.getCreeperBlockDamage();
-    ItemStack item = new ItemStack(Material.CREEPER_HEAD);
+  private ItemStack _createMobProtectionsSettingsItem() {
+    ItemStack item = new ItemStack(Material.SHIELD);
     ItemMeta meta = item.getItemMeta();
 
     if (meta != null) {
       meta.displayName(
-          Component.text(Theme.titlePrefix() + _t("admin-creeper-block-damage-title")));
+          Component.text(Theme.titlePrefix() + _t("admin-protections-settings-title")));
       meta.lore(Arrays.asList(
-          Theme.textPrefix() + _t("admin-creeper-block-damage-description"),
+          Theme.textPrefix() + _t("admin-protections-settings-description"),
           "",
-          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
+          Theme.textPrefix() + _t("admin-protections-settings-creeper-block-damage", "state",
+              _state(_settingsManager.getCreeperBlockDamage())),
+          Theme.textPrefix() + _t("admin-protections-settings-creeper-entity-damage", "state",
+              _state(_settingsManager.getCreeperEntityDamage())),
+          Theme.textPrefix() + _t("admin-protections-settings-enderman-block-steal", "state",
+              _state(_settingsManager.getEndermanBlockSteal())),
           "",
-          Theme.textPrefix() + _t("gui-common-action-toggle"))
-          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
-      item.setItemMeta(meta);
-    }
-
-    return item;
-  }
-
-  private ItemStack _createCreeperEntityDamageItem() {
-    boolean state = _settingsManager.getCreeperEntityDamage();
-    ItemStack item = new ItemStack(Material.TNT);
-    ItemMeta meta = item.getItemMeta();
-
-    if (meta != null) {
-      meta.displayName(
-          Component.text(Theme.titlePrefix() + _t("admin-creeper-entity-damage-title")));
-      meta.lore(Arrays.asList(
-          Theme.textPrefix() + _t("admin-creeper-entity-damage-description"),
-          "",
-          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
-          "",
-          Theme.textPrefix() + _t("gui-common-action-toggle"))
+          Theme.textPrefix() + _t("gui-common-action-open"))
           .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
       item.setItemMeta(meta);
     }
@@ -565,6 +595,28 @@ public class AdminSettingsGUI {
           Component.text(Theme.titlePrefix() + _t("admin-crop-protection-title")));
       meta.lore(Arrays.asList(
           Theme.textPrefix() + _t("admin-crop-protection-description"),
+          "",
+          Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
+          "",
+          Theme.textPrefix() + _t("gui-common-action-toggle"))
+          .stream().filter(Objects::nonNull).map(Component::text).collect(Collectors.toList()));
+      item.setItemMeta(meta);
+    }
+
+    return item;
+  }
+
+  private ItemStack _createVillagerTradeCyclingItem() {
+    boolean state = _settingsManager.getVillagerTradeCyclingEnabled();
+    ItemStack item = new ItemStack(Material.EMERALD);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta != null) {
+      meta.displayName(
+          Component.text(Theme.titlePrefix() + _t("admin-villager-trade-cycling-title")));
+      meta.lore(Arrays.asList(
+          Theme.textPrefix() + _t("admin-villager-trade-cycling-description"),
+          Theme.textPrefix() + _t("admin-villager-trade-cycling-restriction"),
           "",
           Theme.textPrefix() + _t("gui-common-state", "state", _state(state)),
           "",
@@ -1114,6 +1166,23 @@ public class AdminSettingsGUI {
     displayGUI(p, parentMenu, backAction);
   }
 
+  private void _setGUIRowsDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
+      Consumer<Player> backAction) {
+    Player p = (Player) audience;
+    int playtimeRows = Math.round(view.getFloat("playtimeRows"));
+    int waypointsRows = Math.round(view.getFloat("waypointsRows"));
+
+    _settingsManager.setPlaytimeGUIRows(playtimeRows);
+    _settingsManager.setWaypointsGUIRows(waypointsRows);
+
+    p.sendMessage(Component.text(Main.getPrefix() + Main.tr(p, "admin-gui-rows-set-message",
+        "playtimeRows", _settingsManager.getPlaytimeGUIRows(),
+        "waypointsRows", _settingsManager.getWaypointsGUIRows())));
+    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
+
+    displayGUI(p, parentMenu, backAction);
+  }
+
   private void _setSleepingPercentageDialogCB(DialogResponseView view, Audience audience, CustomGUI parentMenu,
       Consumer<Player> backAction) {
     Player p = (Player) audience;
@@ -1183,18 +1252,6 @@ public class AdminSettingsGUI {
     _maintenanceManager.kickAll(_plugin.getServer().getOnlinePlayers());
   }
 
-  private void _toggleCreeperBlockDamage(Player p) {
-    boolean newState = !_settingsManager.getCreeperBlockDamage();
-    _settingsManager.setCreeperBlockDamage(newState);
-    _sendToggleMessage(p, "admin-creeper-block-damage-toggle-message", newState);
-  }
-
-  private void _toggleCreeperEntityDamage(Player p) {
-    boolean newState = !_settingsManager.getCreeperEntityDamage();
-    _settingsManager.setCreeperEntityDamage(newState);
-    _sendToggleMessage(p, "admin-creeper-entity-damage-toggle-message", newState);
-  }
-
   private void _toggleEnd(Player p) {
     boolean newState = !_settingsManager.getEnableEnd();
     _settingsManager.setEnableEnd(newState);
@@ -1223,6 +1280,12 @@ public class AdminSettingsGUI {
     boolean newState = !_settingsManager.getRightClickCropHarvest();
     _settingsManager.setRightClickCropHarvest(newState);
     _sendToggleMessage(p, "admin-right-click-harvest-toggle-message", newState);
+  }
+
+  private void _toggleVillagerTradeCycling(Player p) {
+    boolean newState = !_settingsManager.getVillagerTradeCyclingEnabled();
+    _settingsManager.setVillagerTradeCyclingEnabled(newState);
+    _sendToggleMessage(p, "admin-villager-trade-cycling-toggle-message", newState);
   }
 
   private void _toggleLocatorBar(Player p) {

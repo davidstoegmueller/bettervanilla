@@ -26,7 +26,8 @@ public class TranslationManager {
   public TranslationManager(JavaPlugin plugin, SettingsManager settingsManager) {
     _plugin = plugin;
     _settingsManager = settingsManager;
-    for (Language language : Language.values()) _translations.put(language, _load(language));
+    for (Language language : Language.values())
+      _translations.put(language, _load(language));
     _validateKeyParity();
   }
 
@@ -48,7 +49,8 @@ public class TranslationManager {
 
   public String translate(Language language, String key, Object... replacements) {
     String value = _translations.getOrDefault(language, Collections.emptyMap()).get(key);
-    if (value == null) value = _translations.getOrDefault(Language.EN, Collections.emptyMap()).get(key);
+    if (value == null)
+      value = _translations.getOrDefault(Language.EN, Collections.emptyMap()).get(key);
     if (value == null) {
       _plugin.getLogger().warning("Missing translation key '" + key + "' for " + language.getCode());
       return key;
@@ -92,7 +94,8 @@ public class TranslationManager {
     FileConfiguration yaml = translationConfig.getFileConfig();
     Map<String, String> values = new LinkedHashMap<>();
     for (String key : yaml.getKeys(false)) {
-      if (yaml.isString(key)) values.put(key, yaml.getString(key, key));
+      if (yaml.isString(key))
+        values.put(key, yaml.getString(key, key));
     }
     return Collections.unmodifiableMap(values);
   }

@@ -27,7 +27,9 @@ public class RightClickCropHarvest implements Listener {
 
   @EventHandler
   public void onCropRightClick(PlayerInteractEvent e) {
-    if (!_settingsManager.getRightClickCropHarvest()) {
+    Player p = e.getPlayer();
+    if (!_settingsManager.getRightClickCropHarvest()
+        || !_settingsManager.getPlayerRightClickCropHarvest(p.getUniqueId())) {
       return;
     }
 
@@ -68,7 +70,6 @@ public class RightClickCropHarvest implements Listener {
     }
 
     e.setCancelled(true);
-    Player p = e.getPlayer();
 
     Collection<ItemStack> drops = block.getDrops(p.getInventory().getItemInMainHand(), p);
     boolean seedConsumed = false;

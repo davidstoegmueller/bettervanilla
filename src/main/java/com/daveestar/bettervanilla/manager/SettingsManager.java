@@ -25,7 +25,7 @@ public class SettingsManager {
   private FileConfiguration _fileConfig;
 
   public static final List<Material> VEIN_MINER_TOOLS = Arrays.asList(
-      Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE,
+      Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.COPPER_PICKAXE, Material.IRON_PICKAXE,
       Material.GOLDEN_PICKAXE, Material.DIAMOND_PICKAXE,
       Material.NETHERITE_PICKAXE);
 
@@ -39,14 +39,16 @@ public class SettingsManager {
       Material.DEEPSLATE_DIAMOND_ORE, Material.DEEPSLATE_COPPER_ORE, Material.GLOWSTONE);
 
   public static final List<Material> VEIN_CHOPPER_TOOLS = Arrays.asList(
-      Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE,
+      Material.WOODEN_AXE, Material.STONE_AXE, Material.COPPER_AXE, Material.IRON_AXE,
       Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE);
 
   public static final List<Material> VEIN_CHOPPER_BLOCKS = Arrays.asList(
       Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
       Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG,
       Material.MANGROVE_LOG, Material.CHERRY_LOG, Material.CRIMSON_STEM, Material.WARPED_STEM, Material.PALE_OAK_LOG,
-      Material.MANGROVE_ROOTS);
+      Material.MANGROVE_ROOTS, Material.STRIPPED_OAK_LOG, Material.STRIPPED_BIRCH_LOG, Material.STRIPPED_ACACIA_LOG,
+      Material.STRIPPED_CHERRY_LOG, Material.STRIPPED_JUNGLE_LOG, Material.STRIPPED_SPRUCE_LOG,
+      Material.STRIPPED_DARK_OAK_LOG, Material.STRIPPED_PALE_OAK_LOG, Material.STRIPPED_PALE_OAK_LOG);
 
   public SettingsManager(Config config) {
     _config = config;
@@ -223,6 +225,15 @@ public class SettingsManager {
     return _fileConfig.getBoolean("players." + uuid + ".veinchopper", false);
   }
 
+  public boolean getPlayerRightClickCropHarvest(UUID uuid) {
+    return _fileConfig.getBoolean("players." + uuid + ".rightclickcropharvest", false);
+  }
+
+  public void setPlayerRightClickCropHarvest(UUID uuid, boolean value) {
+    _fileConfig.set("players." + uuid + ".rightclickcropharvest", value);
+    _config.save();
+  }
+
   public void setPlayerVeinChopper(UUID uuid, boolean value) {
     _fileConfig.set("players." + uuid + ".veinchopper", value);
     _config.save();
@@ -259,6 +270,24 @@ public class SettingsManager {
 
   public void setServerLanguage(String value) {
     _fileConfig.set("global.language", Language.fromCode(value).getCode());
+    _config.save();
+  }
+
+  public int getPlaytimeGUIRows() {
+    return Math.max(2, Math.min(6, _fileConfig.getInt("global.guirows.playtime", 3)));
+  }
+
+  public void setPlaytimeGUIRows(int value) {
+    _fileConfig.set("global.guirows.playtime", Math.max(2, Math.min(6, value)));
+    _config.save();
+  }
+
+  public int getWaypointsGUIRows() {
+    return Math.max(2, Math.min(6, _fileConfig.getInt("global.guirows.waypoints", 3)));
+  }
+
+  public void setWaypointsGUIRows(int value) {
+    _fileConfig.set("global.guirows.waypoints", Math.max(2, Math.min(6, value)));
     _config.save();
   }
 
@@ -370,6 +399,15 @@ public class SettingsManager {
 
   public void setCreeperEntityDamage(boolean value) {
     _fileConfig.set("global.creeperentitydamage", value);
+    _config.save();
+  }
+
+  public boolean getEndermanBlockSteal() {
+    return _fileConfig.getBoolean("global.endermanblocksteal", true);
+  }
+
+  public void setEndermanBlockSteal(boolean value) {
+    _fileConfig.set("global.endermanblocksteal", value);
     _config.save();
   }
 
@@ -556,6 +594,22 @@ public class SettingsManager {
 
   public void setRightClickCropHarvest(boolean value) {
     _fileConfig.set("global.rightclickcropharvest", value);
+    _config.save();
+
+    if (!value) {
+      String[] uuids = getAllPlayersUUIDS();
+      for (String uuid : uuids) {
+        setPlayerRightClickCropHarvest(UUID.fromString(uuid), false);
+      }
+    }
+  }
+
+  public boolean getVillagerTradeCyclingEnabled() {
+    return _fileConfig.getBoolean("global.villagertradecycling", false);
+  }
+
+  public void setVillagerTradeCyclingEnabled(boolean value) {
+    _fileConfig.set("global.villagertradecycling", value);
     _config.save();
   }
 
