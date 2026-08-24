@@ -5,7 +5,6 @@ A lightweight, drop-in plugin built for cozy SMP servers with friends. BetterVan
 👑 Core Feature: Configure every player and server toggle through the in-game `/settings` menu and [jump straight to the full settings guide](#settings) when you need the details.
 
 [![GitHub release](https://img.shields.io/github/v/release/davidstoegmueller/bettervanilla?style=flat-round)](https://github.com/davidstoegmueller/bettervanilla/releases)
-[![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-round)](LICENSE)
 
 Tested on Paper 26.2 and newer.
 
@@ -251,7 +250,3 @@ This plugin now features a built-in Minecraft Heads Explorer, powered by
 ## Contributing
 
 Pull requests are welcome! If you find a bug or have an idea, open an issue with reproduction steps, logs, or screenshots so we can help quickly.
-
-## License
-
-Distributed under the [MIT License](LICENSE).
