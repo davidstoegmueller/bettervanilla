@@ -2,7 +2,20 @@
 
 # Changelog
 
-## [1.14.3] - xx.07.2026
+## [1.14.3] - 24.08.2026
+
+- 🧑‍🌾 **Villager Trade Cycling** - Added an admin-controlled option to reroll the offers of an untraded novice villager by right-clicking outside its trading inventory.
+- 🛡️ **Mob Protection Settings** - Grouped creeper protections into a dedicated menu and added a toggle that prevents endermen from moving blocks.
+- 🕒 **Playtime Details** - Added current AFK duration and last-seen information to the playtime GUI and player summaries.
+- 🧭 **Waypoint Improvements** - Added `/waypoints cancel`, an option to update a waypoint to the player's current coordinates, configurable waypoint GUI rows, and safer navigation when changing worlds.
+- 🧠 **Heads Search** - Category-level search now finds matching heads across every category.
+- 🌱 **Personal Crop Harvesting** - Added a per-player right-click crop harvesting toggle and the `bettervanilla.rightclickcropharvest` permission.
+- 🖼️ **Configurable GUI Sizes** - Admins can configure the number of rows used by the playtime and waypoint GUIs.
+- ⛏️ **Vein Tool Support** - Added copper pickaxes and axes, plus stripped logs, to the configurable vein miner and vein chopper options.
+- ⚙️ **Configuration Updates** - Existing configuration files now receive newly introduced defaults without overwriting customized values.
+- 🛏️ **Sleeping Percentage** - Ensured at least one player is required to skip the night when eligible players are online.
+- 🕓 **Death Point Timestamps** - Death point timestamps now include the server's time-zone abbreviation.
+- 📦 **Inventory Sorting** - Right-clicking outside a sortable inventory while holding an item now drops a single item instead of triggering a sort.
 
 ## [1.14.2] - 18.07.2026
 

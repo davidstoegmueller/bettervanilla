@@ -47,8 +47,8 @@ public class MessageCommand implements TabExecutor {
         p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "common-error-player-offline",
             "player", Theme.highlight() + args[0] + Theme.error()));
       } else if (!target.getUniqueId().equals(p.getUniqueId())) {
-          String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-          _messageManager.sendPrivateMessage(p, target, message);
+        String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        _messageManager.sendPrivateMessage(p, target, message);
       } else {
         p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "command-message-error-self"));
       }

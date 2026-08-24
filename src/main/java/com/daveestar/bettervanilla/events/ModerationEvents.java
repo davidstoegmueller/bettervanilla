@@ -41,7 +41,8 @@ public class ModerationEvents implements Listener {
       if (!reason.isEmpty()) {
         banMsg += Theme.highlight() + "" + ChatColor.BOLD
             + _tr(e.getUniqueId(), "moderation-ban-screen-reason",
-                "reason", Theme.primary() + reason) + "\n";
+                "reason", Theme.primary() + reason)
+            + "\n";
       }
 
       if (expires != -1) {
