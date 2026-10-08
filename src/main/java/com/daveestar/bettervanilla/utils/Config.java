@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -14,8 +16,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Config {
-  private FileConfiguration _fileConfiguration;
-  private File _file;
+  private final FileConfiguration _fileConfiguration;
+  private final File _file;
 
   public Config(String configName, File path) {
     this(configName, path, null);
@@ -30,30 +32,28 @@ public class Config {
     _file = new File(path, configName);
 
     if (!_file.exists()) {
-      path.mkdirs();
-
       try (InputStream resource = resourcePlugin == null ? null : resourcePlugin.getResource(configName)) {
+        Files.createDirectories(path.toPath());
         if (resource != null) {
           Files.copy(resource, _file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } else {
           _file.createNewFile();
         }
       } catch (IOException e) {
-        e.printStackTrace();
+        throw new IllegalStateException("Could not create configuration " + _file, e);
       }
     }
 
     _fileConfiguration = new YamlConfiguration();
 
-    boolean loaded = false;
     try {
       _fileConfiguration.load(_file);
-      loaded = true;
     } catch (IOException | InvalidConfigurationException e) {
-      e.printStackTrace();
+      throw new IllegalStateException("Could not load configuration " + _file
+          + ". Fix the file before enabling the plugin; existing data was preserved.", e);
     }
 
-    if (loaded && resourcePlugin != null) {
+    if (resourcePlugin != null) {
       _mergeMissingResourceValues(configName, resourcePlugin);
     }
   }
@@ -94,19 +94,39 @@ public class Config {
     return _fileConfiguration;
   }
 
-  public void save() {
+  public synchronized void save() {
+    Path temporaryFile = null;
     try {
-      _fileConfiguration.save(_file);
+      Path target = _file.toPath().toAbsolutePath();
+      temporaryFile = Files.createTempFile(target.getParent(), _file.getName() + "---", ".tmp");
+      _fileConfiguration.save(temporaryFile.toFile());
+      try {
+        Files.move(temporaryFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+      } catch (AtomicMoveNotSupportedException e) {
+        Files.move(temporaryFile, target, StandardCopyOption.REPLACE_EXISTING);
+      }
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new IllegalStateException("Could not save configuration " + _file, e);
+    } finally {
+      if (temporaryFile != null) {
+        try {
+          Files.deleteIfExists(temporaryFile);
+        } catch (IOException ignored) {
+          // The original configuration remains intact if replacing it failed.
+        }
+      }
     }
   }
 
-  public void reload() {
+  public synchronized void reload() {
     try {
-      _fileConfiguration.load(_file);
+      String contents = Files.readString(_file.toPath(), StandardCharsets.UTF_8);
+      // Validate first: loadFromString clears the live configuration before parsing.
+      new YamlConfiguration().loadFromString(contents);
+      _fileConfiguration.loadFromString(contents);
     } catch (IOException | InvalidConfigurationException e) {
-      e.printStackTrace();
+      throw new IllegalStateException("Could not reload configuration " + _file
+          + "; the previous configuration is still active.", e);
     }
   }
 }

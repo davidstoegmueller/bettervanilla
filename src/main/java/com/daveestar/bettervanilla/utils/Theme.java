@@ -54,37 +54,37 @@ public final class Theme {
   public static ChatColor primary() {
     SettingsManager settings = _settings();
     String value = settings == null ? DEFAULT_PRIMARY_FONT_COLOR : settings.getPrimaryFontColor();
-    return MINECRAFT_COLORS.get(value);
+    return MINECRAFT_COLORS.getOrDefault(value, ChatColor.GRAY);
   }
 
   public static ChatColor highlight() {
     SettingsManager settings = _settings();
     String value = settings == null ? DEFAULT_HIGHLIGHT_FONT_COLOR : settings.getHighlightFontColor();
-    return MINECRAFT_COLORS.get(value);
+    return MINECRAFT_COLORS.getOrDefault(value, ChatColor.YELLOW);
   }
 
   public static ChatColor error() {
     SettingsManager settings = _settings();
     String value = settings == null ? DEFAULT_ERROR_FONT_COLOR : settings.getErrorFontColor();
-    return MINECRAFT_COLORS.get(value);
+    return MINECRAFT_COLORS.getOrDefault(value, ChatColor.RED);
   }
 
   public static ChatColor titleSymbol() {
     SettingsManager settings = _settings();
     String value = settings == null ? DEFAULT_TITLE_SYMBOL_COLOR : settings.getTitleSymbolColor();
-    return MINECRAFT_COLORS.get(value);
+    return MINECRAFT_COLORS.getOrDefault(value, ChatColor.RED);
   }
 
   public static ChatColor textSymbol() {
     SettingsManager settings = _settings();
     String value = settings == null ? DEFAULT_TEXT_SYMBOL_COLOR : settings.getTextSymbolColor();
-    return MINECRAFT_COLORS.get(value);
+    return MINECRAFT_COLORS.getOrDefault(value, ChatColor.YELLOW);
   }
 
   public static ChatColor glassPaneColor() {
     SettingsManager settings = _settings();
     String value = settings == null ? DEFAULT_GLASS_PANE_COLOR : settings.getGlassPaneColor();
-    return MINECRAFT_COLORS.get(value);
+    return MINECRAFT_COLORS.getOrDefault(value, ChatColor.YELLOW);
   }
 
   public static Material glassPaneMaterial() {

@@ -10,11 +10,19 @@ public class PlayerTimer {
   }
 
   public void incrementPlayTime() {
-    _playTime++;
+    incrementPlayTime(1);
+  }
+
+  void incrementPlayTime(int seconds) {
+    _playTime += seconds;
   }
 
   public void incrementAFKTime() {
-    _afkTime++;
+    incrementAFKTime(1);
+  }
+
+  void incrementAFKTime(int seconds) {
+    _afkTime += seconds;
   }
 
   public int getPlayTime() {

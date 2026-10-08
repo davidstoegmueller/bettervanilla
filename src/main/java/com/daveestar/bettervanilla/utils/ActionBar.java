@@ -2,15 +2,13 @@ package com.daveestar.bettervanilla.utils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
 import com.daveestar.bettervanilla.Main;
 
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.scheduler.BukkitTask;
 import net.kyori.adventure.text.Component;
 
 public class ActionBar {
@@ -31,7 +29,8 @@ public class ActionBar {
     }
   }
 
-  private final Map<Player, ScheduledTask> _actionBarTasks = new HashMap<>();
+  private final Map<Player, BukkitTask> _actionBarTasks = new HashMap<>();
+  private final Map<Player, String> _actionBarMessages = new HashMap<>();
   private final Map<UUID, Priority> _overridePriorities = new HashMap<>();
 
   public void sendActionBarOnce(Player p, String message) {
@@ -47,14 +46,7 @@ public class ActionBar {
       return;
     }
 
-    removeActionBar(p);
-
-    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
-    ScheduledTask schduledTask = scheduler.runAtFixedRate(Main.getInstance(), task -> {
-      _sendActionBarNow(p, message);
-    }, 0, 2, TimeUnit.SECONDS);
-
-    _actionBarTasks.put(p, schduledTask);
+    _updateActionBar(p, message);
   }
 
   public void startOverride(Player p, String message) {
@@ -67,14 +59,14 @@ public class ActionBar {
     }
 
     _overridePriorities.put(p.getUniqueId(), priority);
-    _removeActionBarInternal(p);
+    _updateActionBar(p, message);
+  }
 
-    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
-    ScheduledTask schduledTask = scheduler.runAtFixedRate(Main.getInstance(), task -> {
-      _sendActionBarNow(p, message);
-    }, 0, 2, TimeUnit.SECONDS);
-
-    _actionBarTasks.put(p, schduledTask);
+  public void destroy() {
+    _actionBarTasks.values().forEach(BukkitTask::cancel);
+    _actionBarTasks.clear();
+    _actionBarMessages.clear();
+    _overridePriorities.clear();
   }
 
   public void clearOverride(Player p) {
@@ -94,11 +86,30 @@ public class ActionBar {
     p.sendActionBar(Component.text(message));
   }
 
-  private void _removeActionBarInternal(Player p) {
-    if (_actionBarTasks.containsKey(p)) {
-      _actionBarTasks.get(p).cancel();
-      _actionBarTasks.remove(p);
+  private void _updateActionBar(Player p, String message) {
+    String previous = _actionBarMessages.put(p, message);
+    if (!message.equals(previous)) {
+      _sendActionBarNow(p, message);
     }
+
+    if (!_actionBarTasks.containsKey(p)) {
+      BukkitTask task = Main.getInstance().getServer().getScheduler().runTaskTimer(Main.getInstance(), () -> {
+        if (!p.isOnline()) {
+          clearOverride(p);
+          return;
+        }
+        _sendActionBarNow(p, _actionBarMessages.get(p));
+      }, 40L, 40L);
+      _actionBarTasks.put(p, task);
+    }
+  }
+
+  private void _removeActionBarInternal(Player p) {
+    BukkitTask task = _actionBarTasks.remove(p);
+    if (task != null) {
+      task.cancel();
+    }
+    _actionBarMessages.remove(p);
   }
 
   private boolean _isOverridden(Player p) {

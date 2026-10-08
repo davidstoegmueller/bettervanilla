@@ -8,10 +8,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -24,7 +22,7 @@ import com.daveestar.bettervanilla.utils.Theme;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
-public class BackpackSettingsGUI implements Listener {
+public class BackpackSettingsGUI {
   private final Main _plugin;
   private final SettingsManager _settingsManager;
   private final BackpackManager _backpackManager;
@@ -33,7 +31,6 @@ public class BackpackSettingsGUI implements Listener {
     _plugin = Main.getInstance();
     _settingsManager = _plugin.getSettingsManager();
     _backpackManager = _plugin.getBackpackManager();
-    Bukkit.getPluginManager().registerEvents(this, _plugin);
   }
 
   public void displayGUI(Player p, CustomGUI parentMenu, Consumer<Player> backAction) {
@@ -62,7 +59,6 @@ public class BackpackSettingsGUI implements Listener {
       @Override
       public void onLeftClick(Player p) {
         int newPages = _settingsManager.getBackpackPages() + 1;
-        _settingsManager.setBackpackPages(newPages);
         _backpackManager.setPages(newPages);
         displayGUI(p, parentMenu, backAction);
       }
@@ -70,7 +66,6 @@ public class BackpackSettingsGUI implements Listener {
       @Override
       public void onRightClick(Player p) {
         int newPages = Math.max(1, _settingsManager.getBackpackPages() - 1);
-        _settingsManager.setBackpackPages(newPages);
         _backpackManager.setPages(newPages);
         displayGUI(p, parentMenu, backAction);
       }
@@ -85,8 +80,7 @@ public class BackpackSettingsGUI implements Listener {
     actions.put("rows", new CustomGUI.ClickAction() {
       @Override
       public void onLeftClick(Player p) {
-        int newRows = Math.min(6, _settingsManager.getBackpackRows() + 1);
-        _settingsManager.setBackpackRows(newRows);
+        int newRows = Math.min(5, _settingsManager.getBackpackRows() + 1);
         _backpackManager.setRows(newRows);
         displayGUI(p, parentMenu, backAction);
       }
@@ -94,7 +88,6 @@ public class BackpackSettingsGUI implements Listener {
       @Override
       public void onRightClick(Player p) {
         int newRows = Math.max(1, _settingsManager.getBackpackRows() - 1);
-        _settingsManager.setBackpackRows(newRows);
         _backpackManager.setRows(newRows);
         displayGUI(p, parentMenu, backAction);
       }
@@ -178,7 +171,6 @@ public class BackpackSettingsGUI implements Listener {
 
   private void _toggleEnabled(Player p) {
     boolean newState = !_settingsManager.getBackpackEnabled();
-    _settingsManager.setBackpackEnabled(newState);
     _backpackManager.setEnabled(newState);
 
     p.sendMessage(Main.getPrefix() + Main.tr(p, "gui-backpack-settings-enabled-changed",

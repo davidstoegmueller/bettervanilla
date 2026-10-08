@@ -9,8 +9,12 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -42,7 +46,9 @@ public class CustomGUI implements Listener {
   private final Map<Integer, String> _slotKeyMap;
   private final Map<String, FooterEntry> _footerEntries;
   private final CustomGUI _parentMenu;
-  private Map<String, ClickAction> _clickActions;
+  private Map<String, ClickAction> _clickActions = Map.of();
+  private final Plugin _plugin;
+  private boolean _registered;
   private final Set<Option> _options;
   private final boolean _searchEnabled;
   private final boolean _sortEnabled;
@@ -56,6 +62,10 @@ public class CustomGUI implements Listener {
 
   public CustomGUI(Plugin pluginInstance, Player p, String title, Map<String, ItemStack> pageEntries,
       int rows, Map<String, Integer> customSlots, CustomGUI parentMenu, Set<Option> options) {
+    if (rows < 2 || rows > 6) {
+      throw new IllegalArgumentException("GUI rows must be between 2 and 6.");
+    }
+    _plugin = pluginInstance;
     int inventorySize = rows * _INVENTORY_ROW_SIZE;
     _currentPage = 1;
     _viewer = p;
@@ -81,17 +91,19 @@ public class CustomGUI implements Listener {
 
     _gui = Bukkit.createInventory(null, inventorySize, Component.text(title));
     _updatePage();
-
-    Bukkit.getPluginManager().registerEvents(this, pluginInstance);
   }
 
   public void open(Player p) {
     p.playSound(p, Sound.UI_TOAST_IN, 0.7F, 1);
     p.openInventory(_gui);
+    if (!_registered && p.getOpenInventory().getTopInventory().equals(_gui)) {
+      Bukkit.getPluginManager().registerEvents(this, _plugin);
+      _registered = true;
+    }
   }
 
   public void setClickActions(Map<String, ClickAction> clickActions) {
-    _clickActions = clickActions;
+    _clickActions = clickActions != null ? clickActions : Map.of();
   }
 
   public void setBackAction(Consumer<Player> backAction) {
@@ -322,7 +334,7 @@ public class CustomGUI implements Listener {
     return displayItem;
   }
 
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   private void _onInventoryClick(InventoryClickEvent e) {
     if (!e.getInventory().equals(_gui))
       return;
@@ -332,9 +344,18 @@ public class CustomGUI implements Listener {
     int rawSlot = e.getRawSlot();
     int topSize = _gui.getSize();
 
+    // Collect-to-cursor scans both inventories, including protected footer items.
+    if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+      e.setCancelled(true);
+      return;
+    }
+
     if (rawSlot >= topSize) {
       if (!allowMove) {
         e.setCancelled(true);
+      } else if (e.isShiftClick()) {
+        e.setCancelled(true);
+        _moveToStorage(e);
       }
 
       // player inventory interaction
@@ -360,30 +381,6 @@ public class CustomGUI implements Listener {
 
     if (e.getClick() == ClickType.DOUBLE_CLICK) {
       return;
-    }
-
-    if (allowMove && isItemSlot && e.getCursor().getType() == Material.AIR
-        && !isNavSlot && !isActionSlot) {
-      ItemStack item = _gui.getItem(rawSlot);
-
-      if (item != null) {
-        if (e.isShiftClick()) {
-          Map<Integer, ItemStack> left = p.getInventory().addItem(item.clone());
-
-          if (left.isEmpty()) {
-            _gui.setItem(rawSlot, null);
-            setEntryItem(_slotKeyMap.get(rawSlot), null);
-          } else {
-            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 0.5F, 1);
-          }
-        } else {
-          p.setItemOnCursor(item.clone());
-          _gui.setItem(rawSlot, null);
-          setEntryItem(_slotKeyMap.get(rawSlot), null);
-        }
-
-        return;
-      }
     }
 
     if (!isActionSlot && !isItemSlot)
@@ -431,6 +428,56 @@ public class CustomGUI implements Listener {
     }
   }
 
+  private void _moveToStorage(InventoryClickEvent e) {
+    ItemStack source = e.getCurrentItem();
+    if (source == null || source.getType().isAir()) {
+      return;
+    }
+
+    ItemStack remaining = source.clone();
+    // Merge existing stacks before using empty slots, never touching the footer.
+    for (int pass = 0; pass < 2 && remaining.getAmount() > 0; pass++) {
+      for (int slot = 0; slot < _pageSize && remaining.getAmount() > 0; slot++) {
+        ItemStack current = _gui.getItem(slot);
+        boolean empty = current == null || current.getType().isAir();
+        if ((pass == 0 && (empty || !current.isSimilar(remaining)))
+            || (pass == 1 && !empty)) {
+          continue;
+        }
+        int amount = empty ? 0 : current.getAmount();
+        int capacity = Math.min(remaining.getMaxStackSize(), _gui.getMaxStackSize()) - amount;
+        int transfer = Math.min(Math.max(0, capacity), remaining.getAmount());
+        if (transfer > 0) {
+          ItemStack moved = empty ? remaining.clone() : current.clone();
+          moved.setAmount(amount + transfer);
+          _gui.setItem(slot, moved);
+          remaining.setAmount(remaining.getAmount() - transfer);
+        }
+      }
+    }
+    e.setCurrentItem(remaining.getAmount() == 0 ? null : remaining);
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  private void _onInventoryDrag(InventoryDragEvent e) {
+    if (!e.getInventory().equals(_gui)) {
+      return;
+    }
+    boolean allowMove = _options.contains(Option.ALLOW_ITEM_MOVEMENT);
+    if (e.getRawSlots().stream().anyMatch(slot -> slot < _gui.getSize()
+        && (!allowMove || slot >= _pageSize))) {
+      e.setCancelled(true);
+    }
+  }
+
+  @EventHandler
+  private void _onInventoryClose(InventoryCloseEvent e) {
+    if (e.getInventory().equals(_gui)) {
+      HandlerList.unregisterAll(this);
+      _registered = false;
+    }
+  }
+
   private void _handlePageSwitch(Player p, boolean isNextPage) {
     int oldPage = _currentPage;
     int newPage = _currentPage;
@@ -470,7 +517,7 @@ public class CustomGUI implements Listener {
       case SHIFT_RIGHT:
       case WINDOW_BORDER_RIGHT:
         _applySearchTerm("");
-        p.openInventory(_gui);
+        open(p);
         handled = true;
         break;
       default:
@@ -529,7 +576,7 @@ public class CustomGUI implements Listener {
             _searchAction.accept(player, input);
           } else {
             _applySearchTerm(input);
-            player.openInventory(_gui);
+            open(player);
           }
         },
         null, Main.tr(p, "dialog-button-apply"), Main.tr(p, "dialog-button-cancel"));

@@ -13,6 +13,8 @@ import org.bukkit.block.data.Bisected.Half;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -44,9 +46,10 @@ public class DoubleDoorSync implements Listener {
     _settingsManager = _plugin.getSettingsManager();
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onDoorInteract(PlayerInteractEvent e) {
-    if (e.getHand() != EquipmentSlot.HAND || e.getAction() != Action.RIGHT_CLICK_BLOCK) {
+    if (e.getHand() != EquipmentSlot.HAND || e.getAction() != Action.RIGHT_CLICK_BLOCK
+        || e.useInteractedBlock() == Result.DENY) {
       return;
     }
 
@@ -76,7 +79,12 @@ public class DoubleDoorSync implements Listener {
     }
 
     // run next tick to let the vanilla interaction finish first
-    Bukkit.getScheduler().runTask(_plugin, () -> _syncDoorState(baseDoor, partnerDoor));
+    boolean wasOpen = baseDoorData.isOpen();
+    Bukkit.getScheduler().runTask(_plugin, () -> {
+      if (baseDoor.getBlockData() instanceof Door door && door.isOpen() != wasOpen) {
+        _syncDoorState(baseDoor, partnerDoor);
+      }
+    });
   }
 
   private boolean _isHandOpenableDoor(Material material) {

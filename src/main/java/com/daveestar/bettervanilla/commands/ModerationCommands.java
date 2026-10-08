@@ -26,6 +26,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
 public class ModerationCommands {
+  private static final Pattern DURATION_PART = Pattern.compile("(\\d+)([dhms])", Pattern.CASE_INSENSITIVE);
+  private static final Pattern DURATION = Pattern.compile("(?:\\d+[dhms])+", Pattern.CASE_INSENSITIVE);
   public static class KickCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
@@ -131,6 +133,10 @@ public class ModerationCommands {
 
       if (args.length > 1) {
         long parsed = parseDuration(args[1]);
+        if (parsed <= 0 && DURATION.matcher(args[1]).matches()) {
+          cs.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(cs, "command-ban-usage"));
+          return true;
+        }
 
         if (parsed > 0) {
           durationSeconds = parsed;
@@ -296,6 +302,10 @@ public class ModerationCommands {
 
       if (args.length > 1) {
         long parsed = parseDuration(args[1]);
+        if (parsed <= 0 && DURATION.matcher(args[1]).matches()) {
+          cs.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(cs, "command-mute-usage"));
+          return true;
+        }
 
         if (parsed > 0) {
           durationSeconds = parsed;
@@ -420,30 +430,34 @@ public class ModerationCommands {
   }
 
   static long parseDuration(String input) {
-    Matcher matcher = Pattern.compile("(\\d+)([dhms])", Pattern.CASE_INSENSITIVE).matcher(input);
+    if (input == null || input.isEmpty()) {
+      return -1;
+    }
+    Matcher matcher = DURATION_PART.matcher(input);
     long total = 0;
     int matched = 0;
 
-    while (matcher.find()) {
-      long value = Long.parseLong(matcher.group(1));
-      matched += matcher.group().length();
-
-      switch (matcher.group(2).toLowerCase()) {
-        case "d":
-          total += value * 86400;
-          break;
-        case "h":
-          total += value * 3600;
-          break;
-        case "m":
-          total += value * 60;
-          break;
-        case "s":
-          total += value;
-          break;
-        default:
+    try {
+      while (matcher.find()) {
+        if (matcher.start() != matched) {
           return -1;
+        }
+        long value = Long.parseLong(matcher.group(1));
+        matched = matcher.end();
+        int multiplier = switch (Character.toLowerCase(matcher.group(2).charAt(0))) {
+          case 'd' -> 86400;
+          case 'h' -> 3600;
+          case 'm' -> 60;
+          default -> 1;
+        };
+        total = Math.addExact(total, Math.multiplyExact(value, multiplier));
+        // Timer formatting uses integer seconds; reject durations that it cannot represent.
+        if (total > Integer.MAX_VALUE) {
+          return -1;
+        }
       }
+    } catch (NumberFormatException | ArithmeticException e) {
+      return -1;
     }
 
     return matched == input.length() ? total : -1;

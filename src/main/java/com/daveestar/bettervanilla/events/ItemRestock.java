@@ -52,6 +52,10 @@ public class ItemRestock implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onItemConsume(PlayerItemConsumeEvent e) {
+    if (e.getHand() != EquipmentSlot.HAND) {
+      return;
+    }
+
     ItemStack consumed = e.getItem();
     if (consumed == null || consumed.getType() == Material.AIR) {
       return;
@@ -79,12 +83,16 @@ public class ItemRestock implements Listener {
       return;
     }
 
-    Bukkit.getScheduler().runTask(plugin, () -> _restock(p, material));
+    int hotbarSlot = p.getInventory().getHeldItemSlot();
+    Bukkit.getScheduler().runTask(plugin, () -> {
+      if (p.isOnline() && _shouldRestock(p)) {
+        _restock(p, material, hotbarSlot);
+      }
+    });
   }
 
-  private void _restock(Player p, Material material) {
+  private void _restock(Player p, Material material, int hotbarSlot) {
     PlayerInventory inventory = p.getInventory();
-    int hotbarSlot = inventory.getHeldItemSlot();
 
     if (hotbarSlot < 0 || hotbarSlot > 8) {
       return;

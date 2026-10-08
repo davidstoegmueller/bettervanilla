@@ -81,9 +81,12 @@ public class RecipeSyncManager implements Listener {
 
     var payload = new NeoForgeRecipeSync(recipeTypeSet, filtered);
     RegistryFriendlyByteBuf buffer = createBuffer(server);
-    NeoForgeRecipeSync.STREAM_CODEC.encode(buffer, payload);
-
-    sendPayload(p, Identifier.fromNamespaceAndPath("neoforge", "recipe_content"), toBytes(buffer));
+    try {
+      NeoForgeRecipeSync.STREAM_CODEC.encode(buffer, payload);
+      sendPayload(p, Identifier.fromNamespaceAndPath("neoforge", "recipe_content"), toBytes(buffer));
+    } finally {
+      buffer.release();
+    }
     p.connection
         .send(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(server.registries())));
   }
@@ -108,9 +111,12 @@ public class RecipeSyncManager implements Listener {
 
     var payload = new FabricRecipeSync(list);
     RegistryFriendlyByteBuf buffer = createBuffer(server);
-    FabricRecipeSync.CODEC.encode(buffer, payload);
-
-    sendPayload(p, Identifier.fromNamespaceAndPath("fabric", "recipe_sync"), toBytes(buffer));
+    try {
+      FabricRecipeSync.CODEC.encode(buffer, payload);
+      sendPayload(p, Identifier.fromNamespaceAndPath("fabric", "recipe_sync"), toBytes(buffer));
+    } finally {
+      buffer.release();
+    }
   }
 
   private static List<RecipeHolder<?>> collectAllRecipes(RecipeManager recipeManager) {

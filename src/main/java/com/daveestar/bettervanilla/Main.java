@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -229,21 +230,47 @@ public class Main extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    _mainInstance = null;
-
-    // prepare all features for plugin disable
-    _timerManager.destroy();
-    _compassManager.destroy();
-    _backpackManager.destroy();
-    _tabListManager.destroy();
-    _sittingManager.destroy();
+    // Startup can fail partway through. Keep the instance available during cleanup.
+    if (_headsManager != null)
+      _cleanup("heads", _headsManager::destroy);
+    if (_timerManager != null)
+      _cleanup("timer", _timerManager::destroy);
+    if (_compassManager != null)
+      _cleanup("compass", _compassManager::destroy);
+    if (_backpackManager != null)
+      _cleanup("backpacks", _backpackManager::destroy);
+    if (_tabListManager != null)
+      _cleanup("tab list", _tabListManager::destroy);
+    if (_sittingManager != null)
+      _cleanup("seats", _sittingManager::destroy);
+    if (_navigationManager != null)
+      _cleanup("navigation", _navigationManager::destroy);
+    if (_actionBar != null)
+      _cleanup("action bars", _actionBar::destroy);
+    if (_afkManager != null)
+      _cleanup("AFK protection", _afkManager::destroy);
+    if (_vanishManager != null)
+      _cleanup("vanish", _vanishManager::destroy);
+    if (_nameTagManager != null)
+      _cleanup("name tags", _nameTagManager::destroy);
+    if (_permissionsManager != null)
+      _cleanup("permissions", _permissionsManager::destroy);
 
     if (_craftingRecipes != null) {
-      _craftingRecipes.values().forEach(CustomCraftingRecipe::destroyRecipe);
+      _craftingRecipes.values().forEach(recipe -> _cleanup("recipe", recipe::destroyRecipe));
       _craftingRecipes.clear();
     }
 
+    _mainInstance = null;
     _LOGGER.info("BetterVanilla - DISABLED");
+  }
+
+  private void _cleanup(String feature, Runnable cleanup) {
+    try {
+      cleanup.run();
+    } catch (RuntimeException e) {
+      getLogger().log(Level.SEVERE, "Failed to clean up " + feature + " during shutdown.", e);
+    }
   }
 
   private void _registerCraftingRecipe(CraftingRecipe recipe) {

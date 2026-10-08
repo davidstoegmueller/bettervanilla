@@ -9,7 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerKickEvent;
+import java.util.Locale;
+import java.util.regex.Matcher;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.manager.AFKManager;
@@ -28,7 +29,7 @@ import com.daveestar.bettervanilla.utils.Theme;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
 public class ChatMessages implements Listener {
@@ -111,28 +112,18 @@ public class ChatMessages implements Listener {
     _backpackManager.onPlayerLeft(p);
     _messageManager.onPlayerLeft(p);
     _nameTagManager.removeNameTag(p);
+    _plugin.getNavigationManager().stopNavigation(p);
+    _plugin.getActionBar().clearOverride(p);
   }
 
-  @EventHandler
-  public void onPlayerKick(PlayerKickEvent e) {
-    Player p = (Player) e.getPlayer();
-
-    _permissionsManager.onPlayerLeft(p);
-    _afkManager.onPlayerLeft(p);
-    _timerManager.onPlayerLeft(p);
-    _compassManager.onPlayerLeft(p);
-    _backpackManager.onPlayerLeft(p);
-    _messageManager.onPlayerLeft(p);
-    _nameTagManager.removeNameTag(p);
-  }
-
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   public void onPlayerChat(AsyncChatEvent e) {
     // convert & color codes to actual ChatColor codes
-    String raw = ((TextComponent) e.message()).content();
+    String raw = PlainTextComponentSerializer.plainText().serialize(e.message());
     String translated = ChatColor.translateAlternateColorCodes('&', raw);
 
-    // set the formatted chat message with ping support
+    // Configuration reads are synchronized; player/world effects stay on the server
+    // thread.
     e.renderer((source, sourceDisplayName, messageComponent, viewer) -> {
       String formatted = translated;
 
@@ -140,25 +131,26 @@ public class ChatMessages implements Listener {
         Player chatViewer = (Player) viewer;
         String name = chatViewer.getName();
 
-        String lowerName = name.toLowerCase();
+        String lowerName = name.toLowerCase(Locale.ROOT);
 
-        if (formatted.toLowerCase().contains(lowerName) || formatted.toLowerCase().contains("@" + lowerName)) {
+        if (formatted.toLowerCase(Locale.ROOT).contains(lowerName)) {
           formatted = formatted.replaceAll("(?i)@?" + Pattern.quote(name),
-              Theme.highlight() + "" + ChatColor.BOLD + name + Theme.primary());
+              Matcher.quoteReplacement(Theme.highlight() + "" + ChatColor.BOLD + name + Theme.primary()));
 
-          chatViewer.playSound(chatViewer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1);
+          if (_plugin.isEnabled()) {
+            _plugin.getServer().getScheduler().runTask(_plugin, () -> {
+              if (chatViewer.isOnline()) {
+                chatViewer.playSound(chatViewer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1);
+              }
+            });
+          }
         }
       }
 
-      String tagSuffix = "";
-      if (source instanceof Player sourcePlayer) {
-        tagSuffix = _tagManager.getFormattedTag(sourcePlayer);
-      }
-
-      CommandSender commandViewer = viewer instanceof CommandSender sender ? sender : null;
+      CommandSender commandViewer = viewer instanceof CommandSender commandSender ? commandSender : null;
       return Component.text(Main.tr(commandViewer, "chat-message-format",
           "sender", Theme.primary() + "[" + Theme.highlight() + source.getName() + Theme.primary() + "]",
-          "tag", tagSuffix,
+          "tag", _tagManager.getFormattedTag(source),
           "message", Theme.textPrefix() + formatted));
     });
   }

@@ -3,6 +3,8 @@ package com.daveestar.bettervanilla.gui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -10,11 +12,13 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -34,16 +38,15 @@ public class CraftingRecipeEditorGUI implements Listener {
 
   private final Main plugin;
   private final SettingsManager settingsManager;
+  private final Set<Inventory> openEditors = new HashSet<>();
 
   public CraftingRecipeEditorGUI() {
     plugin = Main.getInstance();
     settingsManager = plugin.getSettingsManager();
-
-    Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
   public void displayGUI(Player p, RecipeConfig recipeConfig, Consumer<Player> backAction) {
-    RecipeEditorSession session = new RecipeEditorSession(recipeConfig, backAction);
+    RecipeEditorSession session = new RecipeEditorSession(this, recipeConfig, backAction);
     Inventory inventory = Bukkit.createInventory(
         session,
         InventoryType.WORKBENCH,
@@ -54,6 +57,12 @@ public class CraftingRecipeEditorGUI implements Listener {
     inventory.setItem(RESULT_SLOT, _createResultItem(p, recipeConfig));
 
     p.openInventory(inventory);
+    if (p.getOpenInventory().getTopInventory().equals(inventory)) {
+      if (openEditors.isEmpty()) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+      }
+      openEditors.add(inventory);
+    }
     p.sendMessage(Main.getPrefix() + Theme.primary()
         + Main.tr(p, "gui-crafting-recipe-editor-instructions"));
   }
@@ -194,14 +203,19 @@ public class CraftingRecipeEditorGUI implements Listener {
   // EVENTS
   // ------
 
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   public void onInventoryClick(InventoryClickEvent e) {
-    RecipeEditorSession session = RecipeEditorSession.from(e.getView().getTopInventory());
+    RecipeEditorSession session = _getSession(e.getView().getTopInventory());
     if (session == null) {
       return;
     }
 
     if (!(e.getWhoClicked() instanceof Player p)) {
+      return;
+    }
+
+    if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+      e.setCancelled(true);
       return;
     }
 
@@ -218,9 +232,9 @@ public class CraftingRecipeEditorGUI implements Listener {
     }
   }
 
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   public void onInventoryDrag(InventoryDragEvent e) {
-    RecipeEditorSession session = RecipeEditorSession.from(e.getView().getTopInventory());
+    RecipeEditorSession session = _getSession(e.getView().getTopInventory());
     if (session == null) {
       return;
     }
@@ -239,7 +253,7 @@ public class CraftingRecipeEditorGUI implements Listener {
 
   @EventHandler
   public void onInventoryClose(InventoryCloseEvent e) {
-    RecipeEditorSession session = RecipeEditorSession.from(e.getInventory());
+    RecipeEditorSession session = _getSession(e.getInventory());
     if (session == null || !(e.getPlayer() instanceof Player p)) {
       return;
     }
@@ -248,16 +262,25 @@ public class CraftingRecipeEditorGUI implements Listener {
       _returnItemsToPlayer(p, session.getInventory());
     }
 
+    openEditors.remove(e.getInventory());
+    if (openEditors.isEmpty()) {
+      HandlerList.unregisterAll(this);
+    }
+
     Consumer<Player> backAction = session._backAction();
-    if (backAction != null) {
-      Bukkit.getScheduler().runTask(plugin, () -> backAction.accept(p));
+    if (backAction != null && plugin.isEnabled()) {
+      Bukkit.getScheduler().runTask(plugin, () -> {
+        if (p.isOnline() && p.getOpenInventory().getTopInventory().getType() == InventoryType.CRAFTING) {
+          backAction.accept(p);
+        }
+      });
     }
   }
 
   @EventHandler
   public void onPlayerQuit(PlayerQuitEvent e) {
     Player p = e.getPlayer();
-    RecipeEditorSession session = RecipeEditorSession.from(p.getOpenInventory().getTopInventory());
+    RecipeEditorSession session = _getSession(p.getOpenInventory().getTopInventory());
     if (session == null) {
       return;
     }
@@ -271,13 +294,20 @@ public class CraftingRecipeEditorGUI implements Listener {
   // HELPER CLASS
   // ------------
 
+  private RecipeEditorSession _getSession(Inventory inventory) {
+    RecipeEditorSession session = RecipeEditorSession.from(inventory);
+    return session != null && session.owner == this ? session : null;
+  }
+
   private static final class RecipeEditorSession implements InventoryHolder {
+    private final CraftingRecipeEditorGUI owner;
     private final RecipeConfig recipeConfig;
     private final Consumer<Player> backAction;
     private Inventory inventory;
     private boolean saved;
 
-    private RecipeEditorSession(RecipeConfig recipeConfig, Consumer<Player> backAction) {
+    private RecipeEditorSession(CraftingRecipeEditorGUI owner, RecipeConfig recipeConfig, Consumer<Player> backAction) {
+      this.owner = owner;
       this.recipeConfig = recipeConfig;
       this.backAction = backAction;
     }

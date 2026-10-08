@@ -18,6 +18,9 @@ public final class InventorySortUtils {
 
   public static void sortInventory(Inventory inv, InventorySortMode mode) {
     List<ItemStack> items = collectStackedItems(Arrays.asList(inv.getContents()));
+    if (items.size() > inv.getSize()) {
+      return; // Oversized stacks must not lose items when expanded into legal stacks.
+    }
     items.sort(getComparator(mode));
     inv.clear();
 
@@ -56,10 +59,13 @@ public final class InventorySortUtils {
         continue;
       }
 
-      items.add(item.clone());
+      items.add(item);
     }
 
     List<ItemStack> stacked = collectStackedItems(items);
+    if (stacked.size() > end - start) {
+      return result;
+    }
     stacked.sort(getComparator(mode));
 
     for (int i = start; i < end; i++) {

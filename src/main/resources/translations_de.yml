@@ -603,6 +603,7 @@ event-death-chest-items-stored: "Alle deine Gegenstände befinden sich an diesem
 event-death-chest-drop-warning: "ACHTUNG!{primary} Sobald du die Truhe schließt oder abbaust, fallen alle Gegenstände auf den Boden!"
 event-death-chest-no-safe-location: "In der Nähe wurde kein sicherer Platz für eine Todestruhe gefunden. Deine Gegenstände liegen an deinem Todesort."
 event-death-items-dropped: "Deine Gegenstände liegen auf dem Boden."
+event-death-items-retained: "Dein Inventar wurde behalten."
 event-death-void-chest-relocated: "Hinweis:{primary} Du bist in die Leere gefallen! Deine Todestruhe erscheint bei {highlight}Y: {primary}{y}."
 event-death-void-chest-disabled: "Hinweis:{primary} Du bist in die Leere gefallen, während Todestruhen deaktiviert waren. In der Leere verlorene Gegenstände können nicht wiederhergestellt werden."
 event-death-void-items-lost: "Hinweis:{primary} Gegenstände, die in die Leere fallen, können nicht wiederhergestellt werden."

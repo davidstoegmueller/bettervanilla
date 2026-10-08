@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -153,6 +154,7 @@ public class DeathPointsGUI {
     ItemStack[] deathPointItems = _deathPointsManager.getDeathPointItems(p, pointUUID);
 
     Map<String, ItemStack> itemPageEntries = Arrays.stream(deathPointItems)
+        .filter(Objects::nonNull)
         .collect(Collectors.toMap(item -> UUID.randomUUID().toString(), item -> item));
 
     CustomGUI itemsGUI = new CustomGUI(_plugin, p, title, itemPageEntries, 6, null, parentMenu,

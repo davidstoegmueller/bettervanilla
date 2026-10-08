@@ -34,6 +34,10 @@ public class DeathPointsManager {
   }
 
   public void addDeathPoint(Player p, Location loc, boolean deathChestEnabled) {
+    addDeathPoint(p, loc, deathChestEnabled, p.getInventory().getContents());
+  }
+
+  public void addDeathPoint(Player p, Location loc, boolean deathChestEnabled, ItemStack[] items) {
     String playerName = p.getName();
     String playerUUID = p.getUniqueId().toString();
     String pointUUID = UUID.randomUUID().toString();
@@ -55,7 +59,7 @@ public class DeathPointsManager {
 
     if (deathChestEnabled) {
       List<Map<String, Object>> serializedItemStacks = ItemStackUtils
-          .serializeArray(p.getInventory().getContents());
+          .serializeArray(items);
       _fileConfig.set(deathPointPath + ".inventory", serializedItemStacks);
     } else {
       _fileConfig.set(deathPointPath + ".inventory", null);
@@ -145,7 +149,7 @@ public class DeathPointsManager {
       return new ItemStack[0];
     }
 
-    List<Map<?, ?>> inventoryList = _fileConfig.getMapList(deathPointPath + ".inventory");
+    List<?> inventoryList = _fileConfig.getList(deathPointPath + ".inventory");
     return ItemStackUtils.deserializeArray(inventoryList);
   }
 
@@ -161,14 +165,20 @@ public class DeathPointsManager {
   }
 
   public DeathPointReference getDeathPointAtLocation(Location loc) {
+    if (loc == null || loc.getWorld() == null) {
+      return null;
+    }
     for (String playerUUID : _fileConfig.getKeys(false)) {
       ConfigurationSection deathpointsSection = _fileConfig.getConfigurationSection(playerUUID + ".deathpoints");
 
       if (deathpointsSection != null) {
         for (String pointUUID : deathpointsSection.getKeys(false)) {
+          if (!hasDeathPointInventory(playerUUID, pointUUID)) {
+            continue;
+          }
           String path = playerUUID + ".deathpoints." + pointUUID;
           Location pointLoc = _readLocation(path);
-          if (loc.getWorld().getName().equals(pointLoc.getWorld().getName())
+          if (pointLoc.getWorld() != null && loc.getWorld().equals(pointLoc.getWorld())
               && loc.getBlockX() == pointLoc.getBlockX()
               && loc.getBlockY() == pointLoc.getBlockY()
               && loc.getBlockZ() == pointLoc.getBlockZ()) {
@@ -205,14 +215,18 @@ public class DeathPointsManager {
   // -----------------------
 
   private void _removeDeathChest(Location loc) {
-    if (loc.getBlock() != null) {
+    if (loc.getWorld() != null && loc.getBlock().getType() == Material.CHEST) {
       loc.getBlock().setType(Material.AIR, false);
     }
   }
 
   private void _removeDeathHologram(Location loc) {
-    loc.getWorld().getEntitiesByClass(ArmorStand.class).forEach(stand -> {
-      if (stand.isMarker() && stand.getLocation().distance(loc.clone().add(0.5, 0.5, 0.5)) < 1.5) {
+    if (loc.getWorld() == null) {
+      return;
+    }
+    Location center = loc.clone().add(0.5, 0.5, 0.5);
+    loc.getWorld().getNearbyEntities(center, 1.5, 1.5, 1.5).forEach(entity -> {
+      if (entity instanceof ArmorStand stand && stand.isMarker() && stand.getLocation().distanceSquared(center) < 2.25) {
         stand.remove();
       }
     });

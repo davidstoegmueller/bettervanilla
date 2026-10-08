@@ -1,18 +1,20 @@
 package com.daveestar.bettervanilla.manager;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.HttpUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class HeadsManager {
   private static final String APP_UUID = "521a4c0c-17e7-4cda-9b60-2e98520abf26";
@@ -36,9 +38,10 @@ public class HeadsManager {
   private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(60);
   private static final Duration FETCH_COOLDOWN = Duration.ofSeconds(60);
 
-  private JsonObject _customHeadsData;
-  private JsonObject _customHeadCategoriesData;
-  private long _lastFetchMs;
+  private volatile Catalog _catalog;
+  private volatile long _lastFetchMs;
+  private CompletableFuture<Boolean> _fetchFuture;
+  private BukkitTask _fetchTask;
 
   private final Main _plugin;
   private SettingsManager _settingsManager;
@@ -55,7 +58,13 @@ public class HeadsManager {
   // FETCH HEADS DATA
   // ----------------
 
-  public CompletableFuture<Boolean> fetchHeadsData() {
+  public synchronized CompletableFuture<Boolean> fetchHeadsData() {
+    if (!_plugin.isEnabled()) {
+      return CompletableFuture.completedFuture(false);
+    }
+    if (_fetchFuture != null && !_fetchFuture.isDone()) {
+      return _fetchFuture;
+    }
     long now = System.currentTimeMillis();
     if (_lastFetchMs > 0 && now - _lastFetchMs < FETCH_COOLDOWN.toMillis()) {
       _plugin.getLogger().info("Heads data refresh skipped due to rate limit. Wait another "
@@ -65,48 +74,68 @@ public class HeadsManager {
 
     _lastFetchMs = now;
     CompletableFuture<Boolean> resultFuture = new CompletableFuture<>();
-    Bukkit.getScheduler().runTaskAsynchronously(_plugin, () -> {
-      boolean success = false;
+    _fetchFuture = resultFuture;
+    // Read configuration on the caller's server thread, before starting HTTP work.
+    Map<String, String> headers = _buildApiHeaders();
+    _fetchTask = Bukkit.getScheduler().runTaskAsynchronously(_plugin, () -> {
+      Catalog catalog = null;
 
       _plugin.getLogger().info("Refreshing heads data from Minecraft-Heads API...");
 
       try {
-        JsonObject headsData = _fetchCustomHeadsData();
-        JsonObject categoriesData = _fetchCustomHeadCategoriesData();
+        JsonObject headsData = _fetchCustomHeadsData(headers);
+        JsonObject categoriesData = _fetchCustomHeadCategoriesData(headers);
 
         boolean headsOk = _isCustomHeadsFetchSuccessful(headsData);
         boolean categoriesOk = _isCustomHeadCategoriesFetchSuccessful(categoriesData);
 
-        if (headsOk) {
-          _customHeadsData = headsData;
+        if (headsOk && categoriesOk) {
+          _validateCatalog(headsData, categoriesData);
+          catalog = new Catalog(headsData, categoriesData);
         }
-
-        if (categoriesOk) {
-          _customHeadCategoriesData = categoriesData;
-        }
-
-        success = headsOk && categoriesOk;
-
-        if (success) {
-          int headsSize = getTotalCustomHeads();
-          int categoriesSize = getTotalCustomHeadCategories();
-          JsonArray warnings = getCustomHeadWarnings();
-
-          _plugin.getLogger().info("Total Custom Heads Fetched: " + headsSize);
-          _plugin.getLogger().info("Total Custom Head Categories Fetched: " + categoriesSize);
-
-          for (JsonElement warning : warnings) {
-            _plugin.getLogger().warning("Custom Heads Warning: " + warning.getAsString());
-          }
-        }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
       } catch (Exception e) {
         _plugin.getLogger().log(Level.SEVERE, "Failed to refresh heads data from Minecraft-Heads API.", e);
       }
 
-      resultFuture.complete(success);
+      Catalog fetchedCatalog = catalog;
+      if (!_plugin.isEnabled()) {
+        resultFuture.complete(false);
+        return;
+      }
+      try {
+        Bukkit.getScheduler().runTask(_plugin, () -> {
+          if (resultFuture.isDone()) {
+            return;
+          }
+          if (fetchedCatalog != null) {
+            _catalog = fetchedCatalog;
+            _plugin.getLogger().info("Total Custom Heads Fetched: " + getTotalCustomHeads());
+            _plugin.getLogger().info("Total Custom Head Categories Fetched: " + getTotalCustomHeadCategories());
+            for (JsonElement warning : getCustomHeadWarnings()) {
+              _plugin.getLogger().warning("Custom Heads Warning: " + warning);
+            }
+          }
+          resultFuture.complete(fetchedCatalog != null);
+        });
+      } catch (IllegalStateException e) {
+        // The plugin can be disabled between checking it and scheduling completion.
+        resultFuture.complete(false);
+      }
     });
 
     return resultFuture;
+  }
+
+  public synchronized void destroy() {
+    if (_fetchTask != null) {
+      _fetchTask.cancel();
+      _fetchTask = null;
+    }
+    if (_fetchFuture != null) {
+      _fetchFuture.complete(false);
+    }
   }
 
   public long getRemainingFetchCooldownSeconds() {
@@ -120,15 +149,14 @@ public class HeadsManager {
   }
 
   private boolean _isCustomHeadsFetchSuccessful(JsonObject data) {
-    return data != null && data.has(KEY_DATA);
+    return data != null && data.get(KEY_DATA) instanceof JsonArray;
   }
 
   private boolean _isCustomHeadCategoriesFetchSuccessful(JsonObject data) {
-    if (data == null || !data.has(KEY_META)) {
+    if (!_isCustomHeadsFetchSuccessful(data) || !(data.get(KEY_META) instanceof JsonObject meta)) {
       return false;
     }
 
-    JsonObject meta = data.getAsJsonObject(KEY_META);
     return meta.has(KEY_RECORDS);
   }
 
@@ -137,19 +165,17 @@ public class HeadsManager {
   // ---------------------------
 
   public JsonArray getCustomHeadsData() {
-    return _customHeadsData.getAsJsonArray(KEY_DATA);
+    Catalog catalog = _catalog;
+    return catalog == null ? new JsonArray() : catalog.heads().getAsJsonArray(KEY_DATA);
   }
 
   public JsonArray getCustomHeadCategoriesData() {
-    return _customHeadCategoriesData.getAsJsonArray(KEY_DATA);
+    Catalog catalog = _catalog;
+    return catalog == null ? new JsonArray() : catalog.categories().getAsJsonArray(KEY_DATA);
   }
 
   public int getTotalCustomHeads() {
-    if (_customHeadsData != null && _customHeadsData.has(KEY_DATA)) {
-      return _customHeadsData.getAsJsonArray(KEY_DATA).size();
-    }
-
-    return 0;
+    return getCustomHeadsData().size();
   }
 
   // ----------------------------
@@ -157,15 +183,7 @@ public class HeadsManager {
   // ----------------------------
 
   public int getTotalCustomHeadCategories() {
-    if (_customHeadCategoriesData != null && _customHeadCategoriesData.has(KEY_META)) {
-      JsonObject meta = _customHeadCategoriesData.getAsJsonObject(KEY_META);
-
-      if (meta.has(KEY_RECORDS)) {
-        return meta.get(KEY_RECORDS).getAsInt();
-      }
-    }
-
-    return 0;
+    return getCustomHeadCategoriesData().size();
   }
 
   // -----------------
@@ -173,8 +191,9 @@ public class HeadsManager {
   // -----------------
 
   public JsonArray getCustomHeadWarnings() {
-    if (_customHeadsData != null && _customHeadsData.has(KEY_WARNINGS)) {
-      return _customHeadsData.getAsJsonArray(KEY_WARNINGS);
+    Catalog catalog = _catalog;
+    if (catalog != null && catalog.heads().get(KEY_WARNINGS) instanceof JsonArray warnings) {
+      return warnings;
     }
 
     return new JsonArray();
@@ -184,50 +203,74 @@ public class HeadsManager {
   // FETCH INITIAL HEAD DATA
   // -----------------------
 
-  private JsonObject _fetchCustomHeadsData() {
-    try {
-      Map<String, String> headers = _buildApiHeaders();
-      String firstUrl = _buildGetCustomHeadsURL(DEMO_MODE, 1);
-      JsonElement responseJSON = HttpUtils.sendGETRequest(firstUrl, REQUEST_TIMEOUT, headers);
-      JsonObject responseObject = responseJSON.getAsJsonObject();
+  private JsonObject _fetchCustomHeadsData(Map<String, String> headers) throws IOException, InterruptedException {
+    String firstUrl = _buildGetCustomHeadsURL(DEMO_MODE, 1);
+    JsonElement responseJSON = HttpUtils.sendGETRequest(firstUrl, REQUEST_TIMEOUT, headers);
+    JsonObject responseObject = responseJSON.getAsJsonObject();
+    if (!_isCustomHeadsFetchSuccessful(responseObject)) {
+      throw new IOException("Heads response is missing its data array.");
+    }
 
-      if (responseObject.has(KEY_PAGINATION)) {
-        JsonObject pagination = responseObject.getAsJsonObject(KEY_PAGINATION);
-        int totalPages = pagination.get(KEY_PAGINATION_LAST_PAGE).getAsInt();
+    if (responseObject.has(KEY_PAGINATION)) {
+      JsonObject pagination = responseObject.getAsJsonObject(KEY_PAGINATION);
+      int totalPages = pagination.get(KEY_PAGINATION_LAST_PAGE).getAsInt();
 
-        for (int page = 2; page <= totalPages; page++) {
-          String pagedUrl = _buildGetCustomHeadsURL(DEMO_MODE, page);
-          JsonElement pagedResponseJSON = HttpUtils.sendGETRequest(pagedUrl, REQUEST_TIMEOUT, headers);
-          JsonObject pagedResponseObject = pagedResponseJSON.getAsJsonObject();
+      for (int page = 2; page <= totalPages; page++) {
+        if (Thread.currentThread().isInterrupted() || !_plugin.isEnabled()) {
+          throw new InterruptedException("Heads refresh cancelled.");
+        }
+        String pagedUrl = _buildGetCustomHeadsURL(DEMO_MODE, page);
+        JsonElement pagedResponseJSON = HttpUtils.sendGETRequest(pagedUrl, REQUEST_TIMEOUT, headers);
+        JsonObject pagedResponseObject = pagedResponseJSON.getAsJsonObject();
 
-          if (pagedResponseObject.has(KEY_DATA)) {
-            for (JsonElement data : pagedResponseObject.getAsJsonArray(KEY_DATA)) {
-              responseObject.getAsJsonArray(KEY_DATA).add(data);
-            }
-          }
+        if (_isCustomHeadsFetchSuccessful(pagedResponseObject)) {
+          responseObject.getAsJsonArray(KEY_DATA).addAll(pagedResponseObject.getAsJsonArray(KEY_DATA));
+        } else {
+          throw new IOException("Heads page " + page + " is missing its data array.");
         }
       }
-
-      return responseObject;
-    } catch (Exception e) {
-      _plugin.getLogger().log(Level.SEVERE, "Failed to fetch custom heads from Minecraft-Heads API.", e);
     }
 
-    return new JsonObject();
+    return responseObject;
   }
 
-  private JsonObject _fetchCustomHeadCategoriesData() {
-    try {
-      Map<String, String> headers = _buildApiHeaders();
-      String url = _buildGetHeadCategoriesURL();
-      JsonElement responseJSON = HttpUtils.sendGETRequest(url, REQUEST_TIMEOUT, headers);
+  private JsonObject _fetchCustomHeadCategoriesData(Map<String, String> headers) throws IOException, InterruptedException {
+    String url = _buildGetHeadCategoriesURL();
+    JsonElement responseJSON = HttpUtils.sendGETRequest(url, REQUEST_TIMEOUT, headers);
 
-      return responseJSON.getAsJsonObject();
-    } catch (Exception e) {
-      _plugin.getLogger().log(Level.SEVERE, "Failed to fetch head categories from Minecraft-Heads API.", e);
+    return responseJSON.getAsJsonObject();
+  }
+
+  private void _validateCatalog(JsonObject heads, JsonObject categories) throws IOException {
+    for (JsonElement element : heads.getAsJsonArray(KEY_DATA)) {
+      if (!(element instanceof JsonObject head) || !_isString(head.get("n"))
+          || !_isString(head.get("u")) || !_isInteger(head.get("c"))) {
+        throw new IOException("Heads response contains an invalid head record.");
+      }
     }
+    for (JsonElement element : categories.getAsJsonArray(KEY_DATA)) {
+      if (!(element instanceof JsonObject category) || !_isString(category.get("n"))
+          || !_isInteger(category.get("id"))) {
+        throw new IOException("Categories response contains an invalid category record.");
+      }
+    }
+  }
 
-    return new JsonObject();
+  private boolean _isString(JsonElement value) {
+    return value instanceof JsonPrimitive primitive && primitive.isString();
+  }
+
+  private boolean _isInteger(JsonElement value) {
+    if (!(value instanceof JsonPrimitive primitive) || primitive.isBoolean()) {
+      return false;
+    }
+    try {
+      primitive.getAsBigDecimal().toBigIntegerExact().intValueExact();
+      primitive.getAsInt();
+      return true;
+    } catch (NumberFormatException | ArithmeticException e) {
+      return false;
+    }
   }
 
   // --------------
@@ -268,8 +311,9 @@ public class HeadsManager {
       return Map.of();
     }
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put(HEADER_API_KEY, apiKey);
-    return headers;
+    return Map.of(HEADER_API_KEY, apiKey);
+  }
+
+  private record Catalog(JsonObject heads, JsonObject categories) {
   }
 }

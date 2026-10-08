@@ -10,10 +10,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -24,7 +22,7 @@ import com.daveestar.bettervanilla.utils.Theme;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
-public class MaterialToggleGUI implements Listener {
+public class MaterialToggleGUI {
   private final Main _plugin;
   private final String _titleKey;
   private final List<Material> _materials;
@@ -38,7 +36,6 @@ public class MaterialToggleGUI implements Listener {
     _materials = materials;
     _getList = getter;
     _setList = setter;
-    Bukkit.getPluginManager().registerEvents(this, _plugin);
   }
 
   public void displayGUI(Player p, CustomGUI parent) {
@@ -66,7 +63,7 @@ public class MaterialToggleGUI implements Listener {
       entries.put(mat.name(), item);
     }
 
-    int rows = Math.max(1, (int) Math.ceil(entries.size() / 9.0)) + 1;
+    int rows = Math.min(6, Math.max(1, (int) Math.ceil(entries.size() / 9.0)) + 1);
     CustomGUI gui = new CustomGUI(_plugin, p,
         Theme.titlePrefix() + Main.tr(p, _titleKey),
         entries, rows, null, parent,

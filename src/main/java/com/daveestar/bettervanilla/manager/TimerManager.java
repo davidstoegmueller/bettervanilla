@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
@@ -16,7 +15,7 @@ import com.daveestar.bettervanilla.utils.ActionBar;
 import com.daveestar.bettervanilla.utils.Config;
 import com.daveestar.bettervanilla.utils.Theme;
 
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import net.md_5.bungee.api.ChatColor;
 
 public class TimerManager {
@@ -24,6 +23,9 @@ public class TimerManager {
   private boolean _running;
   private boolean _runningOverride;
   private int _globalTimer;
+  private BukkitTask _task;
+  private int _secondsSinceSave;
+  private long _lastTickNanos;
   private final Map<UUID, PlayerTimer> _playerTimers = new HashMap<>();
 
   private final Config _config;
@@ -71,9 +73,17 @@ public class TimerManager {
   }
 
   public void destroy() {
-    this.setRunning(false);
-
-    _plugin.getServer().getOnlinePlayers().forEach(this::onPlayerLeft);
+    if (_task != null) {
+      _task.cancel();
+      _task = null;
+    }
+    _running = false;
+    _fileConfig.set("running", false);
+    for (Map.Entry<UUID, PlayerTimer> entry : _playerTimers.entrySet()) {
+      _savePlayerTimer(entry.getKey(), entry.getValue());
+    }
+    _config.save();
+    _playerTimers.clear();
   }
 
   public void onPlayerLeft(Player p) {
@@ -82,6 +92,7 @@ public class TimerManager {
 
     if (timer != null) {
       _savePlayerTimer(playerId, timer);
+      _config.save();
     }
 
     updateRunningState(_plugin.getServer().getOnlinePlayers().size() - 1);
@@ -127,9 +138,12 @@ public class TimerManager {
           UUID playerId = UUID.fromString(key);
 
           PlayerTimer newPlayerTimer = new PlayerTimer(0, 0);
-          _playerTimers.put(playerId, newPlayerTimer);
+          if (_playerTimers.containsKey(playerId)) {
+            _playerTimers.put(playerId, newPlayerTimer);
+          }
           _savePlayerTimer(playerId, newPlayerTimer);
         }));
+    _config.save();
   }
 
   public int getPlayTime(Player p) {
@@ -204,8 +218,9 @@ public class TimerManager {
     }
   }
 
-  private void _incrementGlobalTimer() {
-    setGlobalTimer(_globalTimer + 1);
+  private void _incrementGlobalTimer(int seconds) {
+    _globalTimer += seconds;
+    _fileConfig.set("globalTimer", _globalTimer);
   }
 
   private void _displayTimerActionBar() {
@@ -241,43 +256,55 @@ public class TimerManager {
   private void _savePlayerTimer(UUID playerId, PlayerTimer timer) {
     _fileConfig.set("playerTimers." + playerId + ".playTime", timer.getPlayTime());
     _fileConfig.set("playerTimers." + playerId + ".afkTime", timer.getAFKTime());
-    _config.save();
   }
 
   private void _initializePlayerTimers() {
-    Optional.ofNullable(_fileConfig.getConfigurationSection("playerTimers"))
-        .ifPresent(section -> section.getKeys(false).forEach(key -> {
-          UUID playerId = UUID.fromString(key);
-          _playerTimers.put(playerId, _loadPlayerTimer(playerId));
-        }));
+    for (Player player : _plugin.getServer().getOnlinePlayers()) {
+      UUID playerId = player.getUniqueId();
+      _playerTimers.put(playerId, _loadPlayerTimer(playerId));
+    }
   }
 
-  private void _handlePlayerTimers() {
+  private void _handlePlayerTimers(int seconds) {
     for (Player p : _plugin.getServer().getOnlinePlayers()) {
       PlayerTimer timer = _playerTimers.get(p.getUniqueId());
 
       if (timer != null) {
         if (_afkManager.isAFK(p)) {
-          timer.incrementAFKTime();
+          timer.incrementAFKTime(seconds);
         } else {
-          timer.incrementPlayTime();
+          timer.incrementPlayTime(seconds);
         }
       }
     }
   }
 
   private void _startTimerTask() {
-    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
-
-    scheduler.runAtFixedRate(_plugin, task -> {
+    _lastTickNanos = System.nanoTime();
+    _task = _plugin.getServer().getScheduler().runTaskTimer(_plugin, () -> {
+      // Keep measuring real seconds even when server ticks slow down.
+      int seconds = (int) Math.min(Integer.MAX_VALUE, (System.nanoTime() - _lastTickNanos) / 1_000_000_000L);
+      if (seconds <= 0) {
+        return;
+      }
+      _lastTickNanos += seconds * 1_000_000_000L;
       _afkManager.checkAllPlayersAFKStatus();
 
       if (_running) {
-        _incrementGlobalTimer();
-        _handlePlayerTimers();
+        _incrementGlobalTimer(seconds);
+        _handlePlayerTimers(seconds);
       }
 
       _displayTimerActionBar();
-    }, 0, 1, TimeUnit.SECONDS);
+
+      _secondsSinceSave = (int) Math.min(60L, _secondsSinceSave + (long) seconds);
+      if (_secondsSinceSave >= 60) {
+        for (Map.Entry<UUID, PlayerTimer> entry : _playerTimers.entrySet()) {
+          _savePlayerTimer(entry.getKey(), entry.getValue());
+        }
+        _config.save();
+        _secondsSinceSave = 0;
+      }
+    }, 20L, 20L);
   }
 }

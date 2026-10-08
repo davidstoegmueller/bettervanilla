@@ -360,7 +360,7 @@ public class PermissionsCommand implements TabExecutor {
   // ---------------------
 
   private void handleReloadCommand(CommandSender sender, String[] args) {
-    permissionsManager.reloadPermissions();
+    permissionsManager.reloadConfiguration();
     sender.sendMessage(Main.getPrefix() + Main.tr(sender, "command-permissions-reload-success"));
   }
 

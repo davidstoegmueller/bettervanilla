@@ -207,8 +207,14 @@ public class AFKManager {
     return Math.max(0, _timerManager.getGlobalTimer() - afkStartTime);
   }
 
-  private int _getAFKTime() {
+  public void destroy() {
+    for (Player player : new java.util.ArrayList<>(_lastMovement.keySet())) {
+      onPlayerLeft(player);
+    }
+  }
+
+  private long _getAFKTime() {
     int afkTimeInMinutes = _settingsManager.getAFKTime();
-    return 1000 * 60 * afkTimeInMinutes;
+    return 1000L * 60 * afkTimeInMinutes;
   }
 }
