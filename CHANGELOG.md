@@ -2,6 +2,10 @@
 
 # Changelog
 
+## [1.15.0] - 08.10.2026
+
+- 📦 **Minecraft Version 26.3** - Upgraded the plugin to minecraft version 26.3
+
 ## [1.14.3] - 24.08.2026
 
 - 🧑‍🌾 **Villager Trade Cycling** - Added an admin-controlled option to reroll the offers of an untraded novice villager by right-clicking outside its trading inventory.

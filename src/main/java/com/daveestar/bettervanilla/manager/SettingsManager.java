@@ -48,7 +48,7 @@ public class SettingsManager {
       Material.MANGROVE_LOG, Material.CHERRY_LOG, Material.CRIMSON_STEM, Material.WARPED_STEM, Material.PALE_OAK_LOG,
       Material.MANGROVE_ROOTS, Material.STRIPPED_OAK_LOG, Material.STRIPPED_BIRCH_LOG, Material.STRIPPED_ACACIA_LOG,
       Material.STRIPPED_CHERRY_LOG, Material.STRIPPED_JUNGLE_LOG, Material.STRIPPED_SPRUCE_LOG,
-      Material.STRIPPED_DARK_OAK_LOG, Material.STRIPPED_PALE_OAK_LOG, Material.STRIPPED_PALE_OAK_LOG);
+      Material.STRIPPED_DARK_OAK_LOG, Material.STRIPPED_PALE_OAK_LOG, Material.STRIPPED_MANGROVE_LOG);
 
   public SettingsManager(Config config) {
     _config = config;
