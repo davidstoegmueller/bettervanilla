@@ -1,9 +1,9 @@
 package com.daveestar.bettervanilla.events;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.EventPriority;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
@@ -29,27 +29,27 @@ public class ModerationEvents implements Listener {
 
   @EventHandler
   public void onPreLogin(AsyncPlayerPreLoginEvent e) {
-    OfflinePlayer p = Main.getInstance().getServer().getOfflinePlayer(e.getUniqueId());
+    UUID playerId = e.getUniqueId();
 
-    if (_modManager.isBanned(p)) {
-      String reason = _modManager.getBanReason(p);
-      long expires = _modManager.getBanExpiry(p);
+    if (_modManager.isBanned(playerId)) {
+      String reason = _modManager.getBanReason(playerId);
+      long expires = _modManager.getBanExpiry(playerId);
       String banMsg = Theme.highlight() + "" + ChatColor.BOLD
-          + _tr(e.getUniqueId(), "moderation-ban-screen-title") + "\n\n" + Theme.primary()
-          + _tr(e.getUniqueId(), "moderation-ban-screen-description") + "\n\n";
+          + _tr(playerId, "moderation-ban-screen-title") + "\n\n" + Theme.primary()
+          + _tr(playerId, "moderation-ban-screen-description") + "\n\n";
 
       if (!reason.isEmpty()) {
         banMsg += Theme.highlight() + "" + ChatColor.BOLD
-            + _tr(e.getUniqueId(), "moderation-ban-screen-reason",
+            + _tr(playerId, "moderation-ban-screen-reason",
                 "reason", Theme.primary() + reason)
             + "\n";
       }
 
       if (expires != -1) {
         long remaining = (expires - System.currentTimeMillis()) / 1000;
-        String time = _timerManager.formatTime(e.getUniqueId(), (int) remaining);
+        String time = _timerManager.formatTime(playerId, (int) remaining);
         banMsg += Theme.highlight() + "" + ChatColor.BOLD
-            + _tr(e.getUniqueId(), "moderation-ban-screen-expires",
+            + _tr(playerId, "moderation-ban-screen-expires",
                 "time", Theme.primary() + time);
       }
 
@@ -57,7 +57,7 @@ public class ModerationEvents implements Listener {
     }
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
   public void onChat(AsyncChatEvent e) {
     Player p = e.getPlayer();
     if (_modManager.isMuted(p)) {

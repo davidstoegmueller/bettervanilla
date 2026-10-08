@@ -61,8 +61,8 @@ public class PermissionsManager {
 
     migrateLegacyDefaultGroupIfNeeded();
 
-    addGroup(defaultGroupName);
     seedRecommendedGroups();
+    addGroup(defaultGroupName);
 
     if (updated) {
       _save();
@@ -137,6 +137,11 @@ public class PermissionsManager {
     for (Map.Entry<String, List<String>> entry : recommended.entrySet()) {
       String groupName = entry.getKey();
       List<String> recommendedPerms = entry.getValue();
+
+      // Existing groups belong to the administrator, including removed permissions.
+      if (groupExists(groupName)) {
+        continue;
+      }
 
       addGroup(groupName);
 
@@ -396,6 +401,7 @@ public class PermissionsManager {
   // -------------------------
 
   public void onPlayerJoined(Player p) {
+    onPlayerLeft(p);
     String uuid = p.getUniqueId().toString();
 
     if (!_fileConfig.contains(USERS_PATH + "." + uuid)) {
@@ -428,6 +434,12 @@ public class PermissionsManager {
   // RELOAD PERMISSIONS METHOD
   // -------------------------
 
+  public void reloadConfiguration() {
+    _config.reload();
+    _loadConfig();
+    reloadPermissions();
+  }
+
   public void reloadPermissions() {
     // Iterate over all online players and re-apply permissions
     for (Player p : plugin.getServer().getOnlinePlayers()) {
@@ -448,5 +460,12 @@ public class PermissionsManager {
       activeAttachments.put(uid, attachment);
       p.updateCommands();
     }
+  }
+
+  public void destroy() {
+    for (Player player : plugin.getServer().getOnlinePlayers()) {
+      onPlayerLeft(player);
+    }
+    activeAttachments.clear();
   }
 }

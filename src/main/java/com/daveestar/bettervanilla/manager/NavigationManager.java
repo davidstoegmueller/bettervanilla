@@ -47,7 +47,7 @@ public class NavigationManager {
     Location playerLocation = p.getLocation().toBlockLocation();
     Location targetLocation = navigationData.getLocation().toBlockLocation();
 
-    if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
+    if (targetLocation.getWorld() == null || !targetLocation.getWorld().equals(playerLocation.getWorld())) {
       p.sendMessage(Main.getPrefix() + Theme.error()
           + Main.tr(p, "navigation-error-target-different-world"));
       return;
@@ -83,7 +83,7 @@ public class NavigationManager {
       Location playerLocation = p.getLocation().toBlockLocation();
       Location targetLocation = navigationData.getLocation().toBlockLocation();
 
-      if (!targetLocation.getWorld().equals(playerLocation.getWorld())) {
+      if (targetLocation.getWorld() == null || !targetLocation.getWorld().equals(playerLocation.getWorld())) {
         this.stopNavigation(p);
         p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "navigation-canceled-world-change"));
         return;
@@ -120,6 +120,12 @@ public class NavigationManager {
   public NavigationData getActiveNavigation(Player p) {
     // retrieve the active navigation data for the player
     return _activeNavigations.get(p);
+  }
+
+  public void destroy() {
+    for (Player player : new java.util.ArrayList<>(_activeNavigations.keySet())) {
+      stopNavigation(player);
+    }
   }
 
   private String _getNavigationText(Player viewer, String name, Location targetLocation, Location playerLocation) {

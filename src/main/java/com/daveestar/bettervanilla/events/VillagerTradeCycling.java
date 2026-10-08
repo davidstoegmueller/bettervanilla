@@ -4,6 +4,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.MerchantInventory;
@@ -23,7 +24,7 @@ public class VillagerTradeCycling implements Listener {
     _settingsManager = _plugin.getSettingsManager();
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onInventoryClick(InventoryClickEvent e) {
     if (!_settingsManager.getVillagerTradeCyclingEnabled()
         || !e.isRightClick()

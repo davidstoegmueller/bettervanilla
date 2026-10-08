@@ -68,6 +68,12 @@ public class NameTagManager {
     _removeTeamEntry(p);
   }
 
+  public void destroy() {
+    if (_scoreboardManager != null) {
+      _plugin.getServer().getOnlinePlayers().forEach(this::removeNameTag);
+    }
+  }
+
   private String _buildPrefix(Player p) {
     boolean isAfk = _afkManager.isPlayerMarkedAFK(p);
 

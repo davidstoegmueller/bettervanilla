@@ -1,9 +1,9 @@
 package com.daveestar.bettervanilla.manager;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
@@ -17,7 +17,7 @@ import net.kyori.adventure.text.Component;
 
 public class VanishManager {
   private final Main _plugin;
-  private final Set<UUID> _vanishedPlayers = new HashSet<>();
+  private final Set<UUID> _vanishedPlayers = ConcurrentHashMap.newKeySet();
   private TabListManager _tabListManager;
   private NameTagManager _nameTagManager;
 
@@ -99,6 +99,14 @@ public class VanishManager {
 
   public int getVanishedCount() {
     return (int) _onlineVanishedPlayers().count();
+  }
+
+  public void destroy() {
+    _onlineVanishedPlayers().forEach(player -> {
+      _showToOthers(player);
+      _applyVisibleState(player);
+    });
+    _vanishedPlayers.clear();
   }
 
   private void _applyVanishState(Player p) {

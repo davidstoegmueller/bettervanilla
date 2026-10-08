@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -24,6 +26,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -64,7 +67,7 @@ public class DeathChest implements Listener {
     _backpackManager = _plugin.getBackpackManager();
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onPlayerDeath(PlayerDeathEvent e) {
     Player p = (Player) e.getEntity();
 
@@ -79,7 +82,7 @@ public class DeathChest implements Listener {
       deathChestLocation.setY(100.5);
     }
 
-    boolean deathChestEnabled = _settingsManager.getDeathChestEnabled();
+    boolean deathChestEnabled = _settingsManager.getDeathChestEnabled() && !e.getKeepInventory();
     boolean deathChestSpawned = false;
 
     if (deathChestEnabled) {
@@ -90,7 +93,7 @@ public class DeathChest implements Listener {
       }
     }
 
-    _deathPointsManager.addDeathPoint(p, deathChestLocation, deathChestSpawned);
+    _deathPointsManager.addDeathPoint(p, deathChestLocation, deathChestSpawned, e.getDrops().toArray(ItemStack[]::new));
 
     if (deathChestSpawned) {
       e.getDrops().clear();
@@ -108,11 +111,13 @@ public class DeathChest implements Listener {
       p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-drop-warning"));
     } else if (deathChestEnabled) {
       p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-chest-no-safe-location"));
+    } else if (e.getKeepInventory()) {
+      p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-items-retained"));
     } else {
       p.sendMessage(Main.getPrefix() + Main.tr(p, "event-death-items-dropped"));
     }
 
-    if (fellIntoVoid) {
+    if (fellIntoVoid && !e.getKeepInventory()) {
       if (deathChestSpawned) {
         p.sendMessage(Main.getPrefix() + Theme.error() + Main.tr(p, "event-death-void-chest-relocated",
             "y", chestY));
@@ -213,11 +218,12 @@ public class DeathChest implements Listener {
             playerName = Main.tr(p, "event-death-chest-owner-unknown");
           }
           ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
-          Inventory inv = Bukkit.createInventory(null, 45,
+          int size = items.length > 45 ? 54 : 45;
+          Inventory inv = Bukkit.createInventory(null, size,
               Component.text(Theme.titlePrefix() + Main.tr(p, "event-death-chest-inventory-title",
                   "player", playerName)));
 
-          inv.setContents(items);
+          inv.setContents(Arrays.copyOf(items, Math.min(items.length, size)));
           p.openInventory(inv);
 
           openedDeathChests.put(p, clickedLoc);
@@ -258,7 +264,18 @@ public class DeathChest implements Listener {
   }
 
   @EventHandler
+  public void onDeathChestDrag(InventoryDragEvent e) {
+    String ownerUUID = deathChestInventories.get(e.getView().getTopInventory());
+    if (ownerUUID != null && !e.getWhoClicked().getUniqueId().toString().equals(ownerUUID)) {
+      e.setCancelled(true);
+    }
+  }
+
+  @EventHandler
   public void onDeathChestClose(InventoryCloseEvent e) {
+    if (!deathChestInventories.containsKey(e.getInventory())) {
+      return;
+    }
     Player p = (Player) e.getPlayer();
 
     if (openedDeathChests.containsKey(p)) {
@@ -268,7 +285,16 @@ public class DeathChest implements Listener {
       if (ref != null) {
         if (p.getUniqueId().toString().equals(ref.ownerUUID)) {
           Location playerLoc = p.getLocation().toBlockLocation();
-          removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, e.getInventory().getContents());
+          ItemStack[] contents = e.getInventory().getContents();
+          ItemStack[] storedItems = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
+          // Other plugins may add more drops than fit in a chest inventory.
+          if (storedItems.length > contents.length) {
+            ItemStack[] combined = Arrays.copyOf(contents, storedItems.length);
+            System.arraycopy(storedItems, contents.length, combined, contents.length,
+                storedItems.length - contents.length);
+            contents = combined;
+          }
+          removeAndDropDeathChestItems(p, playerLoc, ref.ownerUUID, ref.pointUUID, contents);
         }
       }
 
@@ -278,7 +304,7 @@ public class DeathChest implements Listener {
     deathChestInventories.remove(e.getInventory());
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onDeathChestBreak(BlockBreakEvent e) {
     if (e.getBlock().getType() == Material.CHEST) {
       Player p = e.getPlayer();
@@ -288,6 +314,12 @@ public class DeathChest implements Listener {
 
       if (ref != null) {
         if (p.getUniqueId().toString().equals(ref.ownerUUID)) {
+          // Closing an owner's open chest already claims its current contents.
+          if (breakLoc.equals(openedDeathChests.get(p))) {
+            p.closeInventory();
+            e.setCancelled(true);
+            return;
+          }
           Location playerLoc = p.getLocation().toBlockLocation();
           ItemStack[] items = _deathPointsManager.getDeathPointItems(ref.ownerUUID, ref.pointUUID);
 

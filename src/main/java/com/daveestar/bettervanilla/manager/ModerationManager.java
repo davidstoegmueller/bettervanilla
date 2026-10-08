@@ -30,42 +30,55 @@ public class ModerationManager {
     _config.save();
   }
 
-  public void banPlayer(OfflinePlayer p, String reason) {
+  public synchronized void banPlayer(OfflinePlayer p, String reason) {
     _handleBanPlayer(p, reason, -1);
   }
 
-  public void tempBanPlayer(OfflinePlayer p, String reason, long durationMillis) {
-    _handleBanPlayer(p, reason, System.currentTimeMillis() + durationMillis);
+  public synchronized void tempBanPlayer(OfflinePlayer p, String reason, long durationMillis) {
+    _handleBanPlayer(p, reason, _expiry(durationMillis));
   }
 
-  public void unbanPlayer(OfflinePlayer p) {
+  public synchronized void unbanPlayer(OfflinePlayer p) {
     _fileConfig.set("bans." + p.getUniqueId(), null);
     _config.save();
   }
 
-  public boolean isBanned(OfflinePlayer p) {
-    String path = "bans." + p.getUniqueId();
+  public synchronized boolean isBanned(OfflinePlayer p) {
+    return isBanned(p.getUniqueId());
+  }
+
+  public synchronized boolean isBanned(UUID playerId) {
+    String path = "bans." + playerId;
     if (!_fileConfig.contains(path))
       return false;
 
     long expires = _fileConfig.getLong(path + ".expires", -1);
     if (expires != -1 && System.currentTimeMillis() > expires) {
-      unbanPlayer(p);
+      _fileConfig.set(path, null);
+      _config.save();
       return false;
     }
 
     return true;
   }
 
-  public String getBanReason(OfflinePlayer p) {
-    return _fileConfig.getString("bans." + p.getUniqueId() + ".reason", "");
+  public synchronized String getBanReason(OfflinePlayer p) {
+    return getBanReason(p.getUniqueId());
   }
 
-  public long getBanExpiry(OfflinePlayer p) {
-    return _fileConfig.getLong("bans." + p.getUniqueId() + ".expires", -1);
+  public synchronized String getBanReason(UUID playerId) {
+    return _fileConfig.getString("bans." + playerId + ".reason", "");
   }
 
-  public List<String> getBannedPlayerNames() {
+  public synchronized long getBanExpiry(OfflinePlayer p) {
+    return getBanExpiry(p.getUniqueId());
+  }
+
+  public synchronized long getBanExpiry(UUID playerId) {
+    return _fileConfig.getLong("bans." + playerId + ".expires", -1);
+  }
+
+  public synchronized List<String> getBannedPlayerNames() {
     ConfigurationSection section = _fileConfig.getConfigurationSection("bans");
     if (section == null)
       return Collections.emptyList();
@@ -81,20 +94,20 @@ public class ModerationManager {
     return names;
   }
 
-  public void mutePlayer(OfflinePlayer p, String reason) {
+  public synchronized void mutePlayer(OfflinePlayer p, String reason) {
     _handleMutePlayer(p, reason, -1);
   }
 
-  public void tempMutePlayer(OfflinePlayer p, String reason, long durationMillis) {
-    _handleMutePlayer(p, reason, System.currentTimeMillis() + durationMillis);
+  public synchronized void tempMutePlayer(OfflinePlayer p, String reason, long durationMillis) {
+    _handleMutePlayer(p, reason, _expiry(durationMillis));
   }
 
-  public void unmutePlayer(OfflinePlayer p) {
+  public synchronized void unmutePlayer(OfflinePlayer p) {
     _fileConfig.set("mutes." + p.getUniqueId(), null);
     _config.save();
   }
 
-  public boolean isMuted(OfflinePlayer p) {
+  public synchronized boolean isMuted(OfflinePlayer p) {
     String path = "mutes." + p.getUniqueId();
     if (!_fileConfig.contains(path))
       return false;
@@ -108,15 +121,15 @@ public class ModerationManager {
     return true;
   }
 
-  public String getMuteReason(OfflinePlayer p) {
+  public synchronized String getMuteReason(OfflinePlayer p) {
     return _fileConfig.getString("mutes." + p.getUniqueId() + ".reason", "");
   }
 
-  public long getMuteExpiry(OfflinePlayer p) {
+  public synchronized long getMuteExpiry(OfflinePlayer p) {
     return _fileConfig.getLong("mutes." + p.getUniqueId() + ".expires", -1);
   }
 
-  public List<String> getMutedPlayerNames() {
+  public synchronized List<String> getMutedPlayerNames() {
     ConfigurationSection section = _fileConfig.getConfigurationSection("mutes");
     if (section == null)
       return Collections.emptyList();
@@ -137,6 +150,13 @@ public class ModerationManager {
     _fileConfig.set(path + ".reason", reason);
     _fileConfig.set(path + ".expires", expires);
     _config.save();
+  }
+
+  private long _expiry(long durationMillis) {
+    if (durationMillis <= 0 || durationMillis > Integer.MAX_VALUE * 1000L) {
+      throw new IllegalArgumentException("Moderation duration must be positive and fit in integer seconds.");
+    }
+    return Math.addExact(System.currentTimeMillis(), durationMillis);
   }
 
   private void _handleMutePlayer(OfflinePlayer p, String reason, long expires) {

@@ -26,7 +26,7 @@ public class SignColors implements Listener {
 
   private final Map<UUID, Location> _trackedSigns = new ConcurrentHashMap<>();
 
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   public void onSignChange(SignChangeEvent e) {
     _applyLegacyColors(e);
 

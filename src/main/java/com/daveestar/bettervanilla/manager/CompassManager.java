@@ -9,12 +9,11 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Theme;
 
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 
 public class CompassManager {
   private static final int _SCALE_LENGTH = 80;
@@ -29,13 +28,12 @@ public class CompassManager {
       "compass-direction-west-short",
       "compass-direction-northwest-short"
   };
-  // update interval in milliseconds (approx one server tick)
-  private static final int _UPDATE_INTERVAL = 50;
   private static final char _FILL_CHARACTER = '·'; // enhanced visual fill character
   private static final String _ARROW_CHARACTER = "▲"; // enhanced arrow character without color
   private static final int _FILL_CHAR_AMOUNT = 20; // number of fill characters between directions
 
-  private final Map<Player, BossBar> _activeCompass = new ConcurrentHashMap<>();
+  private final Map<Player, BossBar> _activeCompass = new HashMap<>();
+  private BukkitTask _task;
 
   private final Main _plugin;
   private SettingsManager _settingsManager;
@@ -61,7 +59,7 @@ public class CompassManager {
 
   public void onPlayerJoined(Player p) {
     if (_settingsManager.getPlayerToggleCompass(p.getUniqueId())) {
-      _plugin.getServer().getScheduler().runTask(_plugin, () -> addPlayerToCompass(p));
+      addPlayerToCompass(p);
     }
   }
 
@@ -73,6 +71,10 @@ public class CompassManager {
   }
 
   public void destroy() {
+    if (_task != null) {
+      _task.cancel();
+      _task = null;
+    }
     _activeCompass.values().forEach(BossBar::removeAll);
     _activeCompass.clear();
   }
@@ -103,16 +105,14 @@ public class CompassManager {
   }
 
   private void _startCompassUpdateTask() {
-    AsyncScheduler scheduler = _plugin.getServer().getAsyncScheduler();
-
-    scheduler.runAtFixedRate(_plugin, task -> {
+    _task = _plugin.getServer().getScheduler().runTaskTimer(_plugin, () -> {
       _activeCompass.forEach((pl, compassBossBar) -> _updateCompassDirection(pl, compassBossBar));
-    }, 0, _UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
+    }, 1L, 1L);
   }
 
   private void _updateCompassDirection(Player p, BossBar compassBossBar) {
     float yaw = p.getLocation().toBlockLocation().getYaw();
-    yaw = (yaw + 180) % 360; // adjust to align North and South correctly // normalize yaw to the 0-360 range
+    yaw = ((yaw + 180) % 360 + 360) % 360;
 
     String compassScale = _getDynamicCompassScale(p, yaw);
     compassBossBar.setTitle(compassScale);
@@ -154,7 +154,7 @@ public class CompassManager {
     while (currentIndex < finalCompass.length()) {
       boolean matched = false;
       for (String directionName : directionNames) {
-        if (finalCompass.indexOf(directionName, currentIndex) == currentIndex) {
+        if (!directionName.isEmpty() && finalCompass.indexOf(directionName, currentIndex) == currentIndex) {
           coloredCompass.append(Theme.highlight()).append(directionName).append(ChatColor.RESET);
           currentIndex += directionName.length();
           matched = true;

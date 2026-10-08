@@ -51,7 +51,7 @@ public class TagManager {
       return ChatColor.AQUA;
     }
 
-    return Theme.minecraftColors().get(_settingsManager.getPlayerTagColor(p.getUniqueId()));
+    return Theme.minecraftColors().getOrDefault(_settingsManager.getPlayerTagColor(p.getUniqueId()), ChatColor.AQUA);
   }
 
   public String getFormattedTag(Player p) {

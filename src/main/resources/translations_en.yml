@@ -603,6 +603,7 @@ event-death-chest-items-stored: "All your items are stored in the death chest at
 event-death-chest-drop-warning: "ATTENTION!{primary} As soon as you close or break the chest, all items will be dropped!"
 event-death-chest-no-safe-location: "No safe air or fluid block was found nearby. Your items were dropped at your death location."
 event-death-items-dropped: "Your items were dropped on the ground."
+event-death-items-retained: "Your inventory was kept."
 event-death-void-chest-relocated: "Hint:{primary} You fell into the void! Your death chest will spawn at {highlight}Y: {primary}{y}"
 event-death-void-chest-disabled: "Hint:{primary} You fell into the void while death chests are disabled. Items lost in the void cannot be recovered."
 event-death-void-items-lost: "Hint:{primary} Items dropped into the void cannot be recovered."

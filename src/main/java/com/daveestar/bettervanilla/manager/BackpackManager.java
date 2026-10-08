@@ -59,6 +59,10 @@ public class BackpackManager implements Listener {
       return;
     }
 
+    if (_openGUIs.containsKey(p.getUniqueId())) {
+      p.closeInventory();
+    }
+
     int pages = _settingsManager.getBackpackPages();
     int rows = _settingsManager.getBackpackRows() + 1;
     int pageSize = _getPageSize();
@@ -104,16 +108,22 @@ public class BackpackManager implements Listener {
   }
 
   public void setEnabled(boolean value) {
+    if (!value) {
+      _closeOpenBackpacks();
+    }
     _settingsManager.setBackpackEnabled(value);
   }
 
   public void setRows(int rows) {
+    _closeOpenBackpacks();
     _settingsManager.setBackpackRows(rows);
     _backpacks.clear();
   }
 
   public void setPages(int pages) {
+    _closeOpenBackpacks();
     _settingsManager.setBackpackPages(pages);
+    pages = _settingsManager.getBackpackPages();
     _backpacks.clear();
 
     if (_fileConfig.isConfigurationSection("players")) {
@@ -128,6 +138,11 @@ public class BackpackManager implements Listener {
   }
 
   public void destroy() {
+    _closeOpenBackpacks();
+    _backpacks.clear();
+  }
+
+  private void _closeOpenBackpacks() {
     for (Map.Entry<UUID, CustomGUI> entry : new HashMap<>(_openGUIs).entrySet()) {
       Player p = _plugin.getServer().getPlayer(entry.getKey());
       Map<Integer, ItemStack[]> backpack = _backpacks.get(entry.getKey());
@@ -135,6 +150,9 @@ public class BackpackManager implements Listener {
       if (p != null && backpack != null) {
         CustomGUI gui = entry.getValue();
         _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
+        if (p.getOpenInventory().getTopInventory().equals(gui.getInventory())) {
+          p.closeInventory();
+        }
       }
     }
 
@@ -142,12 +160,15 @@ public class BackpackManager implements Listener {
   }
 
   public void onPlayerLeft(Player p) {
-    _openGUIs.remove(p.getUniqueId());
-    _backpacks.remove(p.getUniqueId());
+    CustomGUI gui = _openGUIs.remove(p.getUniqueId());
+    Map<Integer, ItemStack[]> backpack = _backpacks.remove(p.getUniqueId());
+    if (gui != null && backpack != null) {
+      _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
+    }
   }
 
   private void _saveCurrentPage(Player p, CustomGUI gui, Map<Integer, ItemStack[]> backpack, int page) {
-    int pageSize = _getPageSize();
+    int pageSize = gui.getInventory().getSize() - 9;
     ItemStack[] items = new ItemStack[pageSize];
     Inventory inv = gui.getInventory();
 
@@ -234,10 +255,12 @@ public class BackpackManager implements Listener {
   @EventHandler
   public void onInventoryClose(InventoryCloseEvent e) {
     Player p = (Player) e.getPlayer();
-    CustomGUI gui = _openGUIs.remove(p.getUniqueId());
-    Map<Integer, ItemStack[]> backpack = _backpacks.remove(p.getUniqueId());
+    CustomGUI gui = _openGUIs.get(p.getUniqueId());
+    Map<Integer, ItemStack[]> backpack = _backpacks.get(p.getUniqueId());
 
     if (gui != null && e.getInventory().equals(gui.getInventory()) && backpack != null) {
+      _openGUIs.remove(p.getUniqueId());
+      _backpacks.remove(p.getUniqueId());
       _saveCurrentPage(p, gui, backpack, gui.getCurrentPage());
     }
   }

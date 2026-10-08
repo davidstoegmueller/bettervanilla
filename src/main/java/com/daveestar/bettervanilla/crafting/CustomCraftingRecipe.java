@@ -123,7 +123,7 @@ public abstract class CustomCraftingRecipe {
 
     ShapedRecipe recipe = new ShapedRecipe(_recipeKey, createResultItem());
     recipe.shape(rows[0].toString(), rows[1].toString(), rows[2].toString());
-    ingredients.forEach((key, item) -> recipe.setIngredient(key, new RecipeChoice.ExactChoice(item)));
+    ingredients.forEach((key, item) -> recipe.setIngredient(key, RecipeChoice.exactChoice(item)));
 
     return recipe;
   }

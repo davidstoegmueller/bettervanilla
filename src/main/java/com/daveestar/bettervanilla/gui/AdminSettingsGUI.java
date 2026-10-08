@@ -1210,6 +1210,9 @@ public class AdminSettingsGUI {
     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1);
 
     _headsManager.fetchHeadsData().thenAccept(success -> {
+      if (!_plugin.isEnabled()) {
+        return;
+      }
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
         if (!p.isOnline()) {
           return;
@@ -1325,6 +1328,9 @@ public class AdminSettingsGUI {
 
     if (newState) {
       _headsManager.fetchHeadsData().thenAccept(success -> {
+        if (!_plugin.isEnabled()) {
+          return;
+        }
         _plugin.getServer().getScheduler().runTask(_plugin, () -> {
           if (!p.isOnline()) {
             return;
@@ -1356,6 +1362,9 @@ public class AdminSettingsGUI {
     }
 
     _headsManager.fetchHeadsData().thenAccept(success -> {
+      if (!_plugin.isEnabled()) {
+        return;
+      }
       _plugin.getServer().getScheduler().runTask(_plugin, () -> {
         if (!p.isOnline()) {
           return;

@@ -14,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.daveestar.bettervanilla.Main;
@@ -44,7 +43,7 @@ public class BedSleepingMessage implements Listener {
     Player p = e.getPlayer();
 
     Bukkit.getScheduler().runTask(_plugin, () -> {
-      if (!p.isSleeping()) {
+      if (!p.isOnline() || !p.isSleeping()) {
         return;
       }
 
@@ -63,11 +62,6 @@ public class BedSleepingMessage implements Listener {
 
   @EventHandler
   public void onPlayerQuit(PlayerQuitEvent e) {
-    _clearPlayer(e.getPlayer());
-  }
-
-  @EventHandler
-  public void onPlayerKick(PlayerKickEvent e) {
     _clearPlayer(e.getPlayer());
   }
 

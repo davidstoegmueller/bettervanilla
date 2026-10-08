@@ -8,6 +8,8 @@ import org.bukkit.block.data.type.Stairs;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -18,10 +20,10 @@ import com.daveestar.bettervanilla.manager.SittingManager;
 public class SittableStairs implements Listener {
   private static final double MAX_DISTANCE = 2;
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onPlayerRightClick(PlayerInteractEvent e) {
     // ignore off-hand interactions to prevent duplicate handling
-    if (e.getHand() != EquipmentSlot.HAND) {
+    if (e.getHand() != EquipmentSlot.HAND || e.useInteractedBlock() == Result.DENY) {
       return;
     }
 

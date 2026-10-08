@@ -2,6 +2,7 @@ package com.daveestar.bettervanilla.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonParseException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,28 +24,20 @@ public final class HttpUtils {
 
   public static JsonElement sendGETRequest(String url, Duration timeout, java.util.Map<String, String> headers)
       throws IOException, InterruptedException {
-    HttpRequest request = HttpRequest.newBuilder()
+    HttpRequest.Builder builder = HttpRequest.newBuilder()
         .uri(URI.create(url))
         .timeout(timeout)
-        .GET()
-        .build();
+        .GET();
 
     if (headers != null && !headers.isEmpty()) {
-      HttpRequest.Builder builder = HttpRequest.newBuilder()
-          .uri(URI.create(url))
-          .timeout(timeout)
-          .GET();
-
       for (var entry : headers.entrySet()) {
         if (entry.getKey() != null && entry.getValue() != null) {
           builder.header(entry.getKey(), entry.getValue());
         }
       }
-
-      request = builder.build();
     }
 
-    HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+    HttpResponse<String> response = CLIENT.send(builder.build(), HttpResponse.BodyHandlers.ofString());
     return handleJsonResponse(response, "GET", url);
   }
 
@@ -68,6 +61,10 @@ public final class HttpUtils {
       throw new IOException(method + " request failed with status " + statusCode + " for " + url);
     }
 
-    return JsonParser.parseString(response.body());
+    try {
+      return JsonParser.parseString(response.body());
+    } catch (JsonParseException e) {
+      throw new IOException(method + " request returned invalid JSON for " + url, e);
+    }
   }
 }

@@ -7,6 +7,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -25,8 +27,11 @@ public class RightClickCropHarvest implements Listener {
     _settingsManager = _plugin.getSettingsManager();
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onCropRightClick(PlayerInteractEvent e) {
+    if (e.useInteractedBlock() == Result.DENY) {
+      return;
+    }
     Player p = e.getPlayer();
     if (!_settingsManager.getRightClickCropHarvest()
         || !_settingsManager.getPlayerRightClickCropHarvest(p.getUniqueId())) {
@@ -75,17 +80,11 @@ public class RightClickCropHarvest implements Listener {
     boolean seedConsumed = false;
 
     for (ItemStack drop : drops) {
-      if (!seedConsumed && drop.getType() == seed) {
-        if (drop.getAmount() > 1) {
-          drop.setAmount(drop.getAmount() - 1);
-        } else {
-          continue;
-        }
-
+      if (drop.getType() == seed && drop.getAmount() > 0) {
+        drop.setAmount(drop.getAmount() - 1);
         seedConsumed = true;
+        break;
       }
-
-      block.getWorld().dropItemNaturally(block.getLocation(), drop);
     }
 
     if (!seedConsumed) {
@@ -97,6 +96,12 @@ public class RightClickCropHarvest implements Listener {
       } else {
         block.breakNaturally(p.getInventory().getItemInMainHand());
         return;
+      }
+    }
+
+    for (ItemStack drop : drops) {
+      if (drop.getAmount() > 0) {
+        block.getWorld().dropItemNaturally(block.getLocation(), drop);
       }
     }
 

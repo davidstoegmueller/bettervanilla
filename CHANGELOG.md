@@ -2,6 +2,22 @@
 
 # Changelog
 
+## [1.15.0] - 08.10.2026
+
+- 📦 **Minecraft Version 26.3** - Updated to Minecraft 26.3.
+- ⚰️ **Death Chest Safety** - Fixed item duplication, overflow handling, and owner protections.
+- 🎒 **Backpack Reliability** - Fixed saving during resizing, disabling, and disconnects.
+- 🖱️ **Inventory & GUI Safety** - Protected menu items and fixed sorting and editor handling.
+- ⛏️ **Vein Mining & Chopping Fixes** - Respected feature toggles, block protections, and tool durability.
+- 🌱 **Crop Harvesting Fixes** - Fixed seed consumption and duplicate drops.
+- 🔄 **Item Restock Fix** - Refilled the correct slot after hotbar changes.
+- 🔐 **Permission Persistence** - Preserved custom permissions and fixed disk reloading.
+- ⚙️ **Safer Configuration Writes** - Protected saved files and preserved data after loading failures.
+- 🧠 **Heads Explorer Reliability** - Prevented overlapping refreshes and kept cached data on failure.
+- 🔨 **Moderation Duration Validation** - Rejected invalid and overflowing ban and mute durations.
+- 🛡️ **Server & Lifecycle Reliability** - Fixed unsafe async updates and task cleanup.
+- ⏱️ **Timer & Action-Bar Performance** - Reduced writes with 60-second checkpoints and reused action-bar tasks.
+
 ## [1.14.3] - 24.08.2026
 
 - 🧑‍🌾 **Villager Trade Cycling** - Added an admin-controlled option to reroll the offers of an untraded novice villager by right-clicking outside its trading inventory.

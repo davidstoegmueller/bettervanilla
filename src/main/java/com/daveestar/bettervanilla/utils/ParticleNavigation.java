@@ -37,10 +37,18 @@ public class ParticleNavigation {
     _location = newLocation.toCenterLocation();
     _showBeam = showBeam;
     _showTrail = showTrail;
+    if (showTrail && _trailTask == null) {
+      displayTrail();
+    } else if (!showTrail) {
+      removeTrail();
+    }
   }
 
   public void displayBeam() {
     _showBeam = true;
+    if (_beamTask != null && !_beamTask.isCancelled()) {
+      return;
+    }
 
     _beamTask = _player.getScheduler().runAtFixedRate(_plugin, task -> {
 
@@ -54,9 +62,9 @@ public class ParticleNavigation {
       double maxHeight = target.getWorld().getMaxHeight();
 
       // generate the beam effect upwards from the given location
-      for (double y = 0; y <= maxHeight; y += 0.5) { // adjust y to control beam height
-        Location particleLocation = target.clone().add(0, y, 0);
-        DustOptions options = new DustOptions(_color, 3);
+      DustOptions options = new DustOptions(_color, 3);
+      for (double y = Math.max(target.getY(), target.getWorld().getMinHeight()); y < maxHeight; y += 0.5) {
+        Location particleLocation = new Location(target.getWorld(), target.getX(), y, target.getZ());
 
         _player.spawnParticle(Particle.DUST, particleLocation, 1, 0.1, 0.1, 0.1, 0, options, true);
       }
@@ -64,16 +72,20 @@ public class ParticleNavigation {
   }
 
   public void removeBeam() {
-    if (_beamTask != null && !_beamTask.isCancelled()) {
-      _beamTask.cancel();
+    _showBeam = false;
+    if (_beamTask != null) {
+      if (!_beamTask.isCancelled()) {
+        _beamTask.cancel();
+      }
       _beamTask = null;
-
-      _showBeam = false;
     }
   }
 
   public void displayTrail() {
     _showTrail = true;
+    if (_trailTask != null && !_trailTask.isCancelled()) {
+      return;
+    }
 
     _trailTask = _player.getScheduler().runAtFixedRate(_plugin, t -> {
       if (!_showTrail)
@@ -86,12 +98,15 @@ public class ParticleNavigation {
         return;
 
       double distance = start.distance(target);
+      if (distance == 0) {
+        return;
+      }
       double maxDistance = Math.min(distance, 10);
       Vector direction = target.toVector().subtract(start.toVector()).normalize();
 
+      DustOptions options = new DustOptions(_color, 1);
       for (double d = 0; d <= maxDistance; d += 1) {
         Location point = start.clone().add(direction.clone().multiply(d));
-        DustOptions options = new DustOptions(_color, 1);
 
         _player.spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, options, true);
       }
@@ -99,11 +114,12 @@ public class ParticleNavigation {
   }
 
   public void removeTrail() {
-    if (_trailTask != null && !_trailTask.isCancelled()) {
-      _trailTask.cancel();
+    _showTrail = false;
+    if (_trailTask != null) {
+      if (!_trailTask.isCancelled()) {
+        _trailTask.cancel();
+      }
       _trailTask = null;
-
-      _showTrail = false;
     }
   }
 }

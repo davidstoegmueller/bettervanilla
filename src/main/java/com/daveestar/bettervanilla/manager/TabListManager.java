@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Statistic;
 import org.bukkit.World;
@@ -14,8 +13,7 @@ import org.bukkit.entity.Player;
 import com.daveestar.bettervanilla.Main;
 import com.daveestar.bettervanilla.utils.Theme;
 
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.scheduler.BukkitTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.md_5.bungee.api.ChatColor;
@@ -32,7 +30,7 @@ public class TabListManager {
   private VanishManager _vanishManager;
   private TagManager _tagManager;
 
-  private ScheduledTask _task;
+  private BukkitTask _task;
 
   public TabListManager() {
     _plugin = Main.getInstance();
@@ -97,12 +95,11 @@ public class TabListManager {
       _task.cancel();
     }
 
-    AsyncScheduler scheduler = Main.getInstance().getServer().getAsyncScheduler();
-    _task = scheduler.runAtFixedRate(Main.getInstance(), task -> {
+    _task = _plugin.getServer().getScheduler().runTaskTimer(_plugin, () -> {
       for (Player p : _plugin.getServer().getOnlinePlayers()) {
         refreshPlayer(p);
       }
-    }, 0, 1, TimeUnit.SECONDS);
+    }, 20L, 20L);
   }
 
   private Component _buildHeader(Player p) {
